@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark;
+}
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+:root {
+    --header-height: 3.25rem;
+    --side-menu-width: 14rem;
+}
+
+@plugin "daisyui/theme" {
+    name: "light";
+    default: true;
+    prefersdark: false;
+    color-scheme: "light";
+    --color-base-100: rgb(255, 255, 255);
+    --color-base-200: rgb(237, 241, 245);
+    --color-base-300: oklch(82.4% 0 0);
+    --color-base-content: rgb(28, 46, 54);
+    --color-primary: oklch(40.723% 0.161 17.53);
+    --color-primary-content: oklch(88.144% 0.032 17.53);
+    --color-secondary: oklch(61.676% 0.169 23.865);
+    --color-secondary-content: oklch(12.335% 0.033 23.865);
+    --color-accent: oklch(73.425% 0.094 60.729);
+    --color-accent-content: oklch(14.685% 0.018 60.729);
+    --color-neutral: oklch(54.367% 0.037 51.902);
+    --color-neutral-content: oklch(90.873% 0.007 51.902);
+    --color-info: oklch(69.224% 0.097 207.284);
+    --color-info-content: oklch(13.844% 0.019 207.284);
+    --color-success: oklch(60.995% 0.08 174.616);
+    --color-success-content: oklch(12.199% 0.016 174.616);
+    --color-warning: oklch(70.081% 0.164 56.844);
+    --color-warning-content: oklch(14.016% 0.032 56.844);
+    --color-error: oklch(53.07% 0.241 24.16);
+    --color-error-content: oklch(90.614% 0.048 24.16);
+    --radius-selector: 1rem;
+    --radius-field: 0.5rem;
+    --radius-box: 1rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+    name: "dark";
+    default: false;
+    prefersdark: false;
+    color-scheme: "dark";
+    --color-base-100: rgb(44, 46, 48);
+    --color-base-200: rgb(29, 30, 33);
+    --color-base-300: oklch(21.15% 0.012 254.09);
+    --color-base-content: rgb(223, 225, 230);
+    --color-primary: oklch(58% 0.233 277.117);
+    --color-primary-content: oklch(96% 0.018 272.314);
+    --color-secondary: oklch(65% 0.241 354.308);
+    --color-secondary-content: oklch(94% 0.028 342.258);
+    --color-accent: oklch(77% 0.152 181.912);
+    --color-accent-content: oklch(38% 0.063 188.416);
+    --color-neutral: oklch(14% 0.005 285.823);
+    --color-neutral-content: oklch(92% 0.004 286.32);
+    --color-info: oklch(74% 0.16 232.661);
+    --color-info-content: oklch(29% 0.066 243.157);
+    --color-success: oklch(76% 0.177 163.223);
+    --color-success-content: oklch(37% 0.077 168.94);
+    --color-warning: oklch(82% 0.189 84.429);
+    --color-warning-content: oklch(41% 0.112 45.904);
+    --color-error: oklch(71% 0.194 13.428);
+    --color-error-content: oklch(27% 0.105 12.094);
+    --radius-selector: 0.5rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+}
+
+@layer utilities {
+    .link-default {
+        @apply hover:text-sky-400;
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-base-200 text-base-content;
+    }
+
+    .header-container {
+        @apply flex items-center bg-base-100 shadow-md px-6;
+
+        height: var(--header-height);
+    }
+
+    .main-container {
+        @apply relative flex bg-base-200;
+
+        padding-top: var(--header-height);
+    }
+
+    .main-container .nav-container {
+        @apply fixed left-0 transition-all duration-400 p-6;
+
+        width: var(--side-menu-width);
+    }
+
+    .main-container.nav-closed .nav-container {
+        @apply absolute;
+
+        left: calc(-1 * var(--side-menu-width));
+    }
+
+        .nav-container .nav-group {
+            @apply mb-6;
+        }
+
+        .nav-container .nav-group .nav-group-title {
+            @apply uppercase font-bold text-xs mb-2;
+        }
+
+        .nav-container .nav-group ul {
+            @apply text-sm space-y-2;
+        }
+
+        .nav-container .nav-group ul li a {
+            @apply link link-hover;
+        }
+
+    .main-container .content-container {
+        @apply border-l border-[#d1d5db] dark:border-[#323335] transition-all duration-400 px-6 py-4 min-h-screen;
+
+        margin-left: var(--side-menu-width);
+    }
+
+    .main-container.nav-closed .content-container {
+        @apply border-none;
+
+        margin-left: 0;
+    }
+}
