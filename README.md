@@ -16,14 +16,3 @@ use keys for menu - so you can save open / close state
 https://mui.com/material-ui/react-table/
 https://github.com/jbetancur/react-data-table-component
 https://primereact.org/datatable/
-
-
-what's the difference between server component and client component?
-
-Hey Javier
-
-Thx for additional information. Sound good.
-
-I’m available for a meeting any working day after 12 PM (Eastern European Summer Time)
-
-Gabriel
