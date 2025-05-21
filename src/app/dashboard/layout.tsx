@@ -2,9 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
 import {Providers} from '@/app/dashboard/providers';
-import {ToggleSideMenu} from '@/app/dashboard/components/toggle-side-menu';
+import {ToggleSideMenu} from '@/app/dashboard/components/toggle-side-menu.component';
 import {MainContainer} from '@/app/dashboard/components/main-container';
 import {ToggleTheme} from '@/components/toggle-theme';
+import {HeaderBreadcrumb} from '@/app/dashboard/components/header-breadcrumb';
+import Head from 'next/head';
 
 function Header() {
     return (
@@ -17,14 +19,14 @@ function Header() {
                         className="flex items-end link-default"
                     >
                         <span className="text-lg font-bold">
-                            dashboard
-                            <sup className="text-xs">TM</sup>
+                            nextjs
+                            <sup className="text-xs">TEST</sup>
                         </span>
 
                     </Link>
                 </div>
-                <div className="w-full">
-
+                <div className="w-full pl-16">
+                    <HeaderBreadcrumb/>
                 </div>
                 <div className="flex items-center">
                     <ToggleTheme/>

@@ -14,7 +14,7 @@ export default function RootLayout({children}: Readonly<{
         <ThemeProvider>
             <html lang="en">
             <body>
-            {children}
+                {children}
             </body>
             </html>
         </ThemeProvider>

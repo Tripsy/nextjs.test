@@ -46,5 +46,4 @@ function useTheme() {
     return context;
 }
 
-
 export {ThemeContext, ThemeProvider, useTheme};

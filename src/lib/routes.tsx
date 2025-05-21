@@ -44,7 +44,7 @@ let Routes = new RoutesCollection();
 
 Routes.add('home', '/');
 Routes.add('dashboard', '/');
-Routes.add('project-list', '/dashboard/projects', 'dashboard');
-Routes.add('project-view', '/dashboard/projects/:key', 'dashboard');
+Routes.add('user-list', '/dashboard/users', 'dashboard');
+Routes.add('user-view', '/dashboard/users/:key', 'dashboard');
 
 export default Routes;

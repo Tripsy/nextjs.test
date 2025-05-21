@@ -1,10 +1,16 @@
 import React from 'react';
 import {SideMenuProvider} from '@/app/dashboard/providers/side-menu.provider';
+import {BreadcrumbProvider} from '@/app/dashboard/providers/breadcrumb.provider';
+import {PrimeProvider} from '@/app/dashboard/providers/prime.provider';
 
 export function Providers({children}: { children: React.ReactNode }) {
     return (
-        <SideMenuProvider>
-            {children}
-        </SideMenuProvider>
+        <PrimeProvider>
+            <BreadcrumbProvider>
+                <SideMenuProvider>
+                    {children}
+                </SideMenuProvider>
+            </BreadcrumbProvider>
+        </PrimeProvider>
     );
 }

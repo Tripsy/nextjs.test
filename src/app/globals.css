@@ -51,7 +51,8 @@
     default: false;
     prefersdark: false;
     color-scheme: "dark";
-    --color-base-100: rgb(44, 46, 48);
+    /*--color-base-100: rgb(28, 34, 41);*/
+    --color-base-100: rgb(31, 42, 56);
     --color-base-200: rgb(29, 30, 33);
     --color-base-300: oklch(21.15% 0.012 254.09);
     --color-base-content: rgb(223, 225, 230);
@@ -117,7 +118,11 @@
     }
 
         .nav-container .nav-group {
-            @apply mb-6;
+            @apply mb-2;
+        }
+
+        .nav-container .nav-group ul {
+            @apply ml-4 pb-2;
         }
 
         .nav-container .nav-group .nav-group-title {
@@ -133,7 +138,7 @@
         }
 
     .main-container .content-container {
-        @apply border-l border-[#d1d5db] dark:border-[#323335] transition-all duration-400 px-6 py-4 min-h-screen;
+        @apply w-full border-l border-[#d1d5db] dark:border-[#323335] transition-all duration-400 px-6 py-4 min-h-screen;
 
         margin-left: var(--side-menu-width);
     }

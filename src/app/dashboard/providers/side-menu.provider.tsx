@@ -1,6 +1,6 @@
 'use client'
 
-import React, {createContext, useState, ReactNode, useContext, useEffect} from 'react';
+import React, {createContext, useState, ReactNode, useContext, useLayoutEffect} from 'react';
 
 type Status = 'open' | 'closed';
 
@@ -12,12 +12,12 @@ const SideMenuContext = createContext<{
 const SideMenuProvider = ({children}: { children: ReactNode }) => {
     const [status, setStatus] = useState<Status>('open');
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const saved = localStorage.getItem('dashboard-side-menu') as Status;
         const status: Status = saved || 'open';
 
         setStatus(status);
-    }, [status]);
+    }, []);
 
     const toggleStatus = (status: Status): void => {
 
