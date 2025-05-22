@@ -17,9 +17,9 @@ import {useSideMenu} from '@/app/dashboard/providers/side-menu.provider';
 
 export function SideMenu() {
     return (
-        <nav className="nav-container">
-            <details open className="nav-group">
-                <summary className="nav-group-title">
+        <nav className="side-menu-container">
+            <details open className="side-menu-group">
+                <summary className="side-menu-group-title">
                     Content
                 </summary>
                 <ul>
@@ -33,8 +33,8 @@ export function SideMenu() {
                     </li>
                 </ul>
             </details>
-            <details className="nav-group">
-                <summary className="nav-group-title">
+            <details className="side-menu-group">
+                <summary className="side-menu-group-title">
                     Settings
                 </summary>
                 <ul>
@@ -48,8 +48,8 @@ export function SideMenu() {
                     </li>
                 </ul>
             </details>
-            <details className="nav-group">
-                <summary className="nav-group-title">
+            <details className="side-menu-group">
+                <summary className="side-menu-group-title">
                     Logs
                 </summary>
                 <ul>
@@ -79,8 +79,8 @@ export function SideMenu() {
                     </li>
                 </ul>
             </details>
-            <details className="nav-group">
-                <summary className="nav-group-title">
+            <details className="side-menu-group">
+                <summary className="side-menu-group-title">
                     Users
                 </summary>
                 <ul>
@@ -106,7 +106,7 @@ export function SideMenu() {
     );
 }
 
-export function MainContainer({children}: { children: React.ReactNode }) {
+export function MainContainerComponent({children}: { children: React.ReactNode }) {
     const {status} = useSideMenu();
 
     return (
