@@ -1,11 +1,8 @@
 'use client'
 
 import React from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-    faBars
-} from '@fortawesome/free-solid-svg-icons';
 import {useSideMenu} from '@/app/dashboard/providers/side-menu.provider';
+import {Icons} from '@/components/icon.component';
 
 export function ToggleSideMenu() {
     const { status, toggleStatus } = useSideMenu();
@@ -21,12 +18,12 @@ export function ToggleSideMenu() {
 
             <div className="swap-off w-8 h-8 flex items-center justify-center rounded-full bg-base-200">
                 {/* When menu is open (unchecked) */}
-                <FontAwesomeIcon icon={faBars} className="w-4 h-4"/>
+                <Icons.SideMenuOpen className="w-4 h-4" />
             </div>
 
             <div className="swap-on w-8 h-8 flex items-center justify-center rounded-full bg-base-200">
                 {/* When menu is closed (checked) */}
-                <FontAwesomeIcon icon={faBars} className="w-4 h-4 opacity-50"/>
+                <Icons.SideMenuClosed className="w-4 h-4 opacity-50" />
             </div>
         </label>
     );

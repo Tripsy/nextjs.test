@@ -3,10 +3,10 @@ import Link from 'next/link';
 import Routes from '@/lib/routes';
 import {Providers} from '@/app/dashboard/providers';
 import {ToggleSideMenu} from '@/app/dashboard/components/toggle-side-menu.component';
-import {MainContainer} from '@/app/dashboard/components/main-container';
+import {SideMenu} from '@/app/dashboard/components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {HeaderBreadcrumb} from '@/app/dashboard/components/header-breadcrumb';
-import Head from 'next/head';
+import {HeaderBreadcrumb} from '@/app/dashboard/components/header-breadcrumb.component';
+import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
 
 function Header() {
     return (
@@ -122,9 +122,13 @@ export default function Layout({children}: { children: React.ReactNode }) {
     return (
         <Providers>
             <Header/>
-            <MainContainer>
-                {children}
-            </MainContainer>
+            <SideMenuSetter/>
+            <main className="main-container">
+                <SideMenu/>
+                <div className="content-container">
+                    {children}
+                </div>
+            </main>
             <Footer/>
         </Providers>
     );

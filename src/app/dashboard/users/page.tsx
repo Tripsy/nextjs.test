@@ -1,7 +1,12 @@
-import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb-setter';
+import React from 'react';
+import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb.setter';
 import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
-import DataTableList, {TableColumnsType} from '@/app/dashboard/components/table-list.component';
-import {statusBodyTemplate} from '@/app/dashboard/components/table-row-status.component';
+import DataTableList, {
+    DateBodyTemplate,
+    StatusBodyTemplate,
+    TableColumnsType
+} from '@/app/dashboard/components/table-list.component';
+import {RoleBodyTemplate} from '@/app/dashboard/components/users/table-list.component';
 
 export default function Page() {
     const items: BreadcrumbType[] = [
@@ -13,9 +18,9 @@ export default function Page() {
         {field: 'id', header: 'ID', sortable: true},
         {field: 'name', header: 'Name', sortable: true},
         {field: 'email', header: 'Email'},
-        {field: 'role', header: 'Role'},
-        {field: 'status', header: 'Status', body: statusBodyTemplate},
-        {field: 'created_at', header: 'Created At', sortable: true},
+        {field: 'role', header: 'Role', body: RoleBodyTemplate},
+        {field: 'status', header: 'Status', body: StatusBodyTemplate, style: {maxWidth: '6rem'}},
+        {field: 'created_at', header: 'Created At', sortable: true, body: DateBodyTemplate},
     ];
 
     return (

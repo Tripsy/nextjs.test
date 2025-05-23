@@ -20,8 +20,6 @@ const SideMenuProvider = ({children}: { children: ReactNode }) => {
     }, []);
 
     const toggleStatus = (status: Status): void => {
-
-        console.log(status)
         setStatus(status);
 
         localStorage.setItem('dashboard-side-menu', status);

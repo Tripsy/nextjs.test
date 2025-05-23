@@ -1,6 +1,6 @@
 'use client'
 
-import React, {createContext, useState, ReactNode, useContext, useLayoutEffect} from 'react';
+import React, {createContext, useState, ReactNode, useContext} from 'react';
 
 export type BreadcrumbType = { label: string; href?: string };
 

@@ -1,11 +1,8 @@
 'use client'
 
 import React from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-    faMoon, faSun
-} from '@fortawesome/free-solid-svg-icons';
 import {useTheme} from '@/app/providers/theme.provider';
+import { Icons } from './icon.component';
 
 export function ToggleTheme() {
     const { toggleTheme } = useTheme();
@@ -18,8 +15,8 @@ export function ToggleTheme() {
         <label aria-label="Toggle Theme" className="swap swap-rotate mr-5">
             <input type="checkbox" onChange={handleToggle}/>
 
-            <FontAwesomeIcon icon={faSun} className="swap-off w-5 h-5"/>
-            <FontAwesomeIcon icon={faMoon} className="swap-on on w-5 h-5"/>
+            <Icons.ToggleThemeDay className="swap-off w-5 h-5"/>
+            <Icons.ToggleThemeNight className="swap-on on w-5 h-5"/>
         </label>
     );
 }

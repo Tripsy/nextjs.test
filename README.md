@@ -1,3 +1,14 @@
+# TODO
+
+1. table statefull should remember pagination / per page / filters / sort
+2. Layout main container ..height
+
+# IDEAS
+
+1. header right menu - add history to keep track of last 10 pages
+
+# NOTES
+
 To pass props, add them to the JSX, just like you would with HTML attributes.
 To read props, use the function Avatar({ person, size }) destructuring syntax.
 You can specify a default value like size = 100, which is used for missing and undefined props.
@@ -6,12 +17,9 @@ Nested JSX like <Card><Avatar /></Card> will appear as Card component’s childr
 Props are read-only snapshots in time: every render receives a new version of props.
 You can’t change props. When you need interactivity, you’ll need to set state.
 
+Don’t use window or localStorage in useState initializer — React will render it differently on server vs. client.
 
-TODO 
-
-move breadcrumb to header
-use keys for menu - so you can save open / close state
-
+# RESOURCES
 
 https://mui.com/material-ui/react-table/
 https://github.com/jbetancur/react-data-table-component

@@ -1,9 +1,8 @@
-'use client'
+'use client';
 
-import React from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
     faDiagramProject,
     faUserLock,
@@ -11,110 +10,91 @@ import {
     faDatabase,
     faFileWaveform,
     faEnvelopesBulk,
-    faUserGroup
+    faUserGroup, IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
-import {useSideMenu} from '@/app/dashboard/providers/side-menu.provider';
+import {useDebouncedEffect} from '@/app/hooks';
+import {AwesomeIcon} from '@/components/icon.component';
+
+type SideMenuGroupProps = {
+    groupKey: string;
+    defaultOpen?: boolean;
+    title: string;
+    children: React.ReactNode;
+};
+
+function SideMenuGroup({groupKey, defaultOpen, title, children}: SideMenuGroupProps) {
+    const groupKeyStorage = `side-menu-open-${groupKey}`;
+
+    const [open, setOpen] = useState<boolean>(() => defaultOpen ?? false);
+
+    useLayoutEffect(() => {
+        const openStorage: string | null = localStorage.getItem(groupKeyStorage);
+
+        if (openStorage !== null && openStorage !== 'undefined') {
+            setOpen(JSON.parse(openStorage));
+        }
+    }, [groupKeyStorage]);
+
+    useDebouncedEffect(() => {
+        localStorage.setItem(groupKeyStorage, JSON.stringify(open));
+    }, [open], 500);
+
+    const handleToggle = (e: React.MouseEvent<HTMLElement>) => {
+        e.preventDefault();
+
+        setOpen(previousState => !previousState);
+    };
+
+    return (
+        <details open={open} className="side-menu-group">
+            <summary className="side-menu-group-title" onClick={handleToggle}>
+                {title}
+            </summary>
+            <ul>
+                {children}
+            </ul>
+        </details>
+    );
+}
+
+type SideMenuItemProps = {
+    href: string;
+    label: string;
+    icon: IconDefinition;
+};
+
+export function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
+    return (
+        <li>
+            <Link href={href}>
+                <AwesomeIcon icon={icon} className="inline-block w-5 h-5 mr-0.75" />
+                {label}
+            </Link>
+        </li>
+    );
+}
 
 export function SideMenu() {
     return (
         <nav className="side-menu-container">
-            <details open className="side-menu-group">
-                <summary className="side-menu-group-title">
-                    Content
-                </summary>
-                <ul>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faDiagramProject} className="inline-block w-5 h-5 mr-0.75"/>
-                            Projects
-                        </Link>
-                    </li>
-                </ul>
-            </details>
-            <details className="side-menu-group">
-                <summary className="side-menu-group-title">
-                    Settings
-                </summary>
-                <ul>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faFileLines} className="inline-block w-5 h-5 mr-0.75"/>
-                            Templates
-                        </Link>
-                    </li>
-                </ul>
-            </details>
-            <details className="side-menu-group">
-                <summary className="side-menu-group-title">
-                    Logs
-                </summary>
-                <ul>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faDatabase} className="inline-block w-5 h-5 mr-0.75"/>
-                            Log Data
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faFileWaveform} className="inline-block w-5 h-5 mr-0.75"/>
-                            Cron History
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faEnvelopesBulk} className="inline-block w-5 h-5 mr-0.75"/>
-                            Mail Queue
-                        </Link>
-                    </li>
-                </ul>
-            </details>
-            <details className="side-menu-group">
-                <summary className="side-menu-group-title">
-                    Users
-                </summary>
-                <ul>
-                    <li>
-                        <Link
-                            href={Routes.get('user-list')}
-                        >
-                            <FontAwesomeIcon icon={faUserGroup} className="inline-block w-5 h-5 mr-0.75"/>
-                            Users
-                        </Link>
-                    </li>
-                    <li>
-                        <Link
-                            href="#"
-                        >
-                            <FontAwesomeIcon icon={faUserLock} className="inline-block w-5 h-5 mr-0.75"/>
-                            Permissions
-                        </Link>
-                    </li>
-                </ul>
-            </details>
+            <SideMenuGroup groupKey="side-menu-content" title="Content">
+                <SideMenuGroupItem href="#" label="Projects" icon={faDiagramProject} />
+            </SideMenuGroup>
+
+            <SideMenuGroup groupKey="side-menu-settings" title="Settings">
+                <SideMenuGroupItem href="#" label="Templates" icon={faFileLines} />
+            </SideMenuGroup>
+
+            <SideMenuGroup groupKey="side-menu-logs" title="Logs">
+                <SideMenuGroupItem href="#" label="Log Data" icon={faDatabase} />
+                <SideMenuGroupItem href="#" label="Cron History" icon={faFileWaveform} />
+                <SideMenuGroupItem href="#" label="Mail Queue" icon={faEnvelopesBulk} />
+            </SideMenuGroup>
+
+            <SideMenuGroup groupKey="side-menu-users" defaultOpen title="Users">
+                <SideMenuGroupItem href={Routes.get('user-list')} label="Users" icon={faUserGroup} />
+                <SideMenuGroupItem href="#" label="Permissions" icon={faUserLock} />
+            </SideMenuGroup>
         </nav>
-    );
-}
-
-export function MainContainerComponent({children}: { children: React.ReactNode }) {
-    const {status} = useSideMenu();
-
-    return (
-        <main className={`main-container nav-${status}`}>
-            <SideMenu/>
-            <div className="content-container">
-                {children}
-            </div>
-        </main>
     );
 }

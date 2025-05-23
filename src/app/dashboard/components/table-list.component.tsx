@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import {JSX, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {FetchFilterUserType, UserEntryType, fetchUsers} from '@/lib/services/user.service';
+import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/table-row.component';
 
 type ServiceDataTypes = {
     users: {
@@ -52,7 +53,8 @@ type TableColumn = {
     header: string;
     sortable?: boolean;
     // filterable?: boolean;
-    body?: (rowData: any) => JSX.Element;
+    body?: (rowData: any, column: TableColumn) => React.JSX.Element | string;
+    style?: React.CSSProperties;
 };
 
 export type TableColumnsType = TableColumn[];
@@ -150,7 +152,7 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
                 value={data}
                 dataKey="id"
                 lazy
-                paginator
+                paginator rowsPerPageOptions={[5, 10, 25, 50]}
                 first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords} onPage={onPage}
                 onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
                 onFilter={onFilter} filters={lazyState.filters}
@@ -162,9 +164,25 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
                 footer={footer}
             >
                 {props.columns.map((column: TableColumn) => (
-                    <Column key={column.field} field={column.field} header={column.header} body={column.body ?? null} sortable={column.sortable ?? false} />
+                    <Column
+                        key={column.field}
+                        field={column.field}
+                        header={column.header}
+                        style={column.style}
+                        body={(rowData) => column.body?.(rowData, column) || rowData[column.field]}
+                        sortable={column.sortable ?? false}/>
                 ))}
             </DataTable>
         </div>
     );
 }
+
+export const StatusBodyTemplate = (entry: { status: StatusKey; }) => {
+    return <TableRowStatus status={entry.status}/>;
+};
+
+export const DateBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
+    const date: Date | string = entry[column.field];
+
+    return <TableRowDate date={date} />;
+};

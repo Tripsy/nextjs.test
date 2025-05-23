@@ -1,10 +1,7 @@
 'use client';
 
 import React, {useEffect} from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {
-    faTriangleExclamation
-} from '@fortawesome/free-solid-svg-icons';
+import {Icons} from '@/components/icon.component';
 
 export default function Error({error, reset}: { error: Error; reset: () => void }) {
     useEffect(() => {
@@ -15,7 +12,7 @@ export default function Error({error, reset}: { error: Error; reset: () => void 
         <div className="card bg-base-100 shadow-sm">
             <div className="card-body">
                 <h2 className="card-title">
-                    <FontAwesomeIcon icon={faTriangleExclamation} className="w-5 h-5 text-error"/>
+                    <Icons.Error className="w-5 h-5 text-error" />
                     Something went wrong!
                 </h2>
                 <p>
