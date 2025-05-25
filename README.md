@@ -1,7 +1,11 @@
 # TODO
 
-1. table statefull should remember pagination / per page / filters / sort
-2. Layout main container ..height
+1. Layout main container ..height
+2. Table filter
+3. Table actions - global
+4. onRowSelect - present actions (edit / delete)
+5. login 
+6. auth
 
 # IDEAS
 

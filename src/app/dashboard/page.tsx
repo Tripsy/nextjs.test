@@ -1,5 +1,11 @@
 import Link from 'next/link'
 import Routes from '@/lib/routes';
+import type {Metadata} from 'next';
+import {lang} from '@/config/lang';
+
+export const metadata: Metadata = {
+    title: `Dashboard | ${lang.app.name}`,
+};
 
 export default function Page() {
     return (

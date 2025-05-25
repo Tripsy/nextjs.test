@@ -37,7 +37,7 @@ function SideMenuGroup({groupKey, defaultOpen, title, children}: SideMenuGroupPr
 
     useDebouncedEffect(() => {
         localStorage.setItem(groupKeyStorage, JSON.stringify(open));
-    }, [open], 500);
+    }, [open], 1000);
 
     const handleToggle = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
