@@ -2,23 +2,25 @@ import Link from 'next/link'
 import Routes from '@/lib/routes';
 import type {Metadata} from 'next';
 import {lang} from '@/config/lang';
+import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
+import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb.setter';
+import React from 'react';
 
 export const metadata: Metadata = {
     title: `Dashboard | ${lang.app.name}`,
 };
 
 export default function Page() {
+    const items: BreadcrumbType[] = [
+        {label: 'Dashboard'}
+    ];
+
     return (
         <>
-            Dashboard
-            <br/>
-            <br/>
-            <Link
-                href={Routes.get('user-list')}
-                className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
-            >
-                Projects
-            </Link>
+            <BreadcrumbSetter items={items}/>
+            <div>
+                Dashboard
+            </div>
         </>
     );
 }

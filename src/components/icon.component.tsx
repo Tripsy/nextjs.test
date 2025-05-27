@@ -1,6 +1,6 @@
 import {FontAwesomeIcon, FontAwesomeIconProps} from '@fortawesome/react-fontawesome';
 import {
-    faBars, faCircleCheck, faCircleXmark, faClock, faMoon, faSun, faTriangleExclamation
+    faBars, faCircleCheck, faCircleXmark, faClock, faMagnifyingGlass, faMoon, faSun, faTriangleExclamation
 } from '@fortawesome/free-solid-svg-icons';
 
 export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIconProps) {
@@ -10,6 +10,9 @@ export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIcon
 export const Icons = {
     Error: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faTriangleExclamation} {...props} />
+    ),
+    Search: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faMagnifyingGlass} {...props} />
     ),
     SideMenuOpen: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faBars} {...props} />

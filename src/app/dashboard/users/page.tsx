@@ -6,10 +6,14 @@ import DataTableList, {
     StatusBodyTemplate,
     TableColumnsType
 } from '@/app/dashboard/components/table-list.component';
-import {onRowSelect, onRowUnselect, RoleBodyTemplate} from '@/app/dashboard/components/users/table-list.component';
+import {
+    FilterBodyTemplate,
+    onRowSelect,
+    onRowUnselect,
+    RoleBodyTemplate
+} from '@/app/dashboard/components/users/table-list.component';
 import type {Metadata} from 'next';
 import {lang} from '@/config/lang';
-import {DataTableFilterMeta} from 'primereact/datatable';
 
 export const metadata: Metadata = {
     title: `Users - Dashboard | ${lang.app.name}`,
@@ -21,7 +25,7 @@ export default function Page() {
         {label: 'Users'},
     ];
 
-    const columns: TableColumnsType = [
+    const UserTableColumns: TableColumnsType = [
         {field: 'id', header: 'ID', sortable: true},
         {field: 'name', header: 'Name', sortable: true},
         {field: 'email', header: 'Email'},
@@ -30,21 +34,12 @@ export default function Page() {
         {field: 'created_at', header: 'Created At', sortable: true, body: DateBodyTemplate},
     ];
 
-    const filters: DataTableFilterMeta = {
-        id: {value: null, matchMode: 'equals'},
-        term: {value: null, matchMode: 'contains'},
-        role: {value: null, matchMode: 'equals'},
-        status: {value: null, matchMode: 'equals'},
-        create_date_start: {value: null, matchMode: 'equals'},
-        create_date_end: {value: null, matchMode: 'equals'},
-        is_deleted: {value: null, matchMode: 'equals'},
-    };
-
     return (
         <>
             <BreadcrumbSetter items={items}/>
             <DataTableList
-                dataSource="users" columns={columns} filters={filters}
+                dataSource="users" columns={UserTableColumns}
+                filterBody={FilterBodyTemplate}
                 selectionMode="multiple" onRowSelect={onRowSelect} onRowUnselect={onRowUnselect}
             />
         </>
