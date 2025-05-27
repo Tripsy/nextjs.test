@@ -30,11 +30,16 @@ export const FilterBodyTemplate= ({
     const [selectedRole, setSelectedRole] = useState<UserRoleEnum | null>(filters.role.value || null);
 
     useEffect(() => {
-        setFilterAction({
+        const updatedFilters: UserTableFiltersType = {
             global: { value: term, matchMode: 'contains' },
             status: { value: selectedStatus, matchMode: 'equals' },
             role: { value: selectedRole, matchMode: 'equals' },
-        });
+            create_date_start: { value: null, matchMode: 'equals' },
+            create_date_end: { value: null, matchMode: 'equals' },
+            is_deleted: { value: null, matchMode: 'equals' },
+        };
+
+        setFilterAction(updatedFilters);
     }, [term, selectedStatus, selectedRole]);
 
     return (
