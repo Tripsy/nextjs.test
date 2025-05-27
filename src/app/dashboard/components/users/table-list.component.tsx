@@ -21,50 +21,115 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
     value: role,
 }));
 
-export const FilterBodyTemplate= ({
+// export const FilterBodyTemplate= ({
+//    filters,
+//    setFilterAction,
+// }: TableFilterBodyTemplateProps<UserTableFiltersType>): React.JSX.Element => {
+//     const [term, setTerm] = useState<string | null>('');
+//     const [selectedStatus, setSelectedStatus] = useState<UserStatusEnum | null>(null);
+//     const [selectedRole, setSelectedRole] = useState<UserRoleEnum | null>(null);
+//
+//     useEffect(() => {
+//         setSelectedStatus(filters.status.value ?? null);
+//         setSelectedRole(filters.role.value ?? null);
+//         setTerm(filters.global.value ?? '');
+//     }, [filters]);
+//
+//     useEffect(() => {
+//         const updatedFilters: UserTableFiltersType = {
+//             global: { value: term, matchMode: 'contains' },
+//             status: { value: selectedStatus, matchMode: 'equals' },
+//             role: { value: selectedRole, matchMode: 'equals' },
+//             create_date_start: { value: null, matchMode: 'equals' },
+//             create_date_end: { value: null, matchMode: 'equals' },
+//             is_deleted: { value: null, matchMode: 'equals' },
+//         };
+//
+//         setFilterAction(updatedFilters);
+//     }, [term, selectedStatus, selectedRole]);
+//
+//     return (
+//         <div className="flex gap-x-4">
+//             <IconField iconPosition="left">
+//                 <InputIcon>
+//                     <div className="flex items-center">
+//                         <Icons.Search className="w-4 h-4" />
+//                     </div>
+//                 </InputIcon>
+//                 <InputText placeholder="Search" value={term ?? ''} onChange={(e: ChangeEvent<HTMLInputElement>) => setTerm(e.target.value)} />
+//             </IconField>
+//
+//             <Dropdown
+//                 value={selectedStatus}
+//                 options={statuses}
+//                 onChange={(e: DropdownChangeEvent) => setSelectedStatus(e.value)}
+//                 placeholder="Status"
+//                 showClear
+//             />
+//
+//             <Dropdown
+//                 value={selectedRole}
+//                 options={roles}
+//                 onChange={(e: DropdownChangeEvent) => setSelectedRole(e.value)}
+//                 placeholder="Role"
+//                 showClear
+//             />
+//         </div>
+//     );
+// };
+
+export const FilterBodyTemplate = ({
    filters,
    setFilterAction,
 }: TableFilterBodyTemplateProps<UserTableFiltersType>): React.JSX.Element => {
-    const [term, setTerm] = useState<string | null>(filters.global.value || '');
-    const [selectedStatus, setSelectedStatus] = useState<UserStatusEnum | null>(filters.status.value || null);
-    const [selectedRole, setSelectedRole] = useState<UserRoleEnum | null>(filters.role.value || null);
+    const handleGlobalChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setFilterAction({
+            ...filters,
+            global: {value: e.target.value, matchMode: 'contains'},
+        });
+    };
 
-    useEffect(() => {
-        const updatedFilters: UserTableFiltersType = {
-            global: { value: term, matchMode: 'contains' },
-            status: { value: selectedStatus, matchMode: 'equals' },
-            role: { value: selectedRole, matchMode: 'equals' },
-            create_date_start: { value: null, matchMode: 'equals' },
-            create_date_end: { value: null, matchMode: 'equals' },
-            is_deleted: { value: null, matchMode: 'equals' },
-        };
+    const handleStatusChange = (e: DropdownChangeEvent) => {
+        setFilterAction({
+            ...filters,
+            status: {value: e.value, matchMode: 'equals'},
+        });
+    };
 
-        setFilterAction(updatedFilters);
-    }, [term, selectedStatus, selectedRole]);
+    const handleRoleChange = (e: DropdownChangeEvent) => {
+        setFilterAction({
+            ...filters,
+            role: {value: e.value, matchMode: 'equals'},
+        });
+    };
 
     return (
         <div className="flex gap-x-4">
             <IconField iconPosition="left">
                 <InputIcon>
                     <div className="flex items-center">
-                        <Icons.Search className="w-4 h-4" />
+                        <Icons.Search className="w-4 h-4"/>
                     </div>
                 </InputIcon>
-                <InputText placeholder="Search" value={term ?? ''} onChange={(e: ChangeEvent<HTMLInputElement>) => setTerm(e.target.value)} />
+                <InputText
+                    placeholder="Search"
+                    value={filters.global.value ?? ''}
+                    onChange={handleGlobalChange}
+                />
             </IconField>
 
             <Dropdown
-                value={selectedStatus}
+                value={filters.status.value}
                 options={statuses}
-                onChange={(e: DropdownChangeEvent) => setSelectedStatus(e.value)}
+                onChange={handleStatusChange}
                 placeholder="Status"
                 showClear
             />
 
             <Dropdown
-                value={selectedRole}
+                value={filters.role.value}
                 options={roles}
-                onChange={(e: DropdownChangeEvent) => setSelectedRole(e.value)}
+                onChange={handleRoleChange}
                 placeholder="Role"
                 showClear
             />

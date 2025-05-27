@@ -1,7 +1,7 @@
 'use client';
 
-import React, {SetStateAction, useEffect, useRef, useState} from 'react';
-import {DataTable, DataTableFilterMeta} from 'primereact/datatable';
+import React, {useEffect, useRef, useState} from 'react';
+import {DataTable, DataTableStateEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {UserEntryType, fetchUsers, UserTableFiltersType, UserTableFilters} from '@/lib/services/user.service';
 import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/table-row.component';
@@ -18,11 +18,12 @@ type ServiceDataTypes = {
 const serviceMap: {
     [K in keyof ServiceDataTypes]: {
         fetchFunction: TableFetchFunction<ServiceDataTypes[K]['entry']>;
-        fetchFunctionFilters: TableFetchFunction<ServiceDataTypes[K]['filter']>;
-}} = {
+        defaultFilters: ServiceDataTypes[K]['filter'];
+    }
+} = {
     users: {
         fetchFunction: fetchUsers,
-        fetchFunctionFilters: UserTableFilters
+        defaultFilters: UserTableFilters
     },
 };
 
@@ -32,7 +33,7 @@ export type TableFetchParamsType = {
     direction: 'ASC' | 'DESC';
     limit: number;
     page: number;
-    filter: DataTableFilterMeta;
+    filter: Record<string, any>;
 };
 
 export type TableFetchResponseType<TEntry = Record<string, any>> = {
@@ -69,7 +70,7 @@ export type TableColumnsType = TableColumn[];
 
 export type TableFilterBodyTemplateProps<TFilter> = {
     filters: TFilter;
-    setFilterAction: (filters: DataTableFilterMeta) => void;
+    setFilterAction: (filters: TFilter) => void;
 };
 
 type TablePropsType<T extends keyof ServiceDataTypes> = {
@@ -83,19 +84,19 @@ type TablePropsType<T extends keyof ServiceDataTypes> = {
 
 export default function DataTableList<T extends keyof ServiceDataTypes>(props: TablePropsType<T>) {
     const service = serviceMap[props.dataSource];
-    
+
     const [error, setError] = useState<Error | null>(null);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<ServiceDataTypes[T]['entry'][]>([]);
-    const [filters, setFilters] = useState<LazyStateType<ServiceDataTypes[T]['filter']>>(service.fetchFunctionFilters);
+    // const [filters, setFilters] = useState<LazyStateType<any>>(service.defaultFilters);
     const [totalRecords, setTotalRecords] = useState(0);
     const [lazyState, setLazyState] = useState<LazyStateType<ServiceDataTypes[T]['filter']>>({
         first: 0,
         rows: 10,
         sortField: 'id',
         sortOrder: -1,
-        filters: service.fetchFunctionFilters
-    });
+        filters: service.defaultFilters
+    }); // TODO move this to user.service similar to defaultFilter -> defaultParams
 
     const [selectedEntry, setSelectedEntry] = useState<ServiceDataTypes[T]['entry'][]>([])
 
@@ -109,8 +110,6 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
     useEffect(() => {
         const lazyStateStored = localStorage.getItem(`table-state-${props.dataSource}`);
 
-        console.log(lazyStateStored)
-
         if (lazyStateStored !== null && lazyStateStored !== 'undefined') {
             setLazyState(JSON.parse(lazyStateStored));
         }
@@ -120,8 +119,6 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
 
     useEffect(() => {
         if (hydrated) {
-            console.log('saving data')
-            console.log(lazyState.filters)
             localStorage.setItem(`table-state-${props.dataSource}`, JSON.stringify(lazyState));
         }
     }, [lazyState, hydrated, props.dataSource]);
@@ -168,16 +165,23 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
         return await fetchFunction(fetchParams);
     };
 
-    const onPage = (event: LazyStateType<ServiceDataTypes[T]['filter']>) => {
+    const onPage = (event: DataTableStateEvent) => {
         clearSelection();
-        setLazyState(event);
+        setLazyState((prev) => ({
+            ...prev,
+            first: event.first,
+            rows: event.rows
+        }));
     };
 
-    const onSort = (event: LazyStateType<ServiceDataTypes[T]['filter']>) => {
-        event['first'] = 0; // Reset to page 1
-
+    const onSort = (event: DataTableStateEvent) => {
         clearSelection();
-        setLazyState(event);
+        setLazyState((prev) => ({
+            ...prev,
+            first: 0,
+            sortField: event.sortField,
+            sortOrder: event.sortOrder,
+        }));
     };
 
     const prevSelectedEntryRef = useRef<ServiceDataTypes[T]['entry'][] | null>(null);
@@ -214,16 +218,17 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
         prevSelectedEntryRef.current = null;
     }
 
-    const header = props.filterBody?.({
-        filters: lazyState.filters,
-        setFilterAction: (newFilters: SetStateAction<DataTableFilterMeta>) => {
-            clearSelection();
+    const header = hydrated && props.filterBody?.({
+        filters: lazyState.filters as ServiceDataTypes[T]['filter'],
+        setFilterAction: (newFilters: ServiceDataTypes[T]['filter']) => {
+            console.log('setFilterAction')
+            // clearSelection();
 
-            // setLazyState((prev: LazyStateType) => ({
-            //     ...prev,
-            //     first: 0,
-            //     filters: typeof newFilters === 'function' ? newFilters(prev.filters) : newFilters,
-            // }));
+            setLazyState((prev: LazyStateType<ServiceDataTypes[T]['filter']>) => ({
+                ...prev,
+                first: 0,
+                filters: newFilters,
+            }));
         },
     });
     const footer = `In total there are ${totalRecords} entries.`;
@@ -233,7 +238,8 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
             <DataTable
                 value={data} lazy
 
-                dataKey="id" selectionMode={props.selectionMode} selection={selectedEntry} metaKeySelection={false} selectionPageOnly={true}
+                dataKey="id" selectionMode={props.selectionMode} selection={selectedEntry} metaKeySelection={false}
+                selectionPageOnly={true}
                 onSelectionChange={onSelectionChange}
                 paginator rowsPerPageOptions={[5, 10, 25, 50]}
                 first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords} onPage={onPage}
@@ -243,10 +249,10 @@ export default function DataTableList<T extends keyof ServiceDataTypes>(props: T
                 scrollable scrollHeight="flex"
                 resizableColumns reorderableColumns
                 stateStorage="local" stateKey={`data-table-state-${props.dataSource}`}
-                filters={filters} header={header} footer={footer}
+                filters={lazyState.filters} header={header} footer={footer}
             >
                 {props.selectionMode === 'multiple' && (
-                    <Column selectionMode="multiple" headerStyle={{ width: '1rem' }} />
+                    <Column selectionMode="multiple" headerStyle={{width: '1rem'}}/>
                 )}
 
                 {props.columns.map((column: TableColumn) => (
@@ -270,5 +276,5 @@ export const StatusBodyTemplate = (entry: { status: StatusKey; }) => {
 export const DateBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
     const date: Date | string = entry[column.field];
 
-    return <TableRowDate date={date} />;
+    return <TableRowDate date={date}/>;
 };

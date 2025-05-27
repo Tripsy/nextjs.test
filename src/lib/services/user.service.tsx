@@ -23,6 +23,8 @@ export const UserTableFilters: UserTableFiltersType = {
     is_deleted: {value: null, matchMode: 'equals'},
 };
 
+// export const UserTableFiltersMeta: DataTableFilterMeta = UserTableFilters;
+
 export type UserEntryType = {
     id: number;
     name: string;
