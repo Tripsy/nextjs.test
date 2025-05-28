@@ -3,8 +3,7 @@ import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb.setter';
 import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
 import DataTableList, {
     DateBodyTemplate,
-    StatusBodyTemplate,
-    TableColumnsType
+    StatusBodyTemplate
 } from '@/app/dashboard/components/table-list.component';
 import {
     FilterBodyTemplate,
@@ -14,6 +13,7 @@ import {
 } from '@/app/dashboard/components/users/table-list.component';
 import type {Metadata} from 'next';
 import {lang} from '@/config/lang';
+import {TableColumnsType} from '@/app/dashboard/types/table-list.type';
 
 export const metadata: Metadata = {
     title: `Users - Dashboard | ${lang.app.name}`,

@@ -43,6 +43,7 @@ class RoutesCollection {
 let Routes = new RoutesCollection();
 
 Routes.add('home', '/');
+Routes.add('login', '/login');
 Routes.add('dashboard', '/dashboard', 'dashboard');
 Routes.add('user-list', '/dashboard/users', 'dashboard');
 Routes.add('user-view', '/dashboard/users/:key', 'dashboard');

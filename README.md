@@ -1,12 +1,15 @@
 # TODO
 
+When is the onFilter triggered 
+
 1. Layout main container ..height
-2. Table filter
-3. onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-4. table check all present global actions (see statamic)
-5. add entry button 
-6. login 
-7. auth
+2. Refactor table-list component
+3. Table filter - add debounce on global search
+4. onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
+5. table check all present global actions (see statamic)
+6. add entry button 
+7. login 
+8. auth
 
 # IDEAS
 
@@ -29,3 +32,15 @@ Don’t use window or localStorage in useState initializer — React will render
 https://mui.com/material-ui/react-table/
 https://github.com/jbetancur/react-data-table-component
 https://primereact.org/datatable/
+
+    if (!responseBody?.data) {
+        throw new Error('Invalid API response structure');
+    }
+    return {
+        entries: responseBody?.data.entries || [],
+        pagination: responseBody?.data.pagination || {
+            page: 1,
+            limit: 10,
+            total: 0
+        },
+    };

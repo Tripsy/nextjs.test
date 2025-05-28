@@ -1,9 +1,6 @@
-import {
-    TableFetchParamsType,
-    TableFetchResponseType
-} from '@/app/dashboard/components/table-list.component';
 import {fetchData} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
+import {TableFetchParamsType, TableFetchResponseType} from '@/app/dashboard/types/table-list.type';
 
 export type UserTableFiltersType = {
     global: DataTableFilterMetaData;
@@ -23,7 +20,13 @@ export const UserTableFilters: UserTableFiltersType = {
     is_deleted: {value: null, matchMode: 'equals'},
 };
 
-// export const UserTableFiltersMeta: DataTableFilterMeta = UserTableFilters;
+export const UserTableParams = {
+    first: 0,
+    rows: 10,
+    sortField: 'id',
+    sortOrder: -1,
+    filters: UserTableFilters
+};
 
 export type UserEntryType = {
     id: number;
