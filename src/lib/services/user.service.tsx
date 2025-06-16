@@ -1,6 +1,7 @@
 import {fetchData} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
 import {TableFetchParamsType, TableFetchResponseType} from '@/app/dashboard/types/table-list.type';
+import {LazyStateType} from '@/app/dashboard/components/table-list.component';
 
 export type UserTableFiltersType = {
     global: DataTableFilterMetaData;
@@ -20,7 +21,7 @@ export const UserTableFilters: UserTableFiltersType = {
     is_deleted: {value: null, matchMode: 'equals'},
 };
 
-export const UserTableParams = {
+export const UserTableParams: LazyStateType<UserTableFiltersType> = {
     first: 0,
     rows: 10,
     sortField: 'id',

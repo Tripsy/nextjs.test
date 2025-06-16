@@ -1,19 +1,20 @@
 # TODO
 
-When is the onFilter triggered 
-
-1. Layout main container ..height
-2. Refactor table-list component
-3. Table filter - add debounce on global search
-4. onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-5. table check all present global actions (see statamic)
-6. add entry button 
-7. login 
-8. auth
+1. Pagination is not persistent
+2. Loading component
+3. Layout main container ..height
+4. add entry button / add delete button - should be grey if no entry is selected
+   - some table should allow multiple selection, some no
+     - the delete button next to add is for multiple selection
+       - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
+5. login 
+6. auth
 
 # IDEAS
 
 1. header right menu - add history to keep track of last 10 pages
+
+https://nextjs.org/docs/app/getting-started/partial-prerendering
 
 # NOTES
 

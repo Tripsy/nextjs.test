@@ -1,20 +1,18 @@
 'use client';
 
-import React, {useEffect, useRef, useState} from 'react';
-import {DataTable, DataTableStateEvent} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/table-row.component';
-import {useDebouncedEffect} from '@/app/hooks';
-import {SERVICES, ServicesTypes} from '@/app/dashboard/config';
+import React, { useEffect, useRef, useState } from 'react';
+import { DataTable, DataTablePageEvent, DataTableSortEvent } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { StatusKey, TableRowDate, TableRowStatus } from '@/app/dashboard/components/table-row.component';
+import { useDebouncedEffect } from '@/app/hooks';
+import { SERVICES, ServicesTypes } from '@/app/dashboard/config';
 import {
     TableColumn,
     TableColumnsType,
-    TableFetchParamsType,
-    TableFilterBodyTemplateProps
+    TableFetchParamsType
 } from '@/app/dashboard/types/table-list.type';
-import {UserTableParams} from '@/lib/services/user.service';
 
-type LazyStateType<TFilter> = {
+export type LazyStateType<TFilter> = {
     first: number;
     rows: number;
     sortField: string;
@@ -25,42 +23,61 @@ type LazyStateType<TFilter> = {
 type TablePropsType<T extends keyof ServicesTypes> = {
     dataSource: T;
     columns: TableColumnsType;
-    filterBody?: (props: TableFilterBodyTemplateProps<ServicesTypes[T]['filter']>) => React.JSX.Element;
+    filters: ServicesTypes[T]['filter'];
     selectionMode: 'checkbox' | 'multiple' | null;
     onRowSelect?: (data: ServicesTypes[T]['entry']) => void;
     onRowUnselect?: (data: ServicesTypes[T]['entry']) => void;
-}
+};
+
+type SelectionChangeEvent<T> = {
+    originalEvent: React.SyntheticEvent;
+    value: T[];
+};
 
 export default function DataTableList<T extends keyof ServicesTypes>(props: TablePropsType<T>) {
     const [error, setError] = useState<Error | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<ServicesTypes[T]['entry'][]>([]);
-    const [totalRecords, setTotalRecords] = useState(0);
-    const [lazyState, setLazyState] = useState<LazyStateType<ServicesTypes[T]['filter']>>(UserTableParams as LazyStateType<ServicesTypes[T]['filter']>);
-    const [selectedEntry, setSelectedEntry] = useState<ServicesTypes[T]['entry'][]>([]);
-    const [hydrated, setHydrated] = useState(false);
 
     // Render error UI if error exists
     if (error) {
-        throw error; // This will trigger your error boundary
+        throw error; // This will trigger error boundary
     }
 
+    const [loading, setLoading] = useState(false);
+
+    const [data, setData] = useState<ServicesTypes[T]['entry'][]>([]);
+    const [totalRecords, setTotalRecords] = useState(0);
+
+    const getInitialLazyState = (): LazyStateType<ServicesTypes[T]['filter']> => {
+        const storedState = localStorage.getItem(`data-table-state-${props.dataSource}`);
+        const parsed = storedState ? JSON.parse(storedState) : null;
+
+        return {
+            ...(SERVICES[props.dataSource]['defaultParams'] as LazyStateType<ServicesTypes[T]['filter']>),
+            ...(parsed || {}),
+            filters: props.filters
+        };
+    };
+
+    const [lazyState, setLazyState] = useState<LazyStateType<ServicesTypes[T]['filter']>>(getInitialLazyState);
+
+    const [selectedEntry, setSelectedEntry] = useState<ServicesTypes[T]['entry'][]>([]);
+
+    const prevSelectedEntryRef = useRef<ServicesTypes[T]['entry'][] | null>(null);
+
+    const clearSelectedEntry = () => {
+        setSelectedEntry([]);
+        prevSelectedEntryRef.current = null;
+    };
+
     useEffect(() => {
-        const lazyStateStored = localStorage.getItem(`table-state-${props.dataSource}`);
+        clearSelectedEntry();
 
-        if (lazyStateStored !== null && lazyStateStored !== 'undefined') {
-            setLazyState(JSON.parse(lazyStateStored));
-        }
-
-        setHydrated(true);
-    }, []);
-
-    useEffect(() => {
-        if (hydrated) {
-            localStorage.setItem(`table-state-${props.dataSource}`, JSON.stringify(lazyState));
-        }
-    }, [lazyState, hydrated, props.dataSource]);
-
+        setLazyState((prev) => ({
+            ...prev,
+            first: 0, // TODO: this is causing the page selection to be persistent
+            filters: props.filters,
+        }));
+    }, [props.filters]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -92,50 +109,50 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
 
     const loadLazyData = async () => {
         const fetchFunction = SERVICES[props.dataSource]['fetchFunction'];
+
+        const mapFiltersToApiPayload = (filters: ServicesTypes[T]['filter']): Record<string, any> => {
+            const payload: Record<string, any> = {};
+
+            Object.entries(filters).forEach(([key, filterObj]) => {
+                if (filterObj?.value != null && filterObj.value !== '') {
+                    if (key === 'global') key = 'term';
+                    payload[key] = filterObj.value;
+                }
+            });
+
+            return payload;
+        };
+
         const fetchParams: TableFetchParamsType = {
             order_by: lazyState.sortField,
             direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
             limit: lazyState.rows,
             page: Math.floor(lazyState.first / lazyState.rows) + 1,
-            filter: {} // TODO lazyState.filters
+            filter: mapFiltersToApiPayload(lazyState.filters),
         };
 
         return await fetchFunction(fetchParams);
     };
 
-    const onPage = (event: DataTableStateEvent) => {
+    const onPage = (event: DataTablePageEvent) => {
         clearSelectedEntry();
+
         setLazyState((prev) => ({
             ...prev,
             first: event.first,
-            rows: event.rows
+            rows: event.rows,
         }));
     };
 
-    const onSort = (event: DataTableStateEvent) => {
+    const onSort = (event: DataTableSortEvent) => {
         clearSelectedEntry();
+
         setLazyState((prev) => ({
             ...prev,
             first: 0,
             sortField: event.sortField,
             sortOrder: event.sortOrder,
         }));
-    };
-
-    // const onFilter = (event: DataTableStateEvent) => {
-    //     clearSelectedEntry();
-    //     setLazyState((prev) => ({
-    //         ...prev,
-    //         first: 0,
-    //         filters: event.filters,
-    //     }));
-    // };
-
-    const prevSelectedEntryRef = useRef<ServicesTypes[T]['entry'][] | null>(null);
-
-    type SelectionChangeEvent<T> = {
-        originalEvent: React.SyntheticEvent;
-        value: T[];
     };
 
     const onSelectionChange = (event: SelectionChangeEvent<ServicesTypes[T]['entry']>) => {
@@ -146,81 +163,58 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
         const prevSelected = prevSelectedEntryRef.current;
         const selected = selectedEntry;
 
-        // If exactly one item is selected
         if (selected.length === 1 && props.onRowSelect) {
             props.onRowSelect(selected[0]);
         }
 
-        // If going from 1 item to 0, call onRowUnselect
         if (selected.length === 0 && prevSelected && prevSelected.length === 1 && props.onRowUnselect) {
             props.onRowUnselect(prevSelected[0]);
         }
 
-        // Save current selection for next comparison
         prevSelectedEntryRef.current = selected;
     }, [selectedEntry], 1000);
 
-    const clearSelectedEntry = () => {
-        setSelectedEntry([]);
-        prevSelectedEntryRef.current = null;
-    }
-
-    const header = hydrated && props.filterBody?.({
-        filters: lazyState.filters as ServicesTypes[T]['filter'],
-        setFilterAction: (newFilters: ServicesTypes[T]['filter']) => {
-            clearSelectedEntry();
-
-            setLazyState((prev: LazyStateType<ServicesTypes[T]['filter']>) => ({
-                ...prev,
-                first: 0,
-                filters: newFilters,
-            }));
-        },
-    });
     const footer = `In total there are ${totalRecords} entries.`;
 
     return (
-        <div className="rounded-2xl p-4 bg-base-100">
-            <DataTable
-                value={data} lazy
+        <DataTable
+            value={data} lazy
+            dataKey="id" selectionMode={props.selectionMode} selection={selectedEntry} metaKeySelection={false}
+            selectionPageOnly={true} onSelectionChange={onSelectionChange}
+            paginator rowsPerPageOptions={[5, 10, 25, 50]}
+            first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords}
+            onPage={onPage} onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
+            loading={loading}
+            stripedRows
+            scrollable scrollHeight="flex"
+            resizableColumns reorderableColumns
+            stateStorage="local" stateKey={`data-table-state-${props.dataSource}`}
+            filters={props.filters}
+            footer={footer}
+        >
+            {props.selectionMode === 'multiple' && (
+                <Column selectionMode="multiple" headerStyle={{ width: '1rem' }} />
+            )}
 
-                dataKey="id" selectionMode={props.selectionMode} selection={selectedEntry} metaKeySelection={false}
-                selectionPageOnly={true}
-                onSelectionChange={onSelectionChange}
-                paginator rowsPerPageOptions={[5, 10, 25, 50]}
-                first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords} onPage={onPage}
-                onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
-                loading={loading}
-                stripedRows
-                scrollable scrollHeight="flex"
-                resizableColumns reorderableColumns
-                stateStorage="local" stateKey={`data-table-state-${props.dataSource}`}
-                filters={lazyState.filters} header={header} footer={footer}
-            >
-                {props.selectionMode === 'multiple' && (
-                    <Column selectionMode="multiple" headerStyle={{width: '1rem'}}/>
-                )}
-
-                {props.columns.map((column: TableColumn) => (
-                    <Column
-                        key={column.field}
-                        field={column.field}
-                        header={column.header}
-                        style={column.style}
-                        body={(rowData) => column.body?.(rowData, column) || rowData[column.field]}
-                        sortable={column.sortable ?? false}/>
-                ))}
-            </DataTable>
-        </div>
+            {props.columns.map((column: TableColumn) => (
+                <Column
+                    key={column.field}
+                    field={column.field}
+                    header={column.header}
+                    style={column.style}
+                    body={(rowData) => column.body?.(rowData, column) || rowData[column.field]}
+                    sortable={column.sortable ?? false}
+                />
+            ))}
+        </DataTable>
     );
 }
 
-export const StatusBodyTemplate = (entry: { status: StatusKey; }) => {
-    return <TableRowStatus status={entry.status}/>;
+export const StatusBodyTemplate = (entry: { status: StatusKey }) => {
+    return <TableRowStatus status={entry.status} />;
 };
 
 export const DateBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
     const date: Date | string = entry[column.field];
-
-    return <TableRowDate date={date}/>;
+    return <TableRowDate date={date} />;
 };

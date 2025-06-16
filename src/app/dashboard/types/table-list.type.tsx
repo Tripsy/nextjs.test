@@ -31,7 +31,7 @@ export type TableColumn = {
 
 export type TableColumnsType = TableColumn[];
 
-export type TableFilterBodyTemplateProps<TFilter> = {
+export type TableFiltersType<TFilter> = {
     filters: TFilter;
     setFilterAction: (filters: TFilter) => void;
 };
