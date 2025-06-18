@@ -1,4 +1,25 @@
 import React from 'react';
+import {ServicesTypes} from '@/app/dashboard/config';
+
+export type LazyStateType<TFilter> = {
+    first: number;
+    rows: number;
+    sortField: string;
+    sortOrder: 1 | 0 | -1 | null | undefined;
+    filters: TFilter;
+};
+
+export type TablePropsType<T extends keyof ServicesTypes> = {
+    dataSource: T;
+    dataKey: string;
+    columns: TableColumnsType;
+    filters: ServicesTypes[T]['filter'];
+    selectionMode: 'checkbox' | 'multiple' | null;
+    onRowSelect?: (entry: ServicesTypes[T]['entry']) => void;
+    onRowUnselect?: (entry: ServicesTypes[T]['entry']) => void;
+    onSelectionChange?: (selectedEntries: ServicesTypes[T]['entry'][]) => void;
+    scrollHeight?: string;
+};
 
 export type TableFetchParamsType = {
     order_by: string;

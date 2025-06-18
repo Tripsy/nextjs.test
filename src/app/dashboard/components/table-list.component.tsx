@@ -7,31 +7,14 @@ import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/component
 import {useDebouncedEffect} from '@/app/hooks';
 import {SERVICES, ServicesTypes} from '@/app/dashboard/config';
 import {
+    LazyStateType,
     TableColumn,
-    TableColumnsType,
-    TableFetchParamsType
+    TableFetchParamsType, TablePropsType
 } from '@/app/dashboard/types/table-list.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import isEqual from 'fast-deep-equal';
-
-export type LazyStateType<TFilter> = {
-    first: number;
-    rows: number;
-    sortField: string;
-    sortOrder: 1 | 0 | -1 | null | undefined;
-    filters: TFilter;
-};
-
-type TablePropsType<T extends keyof ServicesTypes> = {
-    dataSource: T;
-    dataKey: string;
-    columns: TableColumnsType;
-    filters: ServicesTypes[T]['filter'];
-    selectionMode: 'checkbox' | 'multiple' | null;
-    onRowSelect?: (data: ServicesTypes[T]['entry']) => void;
-    onRowUnselect?: (data: ServicesTypes[T]['entry']) => void;
-    onSelectionChange?: (selectedEntries: ServicesTypes[T]['entry'][]) => void;
-};
+import {capitalizeFirstLetter} from '@/lib/utils/string';
+import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
 
 type SelectionChangeEvent<T> = {
     originalEvent: React.SyntheticEvent;
@@ -70,14 +53,17 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
 
     const clearSelectedEntry = () => {
         setSelectedEntry([]);
+        props.onSelectionChange?.([]); // Notify parent of selection changes
         prevSelectedEntryRef.current = null;
     };
 
     useEffect(() => {
-        clearSelectedEntry();
-
         const savedState = readFromLocalStorage<LazyStateType<ServicesTypes[T]['filter']>>(tableStateKey);
         const filtersChanged = !isEqual(savedState?.filters, props.filters);
+
+        if (filtersChanged) {
+            clearSelectedEntry();
+        }
 
         setLazyState((prev) => ({
             ...prev,
@@ -115,9 +101,9 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
     }, [lazyState]);
 
     const loadLazyData = async () => {
-        const fetchFunction = SERVICES[props.dataSource]['fetchFunction'];
+        const findFunction = SERVICES[props.dataSource]['findFunction'];
 
-        if (!fetchFunction) {
+        if (!findFunction) {
             throw new Error(`No fetch function found for ${props.dataSource}`);
         }
 
@@ -130,7 +116,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
             }, {} as Record<string, any>);
         };
 
-        const fetchParams: TableFetchParamsType = {
+        const params: TableFetchParamsType = {
             order_by: lazyState.sortField,
             direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
             limit: lazyState.rows,
@@ -138,7 +124,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
             filter: mapFiltersToApiPayload(lazyState.filters),
         };
 
-        return await fetchFunction(fetchParams);
+        return await findFunction(params);
     };
 
     const onPage = useCallback((event: DataTablePageEvent) => {
@@ -185,8 +171,6 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
         prevSelectedEntryRef.current = selected;
     }, [selectedEntry], 1000);
 
-    const footer = useMemo(() => `In total there are ${totalRecords} entries.`, [totalRecords]);
-
     const tableColumns = useMemo(() => (
         props.columns.map((column: TableColumn) => (
             <Column
@@ -200,22 +184,32 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
         ))
     ), [props.columns]);
 
+    const paginatorTemplate = useMemo(() => ({
+        layout: 'CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
+        CurrentPageReport: (options: PaginatorCurrentPageReportOptions) => (
+            <div className="absolute left-0 hidden md:block text-sm">
+                Showing {options.first} to {options.last} of {options.totalRecords} entries
+            </div>
+        )
+    }), []);
+
     return (
         <DataTable
             value={data} lazy
             dataKey={props.dataKey} selectionMode={props.selectionMode} selection={selectedEntry}
             metaKeySelection={false}
             selectionPageOnly={true} onSelectionChange={onSelectionChange}
-            paginator rowsPerPageOptions={[5, 10, 25, 50]}
             first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords}
             onPage={onPage} onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
             loading={loading}
             stripedRows
-            scrollable scrollHeight="flex"
+            scrollable scrollHeight={props.scrollHeight || 'flex'}
             resizableColumns reorderableColumns
             stateStorage="local" stateKey={tableStateKey}
             filters={lazyState.filters}
-            footer={footer}
+            paginator rowsPerPageOptions={[5, 10, 25, 50]}
+            paginatorTemplate={paginatorTemplate}
+            paginatorClassName="relative"
         >
             {props.selectionMode === 'multiple' && (
                 <Column selectionMode="multiple" headerStyle={{width: '1rem'}}/>
@@ -234,5 +228,10 @@ export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: stri
 
 export const DateBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
     const date: Date | string = entry[column.field];
+
     return <TableRowDate date={date}/>;
+};
+
+export const CapitalizeBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
+    return capitalizeFirstLetter(entry[column.field]);
 };

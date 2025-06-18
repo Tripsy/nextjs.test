@@ -1,21 +1,12 @@
 # TODO
 
-1. refactor structure - table-list > table > make separate filters component
-1. change color for the horizontal line after filters
-1. rename fetchFunction to findFunction
-1. make filters section sticky 
-1. selection fixes
-
-prompt for AI: 
-
-selected entries are not marked when i navigate away and come back ..but the selectedEntries.lengh value says I have entries selected. I don't know if the entries are really selected and not marked or simple the selectedEntries.length does not reset
-
-1. add entry button / add delete button - should be grey if no entry is selected
+4. add entry button / add delete button - should be grey if no entry is selected
    - some table should allow multiple selection, some no
      - the delete button next to add is for multiple selection
        - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-2. login 
-3. auth
+5. login 
+6. auth
+7. menu for mobile 
 
 # IDEAS
 

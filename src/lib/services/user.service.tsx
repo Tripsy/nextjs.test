@@ -1,7 +1,6 @@
 import {fetchData} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
-import {TableFetchParamsType, TableFetchResponseType} from '@/app/dashboard/types/table-list.type';
-import {LazyStateType} from '@/app/dashboard/components/table-list.component';
+import {LazyStateType, TableFetchParamsType, TableFetchResponseType} from '@/app/dashboard/types/table-list.type';
 
 export type UserTableFiltersType = {
     global: DataTableFilterMetaData;
@@ -40,7 +39,7 @@ export type UserEntryType = {
     updated_at: string;
 };
 
-export async function fetchUsers(params: TableFetchParamsType): Promise<TableFetchResponseType<UserEntryType>> {
+export async function findUsers(params: TableFetchParamsType): Promise<TableFetchResponseType<UserEntryType>> {
     const query = new URLSearchParams({
         order_by: String(params.order_by),
         direction: params.direction,
