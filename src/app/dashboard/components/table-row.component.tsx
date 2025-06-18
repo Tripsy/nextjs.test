@@ -5,18 +5,23 @@ import {formatDate} from '@/lib/utils/string';
 const statusList = {
     active: {
         label: 'Active',
-        class: "badge badge-success ",
+        class: "badge badge-success h-8",
         icon: <Icons.Status.Active/>,
     },
     pending: {
         label: 'Pending',
-        class: "badge badge-warning",
+        class: "badge badge-warning h-8",
         icon: <Icons.Status.Pending/>,
     },
     inactive: {
         label: 'Inactive',
-        class: "badge badge-error",
+        class: "badge badge-error h-8",
         icon: <Icons.Status.Inactive/>,
+    },
+    deleted: {
+        label: 'Deleted',
+        class: "badge badge-neutral h-8",
+        icon: <Icons.Status.Deleted/>,
     },
 };
 

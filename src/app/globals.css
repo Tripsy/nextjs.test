@@ -86,6 +86,18 @@
     .link-default {
         @apply hover:text-sky-400;
     }
+
+    .btn-delete {
+        @apply hover:text-white hover:bg-red-400 border-none;
+    }
+
+    .btn-create {
+        @apply btn btn-md bg-blue-500 text-white hover:bg-blue-600 border-none;
+    }
+
+    .badge-neutral {
+        @apply bg-gray-400 border-none;
+    }
 }
 
 @layer base {
@@ -138,8 +150,9 @@
         }
 
     .main-container .content-container {
-        @apply w-full border-l border-[#d1d5db] dark:border-[#323335] transition-all duration-400 px-6 py-4 min-h-screen;
+        @apply w-full border-l border-[#d1d5db] dark:border-[#323335] transition-all duration-400 px-6 py-4;
 
+        min-height: calc(100vh - 8rem);
         margin-left: var(--side-menu-width);
     }
 
