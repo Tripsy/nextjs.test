@@ -83,7 +83,7 @@ export const DataTableUsers = (): JSX.Element => {
             <DataTableFiltersUsers filters={filters} setFilterAction={setFilters} />
 
             // TODO
-            // make this a separate component -> DataTableActions
+            // make this a separate component  DataTableActions
             // when single entry is selected show edit / activate / deactivate & restore
             <div className="my-6 pt-4 border-t border-separator flex justify-between">
                 <div className="flex items-center gap-2">

@@ -1,6 +1,8 @@
 'use client'
 
 import React, {createContext, useState, ReactNode, useContext, useLayoutEffect} from 'react';
+import {usePathname} from 'next/navigation';
+import {isLargeScreen} from '@/lib/utils/window';
 
 type Status = 'open' | 'closed';
 
@@ -11,13 +13,28 @@ const SideMenuContext = createContext<{
 
 const SideMenuProvider = ({children}: { children: ReactNode }) => {
     const [status, setStatus] = useState<Status>('open');
+    const pathname = usePathname();
 
     useLayoutEffect(() => {
-        const saved = localStorage.getItem('dashboard-side-menu') as Status;
-        const status: Status = saved || 'open';
+        let status: Status;
+
+        if (isLargeScreen()) {
+            const saved = localStorage.getItem('dashboard-side-menu') as Status;
+
+            status = saved || 'open';
+        } else {
+            status = 'closed';
+        }
 
         setStatus(status);
     }, []);
+
+    // On route change, close menu on small screens
+    useLayoutEffect(() => {
+        if (!isLargeScreen()) {
+            setStatus('closed');
+        }
+    }, [pathname]);
 
     const toggleStatus = (status: Status): void => {
         setStatus(status);

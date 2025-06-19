@@ -7,6 +7,7 @@ export default function SideMenuSetter(): null {
     const {status} = useSideMenu();
 
     useEffect(() => {
+        console.log('side-menu setter')
         const mainContainerElement: Element | null = document.querySelector('main.main-container');
 
         if (mainContainerElement) {
@@ -18,6 +19,7 @@ export default function SideMenuSetter(): null {
                 mainContainerElement.classList.remove('side-menu-open');
             }
         }
+
         return () => {
             if (mainContainerElement) {
                 mainContainerElement.classList.remove('side-menu-open', 'side-menu-closed');

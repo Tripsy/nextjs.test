@@ -63,7 +63,7 @@ type SideMenuItemProps = {
     icon: IconDefinition;
 };
 
-export function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
+function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
     return (
         <li>
             <Link href={href}>

@@ -10,7 +10,7 @@ import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
 
 function Header() {
     return (
-        <header className="fixed z-3 w-full">
+        <header className="fixed z-10 w-full">
             <div className="header-container">
                 <div className="h-full flex items-center">
                     <SideMenuToggle/>

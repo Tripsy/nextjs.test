@@ -1,10 +1,9 @@
 # TODO
 
-1. side menu on small screens
+2. login / auth
 2. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-3. login 
-4. auth
+
 
 # IDEAS
 
