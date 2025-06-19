@@ -2,10 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
 import {Providers} from '@/app/dashboard/providers';
-import {ToggleSideMenu} from '@/app/dashboard/components/toggle-side-menu.component';
+import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
 import {SideMenu} from '@/app/dashboard/components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {HeaderBreadcrumb} from '@/app/dashboard/components/header-breadcrumb.component';
+import {BreadcrumbHeader} from '@/app/dashboard/components/breadcrumb-header.component';
 import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
 
 function Header() {
@@ -13,7 +13,7 @@ function Header() {
         <header className="fixed z-3 w-full">
             <div className="header-container">
                 <div className="h-full flex items-center">
-                    <ToggleSideMenu/>
+                    <SideMenuToggle/>
                     <Link
                         href={Routes.get('home')}
                         className="flex items-end link-default"
@@ -26,7 +26,7 @@ function Header() {
                     </Link>
                 </div>
                 <div className="w-full pl-16">
-                    <HeaderBreadcrumb/>
+                    <BreadcrumbHeader/>
                 </div>
                 <div className="flex items-center">
                     <ToggleTheme/>

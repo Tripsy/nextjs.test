@@ -3,12 +3,12 @@
 import {UserEntryType, UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {Icons} from '@/components/icon.component';
-import {LazyStateType, TableColumnsType, TablePropsType} from '@/app/dashboard/types/table-list.type';
+import {LazyStateType, DataTableColumnsType, DataTablePropsType} from '@/app/dashboard/types/data-table.type';
 import DataTableList, {
     CapitalizeBodyTemplate,
     DateBodyTemplate,
     StatusBodyTemplate
-} from '@/app/dashboard/components/table-list.component';
+} from '@/app/dashboard/components/data-table-list.component';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import {Loading} from '@/components/loading.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/components/users/data-table-filters-users.component';
@@ -26,7 +26,7 @@ export const onRowUnselect = (entry: UserEntryType) => {
 };
 
 export const DataTableUsers = (): JSX.Element => {
-    const TableColumns: TableColumnsType = [
+    const TableColumns: DataTableColumnsType = [
         {field: 'id', header: 'ID', sortable: true},
         {field: 'name', header: 'Name', sortable: true},
         {field: 'email', header: 'Email'},
@@ -72,15 +72,19 @@ export const DataTableUsers = (): JSX.Element => {
     //     setSelectedEntries([]); // Clear selection after delete
     // };
 
-    const selectionMode: TablePropsType<'users'>['selectionMode'] = 'checkbox';
+    const selectionMode: DataTablePropsType<'users'>['selectionMode'] = 'checkbox';
 
-    const isMultipleSelectionMode = (selectionMode: TablePropsType<'users'>['selectionMode']) => {
+    const isMultipleSelectionMode = (selectionMode: DataTablePropsType<'users'>['selectionMode']) => {
         return selectionMode === 'multiple';
     };
 
     return (
         <div className="rounded-2xl p-4 bg-base-100">
             <DataTableFiltersUsers filters={filters} setFilterAction={setFilters} />
+
+            // TODO
+            // make this a separate component -> DataTableActions
+            // when single entry is selected show edit / activate / deactivate & restore
             <div className="my-6 pt-4 border-t border-separator flex justify-between">
                 <div className="flex items-center gap-2">
                     {isMultipleSelectionMode(selectionMode) && (

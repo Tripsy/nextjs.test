@@ -1,4 +1,4 @@
-import {LazyStateType, TableFetchFunction} from '@/app/dashboard/types/table-list.type';
+import {LazyStateType, DataTableFindFunction} from '@/app/dashboard/types/data-table.type';
 import {
     findUsers,
     UserTableFiltersType,
@@ -15,7 +15,7 @@ export type ServicesTypes = {
 
 export const SERVICES: {
     [K in keyof ServicesTypes]: {
-        findFunction: TableFetchFunction<ServicesTypes[K]['entry']>;
+        findFunction: DataTableFindFunction<ServicesTypes[K]['entry']>;
         defaultParams: LazyStateType<ServicesTypes[K]['filter']>;
     }
 } = {

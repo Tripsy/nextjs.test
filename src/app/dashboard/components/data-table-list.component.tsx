@@ -3,14 +3,14 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/table-row.component';
+import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/data-table-row.component';
 import {useDebouncedEffect} from '@/app/hooks';
 import {SERVICES, ServicesTypes} from '@/app/dashboard/config';
 import {
     LazyStateType,
-    TableColumn,
-    TableFetchParamsType, TablePropsType
-} from '@/app/dashboard/types/table-list.type';
+    DataTableColumnType,
+    DataTableFindParamsType, DataTablePropsType
+} from '@/app/dashboard/types/data-table.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import isEqual from 'fast-deep-equal';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
@@ -21,7 +21,7 @@ type SelectionChangeEvent<T> = {
     value: T[];
 };
 
-export default function DataTableList<T extends keyof ServicesTypes>(props: TablePropsType<T>) {
+export default function DataTableList<T extends keyof ServicesTypes>(props: DataTablePropsType<T>) {
     const tableStateKey = useMemo(() => `data-table-state-${props.dataSource}`, [props.dataSource]);
 
     const [error, setError] = useState<Error | null>(null);
@@ -116,7 +116,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
             }, {} as Record<string, any>);
         };
 
-        const params: TableFetchParamsType = {
+        const params: DataTableFindParamsType = {
             order_by: lazyState.sortField,
             direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
             limit: lazyState.rows,
@@ -172,7 +172,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Tabl
     }, [selectedEntry], 1000);
 
     const tableColumns = useMemo(() => (
-        props.columns.map((column: TableColumn) => (
+        props.columns.map((column: DataTableColumnType) => (
             <Column
                 key={column.field}
                 field={column.field}
@@ -226,12 +226,12 @@ export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: stri
     return <TableRowStatus status={status}/>;
 };
 
-export const DateBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
+export const DateBodyTemplate = (entry: Record<string, any>, column: DataTableColumnType) => {
     const date: Date | string = entry[column.field];
 
     return <TableRowDate date={date}/>;
 };
 
-export const CapitalizeBodyTemplate = (entry: Record<string, any>, column: TableColumn) => {
+export const CapitalizeBodyTemplate = (entry: Record<string, any>, column: DataTableColumnType) => {
     return capitalizeFirstLetter(entry[column.field]);
 };

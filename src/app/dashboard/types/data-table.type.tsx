@@ -9,10 +9,10 @@ export type LazyStateType<TFilter> = {
     filters: TFilter;
 };
 
-export type TablePropsType<T extends keyof ServicesTypes> = {
+export type DataTablePropsType<T extends keyof ServicesTypes> = {
     dataSource: T;
     dataKey: string;
-    columns: TableColumnsType;
+    columns: DataTableColumnsType;
     filters: ServicesTypes[T]['filter'];
     selectionMode: 'checkbox' | 'multiple' | null;
     onRowSelect?: (entry: ServicesTypes[T]['entry']) => void;
@@ -21,7 +21,7 @@ export type TablePropsType<T extends keyof ServicesTypes> = {
     scrollHeight?: string;
 };
 
-export type TableFetchParamsType = {
+export type DataTableFindParamsType = {
     order_by: string;
     direction: 'ASC' | 'DESC';
     limit: number;
@@ -29,7 +29,7 @@ export type TableFetchParamsType = {
     filter: Record<string, any>;
 };
 
-export type TableFetchResponseType<TEntry = Record<string, any>> = {
+export type DataTableFindResponseType<TEntry = Record<string, any>> = {
     entries: TEntry[];
     pagination: {
         page: number;
@@ -38,19 +38,19 @@ export type TableFetchResponseType<TEntry = Record<string, any>> = {
     };
 };
 
-export type TableFetchFunction<TEntry = Record<string, any>> = (
-    params: TableFetchParamsType
-) => Promise<TableFetchResponseType<TEntry>>;
+export type DataTableFindFunction<TEntry = Record<string, any>> = (
+    params: DataTableFindParamsType
+) => Promise<DataTableFindResponseType<TEntry>>;
 
-export type TableColumn = {
+export type DataTableColumnType = {
     field: string;
     header: string;
     sortable?: boolean;
-    body?: (rowData: any, column: TableColumn) => React.JSX.Element | string;
+    body?: (rowData: any, column: DataTableColumnType) => React.JSX.Element | string;
     style?: React.CSSProperties;
 };
 
-export type TableColumnsType = TableColumn[];
+export type DataTableColumnsType = DataTableColumnType[];
 
 export type TableFiltersType<TFilter> = {
     filters: TFilter;

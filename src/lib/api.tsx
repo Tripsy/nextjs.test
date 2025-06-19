@@ -33,42 +33,55 @@ export async function fetchData<T = any>(path: string, options: RequestInit = {}
             return undefined as unknown as T;
         }
 
-        let responseBody: any;
+        const responseBody = await handleJsonResponse(res);
 
-        try {
-            responseBody = await res.json();
-        } catch (err) {
-            // Handle cases where response isn't JSON
-            if (res.ok) {
-                throw new ApiError('Invalid JSON response', res.status, null);
-            }
-        }
-
-        if (!res.ok) {
-            throw new ApiError(
-                responseBody?.message || res.statusText || 'Unknown error',
-                res.status,
-                responseBody
-            );
-        }
+        checkResponse(res, responseBody);
 
         return responseBody?.data !== undefined ? responseBody.data : responseBody;
     } catch (error) {
         clearTimeout(timeout);
 
-        if (error instanceof ApiError) {
-            throw error;
+        handleError(error);
+
+        return undefined as unknown as T;
+    }
+}
+
+async function handleJsonResponse(res: Response) {
+    try {
+        return await res.json();
+    } catch {
+        if (res.ok)  {
+            throw new Error('Invalid JSON response');
         }
 
-        // Handle network errors or aborted requests
-        if (error instanceof Error && error.name === 'AbortError') {
-            throw new ApiError('Request timeout', 408, null);
-        }
+        return null; // Explicitly return null for non-JSON error responses
+    }
+}
 
+function checkResponse(res: Response, responseBody: any) {
+    if (!res.ok) {
         throw new ApiError(
-            error instanceof Error ? error.message : 'Network request failed',
-            0,
-            null
+            responseBody?.message || res.statusText || 'Unknown error',
+            res.status,
+            responseBody
         );
     }
+}
+
+function handleError(error: unknown) {
+    if (error instanceof ApiError) {
+        throw error;
+    }
+
+    // Handle network errors or aborted requests
+    if (error instanceof Error && error.name === 'AbortError') {
+        throw new ApiError('Request timeout', 408, null);
+    }
+
+    throw new ApiError(
+        error instanceof Error ? error.message : 'Network request failed',
+        0,
+        null
+    );
 }

@@ -4,7 +4,7 @@ import React from 'react';
 import {useSideMenu} from '@/app/dashboard/providers/side-menu.provider';
 import {Icons} from '@/components/icon.component';
 
-export function ToggleSideMenu() {
+export function SideMenuToggle() {
     const { status, toggleStatus } = useSideMenu();
 
     const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {

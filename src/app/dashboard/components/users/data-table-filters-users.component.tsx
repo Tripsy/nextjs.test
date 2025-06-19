@@ -1,4 +1,4 @@
-import {TableFiltersType} from '@/app/dashboard/types/table-list.type';
+import {TableFiltersType} from '@/app/dashboard/types/data-table.type';
 import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
 import React, {useEffect, useState} from 'react';
 import {useDebouncedEffect} from '@/app/hooks';

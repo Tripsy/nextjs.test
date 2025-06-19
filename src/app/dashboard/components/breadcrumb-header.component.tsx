@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {useBreadcrumb} from '@/app/dashboard/providers/breadcrumb.provider';
 import Routes from '@/lib/routes';
 
-export const HeaderBreadcrumb = () => {
+export const BreadcrumbHeader = () => {
     const {items} = useBreadcrumb();
 
     return (

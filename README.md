@@ -1,12 +1,10 @@
 # TODO
 
-4. add entry button / add delete button - should be grey if no entry is selected
-   - some table should allow multiple selection, some no
-     - the delete button next to add is for multiple selection
-       - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-5. login 
-6. auth
-7. menu for mobile 
+1. side menu on small screens
+2. check data-table-users.component.ts notes
+     consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
+3. login 
+4. auth
 
 # IDEAS
 
