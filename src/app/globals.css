@@ -83,9 +83,17 @@
 }
 
 @layer utilities {
+    /* General */
+
     .link-default {
         @apply hover:text-sky-400;
     }
+
+    .border-separator {
+        @apply border-gray-300 dark:border-gray-600;
+    }
+
+    /* Buttons */
 
     .btn-delete {
         @apply hover:text-white hover:bg-red-400 border-none;
@@ -95,83 +103,123 @@
         @apply btn btn-md bg-blue-500 text-white hover:bg-blue-600 border-none;
     }
 
+    /* Badges */
+
     .badge-neutral {
         @apply bg-gray-400 border-none;
     }
 
-    .border-separator {
-        @apply border-gray-300 dark:border-gray-600;
+    /* Containers */
+
+    .default-container {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .fit-container {
+        @apply w-fit mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    /* Boxes */
+
+    .standard-box {
+        @apply rounded-2xl p-4 bg-base-100;
     }
 }
 
 @layer base {
-    body {
+    /* Dashboard layout */
+
+    .dashboard-layout {
         @apply bg-base-200 text-base-content;
     }
 
-    .header-container {
+    .dashboard-layout .header-section {
         @apply flex items-center bg-base-100 shadow-md px-6;
 
         height: var(--header-height);
     }
 
-    .main-container {
+    .dashboard-layout .main-section {
         @apply relative flex bg-base-200;
 
         padding-top: var(--header-height);
     }
 
-    .main-container .side-menu-container {
+    .dashboard-layout .main-section .side-menu-section {
         @apply fixed left-0 z-9 transition-all duration-400 p-6;
 
         width: var(--side-menu-width);
     }
 
-    .main-container.side-menu-closed .side-menu-container {
+    .dashboard-layout .main-section.side-menu-closed .side-menu-section {
         left: calc(-1 * var(--side-menu-width));
     }
 
     @media (max-width: 1023px) {
-        .main-container.side-menu-open .side-menu-container {
+        .dashboard-layout .main-section.side-menu-open .side-menu-section {
             @apply bg-base-100 shadow-xl rounded-b-lg;
             @apply dark:shadow-[0_2px_4px_rgba(0,0,0,0.5),0_8px_20px_rgba(0,0,0,0.7)];
         }
     }
 
-        .side-menu-container .side-menu-group {
+        .dashboard-layout .side-menu-section .side-menu-group {
             @apply mb-2;
         }
 
-        .side-menu-container .side-menu-group ul {
+        .dashboard-layout .side-menu-section .side-menu-group ul {
             @apply ml-4 pb-2;
         }
 
-        .side-menu-container .side-menu-group .side-menu-group-title {
+        .dashboard-layout .side-menu-group .side-menu-group-title {
             @apply uppercase font-bold text-xs mb-2;
         }
 
-        .side-menu-container .side-menu-group ul {
+        .dashboard-layout .side-menu-section .side-menu-group ul {
             @apply text-sm space-y-2;
         }
 
-        .side-menu-container .side-menu-group ul li a {
+        .dashboard-layout .side-menu-section .side-menu-group ul li a {
             @apply link link-hover;
         }
 
-    .main-container .content-container {
-        @apply w-full border-l border-gray-300 dark:border-gray-700 transition-all duration-400 px-6 py-4;
+    .dashboard-layout .main-section .content-section {
+        @apply w-full border-l border-gray-300 dark:border-gray-700 transition-all duration-400 px-6 py-8;
 
         min-height: calc(100vh - 8rem);
         margin-left: var(--side-menu-width);
     }
 
     @media (max-width: 1023px) {
-        .main-container .content-container {
+        .dashboard-layout .main-section .content-section {
             @apply border-none ml-0;
         }
     }
 
-    .main-container.side-menu-closed .content-container {
+    .dashboard-layout .main-section.side-menu-closed .content-section {
         @apply border-none ml-0;
+    }
+
+    /* Default layout */
+
+    .default-layout {
+        @apply bg-base-200 text-base-content;
+    }
+
+    .default-layout .header-section {
+        @apply flex items-center bg-base-100 shadow-md px-6;
+
+        height: var(--header-height);
+    }
+
+    .default-layout .main-section {
+        @apply relative flex bg-base-200;
+
+        padding-top: var(--header-height);
+    }
+
+    .default-layout .main-section .content-section {
+        @apply w-full py-8;
+
+        min-height: calc(100vh - 8rem);
     }
 }

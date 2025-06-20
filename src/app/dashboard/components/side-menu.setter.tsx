@@ -8,7 +8,7 @@ export default function SideMenuSetter(): null {
 
     useEffect(() => {
         console.log('side-menu setter')
-        const mainContainerElement: Element | null = document.querySelector('main.main-container');
+        const mainContainerElement: Element | null = document.querySelector('main.main-section');
 
         if (mainContainerElement) {
             if (status === 'open') {

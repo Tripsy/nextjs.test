@@ -42,3 +42,15 @@ export function formatCurrency(value: number, currency: string = 'USD'): string 
         currency: currency
     });
 }
+
+/**
+ * Get the value of a key in an object
+ * ex: key = "user.create"
+ *
+ * @param {Record<string, any>} obj - The object to get the value from
+ * @param {string} key - The key to get the value of
+ * @returns {any} - The value of the key
+ */
+export function getObjectValue(obj: Record<string, any>, key: string): any {
+    return key.split('.').reduce((acc, part) => acc && acc[part], obj);
+}

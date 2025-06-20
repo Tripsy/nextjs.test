@@ -1,13 +1,15 @@
 # TODO
 
-2. login / auth
-2. check data-table-users.component.ts notes
+1. Refactor settings similar to lang
+2. Remove border bottom from paginator
+3. login / auth
+4. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-
-
+   
 # IDEAS
 
-1. header right menu - add history to keep track of last 10 pages
+1. dashboard - add history to keep track of last 10 pages
+2. login with google / facebook
 
 https://nextjs.org/docs/app/getting-started/partial-prerendering
 
@@ -29,14 +31,18 @@ https://mui.com/material-ui/react-table/
 https://github.com/jbetancur/react-data-table-component
 https://primereact.org/datatable/
 
-    if (!responseBody?.data) {
-        throw new Error('Invalid API response structure');
-    }
-    return {
-        entries: responseBody?.data.entries || [],
-        pagination: responseBody?.data.pagination || {
-            page: 1,
-            limit: 10,
-            total: 0
-        },
-    };
+            <div>
+                <label htmlFor="password">Password</label>
+                <input id="password" name="password" type="password" />
+            </div>
+            {state?.errors?.password && (
+                <div>
+                    <p>Password must:</p>
+                    <ul>
+                        {state.errors.password.map((error) => (
+                            <li key={error}>- {error}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+

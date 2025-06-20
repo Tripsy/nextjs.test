@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import {useTheme} from '@/app/providers/theme.provider';
+import {useTheme} from '@/providers/theme.provider';
 import { Icons } from './icon.component';
 
 export function ToggleTheme() {

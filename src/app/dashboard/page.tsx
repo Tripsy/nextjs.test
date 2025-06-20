@@ -1,13 +1,11 @@
-import Link from 'next/link'
-import Routes from '@/lib/routes';
 import type {Metadata} from 'next';
-import {lang} from '@/config/lang';
+import {settings} from '@/config/settings';
 import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
 import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb.setter';
 import React from 'react';
 
 export const metadata: Metadata = {
-    title: `Dashboard | ${lang.app.name}`,
+    title: `Dashboard | ${settings.appName}`,
 };
 
 export default function Page() {

@@ -1,21 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
-import {Providers} from '@/app/dashboard/providers';
-import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
-import {SideMenu} from '@/app/dashboard/components/side-menu.component';
+import {Providers} from '@/app/providers';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {BreadcrumbHeader} from '@/app/dashboard/components/breadcrumb-header.component';
-import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
-
-import styles from './dashboard.module.css';
 
 function Header() {
     return (
         <header className="fixed z-10 w-full">
-            <div className="header-section">
-                <div className="h-full flex items-center">
-                    <SideMenuToggle/>
+            <div className="header-section justify-between">
+                <div className="h-full flex items-center ">
                     <Link
                         href={Routes.get('home')}
                         className="flex items-end link-default"
@@ -27,37 +20,8 @@ function Header() {
 
                     </Link>
                 </div>
-                <div className="w-full pl-16">
-                    <BreadcrumbHeader/>
-                </div>
                 <div className="flex items-center">
                     <ToggleTheme/>
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="avatar">
-                            <div className="ring-primary ring-offset-base-100 w-8 rounded-full ring ring-offset-2">
-                                <img
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                                    alt=""/>
-                            </div>
-                        </div>
-                        <ul tabIndex={0}
-                            className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                            <li>
-                                <Link
-                                    href="#"
-                                >
-                                    Settings
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#"
-                                >
-                                    Logout
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </header>
@@ -123,11 +87,9 @@ function Footer() {
 export default function Layout({children}: { children: React.ReactNode }) {
     return (
         <Providers>
-            <div className="dashboard-layout">
+            <div className="default-layout">
                 <Header/>
-                <SideMenuSetter/>
                 <main className="main-section">
-                    <SideMenu/>
                     <div className="content-section">
                         {children}
                     </div>

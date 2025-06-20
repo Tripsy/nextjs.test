@@ -76,7 +76,7 @@ function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
 
 export function SideMenu() {
     return (
-        <nav className="side-menu-container">
+        <nav className="side-menu-section">
             <SideMenuGroup groupKey="side-menu-content" title="Content">
                 <SideMenuGroupItem href="#" label="Projects" icon={faDiagramProject} />
             </SideMenuGroup>

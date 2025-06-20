@@ -11,7 +11,7 @@ import DataTableList, {
 } from '@/app/dashboard/components/data-table-list.component';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import {Loading} from '@/components/loading.component';
-import {DataTableFiltersUsers} from '@/app/dashboard/components/users/data-table-filters-users.component';
+import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
 
 export const onRowSelect = (entry: UserEntryType) => {
     console.log('show')
@@ -79,7 +79,7 @@ export const DataTableUsers = (): JSX.Element => {
     };
 
     return (
-        <div className="rounded-2xl p-4 bg-base-100">
+        <div className="standard-box shadow-md">
             <DataTableFiltersUsers filters={filters} setFilterAction={setFilters} />
 
             // TODO

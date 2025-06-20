@@ -1,7 +1,7 @@
 'use client';
 
 import {PrimeReactProvider} from 'primereact/api';
-import {useTheme} from '@/app/providers/theme.provider';
+import {useTheme} from '@/providers/theme.provider';
 import React from 'react';
 
 export const PrimeProvider = ({children}: { children: React.ReactNode }) => {
