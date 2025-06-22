@@ -1,17 +1,23 @@
 # TODO
 
-1. Refactor settings similar to lang
-2. Remove border bottom from paginator
-3. login / auth
+1. register 
+    - registerAction
+2. login / auth
+3. Remove border bottom from paginator
 4. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
+5. terms page
+6. recover password
+7. other account pages 
    
 # IDEAS
 
 1. dashboard - add history to keep track of last 10 pages
 2. login with google / facebook
 
-https://nextjs.org/docs/app/getting-started/partial-prerendering
+# SEE ALSO
+
+     https://nextjs.org/docs/app/getting-started/partial-prerendering
 
 # NOTES
 
@@ -27,9 +33,13 @@ Don’t use window or localStorage in useState initializer — React will render
 
 # RESOURCES
 
-https://mui.com/material-ui/react-table/
-https://github.com/jbetancur/react-data-table-component
-https://primereact.org/datatable/
+     https://primereact.org/datatable/
+
+# INSPIRATION
+
+https://nexus.daisyui.com/auth/register
+
+# SAMPLES
 
             <div>
                 <label htmlFor="password">Password</label>

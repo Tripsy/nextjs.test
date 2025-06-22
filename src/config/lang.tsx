@@ -1,27 +1,50 @@
-import {settings} from '@/config/settings';
-import {getObjectValue} from '@/lib/utils/string';
+import {app} from '@/config/settings';
+import {getObjectValue, replaceVars} from '@/lib/utils/string';
 
 const en = {
     'app': {
-        'name': settings.appName,
+        'name': app('name'),
     },
     'login': {
         'meta': {
-            'title': `Login | ${settings.appName}`,
+            'title': `Login | ${app('name')}`,
         },
         'validation': {
             'email': 'Please enter a valid email',
             'password': 'Please enter your password',
         }
+    },
+    'register': {
+        'meta': {
+            'title': `Create account | ${app('name')}`,
+        },
+        'validation': {
+            'name_invalid': 'Set your name',
+            'name_min': 'Name must be at least {{min}} characters long',
+            'email_invalid': 'Please enter a valid email',
+            'password_invalid': 'Please enter your password',
+            'password_min': 'Password must be at least {{min}} characters long',
+            'password_condition_capital_letter': 'Password must contain at least one capital letter',
+            'password_condition_number': 'Password must contain at least one number',
+            'password_condition_special_character': 'Password must contain at least one special character',
+            'password_confirm_required': 'Password confirmation is required',
+            'password_confirm_mismatch': 'Passwords does not match',
+            'language_invalid': 'Invalid language',
+            'terms_required': 'You must accept the terms and conditions',
+        }
     }
 };
 
-export function lang(key: string): string {
-    const value = getObjectValue(en, key);
+export function lang(key: string, data?: Record<string, string>): string {
+    let value = getObjectValue(en, key);
 
-    if (typeof value === 'string') {
-        return value;
+    if (typeof value !== 'string') {
+        throw new Error(`Invalid key or non-string value at '${key}'`);
     }
 
-    throw new Error(`Invalid key or non-string value at "${key}"`);
+    if (data) {
+        value = replaceVars(value, data);
+    }
+
+    return value;
 }

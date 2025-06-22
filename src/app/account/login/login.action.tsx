@@ -1,13 +1,15 @@
 import {LoginFormSchema, LoginFormState} from '@/app/account/login/login-form.definition';
 
 export async function loginAction(state: LoginFormState, formData: FormData) {
-    const validated = LoginFormSchema.safeParse({
-        email: formData.get('email'),
-        password: formData.get('password'),
-    });
+    const values = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+    };
+    const validated = LoginFormSchema.safeParse(values);
 
     if (!validated.success) {
         return {
+            values: values,
             errors: validated.error.flatten().fieldErrors,
         }
     }

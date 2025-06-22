@@ -79,7 +79,7 @@ export const DataTableUsers = (): JSX.Element => {
     };
 
     return (
-        <div className="standard-box shadow-md">
+        <div className="standard-box p-4 shadow-md">
             <DataTableFiltersUsers filters={filters} setFilterAction={setFilters} />
 
             // TODO

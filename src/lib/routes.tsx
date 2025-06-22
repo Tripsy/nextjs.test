@@ -7,6 +7,8 @@ type RoutesData = {
     };
 }
 
+// TODO : make group optional redo add() to accept a third argument as RouteData; rename RoutesData to RoutesCollection
+
 class RoutesCollection {
     data: RoutesData = {};
 
@@ -43,7 +45,15 @@ class RoutesCollection {
 let Routes = new RoutesCollection();
 
 Routes.add('home', '/');
-Routes.add('login', '/login');
+Routes.add('terms-and-conditions', '/terms-and-conditions');
+
+// Account
+Routes.add('login', '/account/login');
+Routes.add('register', '/account/register');
+Routes.add('password-recover', '/account/password-recover');
+
+// Dashboard
+// TODO : use chain like Routes.group('dashboard').add().add()
 Routes.add('dashboard', '/dashboard', 'dashboard');
 Routes.add('user-list', '/dashboard/users', 'dashboard');
 Routes.add('user-view', '/dashboard/users/:key', 'dashboard');

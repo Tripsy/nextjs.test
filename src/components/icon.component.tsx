@@ -1,16 +1,17 @@
 import {FontAwesomeIcon, FontAwesomeIconProps} from '@fortawesome/react-fontawesome';
 import {
+    faArrowRightToBracket,
     faBan,
     faBars,
     faCircleCheck,
     faCircleXmark,
-    faClock,
+    faClock, faEnvelope, faEye, faEyeSlash, faKey,
     faMagnifyingGlass,
     faMoon, faPenToSquare,
-    faPlus,
+    faPlus, faSpinner,
     faSun,
     faTrashCan,
-    faTriangleExclamation
+    faTriangleExclamation, faUser, faUserCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIconProps) {
@@ -18,12 +19,6 @@ export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIcon
 }
 
 export const Icons = {
-    Error: (props: Partial<FontAwesomeIconProps>) => (
-        <AwesomeIcon icon={faTriangleExclamation} {...props} />
-    ),
-    Search: (props: Partial<FontAwesomeIconProps>) => (
-        <AwesomeIcon icon={faMagnifyingGlass} {...props} />
-    ),
     SideMenuOpen: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faBars} {...props} />
     ),
@@ -35,6 +30,36 @@ export const Icons = {
     ),
     ToggleThemeNight: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faMoon} {...props} />
+    ),
+    Spinner: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faSpinner} {...props} />
+    ),
+    User: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faUser} {...props} />
+    ),
+    Email: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faEnvelope} {...props} />
+    ),
+    Password: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faKey} {...props} />
+    ),
+    Login: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faArrowRightToBracket} {...props} />
+    ),
+    Register: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faUserCheck} {...props} />
+    ),
+    Error: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faTriangleExclamation} {...props} />
+    ),
+    Search: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faMagnifyingGlass} {...props} />
+    ),
+    Visible: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faEye} {...props} />
+    ),
+    Obscured: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faEyeSlash} {...props} />
     ),
     Status: {
         Active: (props: Partial<FontAwesomeIconProps>) => (

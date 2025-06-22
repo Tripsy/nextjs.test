@@ -54,3 +54,15 @@ export function formatCurrency(value: number, currency: string = 'USD'): string 
 export function getObjectValue(obj: Record<string, any>, key: string): any {
     return key.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
+
+/**
+ * Replace variables in a string
+ * Ex variables: {{key}}, {{Key}}, {{sub_key}}, {{key1}}
+ *
+ * @param {string} content - The string to replace template variables in
+ * @param {Record<string, string>} vars - The template variables to replace
+ * @returns {string} - The string with template variables replaced
+ */
+export function replaceVars(content: string, vars: Record<string, string> = {}): string {
+    return content.replace(/{{(\w+)}}/g, (_, key) => (key in vars ? vars[key] : `{{${key}}}`));
+}

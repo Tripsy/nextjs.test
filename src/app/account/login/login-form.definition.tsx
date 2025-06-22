@@ -11,10 +11,17 @@ export const LoginFormSchema = z.object({
         .string({
             message: lang('login.validation.password')
         })
+        .min(1, {
+            message: lang('login.validation.password')
+        })
         .trim(),
 });
 
 export type LoginFormState = {
+    values: {
+        email: string;
+        password: string;
+    },
     errors?: {
         email?: string[];
         password?: string[];
