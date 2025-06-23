@@ -8,7 +8,14 @@ function getAuthToken(): string {
     return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImlkZW50IjoiMzc4YThlOTEtNzQ3Mi00ZTk0LWJjYTAtZWY1YmM4MjY1YzA3IiwiaWF0IjoxNzQ3NjA4NDcwfQ.xgYG7FRlMY7-2HeWQafTf0w03EGknnoYSd3xtmihze0';
 }
 
-export async function fetchData<T = any>(path: string, options: RequestInit = {}): Promise<T> {
+export type ResponseFetch<T> = {
+    data: T;
+    message?: string;
+    status?: number;
+    success: boolean;
+};
+
+export async function doFetch<T = any>(path: string, options: RequestInit = {}): Promise<ResponseFetch<T> | undefined> {
     const baseUrl = getBackendApiBaseUrl();
     const token = getAuthToken();
 
@@ -30,21 +37,25 @@ export async function fetchData<T = any>(path: string, options: RequestInit = {}
 
         // Handle non-JSON responses (like 204 No Content)
         if (res.status === 204) {
-            return undefined as unknown as T;
+            return undefined;
         }
 
         const responseBody = await handleJsonResponse(res);
 
-        checkResponse(res, responseBody);
+        checkResponse(res, responseBody); // Can throw ApiErr or return `responseBody` depending on the res.status code
 
-        return responseBody?.data !== undefined ? responseBody.data : responseBody;
+        return responseBody;
     } catch (error) {
         clearTimeout(timeout);
 
         handleError(error);
 
-        return undefined as unknown as T;
+        return undefined;
     }
+}
+
+export function getResponseData<T = any>(response: ResponseFetch<T> | undefined): T | undefined {
+    return response?.data;
 }
 
 async function handleJsonResponse(res: Response) {
@@ -60,7 +71,7 @@ async function handleJsonResponse(res: Response) {
 }
 
 function checkResponse(res: Response, responseBody: any) {
-    if (!res.ok) {
+    if (!res.ok && ![409].includes(res.status)) { // If this condition is not matched the `responseBody` is returned
         throw new ApiError(
             responseBody?.message || res.statusText || 'Unknown error',
             res.status,

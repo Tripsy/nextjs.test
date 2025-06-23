@@ -268,4 +268,8 @@
         .form-section .btn-submit[disabled] span {
             @apply text-gray-500;
         }
+
+        .form-section .form-submit-error {
+            @apply text-error text-sm;
+        }
 }

@@ -1,6 +1,6 @@
 import {LazyStateType, DataTableFindFunction} from '@/app/dashboard/types/data-table.type';
 import {
-    findUsers,
+    findUser,
     UserTableFiltersType,
     UserEntryType,
     UserTableParams
@@ -20,7 +20,7 @@ export const SERVICES: {
     }
 } = {
     users: {
-        findFunction: findUsers,
+        findFunction: findUser,
         defaultParams: UserTableParams,
     },
 };

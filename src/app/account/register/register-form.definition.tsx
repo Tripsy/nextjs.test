@@ -49,7 +49,7 @@ export const RegisterFormSchema = z
             .length(2, {
                 message: lang('register.validation.language_invalid')
             })
-            .optional(),
+            .trim(),
         terms: z.literal(true, {
             errorMap: () => ({
                 message: lang('register.validation.terms_required')
@@ -66,16 +66,18 @@ export const RegisterFormSchema = z
         }
     });
 
+export type RegisterFormValues = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirm: string;
+    language: string;
+    terms: boolean;
+};
+
 export type RegisterFormState = {
-    values: {
-        name: string;
-        email: string;
-        password: string;
-        password_confirm: string;
-        language: string;
-        terms: boolean;
-    },
-    errors?: {
+    values: RegisterFormValues,
+    errors: {
         name?: string[];
         email?: string[];
         password?: string[];
@@ -83,5 +85,20 @@ export type RegisterFormState = {
         language?: string[];
         terms?: string[];
     },
-    message?: string;
-} | undefined;
+    message: string | null;
+    response: string | null;
+};
+
+export const defaultRegisterFormState: RegisterFormState = {
+    values: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirm: '',
+        language: 'en',
+        terms: false,
+    },
+    errors: {},
+    message: null,
+    response: null
+};

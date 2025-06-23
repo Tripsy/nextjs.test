@@ -1,7 +1,7 @@
 # TODO
 
 1. register 
-    - registerAction
+    - clear the error on user interaction with a field - see DeepSeek solution
 2. login / auth
 3. Remove border bottom from paginator
 4. check data-table-users.component.ts notes
@@ -56,3 +56,19 @@ https://nexus.daisyui.com/auth/register
                 </div>
             )}
 
+
+
+    const clearError = (fieldName: keyof RegisterFormValues) => {
+        if (state?.errors?.[fieldName]) {
+            action({
+                ...state,
+                errors: {
+                    ...state.errors,
+                    [fieldName]: undefined
+                }
+            });
+        }
+    };
+
+
+                            onChange={() => clearError('name')}

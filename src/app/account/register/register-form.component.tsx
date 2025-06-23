@@ -1,15 +1,64 @@
 'use client';
 
 import React, {useActionState, useState} from 'react';
-import {registerAction} from '@/app/account/register/register.action';
+import {registerAction, registerValidate} from '@/app/account/register/register.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
 import Routes from '@/lib/routes';
 import Link from 'next/link';
+import {
+    defaultRegisterFormState,
+    RegisterFormState,
+    RegisterFormValues
+} from '@/app/account/register/register-form.definition';
 
 export default function RegisterForm() {
-    const [state, action, pending] = useActionState(registerAction, undefined);
+    const [state, action, pending] = useActionState(registerAction, defaultRegisterFormState);
     const [showPassword, setShowPassword] = useState(false);
+
+    const [formValues, setFormValues] = useState<RegisterFormValues>(
+        state?.values || defaultRegisterFormState.values
+    );
+
+    const [localErrors, setLocalErrors] = useState<RegisterFormState['errors']>({});
+
+    // Combine server errors with locally cleared errors
+    const errors = {
+        ...state?.errors,
+        ...localErrors
+    };
+
+    const clearError = (fieldName: keyof RegisterFormValues, value: string | boolean) => {
+        setFormValues(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
+
+        const validated = registerValidate({
+            ...formValues,
+            [fieldName]: value
+        });
+
+        let errors: RegisterFormState['errors'] = {};
+
+        if (!validated.success) {
+            errors = validated.error.flatten().fieldErrors;
+        }
+
+        let updatedFields: Partial<RegisterFormState['errors']> = {};
+
+        if (['password', 'password_confirm'].includes(fieldName)) {
+            updatedFields['password'] = errors['password'];
+            updatedFields['password_confirm'] = errors['password_confirm'];
+        } else {
+            updatedFields[fieldName] = errors[fieldName];
+        }
+
+        setLocalErrors(prev => ({
+            ...prev,
+            ...updatedFields
+        }));
+    };
 
     return (
         <form action={action} className="form-section">
@@ -23,7 +72,7 @@ export default function RegisterForm() {
             <div className="form-part">
                 <div className="form-element">
                     <label htmlFor="name">Name</label>
-                    <div className={clsx('input', { 'input-error': state?.errors?.name })}>
+                    <div className={clsx('input', { 'input-error': errors.name })}>
                         <Icons.User className="opacity-60"/>
                         <input
                             id="name"
@@ -32,18 +81,19 @@ export default function RegisterForm() {
                             autoComplete={"name"}
                             disabled={pending}
                             defaultValue={state?.values?.name ?? ''}
+                            onChange={(e) => clearError('name', e.target.value)}
                         />
                     </div>
                 </div>
-                {state?.errors?.name && (
-                    <div className="form-element-error">{state.errors.name}</div>
+                {errors.name && (
+                    <div className="form-element-error">{errors.name}</div>
                 )}
             </div>
 
             <div className="form-part">
                 <div className="form-element">
                     <label htmlFor="email">Email Address</label>
-                    <div className={clsx('input', { 'input-error': state?.errors?.email })}>
+                    <div className={clsx('input', { 'input-error': errors.email })}>
                         <Icons.Email className="opacity-60"/>
                         <input
                             id="email"
@@ -52,11 +102,12 @@ export default function RegisterForm() {
                             autoComplete={"email"}
                             disabled={pending}
                             defaultValue={state?.values?.email ?? ''}
+                            onChange={(e) => clearError('email', e.target.value)}
                         />
                     </div>
                 </div>
-                {state?.errors?.email && (
-                    <div className="form-element-error">{state.errors.email}</div>
+                {errors.email && (
+                    <div className="form-element-error">{errors.email}</div>
                 )}
             </div>
 
@@ -64,7 +115,7 @@ export default function RegisterForm() {
                 <div>
                     <div className="form-element">
                         <label htmlFor="password">Password</label>
-                        <div className={clsx('input', {'input-error': state?.errors?.password})}>
+                        <div className={clsx('input', {'input-error': errors.password})}>
                             <Icons.Password className="opacity-60"/>
                             <input
                                 id="password"
@@ -74,6 +125,7 @@ export default function RegisterForm() {
                                 autoComplete={"current-password"}
                                 disabled={pending}
                                 defaultValue={state?.values?.password ?? ''}
+                                onChange={(e) => clearError('password', e.target.value)}
                             />
                             <button
                                 type="button"
@@ -89,9 +141,9 @@ export default function RegisterForm() {
                             </button>
                         </div>
                     </div>
-                    {state?.errors?.password && (
+                    {errors.password && (
                         <ul className="form-element-error">
-                            {state.errors.password.map((error) => (
+                            {errors.password.map((error) => (
                                 <li key={error}>- {error}</li>
                             ))}
                         </ul>
@@ -101,7 +153,7 @@ export default function RegisterForm() {
                 <div>
                     <div className="form-element">
                         <label htmlFor="password_confirm">Confirm Password</label>
-                        <div className={clsx('input', {'input-error': state?.errors?.password_confirm})}>
+                        <div className={clsx('input', {'input-error': errors.password_confirm})}>
                             <Icons.Password className="opacity-60"/>
                             <input
                                 id="password_confirm"
@@ -111,11 +163,12 @@ export default function RegisterForm() {
                                 autoComplete={"current-password"}
                                 disabled={pending}
                                 defaultValue={state?.values?.password_confirm ?? ''}
+                                onChange={(e) => clearError('password_confirm', e.target.value)}
                             />
                         </div>
                     </div>
-                    {state?.errors?.password_confirm && (
-                        <div className="form-element-error">{state.errors.password_confirm}</div>
+                    {errors.password_confirm && (
+                        <div className="form-element-error">{errors.password_confirm}</div>
                     )}
                 </div>
             </div>
@@ -132,6 +185,7 @@ export default function RegisterForm() {
                                 className="radio radio-info"
                                 disabled={pending}
                                 defaultChecked={state?.values?.language === 'en'}
+                                onChange={() => clearError('language', 'en')}
                             />
                             <span className="text-sm">English</span>
                         </label>
@@ -143,13 +197,14 @@ export default function RegisterForm() {
                                 className="radio radio-info"
                                 disabled={pending}
                                 defaultChecked={state?.values?.language === 'ro'}
+                                onChange={() => clearError('language', 'ro')}
                             />
                             <span className="text-sm">Română</span>
                         </label>
                     </div>
                 </div>
-                {state?.errors?.language && (
-                    <div className="form-element-error">{state.errors.language}</div>
+                {errors.language && (
+                    <div className="form-element-error">{errors.language}</div>
                 )}
             </div>
 
@@ -159,9 +214,13 @@ export default function RegisterForm() {
                         id="terms"
                         name="terms"
                         type="checkbox"
-                        className="checkbox checkbox-info"
+                        className={clsx('checkbox', {
+                            'checkbox-error': errors.terms,
+                            'checkbox-info': !errors.terms
+                        })}
                         disabled={pending}
                         defaultChecked={state?.values?.terms === true}
+                        onChange={(e) => clearError('terms', e.target.checked)}
                     />
                     <label className="flex items-center font-normal" htmlFor="terms">
                         <span className="text-sm text-gray-500">I agree with&nbsp;</span>
@@ -173,8 +232,8 @@ export default function RegisterForm() {
                         </Link>
                     </label>
                 </div>
-                {state?.errors?.terms && (
-                    <div className="form-element-error">{state.errors.terms}</div>
+                {errors.terms && (
+                    <div className="form-element-error">{errors.terms}</div>
                 )}
             </div>
 
@@ -191,6 +250,11 @@ export default function RegisterForm() {
                     </span>
                 )}
             </button>
+            {state?.response === 'error' && state.message && (
+                <div className="form-submit-error">
+                    <Icons.Error/> {state.message}
+                </div>
+            )}
 
             <p className="mt-4 text-center">
                 <span className="text-sm text-gray-500">Already registered? </span>

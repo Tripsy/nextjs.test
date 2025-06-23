@@ -124,7 +124,13 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
             filter: mapFiltersToApiPayload(lazyState.filters),
         };
 
-        return await findFunction(params);
+        const data = await findFunction(params);
+
+        if (data === undefined) {
+            throw new Error(`Could not retrieve ${props.dataSource} data`);
+        }
+
+        return data;
     };
 
     const onPage = useCallback((event: DataTablePageEvent) => {

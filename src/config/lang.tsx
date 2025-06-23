@@ -31,6 +31,10 @@ const en = {
             'password_confirm_mismatch': 'Passwords does not match',
             'language_invalid': 'Invalid language',
             'terms_required': 'You must accept the terms and conditions',
+        },
+        'message': {
+            'success': 'Thank you for registering. Please check your email to confirm your account.',
+            // 'error': 'We couldn\'t process your submission due to some errors.',
         }
     }
 };
