@@ -1,14 +1,14 @@
 # TODO
 
 1. register 
-    - clear the error on user interaction with a field - see DeepSeek solution
-2. login / auth
-3. Remove border bottom from paginator
-4. check data-table-users.component.ts notes
+    - test
+2. update login from register      
+3. recover password & other account pages
+4. auth
+5. Remove border bottom from paginator
+6. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-5. terms page
-6. recover password
-7. other account pages 
+7. terms page
    
 # IDEAS
 
@@ -40,35 +40,3 @@ Don’t use window or localStorage in useState initializer — React will render
 https://nexus.daisyui.com/auth/register
 
 # SAMPLES
-
-            <div>
-                <label htmlFor="password">Password</label>
-                <input id="password" name="password" type="password" />
-            </div>
-            {state?.errors?.password && (
-                <div>
-                    <p>Password must:</p>
-                    <ul>
-                        {state.errors.password.map((error) => (
-                            <li key={error}>- {error}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-
-
-    const clearError = (fieldName: keyof RegisterFormValues) => {
-        if (state?.errors?.[fieldName]) {
-            action({
-                ...state,
-                errors: {
-                    ...state.errors,
-                    [fieldName]: undefined
-                }
-            });
-        }
-    };
-
-
-                            onChange={() => clearError('name')}

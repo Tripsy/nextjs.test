@@ -6,7 +6,7 @@ import {ToggleTheme} from '@/components/toggle-theme';
 
 function Header() {
     return (
-        <header className="fixed z-10 w-full">
+        <header className="fixed z-90 w-full">
             <div className="header-section justify-between">
                 <div className="h-full flex items-center ">
                     <Link

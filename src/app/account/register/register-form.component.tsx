@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useActionState, useState} from 'react';
+import React, {useActionState, useEffect, useState} from 'react';
 import {registerAction, registerValidate} from '@/app/account/register/register.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
@@ -11,54 +11,66 @@ import {
     RegisterFormState,
     RegisterFormValues
 } from '@/app/account/register/register-form.definition';
+import {FormResult} from '@/components/form-result.component';
+import {useDebouncedEffect} from '@/app/hooks';
+
+// Memoize FormFieldError to avoid unnecessary re-renders
+import { FormFieldError as RawFormFieldError } from '@/components/form-field-error.component';
+const FormFieldError = React.memo(RawFormFieldError);
 
 export default function RegisterForm() {
     const [state, action, pending] = useActionState(registerAction, defaultRegisterFormState);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [formValues, setFormValues] = useState<RegisterFormValues>(
-        state?.values || defaultRegisterFormState.values
-    );
+    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterFormState.values);
+    const [errors, setErrors] = useState<RegisterFormState['errors']>({});
 
-    const [localErrors, setLocalErrors] = useState<RegisterFormState['errors']>({});
+    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
 
-    // Combine server errors with locally cleared errors
-    const errors = {
-        ...state?.errors,
-        ...localErrors
-    };
+    const handleChange = (fieldName: keyof RegisterFormValues) =>
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 
-    const clearError = (fieldName: keyof RegisterFormValues, value: string | boolean) => {
-        setFormValues(prev => ({
-            ...prev,
-            [fieldName]: value
-        }));
+            setFormValues(prev => ({...prev, [fieldName]: value}));
+            setDirtyFields(prev => ({...prev, [fieldName]: true}));
+        };
 
-        const validated = registerValidate({
-            ...formValues,
-            [fieldName]: value
-        });
+    // Debounced validation
+    useDebouncedEffect(() => {
+        if (Object.keys(dirtyFields).length > 0) {
+            const validated = registerValidate(formValues);
 
-        let errors: RegisterFormState['errors'] = {};
-
-        if (!validated.success) {
-            errors = validated.error.flatten().fieldErrors;
+            setErrors(validated.success ? {} : validated.error.flatten().fieldErrors);
+            setDirtyFields({});
         }
+    }, [formValues, dirtyFields], 800);
 
-        let updatedFields: Partial<RegisterFormState['errors']> = {};
-
-        if (['password', 'password_confirm'].includes(fieldName)) {
-            updatedFields['password'] = errors['password'];
-            updatedFields['password_confirm'] = errors['password_confirm'];
-        } else {
-            updatedFields[fieldName] = errors[fieldName];
+    // Initialize form values from server state
+    useEffect(() => {
+        if (state?.values) {
+            setFormValues(state.values);
         }
+    }, [state?.values]);
 
-        setLocalErrors(prev => ({
-            ...prev,
-            ...updatedFields
-        }));
-    };
+    // Combine server errors with local validation
+    useEffect(() => {
+        if (state?.errors) {
+            setErrors(state.errors);
+        }
+    }, [state?.errors]);
+
+    if (state?.status === 'success') {
+        return (
+            <FormResult
+                title="Account Created"
+            >
+                <div>
+                    <p>We've sent a verification email to <span className="font-semibold">{formValues.email}</span>.</p>
+                    <p>Please check your inbox and click the verification link to activate your account.</p>
+                </div>
+            </FormResult>
+        );
+    }
 
     return (
         <form action={action} className="form-section">
@@ -80,14 +92,13 @@ export default function RegisterForm() {
                             placeholder="eg: John Doe"
                             autoComplete={"name"}
                             disabled={pending}
-                            defaultValue={state?.values?.name ?? ''}
-                            onChange={(e) => clearError('name', e.target.value)}
+                            aria-invalid={!!errors.name}
+                            value={formValues.name ?? ''}
+                            onChange={handleChange('name')}
                         />
                     </div>
+                    <FormFieldError messages={errors.name} />
                 </div>
-                {errors.name && (
-                    <div className="form-element-error">{errors.name}</div>
-                )}
             </div>
 
             <div className="form-part">
@@ -101,14 +112,13 @@ export default function RegisterForm() {
                             placeholder="eg: example@domain.com"
                             autoComplete={"email"}
                             disabled={pending}
-                            defaultValue={state?.values?.email ?? ''}
-                            onChange={(e) => clearError('email', e.target.value)}
+                            aria-invalid={!!errors.email}
+                            value={formValues.email ?? ''}
+                            onChange={handleChange('email')}
                         />
                     </div>
+                    <FormFieldError messages={errors.email} />
                 </div>
-                {errors.email && (
-                    <div className="form-element-error">{errors.email}</div>
-                )}
             </div>
 
             <div className="form-part flex flex-col gap-4">
@@ -122,10 +132,11 @@ export default function RegisterForm() {
                                 name="password"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password"
-                                autoComplete={"current-password"}
+                                autoComplete={"new-password"}
                                 disabled={pending}
-                                defaultValue={state?.values?.password ?? ''}
-                                onChange={(e) => clearError('password', e.target.value)}
+                                aria-invalid={!!errors.password}
+                                value={formValues.password ?? ''}
+                                onChange={handleChange('password')}
                             />
                             <button
                                 type="button"
@@ -140,14 +151,8 @@ export default function RegisterForm() {
                                 )}
                             </button>
                         </div>
+                        <FormFieldError messages={errors.password} />
                     </div>
-                    {errors.password && (
-                        <ul className="form-element-error">
-                            {errors.password.map((error) => (
-                                <li key={error}>- {error}</li>
-                            ))}
-                        </ul>
-                    )}
                 </div>
 
                 <div>
@@ -160,16 +165,15 @@ export default function RegisterForm() {
                                 name="password_confirm"
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password confirmation"
-                                autoComplete={"current-password"}
+                                autoComplete={"new-password"}
                                 disabled={pending}
-                                defaultValue={state?.values?.password_confirm ?? ''}
-                                onChange={(e) => clearError('password_confirm', e.target.value)}
+                                aria-invalid={!!errors.password_confirm}
+                                value={formValues.password_confirm ?? ''}
+                                onChange={handleChange('password_confirm')}
                             />
                         </div>
+                        <FormFieldError messages={errors.password_confirm} />
                     </div>
-                    {errors.password_confirm && (
-                        <div className="form-element-error">{errors.password_confirm}</div>
-                    )}
                 </div>
             </div>
 
@@ -182,10 +186,14 @@ export default function RegisterForm() {
                                 type="radio"
                                 name="language"
                                 value="en"
-                                className="radio radio-info"
+                                className={clsx('radio', {
+                                    'radio-error': errors.language,
+                                    'radio-info': !errors.language
+                                })}
                                 disabled={pending}
-                                defaultChecked={state?.values?.language === 'en'}
-                                onChange={() => clearError('language', 'en')}
+                                aria-invalid={!!errors.language}
+                                checked={formValues.language === 'en'}
+                                onChange={handleChange('language')}
                             />
                             <span className="text-sm">English</span>
                         </label>
@@ -194,18 +202,20 @@ export default function RegisterForm() {
                                 type="radio"
                                 name="language"
                                 value="ro"
-                                className="radio radio-info"
+                                className={clsx('radio', {
+                                    'radio-error': errors.language,
+                                    'radio-info': !errors.language
+                                })}
                                 disabled={pending}
-                                defaultChecked={state?.values?.language === 'ro'}
-                                onChange={() => clearError('language', 'ro')}
+                                aria-invalid={!!errors.language}
+                                checked={formValues.language === 'ro'}
+                                onChange={handleChange('language')}
                             />
                             <span className="text-sm">Română</span>
                         </label>
                     </div>
+                    <FormFieldError messages={errors.language} />
                 </div>
-                {errors.language && (
-                    <div className="form-element-error">{errors.language}</div>
-                )}
             </div>
 
             <div className="form-part">
@@ -219,11 +229,14 @@ export default function RegisterForm() {
                             'checkbox-info': !errors.terms
                         })}
                         disabled={pending}
-                        defaultChecked={state?.values?.terms === true}
-                        onChange={(e) => clearError('terms', e.target.checked)}
+                        aria-invalid={!!errors.terms}
+                        checked={formValues.terms}
+                        onChange={handleChange('terms')}
                     />
                     <label className="flex items-center font-normal" htmlFor="terms">
-                        <span className="text-sm text-gray-500">I agree with&nbsp;</span>
+                        <span className="text-sm text-gray-500">
+                            I agree with&nbsp;
+                        </span>
                         <Link
                             href={Routes.get('terms-and-conditions')}
                             className="link-blue text-sm"
@@ -231,13 +244,11 @@ export default function RegisterForm() {
                             terms and conditions
                         </Link>
                     </label>
+                    <FormFieldError messages={errors.terms} />
                 </div>
-                {errors.terms && (
-                    <div className="form-element-error">{errors.terms}</div>
-                )}
             </div>
 
-            <button className="btn btn-submit" disabled={pending} type="submit" aria-busy={pending}>
+            <button className="btn btn-submit" disabled={pending || !!Object.keys(errors).length} type="submit" aria-busy={pending}>
                 {pending ? (
                     <span className="flex items-center gap-2">
                       <Icons.Spinner className="w-4 h-4 animate-spin"/>
@@ -250,7 +261,7 @@ export default function RegisterForm() {
                     </span>
                 )}
             </button>
-            {state?.response === 'error' && state.message && (
+            {state?.status === 'error' && state.message && (
                 <div className="form-submit-error">
                     <Icons.Error/> {state.message}
                 </div>

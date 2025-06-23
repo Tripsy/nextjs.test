@@ -11,12 +11,12 @@ export function registerFormValues(formData: FormData): RegisterFormValues {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
         password_confirm: formData.get('password_confirm') as string,
-        language: (formData.get('language') || 'en') as string,
+        language: formData.get('language') as string,
         terms: formData.get('terms') === 'on', // Convert checkbox value to boolean
     };
 }
 
-export function registerValidate(values: Partial<RegisterFormValues>) {
+export function registerValidate(values: RegisterFormValues) {
     return RegisterFormSchema.safeParse(values);
 }
 
@@ -24,30 +24,26 @@ export async function registerAction(state: RegisterFormState, formData: FormDat
     const values = registerFormValues(formData);
     const validated = registerValidate(values);
 
+    const result: RegisterFormState = {
+        ...state, // Spread existing state
+        values, // Override with new values
+        message: null,
+        status: null
+    };
+
     if (!validated.success) {
         return {
-            values: values,
-            errors: validated.error.flatten().fieldErrors,
-            message: null,
-            response: null
+            ...result,
+            errors: validated.error.flatten().fieldErrors
         };
     }
 
     const fetchResponse = await registerAccount(validated.data);
 
-    if (!fetchResponse.success) {
-        return {
-            values: values,
-            errors: {},
-            message: fetchResponse.message,
-            response: 'error'
-        };
-    }
-
     return {
-        values: values,
+        ...result,
         errors: {},
         message: fetchResponse.message,
-        response: 'success'
+        status: fetchResponse.success ? 'success' : 'error'
     };
 }

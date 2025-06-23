@@ -22,8 +22,8 @@
     --color-base-content: rgb(28, 46, 54);
     --color-primary: oklch(40.723% 0.161 17.53);
     --color-primary-content: oklch(88.144% 0.032 17.53);
-    --color-secondary: oklch(61.676% 0.169 23.865);
-    --color-secondary-content: oklch(12.335% 0.033 23.865);
+    --color-secondary: oklch(89% 0.061 343.231);
+    --color-secondary-content: oklch(45% 0.187 3.815);
     --color-accent: oklch(73.425% 0.094 60.729);
     --color-accent-content: oklch(14.685% 0.018 60.729);
     --color-neutral: oklch(54.367% 0.037 51.902);
@@ -58,8 +58,8 @@
     --color-base-content: rgb(223, 225, 230);
     --color-primary: oklch(58% 0.233 277.117);
     --color-primary-content: oklch(96% 0.018 272.314);
-    --color-secondary: oklch(65% 0.241 354.308);
-    --color-secondary-content: oklch(94% 0.028 342.258);
+    --color-secondary: oklch(89% 0.061 343.231);
+    --color-secondary-content: oklch(45% 0.187 3.815);
     --color-accent: oklch(77% 0.152 181.912);
     --color-accent-content: oklch(38% 0.063 188.416);
     --color-neutral: oklch(14% 0.005 285.823);
@@ -154,7 +154,7 @@
     }
 
     .dashboard-layout .main-section .side-menu-section {
-        @apply fixed left-0 z-9 transition-all duration-400 p-6;
+        @apply fixed left-0 z-80 transition-all duration-400 p-6;
 
         width: var(--side-menu-width);
     }
@@ -254,7 +254,7 @@
         }
 
         .form-section .form-part .form-element {
-            @apply flex flex-col gap-2 mb-2;
+            @apply relative flex flex-col gap-2 mb-2;
         }
 
         .form-section .form-part label {
@@ -265,6 +265,19 @@
             @apply text-error text-sm;
         }
 
+        .form-section .form-element .form-tooltip-error {
+            @apply w-full text-error text-xs md:text-sm absolute left-0 top-full mt-2 z-50 px-4 py-2 bg-error-content rounded shadow-md transition-opacity duration-150 opacity-0 pointer-events-none;
+
+            &::before {
+                @apply absolute -top-1.5 left-4 w-3 h-3 bg-error-content rotate-45;
+                content: "";
+            }
+        }
+
+        .form-section .form-element:hover .form-tooltip-error {
+            @apply opacity-100 pointer-events-auto;
+        }
+
         .form-section .btn-submit[disabled] span {
             @apply text-gray-500;
         }
@@ -272,4 +285,12 @@
         .form-section .form-submit-error {
             @apply text-error text-sm;
         }
+
+    .form-result h1 {
+        @apply text-xl font-semibold
+    }
+
+    .form-result .form-result-content {
+        @apply mt-4 text-sm;
+    }
 }

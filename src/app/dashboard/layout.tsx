@@ -12,7 +12,7 @@ import styles from './dashboard.module.css';
 
 function Header() {
     return (
-        <header className="fixed z-10 w-full">
+        <header className="fixed z-90 w-full">
             <div className="header-section">
                 <div className="h-full flex items-center">
                     <SideMenuToggle/>
@@ -66,7 +66,7 @@ function Header() {
 
 function Footer() {
     return (
-        <footer className="footer sm:footer-horizontal relative z-3 bg-base-100 items-center p-4">
+        <footer className="footer sm:footer-horizontal relative bg-base-100 items-center p-4">
             <aside className="grid-flow-col items-center">
                 <svg
                     width="36"

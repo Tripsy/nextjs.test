@@ -29,7 +29,7 @@ const en = {
             'password_condition_special_character': 'Password must contain at least one special character',
             'password_confirm_required': 'Password confirmation is required',
             'password_confirm_mismatch': 'Passwords does not match',
-            'language_invalid': 'Invalid language',
+            'language_invalid': 'Invalid language selected',
             'terms_required': 'You must accept the terms and conditions',
         },
         'message': {

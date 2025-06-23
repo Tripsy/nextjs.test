@@ -2,69 +2,68 @@ import {z} from 'zod';
 import {lang} from '@/config/lang';
 import {app} from '@/config/settings';
 
-export const RegisterFormSchema = z
-    .object({
-        name: z
-            .string({
-                message: lang('register.validation.name_invalid')
-            })
-            .min(app('user.nameMinLength'), {
-                message: lang('register.validation.name_min', {min: app('user.nameMinLength').toString()}),
-            })
-            .trim(),
-        email: z
-            .string({
-                message: lang('register.validation.email_invalid')
-            })
-            .email({
-                message: lang('register.validation.email_invalid')
-            })
-            .trim(),
-        password: z
-            .string({message: lang('register.validation.password_invalid')})
-            .min(app('user.passwordMinLength'), {
-                message: lang('register.validation.password_min', {min: app('user.passwordMinLength').toString()}),
-            })
-            .refine((value) => /[A-Z]/.test(value), {
-                message: lang('register.validation.password_condition_capital_letter'),
-            })
-            .refine((value) => /[0-9]/.test(value), {
-                message: lang('register.validation.password_condition_number'),
-            })
-            .refine((value) => /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(value), {
-                message: lang('register.validation.password_condition_special_character'),
-            }),
-        password_confirm: z
-            .string({
-                message: lang('register.validation.password_confirm_required')
-            })
-            .min(1, {
-                message: lang('register.validation.password_confirm_required')
-            })
-            .trim(),
-        language: z
-            .string({
-                message: lang('register.validation.language_invalid')
-            })
-            .length(2, {
-                message: lang('register.validation.language_invalid')
-            })
-            .trim(),
-        terms: z.literal(true, {
-            errorMap: () => ({
-                message: lang('register.validation.terms_required')
-            }),
+export const RegisterFormSchema = z.object({
+    name: z
+        .string({
+            message: lang('register.validation.name_invalid')
+        })
+        .min(app('user.nameMinLength'), {
+            message: lang('register.validation.name_min', {min: app('user.nameMinLength').toString()}),
+        })
+        .trim(),
+    email: z
+        .string({
+            message: lang('register.validation.email_invalid')
+        })
+        .email({
+            message: lang('register.validation.email_invalid')
+        })
+        .trim(),
+    password: z
+        .string({message: lang('register.validation.password_invalid')})
+        .min(app('user.passwordMinLength'), {
+            message: lang('register.validation.password_min', {min: app('user.passwordMinLength').toString()}),
+        })
+        .refine((value) => /[A-Z]/.test(value), {
+            message: lang('register.validation.password_condition_capital_letter'),
+        })
+        .refine((value) => /[0-9]/.test(value), {
+            message: lang('register.validation.password_condition_number'),
+        })
+        .refine((value) => /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(value), {
+            message: lang('register.validation.password_condition_special_character'),
         }),
-    })
-    .superRefine(({password, password_confirm}, ctx) => {
-        if (password !== password_confirm) {
-            ctx.addIssue({
-                path: ['password_confirm'],
-                message: lang('register.validation.password_confirm_mismatch'),
-                code: z.ZodIssueCode.custom,
-            });
-        }
-    });
+    password_confirm: z
+        .string({
+            message: lang('register.validation.password_confirm_required')
+        })
+        .min(1, {
+            message: lang('register.validation.password_confirm_required')
+        })
+        .trim(),
+    language: z
+        .string({
+            message: lang('register.validation.language_invalid')
+        })
+        .length(2, {
+            message: lang('register.validation.language_invalid')
+        })
+        .trim(),
+    terms: z.literal(true, {
+        errorMap: () => ({
+            message: lang('register.validation.terms_required')
+        }),
+    }),
+})
+.superRefine(({password, password_confirm}, ctx) => {
+    if (password !== password_confirm) {
+        ctx.addIssue({
+            path: ['password_confirm'],
+            message: lang('register.validation.password_confirm_mismatch'),
+            code: z.ZodIssueCode.custom,
+        });
+    }
+});
 
 export type RegisterFormValues = {
     name: string;
@@ -75,18 +74,13 @@ export type RegisterFormValues = {
     terms: boolean;
 };
 
+export type FormStatus = 'success' | 'error' | null;
+
 export type RegisterFormState = {
-    values: RegisterFormValues,
-    errors: {
-        name?: string[];
-        email?: string[];
-        password?: string[];
-        password_confirm?: string[];
-        language?: string[];
-        terms?: string[];
-    },
+    values: RegisterFormValues;
+    errors: Partial<Record<keyof RegisterFormValues, string[]>>;
     message: string | null;
-    response: string | null;
+    status: FormStatus;
 };
 
 export const defaultRegisterFormState: RegisterFormState = {
@@ -95,10 +89,10 @@ export const defaultRegisterFormState: RegisterFormState = {
         email: '',
         password: '',
         password_confirm: '',
-        language: 'en',
+        language: '',
         terms: false,
     },
     errors: {},
     message: null,
-    response: null
+    status: null
 };
