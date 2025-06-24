@@ -28,7 +28,7 @@ export async function registerAction(state: RegisterFormState, formData: FormDat
         ...state, // Spread existing state
         values, // Override with new values
         message: null,
-        status: null
+        situation: null
     };
 
     if (!validated.success) {
@@ -44,6 +44,6 @@ export async function registerAction(state: RegisterFormState, formData: FormDat
         ...result,
         errors: {},
         message: fetchResponse.message,
-        status: fetchResponse.success ? 'success' : 'error'
+        situation: fetchResponse.success ? 'success' : 'error'
     };
 }

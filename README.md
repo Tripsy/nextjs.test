@@ -1,14 +1,17 @@
 # TODO
 
-1. register 
+
+1. login 
     - test
-2. update login from register      
-3. recover password & other account pages
+2. recover password & other account pages
+3. email-confirm
+    - do updates on node.js first
 4. auth
 5. Remove border bottom from paginator
-6. check data-table-users.component.ts notes
+6. Use `register` for inspiration and update filters
+7. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-7. terms page
+8. terms page
    
 # IDEAS
 

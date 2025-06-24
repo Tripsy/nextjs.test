@@ -15,7 +15,7 @@ export type ResponseFetch<T> = {
     success: boolean;
 };
 
-export async function doFetch<T = any>(path: string, options: RequestInit = {}): Promise<ResponseFetch<T> | undefined> {
+export async function doFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
     const baseUrl = getBackendApiBaseUrl();
     const token = getAuthToken();
 
@@ -42,7 +42,7 @@ export async function doFetch<T = any>(path: string, options: RequestInit = {}):
 
         const responseBody = await handleJsonResponse(res);
 
-        checkResponse(res, responseBody); // Can throw ApiErr or return `responseBody` depending on the res.status code
+        checkResponse(res, responseBody, acceptedErrorCodes); // Can throw ApiErr or return `responseBody` depending on the res.status code
 
         return responseBody;
     } catch (error) {
@@ -58,7 +58,7 @@ export function getResponseData<T = any>(response: ResponseFetch<T> | undefined)
     return response?.data;
 }
 
-async function handleJsonResponse(res: Response) {
+export async function handleJsonResponse(res: Response) {
     try {
         return await res.json();
     } catch {
@@ -70,8 +70,8 @@ async function handleJsonResponse(res: Response) {
     }
 }
 
-function checkResponse(res: Response, responseBody: any) {
-    if (!res.ok && ![409].includes(res.status)) { // If this condition is not matched the `responseBody` is returned
+function checkResponse(res: Response, responseBody: any, acceptedErrorCodes: number[] = []) {
+    if (!res.ok && !acceptedErrorCodes.includes(res.status)) { // If this condition is not matched the `responseBody` is returned
         throw new ApiError(
             responseBody?.message || res.statusText || 'Unknown error',
             res.status,

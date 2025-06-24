@@ -12,6 +12,12 @@ const en = {
         'validation': {
             'email': 'Please enter a valid email',
             'password': 'Please enter your password',
+        },
+        'message': {
+            "error": "We couldn\'t log you in. Verify your details and try again.",
+            "not_active": "We couldn\'t log you in. Your account is not active.",
+            "max_active_sessions": "Too many active sessions",
+            "too_many_login_attempts": "Too many failed login attempts. Please try again later."
         }
     },
     'register': {

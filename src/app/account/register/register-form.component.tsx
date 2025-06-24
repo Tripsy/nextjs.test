@@ -15,7 +15,8 @@ import {FormResult} from '@/components/form-result.component';
 import {useDebouncedEffect} from '@/app/hooks';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
-import { FormFieldError as RawFormFieldError } from '@/components/form-field-error.component';
+import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
+
 const FormFieldError = React.memo(RawFormFieldError);
 
 export default function RegisterForm() {
@@ -59,7 +60,7 @@ export default function RegisterForm() {
         }
     }, [state?.errors]);
 
-    if (state?.status === 'success') {
+    if (state?.situation === 'success') {
         return (
             <FormResult
                 title="Account Created"
@@ -84,7 +85,7 @@ export default function RegisterForm() {
             <div className="form-part">
                 <div className="form-element">
                     <label htmlFor="name">Name</label>
-                    <div className={clsx('input', { 'input-error': errors.name })}>
+                    <div className={clsx('input', {'input-error': errors.name})}>
                         <Icons.User className="opacity-60"/>
                         <input
                             id="name"
@@ -97,14 +98,14 @@ export default function RegisterForm() {
                             onChange={handleChange('name')}
                         />
                     </div>
-                    <FormFieldError messages={errors.name} />
+                    <FormFieldError messages={errors.name}/>
                 </div>
             </div>
 
             <div className="form-part">
                 <div className="form-element">
                     <label htmlFor="email">Email Address</label>
-                    <div className={clsx('input', { 'input-error': errors.email })}>
+                    <div className={clsx('input', {'input-error': errors.email})}>
                         <Icons.Email className="opacity-60"/>
                         <input
                             id="email"
@@ -117,7 +118,7 @@ export default function RegisterForm() {
                             onChange={handleChange('email')}
                         />
                     </div>
-                    <FormFieldError messages={errors.email} />
+                    <FormFieldError messages={errors.email}/>
                 </div>
             </div>
 
@@ -145,13 +146,13 @@ export default function RegisterForm() {
                                 aria-label={showPassword ? "Hide password" : "Show password"}
                             >
                                 {showPassword ? (
-                                    <Icons.Obscured className="opacity-60 hover:opacity-100" />
+                                    <Icons.Obscured className="opacity-60 hover:opacity-100"/>
                                 ) : (
-                                    <Icons.Visible className="opacity-60 hover:opacity-100" />
+                                    <Icons.Visible className="opacity-60 hover:opacity-100"/>
                                 )}
                             </button>
                         </div>
-                        <FormFieldError messages={errors.password} />
+                        <FormFieldError messages={errors.password}/>
                     </div>
                 </div>
 
@@ -172,7 +173,7 @@ export default function RegisterForm() {
                                 onChange={handleChange('password_confirm')}
                             />
                         </div>
-                        <FormFieldError messages={errors.password_confirm} />
+                        <FormFieldError messages={errors.password_confirm}/>
                     </div>
                 </div>
             </div>
@@ -214,7 +215,7 @@ export default function RegisterForm() {
                             <span className="text-sm">Română</span>
                         </label>
                     </div>
-                    <FormFieldError messages={errors.language} />
+                    <FormFieldError messages={errors.language}/>
                 </div>
             </div>
 
@@ -234,21 +235,23 @@ export default function RegisterForm() {
                         onChange={handleChange('terms')}
                     />
                     <label className="flex items-center font-normal" htmlFor="terms">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 dark:text-base-content">
                             I agree with&nbsp;
                         </span>
                         <Link
                             href={Routes.get('terms-and-conditions')}
                             className="link-blue text-sm"
+                            target="_blank"
                         >
                             terms and conditions
                         </Link>
                     </label>
-                    <FormFieldError messages={errors.terms} />
+                    <FormFieldError messages={errors.terms}/>
                 </div>
             </div>
 
-            <button className="btn btn-submit" disabled={pending || !!Object.keys(errors).length} type="submit" aria-busy={pending}>
+            <button className="btn btn-submit" disabled={pending || !!Object.keys(errors).length} type="submit"
+                    aria-busy={pending}>
                 {pending ? (
                     <span className="flex items-center gap-2">
                       <Icons.Spinner className="w-4 h-4 animate-spin"/>
@@ -261,14 +264,14 @@ export default function RegisterForm() {
                     </span>
                 )}
             </button>
-            {state?.status === 'error' && state.message && (
+            {state?.situation === 'error' && state.message && (
                 <div className="form-submit-error">
                     <Icons.Error/> {state.message}
                 </div>
             )}
 
             <p className="mt-4 text-center">
-                <span className="text-sm text-gray-500">Already registered? </span>
+                <span className="text-sm text-gray-500 dark:text-base-content">Already registered? </span>
                 <Link
                     href={Routes.get('login')}
                     className="link-blue text-sm"
