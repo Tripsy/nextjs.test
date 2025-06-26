@@ -7,7 +7,6 @@ export default function SideMenuSetter(): null {
     const {status} = useSideMenu();
 
     useEffect(() => {
-        console.log('side-menu setter')
         const mainContainerElement: Element | null = document.querySelector('main.main-section');
 
         if (mainContainerElement) {

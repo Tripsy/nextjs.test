@@ -240,7 +240,7 @@ export default function RegisterForm() {
                         </span>
                         <Link
                             href={Routes.get('terms-and-conditions')}
-                            className="link-blue text-sm"
+                            className="link link-info link-hover text-sm"
                             target="_blank"
                         >
                             terms and conditions
@@ -250,7 +250,7 @@ export default function RegisterForm() {
                 </div>
             </div>
 
-            <button className="btn btn-submit" disabled={pending || !!Object.keys(errors).length} type="submit"
+            <button className="btn btn-info" disabled={pending || !!Object.keys(errors).length} type="submit"
                     aria-busy={pending}>
                 {pending ? (
                     <span className="flex items-center gap-2">
@@ -274,7 +274,7 @@ export default function RegisterForm() {
                 <span className="text-sm text-gray-500 dark:text-base-content">Already registered? </span>
                 <Link
                     href={Routes.get('login')}
-                    className="link-blue text-sm"
+                    className="link link-info link-hover text-sm"
                 >
                     Sign in here
                 </Link>

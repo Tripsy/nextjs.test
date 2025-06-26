@@ -16,7 +16,7 @@ export const BreadcrumbHeader = () => {
                             item.href ? (
                                 <Link
                                     href={Routes.get(item.href)}
-                                    className="link-default"
+                                    className="link link-hover"
                                 >
                                     {item.label}
                                 </Link>

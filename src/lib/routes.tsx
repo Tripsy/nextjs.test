@@ -47,6 +47,9 @@ let Routes = new RoutesCollection();
 Routes.add('home', '/');
 Routes.add('terms-and-conditions', '/terms-and-conditions');
 
+// API
+Routes.add('auth', '/api/auth');
+
 // Account
 Routes.add('login', '/account/login');
 Routes.add('register', '/account/register');

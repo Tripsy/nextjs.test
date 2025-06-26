@@ -9,6 +9,7 @@ import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
 import {FormSituation} from '@/lib/types/form-situation.type';
 import {getResponseData, ResponseFetch} from '@/lib/api';
+import {createAuth} from '@/lib/services/auth.service';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
     return {
@@ -40,16 +41,29 @@ export async function loginAction(state: LoginFormState, formData: FormData): Pr
     }
 
     try {
-        const fetchResponse = await loginAccount(validated.data);
+        const fetchResponse: ResponseFetch<{token: string}> = await loginAccount(validated.data);
+
+        if (fetchResponse.success && fetchResponse.data?.token) {
+            const authResponse = await createAuth(fetchResponse.data.token);
+
+            if (!authResponse.success) {
+                return {
+                    ...result,
+                    errors: {},
+                    message: authResponse.message || null,
+                    situation: 'error'
+                };
+            }
+        }
 
         return {
             ...result,
             errors: {},
-            message: fetchResponse.message,
+            message: fetchResponse.message || null,
             situation: fetchResponse.success ? 'success' : 'error'
         };
     } catch (error: unknown) {
-        let message: string = lang('login.message.error');
+        let message: string = lang('login.message.could_not_login');
         let situation: FormSituation | 'max_active_sessions' = 'error';
         let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> | undefined = undefined;
 

@@ -1,12 +1,14 @@
 # TODO
 
 
-1. login 
-    - test
+1. auth
+    - Protect Routes (Auth Gate) - middleware
+    - Use the Token for Authenticated API Requests >> right is making a GET request I need to get it from AuthProvider
+    - AuthProvider  - const {user} = useAuth();
+2. logout - destroy session + api request to logout + redirect
 2. recover password & other account pages
 3. email-confirm
     - do updates on node.js first
-4. auth
 5. Remove border bottom from paginator
 6. Use `register` for inspiration and update filters
 7. check data-table-users.component.ts notes
@@ -43,3 +45,21 @@ Don’t use window or localStorage in useState initializer — React will render
 https://nexus.daisyui.com/auth/register
 
 # SAMPLES
+
+
+I need an authProvider 
+    
+import { verifySession } from '@/app/lib/dal'
+
+export default function Dashboard() {
+const session = await verifySession()
+const userRole = session?.user?.role // Assuming 'role' is part of the session object
+
+if (userRole === 'admin') {
+return <AdminDashboard />
+} else if (userRole === 'user') {
+return <UserDashboard />
+} else {
+redirect('/login')
+}
+}

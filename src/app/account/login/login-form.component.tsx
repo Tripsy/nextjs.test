@@ -18,14 +18,28 @@ import {useDebouncedEffect} from '@/app/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {useRouter} from 'next/navigation';
 import {formatDate} from '@/lib/utils/string';
+import {removeTokenAccount} from '@/lib/services/account.service';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-// TODO: continue implementation
-function AuthTokenList({tokens}: { tokens: AuthTokenListType | undefined }) {
+function AuthTokenList({status, tokens}: {
+    status: { message: string, error: boolean },
+    tokens: AuthTokenListType | undefined
+}) {
+    const [displayStatus, setDisplayStatus] = useState(status);
     const [selectedToken, setSelectedToken] = useState<AuthTokenType | null>(null);
     const [loading, setLoading] = useState(false);
     const [tokenList, setTokenList] = useState<AuthTokenListType>(tokens || []);
+
+    useEffect(() => {
+        if (tokens) {
+            setTokenList(tokens);
+        }
+    }, [tokens]);
+
+    useEffect(() => {
+        setDisplayStatus(status);
+    }, [status]);
 
     const handleConfirmDestroy = async () => {
         if (!selectedToken) {
@@ -35,18 +49,19 @@ function AuthTokenList({tokens}: { tokens: AuthTokenListType | undefined }) {
         try {
             setLoading(true);
 
-            const response = await fetch(`/api/auth/tokens/${selectedToken.ident}`, {
-                method: 'DELETE',
+            await removeTokenAccount(selectedToken.ident);
+
+            setDisplayStatus({
+                message: 'Session destroyed successfully. You can retry logging in',
+                error: false
             });
 
-            if (response.ok) {
-                // Optionally show success toast here
-                setTokenList(prev => prev.filter(token => token.ident !== selectedToken.ident));
-            } else {
-                console.error('Failed to delete session');
-            }
+            setTokenList(prev => prev.filter(token => token.ident !== selectedToken.ident));
         } catch (err) {
-            console.error('Error deleting session', err);
+            setDisplayStatus({
+                message: 'Error deleting session',
+                error: false
+            });
         } finally {
             setLoading(false);
             setSelectedToken(null);
@@ -54,55 +69,69 @@ function AuthTokenList({tokens}: { tokens: AuthTokenListType | undefined }) {
     };
 
     return (
-        <div className="space-y-4 mt-2">
-            {tokenList.map((token: AuthTokenType) => (
-                <div key={token.ident} className="p-4 border rounded shadow-sm">
-                    <div className="text-sm">
-                        {token.label}
-                    </div>
-                    <div className="text-xs mt-1">
-                        Last used: {formatDate(token.used_at)}
-                    </div>
-                    <div
-                        className="mt-2 btn btn-delete w-full"
-                        onClick={() => setSelectedToken(token)}
-                    >
-                        Destroy Session
-                    </div>
-                </div>
-            ))}
-
-            {selectedToken && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-                    <div className="bg-base-200 p-4 md:p-8 rounded-md shadow-xl max-w-sm w-full">
-                        <p className="text-sm semi-bold">
-                            Are you sure you want to destroy the session?
-                        </p>
-                        <p className="font-mono text-xs break-words mt-2">
-                            {selectedToken.label}
-                        </p>
-                        <div className="flex justify-end gap-2 mt-4">
-                            <button
-                                type="button"
-                                className="btn btn-neutral"
-                                onClick={() => setSelectedToken(null)}
-                                disabled={loading}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-success"
-                                onClick={handleConfirmDestroy}
-                                disabled={loading}
-                            >
-                                {loading ? 'Deleting...' : 'Confirm'}
-                            </button>
-                        </div>
-                    </div>
+        <>
+            {displayStatus.error && displayStatus.message && (
+                <div className="form-submit-error">
+                    <Icons.Error/> {displayStatus.message}
                 </div>
             )}
-        </div>
+
+            {!displayStatus.error && displayStatus.message && (
+                <div className="form-submit-info">
+                    <Icons.Ok/> {displayStatus.message}
+                </div>
+            )}
+
+            <div className="space-y-4 mt-2">
+                {tokenList.map((token: AuthTokenType) => (
+                    <div key={token.ident} className="p-4 border border-line rounded shadow-sm">
+                        <div className="text-sm">
+                            {token.label}
+                        </div>
+                        <div className="text-xs mt-1">
+                            Last used: {formatDate(token.used_at)}
+                        </div>
+                        <div
+                            className="mt-2 btn btn-neutral btn-delete w-full"
+                            onClick={() => setSelectedToken(token)}
+                        >
+                            <Icons.Action.Destroy/> Destroy Session
+                        </div>
+                    </div>
+                ))}
+
+                {selectedToken && (
+                    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+                        <div className="bg-base-200 p-4 md:p-8 rounded-md shadow-xl max-w-sm w-full">
+                            <p className="text-sm semi-bold">
+                                Are you sure you want to destroy the session?
+                            </p>
+                            <p className="font-mono text-xs break-words mt-2">
+                                {selectedToken.label}
+                            </p>
+                            <div className="flex justify-end gap-2 mt-4">
+                                <button
+                                    type="button"
+                                    className="btn btn-neutral"
+                                    onClick={() => setSelectedToken(null)}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-success"
+                                    onClick={handleConfirmDestroy}
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Deleting...' : 'Confirm'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
 
@@ -217,7 +246,7 @@ export default function LoginForm() {
                 </div>
             </div>
 
-            <button className="btn btn-submit" disabled={pending || !!Object.keys(errors).length} type="submit"
+            <button className="btn btn-info" disabled={pending || !!Object.keys(errors).length} type="submit"
                     aria-busy={pending}>
                 {pending ? (
                     <span className="flex items-center gap-2">
@@ -231,17 +260,22 @@ export default function LoginForm() {
                     </span>
                 )}
             </button>
+
             {state?.situation === 'error' && state.message && (
                 <div className="form-submit-error">
                     <Icons.Error/> {state.message}
                 </div>
             )}
+
             {state?.situation === 'max_active_sessions' && state.message && (
                 <>
-                    <div className="form-submit-error">
-                        <Icons.Error/> {state.message}
-                    </div>
-                    <AuthTokenList tokens={state.body?.authValidTokens} />
+                    <AuthTokenList
+                        tokens={state.body?.authValidTokens}
+                        status={{
+                            message: state.message,
+                            error: true
+                        }}
+                    />
                 </>
             )}
 
@@ -249,7 +283,7 @@ export default function LoginForm() {
                 <span className="text-sm text-gray-500 dark:text-base-content">Not registered yet? </span>
                 <Link
                     href={Routes.get('register')}
-                    className="link-blue text-sm"
+                    className="link link-info link-hover text-sm"
                 >
                     Create an account
                 </Link>

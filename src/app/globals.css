@@ -20,30 +20,31 @@
     --color-base-200: rgb(237, 241, 245);
     --color-base-300: oklch(82.4% 0 0);
     --color-base-content: rgb(28, 46, 54);
-    --color-primary: oklch(40.723% 0.161 17.53);
-    --color-primary-content: oklch(88.144% 0.032 17.53);
-    --color-secondary: oklch(89% 0.061 343.231);
-    --color-secondary-content: oklch(45% 0.187 3.815);
-    --color-accent: oklch(73.425% 0.094 60.729);
-    --color-accent-content: oklch(14.685% 0.018 60.729);
-    --color-neutral: oklch(54.367% 0.037 51.902);
-    --color-neutral-content: oklch(90.873% 0.007 51.902);
-    --color-info: oklch(69.224% 0.097 207.284);
-    --color-info-content: oklch(13.844% 0.019 207.284);
-    --color-success: oklch(60.995% 0.08 174.616);
-    --color-success-content: oklch(12.199% 0.016 174.616);
-    --color-warning: oklch(70.081% 0.164 56.844);
-    --color-warning-content: oklch(14.016% 0.032 56.844);
-    --color-error: oklch(53.07% 0.241 24.16);
-    --color-error-content: oklch(90.614% 0.048 24.16);
+    --color-primary: oklch(0% 0 0);
+    --color-primary-content: oklch(100% 0 0);
+    --color-secondary: oklch(75% 0.183 55.934);
+    --color-secondary-content: oklch(26% 0.079 36.259);
+    --color-accent: oklch(85% 0.199 91.936);
+    --color-accent-content: oklch(28% 0.066 53.813);
+    --color-neutral: oklch(60% 0.043 257.281);
+    --color-neutral-content: oklch(98% 0.001 106.423);
+    --color-info: oklch(71% 0.143 215.221);
+    --color-info-content: oklch(98% 0.019 200.873);
+    --color-success: oklch(69% 0.17 162.48);
+    --color-success-content: oklch(97% 0.021 166.113);
+    --color-warning: oklch(79% 0.184 86.047);
+    --color-warning-content: oklch(98% 0.026 102.212);
+    --color-error: oklch(63% 0.237 25.331);
+    --color-error-content: oklch(97% 0.013 17.38);
     --radius-selector: 0.5rem;
-    --radius-field: 0.25rem;
-    --radius-box: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0rem;
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
     --border: 1px;
-    --depth: 1;
-    --noise: 0;
+    --depth: 0;
+    --noise: 1;
+    --color-line: oklab(0.289171 -0.0186701 -0.0205069 / 0.2);
 }
 
 @plugin "daisyui/theme" {
@@ -51,64 +52,34 @@
     default: false;
     prefersdark: false;
     color-scheme: "dark";
-    /*--color-base-100: rgb(28, 34, 41);*/
-    --color-base-100: rgb(31, 42, 56);
-    --color-base-200: rgb(29, 30, 33);
-    --color-base-300: oklch(21.15% 0.012 254.09);
-    --color-base-content: rgb(223, 225, 230);
-    --color-primary: oklch(58% 0.233 277.117);
-    --color-primary-content: oklch(96% 0.018 272.314);
-    --color-secondary: oklch(89% 0.061 343.231);
-    --color-secondary-content: oklch(45% 0.187 3.815);
-    --color-accent: oklch(77% 0.152 181.912);
-    --color-accent-content: oklch(38% 0.063 188.416);
-    --color-neutral: oklch(14% 0.005 285.823);
-    --color-neutral-content: oklch(92% 0.004 286.32);
-    --color-info: oklch(74% 0.16 232.661);
-    --color-info-content: oklch(29% 0.066 243.157);
-    --color-success: oklch(76% 0.177 163.223);
-    --color-success-content: oklch(37% 0.077 168.94);
-    --color-warning: oklch(82% 0.189 84.429);
-    --color-warning-content: oklch(41% 0.112 45.904);
-    --color-error: oklch(71% 0.194 13.428);
-    --color-error-content: oklch(27% 0.105 12.094);
-    --radius-selector: 0.5rem;
-    --radius-field: 0.25rem;
-    --radius-box: 0.5rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 1px;
-    --depth: 1;
-    --noise: 0;
+    --color-line: oklab(0.97807 -0.00659901 -0.0282392 / 0.2);
 }
 
 @layer utilities {
     /* General */
 
-    .link-default {
-        @apply hover:text-blue-400;
-    }
-
-    .link-blue {
-        @apply text-blue-400 hover:underline;
-    }
-
     .border-separator {
         @apply border-gray-300 dark:border-gray-600;
+    }
+
+    .border-line {
+        border-color: var(--color-line);
     }
 
     /* Buttons */
 
     .btn-delete {
-        @apply hover:text-white hover:bg-red-400 border-none;
+        @apply hover:text-white hover:bg-error border-none;
     }
 
-    .btn-create {
-        @apply btn btn-md bg-blue-500 text-white hover:bg-blue-600 border-none;
+    @media (prefers-color-scheme: dark) {
+        .btn-neutral {
+            background-color: oklch(50% 0.043 257.281);
+        }
     }
 
-    .btn-submit {
-        @apply bg-blue-500 text-white border-blue-700 hover:bg-blue-600 border-none;
+    .btn-info {
+        @apply dark:text-primary-content;
     }
 
     /* Badges */
@@ -191,7 +162,7 @@
         }
 
     .dashboard-layout .main-section .content-section {
-        @apply w-full border-l border-gray-300 dark:border-gray-700 transition-all duration-400 px-6 py-8;
+        @apply w-full border-l border-[var(--color-line)] transition-all duration-400 px-6 py-8;
 
         min-height: calc(100vh - 8rem);
         margin-left: var(--side-menu-width);
@@ -278,12 +249,12 @@
             @apply opacity-100 pointer-events-auto;
         }
 
-        .form-section .btn-submit[disabled] span {
-            @apply text-gray-500 dark:text-gray-400;
-        }
-
         .form-section .form-submit-error {
             @apply mt-2 text-error text-sm;
+        }
+
+        .form-section .form-submit-info {
+            @apply mt-2 text-info text-sm;
         }
 
     .form-result h1 {

@@ -14,7 +14,9 @@ const en = {
             'password': 'Please enter your password',
         },
         'message': {
-            "error": "We couldn\'t log you in. Verify your details and try again.",
+            "could_not_login": "We couldn\'t log you in. Verify your details and try again.",
+            'auth_success': 'Authenticated successfully',
+            "auth_error": "Login failed due to an authentication error.",
             "not_active": "We couldn\'t log you in. Your account is not active.",
             "max_active_sessions": "Too many active sessions",
             "too_many_login_attempts": "Too many failed login attempts. Please try again later."

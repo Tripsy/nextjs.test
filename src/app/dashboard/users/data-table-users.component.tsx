@@ -85,7 +85,7 @@ export const DataTableUsers = (): JSX.Element => {
             // TODO
             // make this a separate component  DataTableActions
             // when single entry is selected show edit / activate / deactivate & restore
-            <div className="my-6 pt-4 border-t border-separator flex justify-between">
+            <div className="my-6 pt-4 border-t border-line flex justify-between">
                 <div className="flex items-center gap-2">
                     {isMultipleSelectionMode(selectionMode) && (
                         <div>
@@ -101,7 +101,7 @@ export const DataTableUsers = (): JSX.Element => {
                     )}
                 </div>
                 <div>
-                    <button className="btn btn-create btn-sm">
+                    <button className="btn btn-info">
                         <Icons.Action.Add className="w-4 h-4" />
                         Create user
                     </button>

@@ -5,11 +5,11 @@ import {
     faBars,
     faCircleCheck,
     faCircleXmark,
-    faClock, faEnvelope, faEye, faEyeSlash, faKey,
+    faClock, faEnvelope, faEye, faEyeSlash, faKey, faLock,
     faMagnifyingGlass,
-    faMoon, faPenToSquare,
+    faMoon, faPenToSquare, faPlugCircleXmark,
     faPlus, faSpinner,
-    faSun,
+    faSun, faThumbsUp,
     faTrashCan,
     faTriangleExclamation, faUser, faUserCheck
 } from '@fortawesome/free-solid-svg-icons';
@@ -52,6 +52,9 @@ export const Icons = {
     Error: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faTriangleExclamation} {...props} />
     ),
+    Ok: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faThumbsUp} {...props} />
+    ),
     Search: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faMagnifyingGlass} {...props} />
     ),
@@ -69,7 +72,7 @@ export const Icons = {
             <AwesomeIcon icon={faClock} {...props} />
         ),
         Inactive: (props: Partial<FontAwesomeIconProps>) => (
-            <AwesomeIcon icon={faCircleXmark} {...props} />
+            <AwesomeIcon icon={faLock} {...props} />
         ),
         Deleted: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faBan} {...props} />
@@ -84,6 +87,9 @@ export const Icons = {
         ),
         Delete: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faTrashCan} {...props} />
+        ),
+        Destroy: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faPlugCircleXmark} {...props} />
         )
     }
 };

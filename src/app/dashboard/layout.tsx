@@ -18,7 +18,7 @@ function Header() {
                     <SideMenuToggle/>
                     <Link
                         href={Routes.get('home')}
-                        className="flex items-end link-default"
+                        className="flex items-end hover:link-info"
                     >
                         <span className="text-lg font-bold">
                             nextjs

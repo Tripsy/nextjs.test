@@ -1,4 +1,4 @@
-import {doFetch, getResponseData, ResponseFetch} from '@/lib/api';
+import {executeBackendFetch, getResponseData} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
 import {LazyStateType, DataTableFindParamsType, DataTableFindResponseType} from '@/app/dashboard/types/data-table.type';
 
@@ -48,7 +48,7 @@ export async function findUser(params: DataTableFindParamsType): Promise<DataTab
         filter: JSON.stringify(params.filter)
     });
 
-    const response = await doFetch<DataTableFindResponseType<UserEntryType>>(`/users?${query}`);
+    const response = await executeBackendFetch<DataTableFindResponseType<UserEntryType>>(`/users?${query}`);
 
     return getResponseData<DataTableFindResponseType<UserEntryType>>(response);
 }

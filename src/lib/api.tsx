@@ -1,34 +1,21 @@
 import {ApiError} from '@/lib/exceptions/api.error';
+import Routes from '@/lib/routes';
+import {getTokenFromCookie} from '@/lib/services/auth.service';
 
 function getBackendApiBaseUrl(): string {
     return process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL || '';
 }
 
-function getAuthToken(): string {
-    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImlkZW50IjoiMzc4YThlOTEtNzQ3Mi00ZTk0LWJjYTAtZWY1YmM4MjY1YzA3IiwiaWF0IjoxNzQ3NjA4NDcwfQ.xgYG7FRlMY7-2HeWQafTf0w03EGknnoYSd3xtmihze0';
-}
-
-export type ResponseFetch<T> = {
-    data: T;
-    message?: string;
-    status?: number;
-    success: boolean;
-};
-
-export async function doFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
-    const baseUrl = getBackendApiBaseUrl();
-    const token = getAuthToken();
-
+export async function executeFrontendFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000); // 10s
 
     try {
-        const res = await fetch(`${baseUrl}${path}`, {
+        const res = await fetch(Routes.get(path), {
             ...options,
             signal: controller.signal,
             headers: {
                 ...(options.headers || {}),
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -54,15 +41,60 @@ export async function doFetch<T = any>(path: string, options: RequestInit = {}, 
     }
 }
 
+export type ResponseFetch<T> = {
+    data?: T;
+    message: string;
+    success: boolean;
+};
+
+export async function executeBackendFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
+    const baseUrl = getBackendApiBaseUrl();
+    const token = await getTokenFromCookie();
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10s
+
+    try {
+        const res = await fetch(`${baseUrl}${path}`, {
+            ...options,
+            signal: controller.signal,
+            headers: {
+                ...(options.headers || {}),
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        clearTimeout(timeout);
+
+        // Handle non-JSON responses (like 204 No Content)
+        if (res.status === 204) {
+            return undefined;
+        }
+
+        const responseBody = await handleJsonResponse(res);
+
+        checkResponse(res, responseBody, acceptedErrorCodes); // Can throw ApiError or return `responseBody` depending on the res.status code
+
+        return responseBody;
+    } catch (error) {
+        clearTimeout(timeout);
+
+        handleError(error);
+
+        return undefined;
+    }
+}
+
 export function getResponseData<T = any>(response: ResponseFetch<T> | undefined): T | undefined {
-    return response?.data;
+    return response?.data as T;
 }
 
 export async function handleJsonResponse(res: Response) {
     try {
         return await res.json();
     } catch {
-        if (res.ok)  {
+        if (res.ok) {
             throw new Error('Invalid JSON response');
         }
 
