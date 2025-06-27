@@ -40,6 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
     }
 }
 
+// TODO: not used yet, should be expanded to get user data
 export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<{ token: string | null }>>> {
     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
 
@@ -52,6 +53,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<
     });
 }
 
+// TODO: not used yet, useful for logout
 export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {
     const response = NextResponse.json({
         data: null,

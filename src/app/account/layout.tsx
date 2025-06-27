@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
-import {Providers} from '@/app/providers';
 import {ToggleTheme} from '@/components/toggle-theme';
 
 function Header() {
@@ -86,16 +85,14 @@ function Footer() {
 
 export default function Layout({children}: { children: React.ReactNode }) {
     return (
-        <Providers>
-            <div className="default-layout">
-                <Header/>
-                <main className="main-section">
-                    <div className="content-section">
-                        {children}
-                    </div>
-                </main>
-                <Footer/>
-            </div>
-        </Providers>
+        <div className="default-layout">
+            <Header/>
+            <main className="main-section">
+                <div className="content-section">
+                    {children}
+                </div>
+            </main>
+            <Footer/>
+        </div>
     );
 }

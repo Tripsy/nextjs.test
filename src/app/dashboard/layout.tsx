@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
-import {Providers} from '@/app/dashboard/providers';
+import {DashboardProvider} from '@/app/dashboard/providers/dashboard.provider';
 import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
 import {SideMenu} from '@/app/dashboard/components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
@@ -122,7 +122,7 @@ function Footer() {
 
 export default function Layout({children}: { children: React.ReactNode }) {
     return (
-        <Providers>
+        <DashboardProvider>
             <div className="dashboard-layout">
                 <Header/>
                 <SideMenuSetter/>
@@ -134,6 +134,6 @@ export default function Layout({children}: { children: React.ReactNode }) {
                 </main>
                 <Footer/>
             </div>
-        </Providers>
+        </DashboardProvider>
     );
 }

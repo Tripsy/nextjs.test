@@ -1,8 +1,8 @@
 import type {Metadata} from "next";
 import './globals.css';
-import {ThemeProvider} from '@/providers/theme.provider';
 import {ReactNode} from 'react';
 import {lang} from '@/config/lang';
+import {Providers} from '@/app/providers';
 
 export const metadata: Metadata = {
     title: `${lang('app.name')}`,
@@ -13,12 +13,12 @@ export default function RootLayout({children}: Readonly<{
     children: ReactNode;
 }>) {
     return (
-        <ThemeProvider>
+        <Providers>
             <html lang="en">
             <body>
                 {children}
             </body>
             </html>
-        </ThemeProvider>
+        </Providers>
     );
 }

@@ -1,9 +1,10 @@
 # TODO
 
 1. auth
-    - logout > destroy session + api request to logout + redirect
-    - Protect Routes (Auth Gate) - middleware
     - AuthProvider  - const {user} = useAuth();
+    - logout > destroy session + api request to logout + redirect
+    - Protect Routes (Auth Gate) - middleware > routes.tsx has some notes about refactoring
+
 2. recover password & other account pages
 3. email-confirm
     - do updates on node.js first
