@@ -1,19 +1,17 @@
 # TODO
 
-
 1. auth
+    - logout > destroy session + api request to logout + redirect
     - Protect Routes (Auth Gate) - middleware
-    - Use the Token for Authenticated API Requests >> right is making a GET request I need to get it from AuthProvider
     - AuthProvider  - const {user} = useAuth();
-2. logout - destroy session + api request to logout + redirect
 2. recover password & other account pages
 3. email-confirm
     - do updates on node.js first
-5. Remove border bottom from paginator
-6. Use `register` for inspiration and update filters
-7. check data-table-users.component.ts notes
+4. Remove border bottom from paginator
+5. Use `register` for inspiration and update filters
+6. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-8. terms page
+7. terms page
    
 # IDEAS
 

@@ -1,44 +1,12 @@
 import {ApiError} from '@/lib/exceptions/api.error';
 import Routes from '@/lib/routes';
-import {getTokenFromCookie} from '@/lib/services/auth.service';
 
-function getBackendApiBaseUrl(): string {
-    return process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL || '';
-}
+export function buildBackendApiUrl(path: string): string {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL || '';
 
-export async function executeFrontendFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s
+    path = path.replace(/^\//, ''); // Remove first / if exist
 
-    try {
-        const res = await fetch(Routes.get(path), {
-            ...options,
-            signal: controller.signal,
-            headers: {
-                ...(options.headers || {}),
-                'Content-Type': 'application/json',
-            },
-        });
-
-        clearTimeout(timeout);
-
-        // Handle non-JSON responses (like 204 No Content)
-        if (res.status === 204) {
-            return undefined;
-        }
-
-        const responseBody = await handleJsonResponse(res);
-
-        checkResponse(res, responseBody, acceptedErrorCodes); // Can throw ApiErr or return `responseBody` depending on the res.status code
-
-        return responseBody;
-    } catch (error) {
-        clearTimeout(timeout);
-
-        handleError(error);
-
-        return undefined;
-    }
+    return `${baseUrl}/${path}`;
 }
 
 export type ResponseFetch<T> = {
@@ -47,84 +15,162 @@ export type ResponseFetch<T> = {
     success: boolean;
 };
 
-export async function executeBackendFetch<T = any>(path: string, options: RequestInit = {}, acceptedErrorCodes?: number[]): Promise<ResponseFetch<T> | undefined> {
-    const baseUrl = getBackendApiBaseUrl();
-    const token = await getTokenFromCookie();
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s
-
-    try {
-        const res = await fetch(`${baseUrl}${path}`, {
-            ...options,
-            signal: controller.signal,
-            headers: {
-                ...(options.headers || {}),
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        clearTimeout(timeout);
-
-        // Handle non-JSON responses (like 204 No Content)
-        if (res.status === 204) {
-            return undefined;
-        }
-
-        const responseBody = await handleJsonResponse(res);
-
-        checkResponse(res, responseBody, acceptedErrorCodes); // Can throw ApiError or return `responseBody` depending on the res.status code
-
-        return responseBody;
-    } catch (error) {
-        clearTimeout(timeout);
-
-        handleError(error);
-
-        return undefined;
-    }
-}
-
 export function getResponseData<T = any>(response: ResponseFetch<T> | undefined): T | undefined {
     return response?.data as T;
 }
 
-export async function handleJsonResponse(res: Response) {
-    try {
-        return await res.json();
-    } catch {
-        if (res.ok) {
-            throw new Error('Invalid JSON response');
+export type RequestMode = 'same-site' | 'use-proxy' | 'back-end' | 'custom';
+
+export class ApiRequest {
+    static readonly ABORT_TIMEOUT: number = 10000; // 10s
+
+    private requestInit: RequestInit = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    private requestMode: RequestMode = 'use-proxy';
+    private acceptedErrorCodes: number[] = [];
+
+    public setRequestMode(mode: RequestMode): this {
+        this.requestMode = mode;
+
+        return this;
+    }
+
+    public setRequestInit(options: RequestInit): this {
+        const predefinedHeaders = new Headers(this.requestInit.headers);
+
+        if (options.headers) {
+            const incomingHeaders = new Headers(options.headers);
+
+            incomingHeaders.forEach((value, key) => {
+                predefinedHeaders.set(key, value);
+            });
         }
 
-        return null; // Explicitly return null for non-JSON error responses
-    }
-}
+        this.requestInit = {
+            ...this.requestInit,
+            ...options,
+            headers: predefinedHeaders
+        };
 
-function checkResponse(res: Response, responseBody: any, acceptedErrorCodes: number[] = []) {
-    if (!res.ok && !acceptedErrorCodes.includes(res.status)) { // If this condition is not matched the `responseBody` is returned
+        return this;
+    }
+
+    public setAcceptedErrorCodes(codes: number[]): this {
+        this.acceptedErrorCodes = codes;
+
+        return this;
+    }
+
+    public useBearerAuth(token: string): this {
+        const headers = new Headers(this.requestInit.headers);
+        headers.set('Authorization', `Bearer ${token}`);
+
+        this.requestInit.headers = headers;
+
+        return this;
+    }
+
+    private async handleJsonResponse(res: Response) {
+        try {
+            return await res.json();
+        } catch {
+            if (res.ok) {
+                throw new Error('Invalid JSON response');
+            }
+
+            return null; // Explicitly return null for non-JSON error responses
+        }
+    }
+
+    private checkResponse(res: Response, responseBody: any) {
+        if (!res.ok && !this.acceptedErrorCodes.includes(res.status)) { // If this condition is not matched the `responseBody` is returned
+            throw new ApiError(
+                responseBody?.message || res.statusText || 'Unknown error',
+                res.status,
+                responseBody
+            );
+        }
+    }
+
+    private handleError(error: unknown) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
+
+        // Handle network errors or aborted requests
+        if (error instanceof Error && error.name === 'AbortError') {
+            throw new ApiError('Request timeout', 408, null);
+        }
+
         throw new ApiError(
-            responseBody?.message || res.statusText || 'Unknown error',
-            res.status,
-            responseBody
+            error instanceof Error ? error.message : 'Network request failed',
+            0,
+            null
         );
     }
-}
 
-function handleError(error: unknown) {
-    if (error instanceof ApiError) {
-        throw error;
+    private buildProxyRoute(path: string) {
+        const [rawPath, rawQuery] = path.split('?');
+
+        const routeSegments = rawPath.split('/').filter(Boolean); // eg: filter(Boolean) removes empty segments
+
+        const proxyRoute = Routes.get('proxy', { path: routeSegments });
+
+        return rawQuery ? `${proxyRoute}?${rawQuery}` : proxyRoute;
     }
 
-    // Handle network errors or aborted requests
-    if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiError('Request timeout', 408, null);
+    private buildRequestUrl(path: string) {
+        switch (this.requestMode) {
+            case 'use-proxy':
+                return this.buildProxyRoute(path);
+            case 'same-site':
+                return Routes.get(path);
+            case 'back-end':
+                return buildBackendApiUrl(path);
+            default:
+                return path;
+        }
     }
 
-    throw new ApiError(
-        error instanceof Error ? error.message : 'Network request failed',
-        0,
-        null
-    );
+    public async doFetch<T = any>(path: string, requestInit: RequestInit = {}): Promise<ResponseFetch<T> | undefined> {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), ApiRequest.ABORT_TIMEOUT);
+
+        const requestUrl = this.buildRequestUrl(path);
+
+        if (requestInit) {
+            this.setRequestInit(requestInit);
+        }
+
+        try {
+            const res = await fetch(requestUrl, {
+                ...this.requestInit,
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeout);
+
+            // Handle non-JSON responses (like 204 No Content)
+            if (res.status === 204) {
+                return undefined;
+            }
+
+            const responseBody = await this.handleJsonResponse(res);
+
+            this.checkResponse(res, responseBody); // Can throw ApiError or return `responseBody` depending on the res.status code
+
+            return responseBody;
+        } catch (error) {
+            clearTimeout(timeout);
+
+            this.handleError(error);
+
+            return undefined;
+        }
+    }
 }

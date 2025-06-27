@@ -2,9 +2,9 @@
 
 import {PrimeReactProvider} from 'primereact/api';
 import {useTheme} from '@/providers/theme.provider';
-import React from 'react';
+import {ReactNode} from 'react';
 
-export const PrimeProvider = ({children}: { children: React.ReactNode }) => {
+export const PrimeProvider = ({children}: { children: ReactNode }) => {
     const {theme} = useTheme();
 
     return (

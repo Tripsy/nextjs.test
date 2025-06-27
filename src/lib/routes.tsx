@@ -19,22 +19,28 @@ class RoutesCollection {
         };
     }
 
-    get(key: string, props?: string[]): string {
-        return this.#resolveHref(key, props);
+    get(path: string, args?: Record<string, string | number | string[]>): string {
+        const [rawPath, rawQuery] = path.split('?');
+
+        const route = this.replaceArgs(rawPath, args);
+
+        return rawQuery ? `${route}?${rawQuery}` : route;
     }
 
-    #resolveHref(key: string, props?: string[]): string {
+    private replaceArgs(key: string, args?: Record<string, string | number | string[]>): string {
         if (!this.data.hasOwnProperty(key)) {
-            throw new ValueError('Route not defined for: `' + key + '`')
+            throw new ValueError('Route not defined for: `' + key + '`');
         }
 
         let href = this.data[key].href;
 
-        if (props) {
-            Object.entries(props).forEach(entry => {
-                const [key, value] = entry;
-
-                href = href.replace(':' + key, value);
+        if (args) {
+            Object.entries(args).forEach(([k, v]) => {
+                if (Array.isArray(v)) {
+                    href = href.replace(`:${k}*`, v.map(encodeURIComponent).join('/'));
+                } else {
+                    href = href.replace(`:${k}`, encodeURIComponent(String(v)));
+                }
             });
         }
 
@@ -48,6 +54,7 @@ Routes.add('home', '/');
 Routes.add('terms-and-conditions', '/terms-and-conditions');
 
 // API
+Routes.add('proxy', '/api/proxy/:path*');
 Routes.add('auth', '/api/auth');
 
 // Account

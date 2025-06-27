@@ -1,6 +1,11 @@
-import {executeBackendFetch, getResponseData} from '@/lib/api';
+import {ApiRequest, getResponseData} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
-import {LazyStateType, DataTableFindParamsType, DataTableFindResponseType} from '@/app/dashboard/types/data-table.type';
+import {
+    LazyStateType,
+    DataTableFindParamsType,
+    DataTableFindResponseType,
+    DataTableFindFunction
+} from '@/app/dashboard/types/data-table.type';
 
 export type UserTableFiltersType = {
     global: DataTableFilterMetaData;
@@ -39,7 +44,7 @@ export type UserEntryType = {
     updated_at: string;
 };
 
-export async function findUser(params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserEntryType> | undefined> {
+export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserEntryType>> => {
     const query = new URLSearchParams({
         order_by: String(params.order_by),
         direction: params.direction,
@@ -48,9 +53,8 @@ export async function findUser(params: DataTableFindParamsType): Promise<DataTab
         filter: JSON.stringify(params.filter)
     });
 
-    const response = await executeBackendFetch<DataTableFindResponseType<UserEntryType>>(`/users?${query}`);
+    const response = await new ApiRequest()
+        .doFetch(`/users?${query}`);
 
-    return getResponseData<DataTableFindResponseType<UserEntryType>>(response);
+    return getResponseData(response);
 }
-
-

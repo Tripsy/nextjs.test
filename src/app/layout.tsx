@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import './globals.css';
 import {ThemeProvider} from '@/providers/theme.provider';
-import React from 'react';
+import {ReactNode} from 'react';
 import {lang} from '@/config/lang';
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({children}: Readonly<{
-    children: React.ReactNode;
+    children: ReactNode;
 }>) {
     return (
         <ThemeProvider>

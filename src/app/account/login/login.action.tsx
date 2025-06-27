@@ -4,12 +4,11 @@ import {
     LoginFormState,
     LoginFormValues
 } from '@/app/account/login/login-form.definition';
-import {loginAccount} from '@/lib/services/account.service';
+import {createAuth, loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
 import {FormSituation} from '@/lib/types/form-situation.type';
 import {getResponseData, ResponseFetch} from '@/lib/api';
-import {createAuth} from '@/lib/services/auth.service';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
     return {

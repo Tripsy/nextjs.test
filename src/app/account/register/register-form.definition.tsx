@@ -88,7 +88,7 @@ export const defaultRegisterFormState: RegisterFormState = {
         email: '',
         password: '',
         password_confirm: '',
-        language: '',
+        language: 'en',
         terms: false,
     },
     errors: {},
