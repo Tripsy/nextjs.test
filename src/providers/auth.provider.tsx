@@ -1,36 +1,50 @@
-'use client'
+'use client';
 
 import React, {createContext, useState, ReactNode, useContext, useEffect} from 'react';
+import {getResponseData, ResponseFetch} from '@/lib/api';
+import {getAuth} from '@/lib/services/account.service';
+import {normalizeUserData, UserModel} from '@/lib/user.model';
 
-type Auth = 'light' | 'dark';
+type AuthContextType = {
+    loading: boolean;
+    user: UserModel;
+    setUser: (user: UserModel | null) => void;
+};
 
-const AuthContext = createContext<{
-    theme: Auth;
-    toggleAuth: (theme: Auth) => void;
-} | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({children}: { children: ReactNode }) => {
-    const [theme, setAuth] = useState<Auth>('light');
+    const [user, setUser] = useState<UserModel>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const saved = localStorage.getItem('theme') as Auth;
-        const initial = saved || 'light';
+        const fetchAuth = async () => {
+            try {
+                const fetchResponse: ResponseFetch<UserModel> | undefined = await getAuth();
 
-        setAuth(initial);
+                if (fetchResponse?.success) {
+                    const userData = getResponseData(fetchResponse);
 
-        document.documentElement.setAttribute('data-theme', initial);
-    }, [theme]);
+                    if (userData) {
+                        return normalizeUserData(userData);
+                    }
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const toggleAuth = (value: Auth) => {
-        setAuth(value);
-
-        document.documentElement.setAttribute('data-theme', value);
-
-        localStorage.setItem('theme', value);
-    };
+        fetchAuth()
+            .then(res => setUser(res ?? null))
+            .catch(error => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(error);
+                }
+            });
+    }, []);
 
     return (
-        <AuthContext.Provider value={{theme, toggleAuth}}>
+        <AuthContext.Provider value={{loading, user, setUser}}>
             {children}
         </AuthContext.Provider>
     );

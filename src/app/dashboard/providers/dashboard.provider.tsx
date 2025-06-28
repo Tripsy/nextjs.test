@@ -5,12 +5,10 @@ import {Providers} from '@/app/providers';
 
 export function DashboardProvider({children}: { children: React.ReactNode }) {
     return (
-        <Providers>
-            <BreadcrumbProvider>
-                <SideMenuProvider>
-                    {children}
-                </SideMenuProvider>
-            </BreadcrumbProvider>
-        </Providers>
+        <BreadcrumbProvider>
+            <SideMenuProvider>
+                {children}
+            </SideMenuProvider>
+        </BreadcrumbProvider>
     );
 }

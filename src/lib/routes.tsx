@@ -59,6 +59,7 @@ Routes.add('auth', '/api/auth');
 
 // Account
 Routes.add('login', '/account/login');
+Routes.add('logout', '/account/logout');
 Routes.add('register', '/account/register');
 Routes.add('password-recover', '/account/password-recover');
 

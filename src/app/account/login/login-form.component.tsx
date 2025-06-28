@@ -60,7 +60,7 @@ function AuthTokenList({status, tokens}: {
         } catch (err) {
             setDisplayStatus({
                 message: 'Error deleting session',
-                error: false
+                error: true
             });
         } finally {
             setLoading(false);

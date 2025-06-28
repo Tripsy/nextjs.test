@@ -40,18 +40,18 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
     }
 }
 
-// TODO: not used yet, should be expanded to get user data
-export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<{ token: string | null }>>> {
-    const token = req.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
-
-    return NextResponse.json({
-        data: {
-            token: token
-        },
-        message: token ? 'Session found' : 'Error retrieving session',
-        success: !!token
-    });
-}
+// // TODO: not used yet, should be expanded to get user data
+// export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<{ token: string | null }>>> {
+//     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
+//
+//     return NextResponse.json({
+//         data: {
+//             token: token
+//         },
+//         message: token ? 'Session found' : 'Error retrieving session',
+//         success: !!token
+//     });
+// }
 
 // TODO: not used yet, useful for logout
 export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {

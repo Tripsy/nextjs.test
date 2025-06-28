@@ -7,8 +7,7 @@ import {SideMenu} from '@/app/dashboard/components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
 import {BreadcrumbHeader} from '@/app/dashboard/components/breadcrumb-header.component';
 import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
-
-import styles from './dashboard.module.css';
+import {UserMenu} from '@/app/dashboard/components/user-menu.component';
 
 function Header() {
     return (
@@ -24,7 +23,6 @@ function Header() {
                             nextjs
                             <sup className="text-xs">TEST</sup>
                         </span>
-
                     </Link>
                 </div>
                 <div className="w-full pl-16">
@@ -32,32 +30,7 @@ function Header() {
                 </div>
                 <div className="flex items-center">
                     <ToggleTheme/>
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="avatar">
-                            <div className="ring-primary ring-offset-base-100 w-8 rounded-full ring ring-offset-2">
-                                <img
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                                    alt=""/>
-                            </div>
-                        </div>
-                        <ul tabIndex={0}
-                            className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                            <li>
-                                <Link
-                                    href="#"
-                                >
-                                    Settings
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="#"
-                                >
-                                    Logout
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    <UserMenu/>
                 </div>
             </div>
         </header>

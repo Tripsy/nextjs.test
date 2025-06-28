@@ -1,1 +1,0 @@
-export type FormSituation = 'success' | 'error' | null;

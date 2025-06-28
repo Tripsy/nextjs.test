@@ -1,7 +1,9 @@
 # TODO
 
 1. auth
-    - AuthProvider  - const {user} = useAuth();
+    - TODO: could be moved in a ProtectedRoute component
+     - if role is not admin or operator redirect outside dashboard if operator and doesn't have role just show restricted
+    - some sort of refresh token mechanism to keep user logged in > get info from remote API maybe 
     - logout > destroy session + api request to logout + redirect
     - Protect Routes (Auth Gate) - middleware > routes.tsx has some notes about refactoring
 
@@ -13,6 +15,7 @@
 6. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
 7. terms page
+8. Them switcher has a glitch on first click
    
 # IDEAS
 
@@ -62,3 +65,9 @@ return <UserDashboard />
 redirect('/login')
 }
 }
+
+
+
+.then(r => {
+return r;
+})

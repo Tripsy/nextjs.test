@@ -1,13 +1,12 @@
 import {
     AuthTokenListType,
-    LoginFormSchema,
+    LoginFormSchema, LoginFormSituation,
     LoginFormState,
     LoginFormValues
 } from '@/app/account/login/login-form.definition';
 import {createAuth, loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
-import {FormSituation} from '@/lib/types/form-situation.type';
 import {getResponseData, ResponseFetch} from '@/lib/api';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
@@ -63,7 +62,7 @@ export async function loginAction(state: LoginFormState, formData: FormData): Pr
         };
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
-        let situation: FormSituation | 'max_active_sessions' = 'error';
+        let situation: LoginFormSituation = 'error';
         let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> | undefined = undefined;
 
         if (error instanceof ApiError) {

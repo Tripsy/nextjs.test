@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
 import {app} from '@/config/settings';
-import {FormSituation} from '@/lib/types/form-situation.type';
 
 export const RegisterFormSchema = z.object({
     name: z
@@ -75,11 +74,13 @@ export type RegisterFormValues = {
     terms: boolean;
 };
 
+export type RegisterFormSituation = 'success' | 'error' | null;
+
 export type RegisterFormState = {
     values: RegisterFormValues;
     errors: Partial<Record<keyof RegisterFormValues, string[]>>;
     message: string | null;
-    situation: FormSituation;
+    situation: RegisterFormSituation;
 };
 
 export const defaultRegisterFormState: RegisterFormState = {

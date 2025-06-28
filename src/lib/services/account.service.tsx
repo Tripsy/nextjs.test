@@ -24,7 +24,7 @@ export async function loginAccount(params: LoginFormValues): Promise<any> {
 
 export async function removeTokenAccount(token: string): Promise<any> {
     return await new ApiRequest()
-        .doFetch('/account/login', {
+        .doFetch('/account/token', {
             method: 'DELETE',
             body: JSON.stringify({
                 ident: token
@@ -53,4 +53,9 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
             message: error instanceof Error ? lang('login.message.auth_error') : 'Network request failed',
         };
     }
+}
+
+export async function getAuth() {
+    return await new ApiRequest()
+        .doFetch('/account/details');
 }

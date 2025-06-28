@@ -1,7 +1,5 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
-import {FormSituation} from '@/lib/types/form-situation.type';
-import {ResponseFetch} from '@/lib/api';
 
 export const LoginFormSchema = z.object({
     email: z
@@ -24,11 +22,13 @@ export type LoginFormValues = {
     password: string;
 };
 
+export type LoginFormSituation = 'success' | 'error' | 'max_active_sessions' | null;
+
 export type LoginFormState = {
     values: LoginFormValues;
     errors: Partial<Record<keyof LoginFormValues, string[]>>;
     message: string | null;
-    situation: FormSituation | 'max_active_sessions';
+    situation: LoginFormSituation;
     body?: { authValidTokens: AuthTokenListType } | undefined;
 };
 
