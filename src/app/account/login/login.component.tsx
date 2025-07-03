@@ -8,18 +8,19 @@ import Routes from '@/lib/routes';
 import Link from 'next/link';
 import {
     AuthTokenListType, AuthTokenType,
-    defaultLoginFormState,
-    LoginFormState,
+    defaultLoginState,
+    LoginState,
     LoginFormValues
-} from '@/app/account/login/login-form.definition';
+} from '@/app/account/login/login.definition';
 import {useDebouncedEffect} from '@/app/hooks';
-
-// Memoize FormFieldError to avoid unnecessary re-renders
-import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {useRouter} from 'next/navigation';
 import {formatDate} from '@/lib/utils/string';
 import {removeTokenAccount} from '@/lib/services/account.service';
 
+// Memoize FormFieldError to avoid unnecessary re-renders
+import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
+import {readCookie, removeCookie} from '@/lib/utils/js';
+import {app} from '@/config/settings';
 const FormFieldError = React.memo(RawFormFieldError);
 
 function AuthTokenList({status, tokens}: {
@@ -135,14 +136,14 @@ function AuthTokenList({status, tokens}: {
     );
 }
 
-export default function LoginForm() {
+export default function Login() {
     const router = useRouter();
 
-    const [state, action, pending] = useActionState(loginAction, defaultLoginFormState);
+    const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [formValues, setFormValues] = useState<LoginFormValues>(defaultLoginFormState.values);
-    const [errors, setErrors] = useState<LoginFormState['errors']>({});
+    const [formValues, setFormValues] = useState<LoginFormValues>(defaultLoginState.values);
+    const [errors, setErrors] = useState<LoginState['errors']>({});
 
     const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof LoginFormValues, boolean>>>({});
 
@@ -180,7 +181,12 @@ export default function LoginForm() {
 
     useEffect(() => {
         if (state?.situation === 'success' && router) {
-            router.push(Routes.get('dashboard'));
+            const redirectUrl = readCookie(app('user.sessionLoginRedirect')) || Routes.get('dashboard');
+
+            // Clean up the cookie so it doesn't stick around
+            removeCookie(app('user.sessionLoginRedirect'));
+
+            router.push(redirectUrl);
         }
     }, [state?.situation, router]);
 
@@ -246,11 +252,15 @@ export default function LoginForm() {
                 </div>
             </div>
 
-            <button className="btn btn-info" disabled={pending || !!Object.keys(errors).length} type="submit"
-                    aria-busy={pending}>
+            <button
+                className="btn btn-info"
+                disabled={pending || !!Object.keys(errors).length}
+                type="submit"
+                    aria-busy={pending}
+            >
                 {pending ? (
                     <span className="flex items-center gap-2">
-                      <Icons.Spinner className="w-4 h-4 animate-spin"/>
+                      <Icons.Loading className="w-4 h-4 animate-spin"/>
                       Please wait...
                     </span>
                 ) : (

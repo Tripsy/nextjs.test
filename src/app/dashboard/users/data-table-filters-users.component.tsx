@@ -12,7 +12,7 @@ import {Icons} from '@/components/icon.component';
 import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {Button} from 'primereact/button';
-import {UserRoleEnum, UserStatusEnum} from '@/lib/enums';
+import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 
 export const DataTableFiltersUsers = ({
     filters,

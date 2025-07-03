@@ -1,8 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {ResponseFetch} from '@/lib/api';
-
-const SESSION_COOKIE_NAME: string = process.env.SESSION_COOKIE_NAME || 'session';
-const SESSION_MAX_AGE: number = 60 * Number(process.env.SESSION_MAX_AGE || 10800);
+import {app} from '@/config/settings';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch<null>>> {
     try {
@@ -22,12 +20,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
             success: true
         });
 
-        response.cookies.set(SESSION_COOKIE_NAME, token, {
+        response.cookies.set(app('user.sessionToken'), token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: app('environment') === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: SESSION_MAX_AGE,
+            maxAge: app('user.sessionMaxAge'),
         });
 
         return response;
@@ -40,20 +38,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
     }
 }
 
-// // TODO: not used yet, should be expanded to get user data
-// export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<{ token: string | null }>>> {
-//     const token = req.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
-//
-//     return NextResponse.json({
-//         data: {
-//             token: token
-//         },
-//         message: token ? 'Session found' : 'Error retrieving session',
-//         success: !!token
-//     });
-// }
-
-// TODO: not used yet, useful for logout
 export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {
     const response = NextResponse.json({
         data: null,
@@ -61,7 +45,7 @@ export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {
         success: true
     });
 
-    response.cookies.delete(SESSION_COOKIE_NAME);
+    response.cookies.delete(app('user.sessionToken'));
 
     return response;
 }

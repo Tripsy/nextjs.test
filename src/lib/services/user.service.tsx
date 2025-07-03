@@ -3,9 +3,9 @@ import {DataTableFilterMetaData} from 'primereact/datatable';
 import {
     LazyStateType,
     DataTableFindParamsType,
-    DataTableFindResponseType,
-    DataTableFindFunction
+    DataTableFindResponseType
 } from '@/app/dashboard/types/data-table.type';
+import {UserModel} from '@/lib/models/user.model';
 
 export type UserTableFiltersType = {
     global: DataTableFilterMetaData;
@@ -33,18 +33,7 @@ export const UserTableParams: LazyStateType<UserTableFiltersType> = {
     filters: UserTableFilters
 };
 
-export type UserEntryType = {
-    id: number;
-    name: string;
-    email: string;
-    status: string;
-    language: string;
-    role: string;
-    created_at: string;
-    updated_at: string;
-};
-
-export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserEntryType>> => {
+export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel>> => {
     const query = new URLSearchParams({
         order_by: String(params.order_by),
         direction: params.direction,

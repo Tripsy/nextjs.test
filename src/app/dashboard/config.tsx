@@ -2,14 +2,14 @@ import {LazyStateType, DataTableFindFunction} from '@/app/dashboard/types/data-t
 import {
     findUser,
     UserTableFiltersType,
-    UserEntryType,
     UserTableParams
 } from '@/lib/services/user.service';
+import {UserModel} from '@/lib/models/user.model';
 
 export type ServicesTypes = {
     users: {
         filter: UserTableFiltersType;
-        entry: UserEntryType;
+        entry: UserModel;
     };
 };
 

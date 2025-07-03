@@ -1,6 +1,6 @@
 'use client';
 
-import {UserEntryType, UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
+import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {Icons} from '@/components/icon.component';
 import {LazyStateType, DataTableColumnsType, DataTablePropsType} from '@/app/dashboard/types/data-table.type';
@@ -12,14 +12,15 @@ import DataTableList, {
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import {Loading} from '@/components/loading.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
+import {UserModel} from '@/lib/models/user.model';
 
-export const onRowSelect = (entry: UserEntryType) => {
+export const onRowSelect = (entry: UserModel) => {
     console.log('show')
     console.log(entry)
     // toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: `Name: ${event.data.name}`, life: 3000 });
 };
 
-export const onRowUnselect = (entry: UserEntryType) => {
+export const onRowUnselect = (entry: UserModel) => {
     console.log('hide')
     console.log(entry)
     // toast.current?.show({ severity: 'warn', summary: 'Product Unselected', detail: `Name: ${event.data.name}`, life: 3000 });
@@ -35,9 +36,9 @@ export const DataTableUsers = (): JSX.Element => {
         {field: 'created_at', header: 'Created At', sortable: true, body: DateBodyTemplate},
     ];
 
-    const [selectedEntries, setSelectedEntries] = useState<UserEntryType[]>([]);
+    const [selectedEntries, setSelectedEntries] = useState<UserModel[]>([]);
 
-    const handleSelectionChange = useCallback((selectedEntries: UserEntryType[]) => {
+    const handleSelectionChange = useCallback((selectedEntries: UserModel[]) => {
         setSelectedEntries(selectedEntries);
     }, []);
 
@@ -63,7 +64,6 @@ export const DataTableUsers = (): JSX.Element => {
             </div>
         );
     }
-
 
     //TODO
     // const handleDeleteSelected = () => {

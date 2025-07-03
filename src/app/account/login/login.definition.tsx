@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
 
-export const LoginFormSchema = z.object({
+export const LoginSchema = z.object({
     email: z
         .string()
         .email({
@@ -22,17 +22,17 @@ export type LoginFormValues = {
     password: string;
 };
 
-export type LoginFormSituation = 'success' | 'error' | 'max_active_sessions' | null;
+export type LoginSituation = 'success' | 'error' | 'max_active_sessions' | null;
 
-export type LoginFormState = {
+export type LoginState = {
     values: LoginFormValues;
     errors: Partial<Record<keyof LoginFormValues, string[]>>;
     message: string | null;
-    situation: LoginFormSituation;
+    situation: LoginSituation;
     body?: { authValidTokens: AuthTokenListType } | undefined;
 };
 
-export const defaultLoginFormState: LoginFormState = {
+export const defaultLoginState: LoginState = {
     values: {
         email: '',
         password: '',

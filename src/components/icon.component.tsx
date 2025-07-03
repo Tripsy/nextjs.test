@@ -31,7 +31,7 @@ export const Icons = {
     ToggleThemeNight: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faMoon} {...props} />
     ),
-    Spinner: (props: Partial<FontAwesomeIconProps>) => (
+    Loading: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faSpinner} {...props} />
     ),
     User: (props: Partial<FontAwesomeIconProps>) => (
@@ -54,6 +54,9 @@ export const Icons = {
     ),
     Ok: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faThumbsUp} {...props} />
+    ),
+    Success: (props: Partial<FontAwesomeIconProps>) => (
+        <AwesomeIcon icon={faCircleCheck} {...props} />
     ),
     Search: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faMagnifyingGlass} {...props} />

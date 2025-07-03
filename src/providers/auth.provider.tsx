@@ -1,50 +1,43 @@
 'use client';
 
 import React, {createContext, useState, ReactNode, useContext, useEffect} from 'react';
-import {getResponseData, ResponseFetch} from '@/lib/api';
+import {AuthModel} from '@/lib/models/auth.model';
 import {getAuth} from '@/lib/services/account.service';
-import {normalizeUserData, UserModel} from '@/lib/user.model';
+import {app} from '@/config/settings';
 
 type AuthContextType = {
     loading: boolean;
-    user: UserModel;
-    setUser: (user: UserModel | null) => void;
+    auth: AuthModel;
+    setAuth: (model: AuthModel) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({children}: { children: ReactNode }) => {
-    const [user, setUser] = useState<UserModel>(null);
+    const [auth, setAuth] = useState<AuthModel>(null);
     const [loading, setLoading] = useState(true);
 
+    // TODO: add check based on role -> see routes settings
     useEffect(() => {
         const fetchAuth = async () => {
             try {
-                const fetchResponse: ResponseFetch<UserModel> | undefined = await getAuth();
-
-                if (fetchResponse?.success) {
-                    const userData = getResponseData(fetchResponse);
-
-                    if (userData) {
-                        return normalizeUserData(userData);
-                    }
-                }
+                return getAuth();
             } finally {
                 setLoading(false);
             }
         };
 
         fetchAuth()
-            .then(res => setUser(res ?? null))
+            .then(res => setAuth(res ?? null))
             .catch(error => {
-                if (process.env.NODE_ENV === 'development') {
+                if (app('environment') === 'development') {
                     console.log(error);
                 }
             });
     }, []);
 
     return (
-        <AuthContext.Provider value={{loading, user, setUser}}>
+        <AuthContext.Provider value={{loading, auth, setAuth}}>
             {children}
         </AuthContext.Provider>
     );

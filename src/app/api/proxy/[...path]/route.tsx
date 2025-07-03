@@ -2,19 +2,16 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {buildBackendApiUrl} from '@/lib/api';
-import {getClientIp, getTokenFromCookie} from '@/lib/utils/system';
+import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
 
 async function handler(req: NextRequest, path: string[]) {
-    const token = await getTokenFromCookie();
+    const token = getSessionToken();
     const url = buildBackendApiUrl(path.join('/'));
 
-    const headers: HeadersInit = {
+    const headers = {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
-        'User-Agent': req.headers.get('user-agent') || '',
-        'Accept-Language': req.headers.get('accept-language') || '',
-        'X-Client-IP': getClientIp(req),
-        'X-Client-OS': req.headers.get('x-client-os') || '',
+        ...forwardedHeaders(req),
     };
 
     const body = ['GET', 'HEAD'].includes(req.method) ? undefined : await req.text();

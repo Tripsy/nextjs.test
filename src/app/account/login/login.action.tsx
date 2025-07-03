@@ -1,9 +1,9 @@
 import {
     AuthTokenListType,
-    LoginFormSchema, LoginFormSituation,
-    LoginFormState,
+    LoginSchema, LoginSituation,
+    LoginState,
     LoginFormValues
-} from '@/app/account/login/login-form.definition';
+} from '@/app/account/login/login.definition';
 import {createAuth, loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
@@ -17,14 +17,14 @@ export function loginFormValues(formData: FormData): LoginFormValues {
 }
 
 export function loginValidate(values: LoginFormValues) {
-    return LoginFormSchema.safeParse(values);
+    return LoginSchema.safeParse(values);
 }
 
-export async function loginAction(state: LoginFormState, formData: FormData): Promise<LoginFormState> {
+export async function loginAction(state: LoginState, formData: FormData): Promise<LoginState> {
     const values = loginFormValues(formData);
     const validated = loginValidate(values);
 
-    const result: LoginFormState = {
+    const result: LoginState = {
         ...state, // Spread existing state
         values, // Override with new values
         message: null,
@@ -62,7 +62,7 @@ export async function loginAction(state: LoginFormState, formData: FormData): Pr
         };
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
-        let situation: LoginFormSituation = 'error';
+        let situation: LoginSituation = 'error';
         let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> | undefined = undefined;
 
         if (error instanceof ApiError) {
@@ -76,6 +76,9 @@ export async function loginAction(state: LoginFormState, formData: FormData): Pr
                     responseBody = error.response
                     break;
                 case 406:
+                    situation = 'success'; // Already logged in
+                    break;
+                case 400:
                     message = lang('login.message.not_active');
                     break;
             }

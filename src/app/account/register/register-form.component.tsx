@@ -254,7 +254,7 @@ export default function RegisterForm() {
                     aria-busy={pending}>
                 {pending ? (
                     <span className="flex items-center gap-2">
-                      <Icons.Spinner className="w-4 h-4 animate-spin"/>
+                      <Icons.Loading className="w-4 h-4 animate-spin"/>
                       Please wait...
                     </span>
                 ) : (

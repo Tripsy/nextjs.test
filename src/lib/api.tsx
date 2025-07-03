@@ -1,12 +1,11 @@
 import {ApiError} from '@/lib/exceptions/api.error';
 import Routes from '@/lib/routes';
+import {app} from '@/config/settings';
 
 export function buildBackendApiUrl(path: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL || '';
-
     path = path.replace(/^\//, ''); // Remove first / if exist
 
-    return `${baseUrl}/${path}`;
+    return app('backend.api_url') + '/' + path;
 }
 
 export type ResponseFetch<T> = {
@@ -40,21 +39,16 @@ export class ApiRequest {
         return this;
     }
 
-    public setRequestInit(options: RequestInit): this {
-        const predefinedHeaders = new Headers(this.requestInit.headers);
-
-        if (options.headers) {
-            const incomingHeaders = new Headers(options.headers);
-
-            incomingHeaders.forEach((value, key) => {
-                predefinedHeaders.set(key, value);
-            });
-        }
+    public setRequestInit(options: RequestInit): this { // TODO: this works but may fail depending on how data is provided (eg: Headers Object vs. Object)
+        const headers = {
+            ...this.requestInit.headers,
+            ...options.headers
+        };
 
         this.requestInit = {
             ...this.requestInit,
             ...options,
-            headers: predefinedHeaders
+            headers: headers,
         };
 
         return this;
@@ -62,15 +56,6 @@ export class ApiRequest {
 
     public setAcceptedErrorCodes(codes: number[]): this {
         this.acceptedErrorCodes = codes;
-
-        return this;
-    }
-
-    public useBearerAuth(token: string): this {
-        const headers = new Headers(this.requestInit.headers);
-        headers.set('Authorization', `Bearer ${token}`);
-
-        this.requestInit.headers = headers;
 
         return this;
     }
@@ -119,9 +104,13 @@ export class ApiRequest {
 
         const routeSegments = rawPath.split('/').filter(Boolean); // eg: filter(Boolean) removes empty segments
 
-        const proxyRoute = Routes.get('proxy', { path: routeSegments });
+        let proxyRoute = Routes.get('proxy', { path: routeSegments });
 
-        return rawQuery ? `${proxyRoute}?${rawQuery}` : proxyRoute;
+        if (rawQuery) {
+            proxyRoute += `?${rawQuery}`;
+        }
+
+        return app('url') + proxyRoute;
     }
 
     private buildRequestUrl(path: string) {

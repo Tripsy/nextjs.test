@@ -4,21 +4,23 @@ import Link from 'next/link';
 import React, {useEffect} from 'react';
 import Routes from '@/lib/routes';
 import {useAuth} from '@/providers/auth.provider';
-import {isAuthenticated} from '@/lib/user.model';
+import {isAuthenticated} from '@/lib/models/auth.model';
 import {useRouter} from 'next/navigation';
 import {getNameInitials} from '@/lib/utils/string';
 
+// TODO: maybe UserMenu should get auth as prop  ...the loading part doesn't have sense based on the fact this is a dashboard component
+// however this logic is good for other parts of the website
 export function UserMenu() {
     const router = useRouter();
 
-    const {loading, user} = useAuth();
+    const {loading, auth} = useAuth();
 
-    // TODO: could be moved in a ProtectedRoute component
-    useEffect(() => {
-        if (!loading && !isAuthenticated(user)) {
-            router.push(Routes.get('login'));
-        }
-    }, [loading, user]);
+    // // TODO: could be moved in a ProtectedRoute component
+    // useEffect(() => {
+    //     if (!loading && !isAuthenticated(auth)) {
+    //         router.push(Routes.get('login'));
+    //     }
+    // }, [loading, auth]);
 
     if (loading) {
         return (
@@ -30,7 +32,7 @@ export function UserMenu() {
         <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button">
                 <div className="rounded-full shadow-md bg-gray-100 p-1 cursor-pointer font-bold dark:text-black">
-                    { getNameInitials(user?.name) }
+                    { getNameInitials(auth?.name) }
                 </div>
             </div>
             <ul tabIndex={0}
