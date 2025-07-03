@@ -16,6 +16,11 @@ type RoutesData = {
     [key: string]: {path: string} & RouteProps;
 };
 
+export type RouteMatch = {
+    name: string;
+    props: RouteProps
+} | null;
+
 class RouteBuilder {
     constructor(
         private readonly parent: RoutesCollection,
@@ -92,7 +97,7 @@ class RoutesCollection {
         return result;
     }
 
-    public match(pathname: string): { name: string; props: RouteProps } | null {
+    public match(pathname: string): RouteMatch {
         for (const [name, props] of Object.entries(this.data)) {
 
             const pattern = this.convertPathToRegex(props.path);

@@ -17,6 +17,7 @@ export async function getSessionToken(): Promise<string | undefined> {
 
     return cookieStore.get(app('user.sessionToken'))?.value;
 }
+
 //
 // export function getSessionTokenFromRequest(req: NextRequest): string | undefined {
 //     return req.cookies.get(app('user.sessionToken'))?.value;

@@ -1,11 +1,10 @@
 `use server`;
 
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
+import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {RegisterFormValues} from '@/app/account/register/register-form.definition';
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
-import {normalizeDates} from '@/lib/utils/model';
-import {AuthModel} from '@/lib/models/auth.model';
+import {AuthModel, handleAuthResponse} from '@/lib/models/auth.model';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()
@@ -58,18 +57,10 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
 }
 
 export async function getAuth(): Promise<AuthModel> {
-    const fetchResponse = await new ApiRequest()
+    const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
         .doFetch('/account/details');
 
-    if (fetchResponse?.success) {
-        const responseData = getResponseData(fetchResponse);
-
-        if (responseData) {
-            return normalizeDates(responseData) as AuthModel;
-        }
-    }
-
-    return null;
+    return handleAuthResponse(fetchResponse);
 }
 
 export async function logoutAccount(): Promise<any> {

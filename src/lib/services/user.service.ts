@@ -4,7 +4,7 @@ import {
     LazyStateType,
     DataTableFindParamsType,
     DataTableFindResponseType
-} from '@/app/dashboard/types/data-table.type';
+} from '@/types/data-table.type';
 import {UserModel} from '@/lib/models/user.model';
 
 export type UserTableFiltersType = {

@@ -45,7 +45,7 @@ export default function Logout() {
                 {state?.situation === 'success' && state.message && (
                     <>
                         <div className="text-success">
-                            <Icons.Success/> {state.message} some random message
+                            <Icons.Success/> {state.message}
                         </div>
 
                         <p className="mt-8 text-center">

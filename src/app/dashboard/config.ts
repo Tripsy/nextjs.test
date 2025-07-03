@@ -1,4 +1,4 @@
-import {LazyStateType, DataTableFindFunction} from '@/app/dashboard/types/data-table.type';
+import {LazyStateType, DataTableFindFunction} from '@/types/data-table.type';
 import {
     findUser,
     UserTableFiltersType,

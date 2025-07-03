@@ -5,6 +5,7 @@ import {Icons} from '@/components/icon.component';
 
 export default function Error({error, reset}: { error: Error; reset: () => void }) {
     useEffect(() => {
+        // TODO: log error
         console.error('Error in dashboard:', error);
     }, [error]);
 

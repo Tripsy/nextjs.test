@@ -10,7 +10,7 @@ import {
     LazyStateType,
     DataTableColumnType,
     DataTableFindParamsType, DataTablePropsType
-} from '@/app/dashboard/types/data-table.type';
+} from '@/types/data-table.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import isEqual from 'fast-deep-equal';
 import {capitalizeFirstLetter} from '@/lib/utils/string';

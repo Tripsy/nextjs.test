@@ -5,7 +5,7 @@ import {buildBackendApiUrl} from '@/lib/api';
 import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
 
 async function handler(req: NextRequest, path: string[]) {
-    const token = getSessionToken();
+    const token = await getSessionToken();
     const url = buildBackendApiUrl(path.join('/'));
 
     const headers = {

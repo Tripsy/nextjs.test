@@ -1,11 +1,12 @@
-import {NextResponse} from 'next/server';
 import type {NextRequest} from 'next/server';
-import Routes, {RouteAuthRequirement} from '@/lib/routes';
-import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
-import {ApiRequest, getResponseData} from '@/lib/api';
-import {normalizeDates} from '@/lib/utils/model';
-import {AuthModel, isAdmin, isOperator} from '@/lib/models/auth.model';
+import {NextResponse} from 'next/server';
+import Routes, {RouteAuthRequirement, RouteMatch} from '@/lib/routes';
+import {forwardedHeaders, getClientIp, getSessionToken} from '@/lib/utils/system';
+import {ApiRequest, ResponseFetch} from '@/lib/api';
+import {AuthModel, handleAuthResponse, isAdmin, isOperator} from '@/lib/models/auth.model';
 import {app} from '@/config/settings';
+import {ApiError} from '@/lib/exceptions/api.error';
+import {getRedisClient} from '@/config/init-redis.config';
 
 function redirectToLogin(req: NextRequest) {
     const response = NextResponse.redirect(
@@ -24,16 +25,56 @@ function redirectToLogin(req: NextRequest) {
     return response;
 }
 
-export async function middleware(req: NextRequest) {
-    const pathname = req.nextUrl.pathname;
+function handleMiddlewareError(req: NextRequest, error: Error | string) {
+    if (error) {
+        let logMessage: string;
 
-    const routeMatch = Routes.match(pathname);
+        if (error instanceof Error) {
+            logMessage = error.message;
+        } else {
+            logMessage = error;
+        }
 
-    if (!routeMatch) {
-        return NextResponse.next();
+        // TODO: log error
+        console.error(`[Middleware Error] ${req.nextUrl.pathname} →`, logMessage);
     }
 
-    switch (routeMatch.props.authRequirement) {
+    return NextResponse.redirect(
+        new URL(Routes.get('home'), req.url) // TODO: maybe redirect to a custom error page
+    );
+}
+
+function handleMiddlewareResponse() {
+    const response = NextResponse.next();
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+
+    return response;
+}
+
+async function rateLimit(req: NextRequest) {
+    const redis = getRedisClient();
+    const key = `rate-limit:${getClientIp(req)}`;
+    const current = await redis.incr(key);
+
+    if (current === 1) {
+        await redis.expire(key, app('middleware.rate_limit_window'));
+    }
+
+    if (current > app('middleware.max_requests')) {
+        const ttl = await redis.ttl(key);
+
+        return {
+            isAllowed: false, retryAfter: ttl
+        };
+    }
+
+    return {
+        isAllowed: true
+    };
+}
+
+async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch): Promise<NextResponse | undefined> {
+    switch (routeMatch?.props.authRequirement) {
         case RouteAuthRequirement.AUTHENTICATED:
         case RouteAuthRequirement.PROTECTED:
             const sessionToken = await getSessionToken();
@@ -42,96 +83,89 @@ export async function middleware(req: NextRequest) {
                 return redirectToLogin(req);
             }
 
-            let authModel: AuthModel = null;
+            try {
+                const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
+                    .setRequestMode('back-end')
+                    .doFetch('/account/details', {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${sessionToken}`,
+                            ...forwardedHeaders(req)
+                        }
+                    });
 
-            const fetchResponse = await new ApiRequest()
-                .setRequestMode('back-end')
-                .doFetch('/account/details', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${sessionToken}`,
-                        ...forwardedHeaders(req)
+                const authModel = handleAuthResponse(fetchResponse);
+
+                if (routeMatch.props.authRequirement === RouteAuthRequirement.PROTECTED) {
+                    if (!isAdmin(authModel) && !isOperator(authModel)) {
+                        return NextResponse.redirect(
+                            new URL(Routes.get('home'), req.url)
+                        );
                     }
-                });
-
-            // TODO replace with try catch block
-            if (fetchResponse?.success) {
-                const responseData = getResponseData(fetchResponse);
-
-                if (responseData) {
-                    // TODO maybe include refresh session token here & caching. ..look for normalizeDates
-                    authModel = normalizeDates(responseData) as AuthModel;
-                } else {
-                    return redirectToLogin(req);
                 }
-            } else {
-                return redirectToLogin(req);
-            }
-
-            if (routeMatch.props.authRequirement === RouteAuthRequirement.PROTECTED) {
-                if (!isAdmin(authModel) && !isOperator(authModel)) {
-                    return NextResponse.redirect(
-                        new URL(Routes.get('home'), req.url)
-                    );
+            } catch (error: unknown) {
+                if (error instanceof ApiError) {
+                    if ([401, 404].includes(error.status)) {
+                        return redirectToLogin(req);
+                    }
                 }
+
+                return handleMiddlewareError(req, error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)');
             }
-            return NextResponse.next();
-        default:
-            return NextResponse.next();
+            break;
     }
 
-    // // Example: Prevent authenticated users from accessing auth pages
-    // if (routeMatch.name === 'login') {
-    //     const isAuthenticated = checkAuth(request);
-    //     if (isAuthenticated) {
-    //         return NextResponse.redirect(new URL(Routes.get('dashboard'), request.url));
-    //     }
-    // }
-    //
-    // return NextResponse.next();
-
-    // // 1. Check authentication
-    // const sessionToken = await getSessionToken();
-    //
-    // if (!sessionToken) {
-    //     // Redirect to login if not authenticated
-    //     return NextResponse.redirect(new URL('/login', request.url));
-    // }
-    //
-    // const authData = await getAuthData();
-    //
-    // if (!authData) {
-    //     // Redirect to login if not authenticated
-    //     return NextResponse.redirect(new URL('/login', request.url));
-    // }
-    //
-    //
-    //    - optional check role based on route
-    // const verifiedToken = await verifyAuth(request).catch(() => {
-    //     console.error('Invalid token');
-    // });
-    //
-    // if (!verifiedToken) {
-    //     // Redirect to login if not authenticated
-    //     return NextResponse.redirect(new URL('/login', request.url));
-    // }
-    //
-    // // 2. Role-based access control (optional)
-    // if (request.nextUrl.pathname.startsWith('/admin') && verifiedToken.role !== 'admin') {
-    //     return NextResponse.redirect(new URL('/unauthorized', request.url));
-    // }
-    //
-    // // 3. Add security headers (optional)
-    // const response = NextResponse.next();
-    // response.headers.set('X-Content-Type-Options', 'nosniff');
-    // return response;
+    return undefined;
 }
 
-// Specify which routes to protect
-// TODO: consider to add exclusin (eg: css / json / js / etc) and let all the routes to be checked based on routes configuration
+export async function middleware(req: NextRequest) {
+    // Match route
+    const pathname = req.nextUrl.pathname;
+
+    const routeMatch = Routes.match(pathname);
+
+    if (!routeMatch) {
+        return handleMiddlewareResponse();
+    }
+
+    // Rate limit
+    const {isAllowed, retryAfter} = await rateLimit(req);
+
+    if (!isAllowed) {
+        return new NextResponse(
+            JSON.stringify({error: 'Too many requests. Please try again later.'}),
+            {
+                status: 429,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Retry-After': String(retryAfter),
+                },
+            }
+        );
+    }
+
+    if (['proxy'].includes(routeMatch.name)) {
+        const authResponse = await handleAuthRequirement(req, routeMatch);
+
+        if (authResponse) {
+            return authResponse;
+        }
+    }
+
+    return handleMiddlewareResponse();
+}
+
+const EXCLUDE_STATICS = [
+    'api',
+    '_next',
+    'favicon.ico',
+    'robots.txt',
+    '.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)'
+];
+
 export const config = {
     matcher: [
-        '/dashboard/:path*',
-        '/account/:path*',
-    ]
+        `/((?!${EXCLUDE_STATICS.join('|')}).*)`, // Exclude static assets and special files
+        // '/api/:path*', // Exclude all API routes (note: they are skipped in the middleware; if we keep the exclusion here the rate limit will not trigger)
+    ],
 };

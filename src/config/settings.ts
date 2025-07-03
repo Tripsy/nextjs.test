@@ -16,7 +16,19 @@ const settings = {
     },
     backend: {
         api_url: process.env.BACKEND_API_URL || '',
-    }
+    },
+    middleware: {
+        rate_limit_window: Number(process.env.RATE_LIMIT_WINDOW) || 60, // seconds
+        max_requests: Number(process.env.MAX_REQUESTS) || 100, // Max requests per window
+    },
+    redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379', 10),
+        password: process.env.REDIS_PASSWORD || undefined,
+    },
+    cache: {
+        ttl: Number(process.env.CACHE_TTL) || 60
+    },
 };
 
 export function app(key: string): any {

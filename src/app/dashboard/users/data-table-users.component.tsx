@@ -3,7 +3,7 @@
 import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {Icons} from '@/components/icon.component';
-import {LazyStateType, DataTableColumnsType, DataTablePropsType} from '@/app/dashboard/types/data-table.type';
+import {LazyStateType, DataTableColumnsType, DataTablePropsType} from '@/types/data-table.type';
 import DataTableList, {
     CapitalizeBodyTemplate,
     DateBodyTemplate,
