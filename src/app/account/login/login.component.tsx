@@ -12,15 +12,16 @@ import {
     LoginState,
     LoginFormValues
 } from '@/app/account/login/login.definition';
-import {useDebouncedEffect} from '@/app/hooks';
 import {useRouter} from 'next/navigation';
-import {formatDate} from '@/lib/utils/string';
 import {removeTokenAccount} from '@/lib/services/account.service';
+import {readCookie, removeCookie} from '@/lib/utils/js';
+import {app} from '@/config/settings';
+import {formatDate} from '@/lib/utils/date';
+import {useDebouncedEffect} from '@/hooks';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
-import {readCookie, removeCookie} from '@/lib/utils/js';
-import {app} from '@/config/settings';
+
 const FormFieldError = React.memo(RawFormFieldError);
 
 function AuthTokenList({status, tokens}: {

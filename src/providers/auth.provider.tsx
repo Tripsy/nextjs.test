@@ -31,7 +31,7 @@ const AuthProvider = ({children}: { children: ReactNode }) => {
             .then(res => setAuth(res ?? null))
             .catch(error => {
                 if (app('environment') === 'development') {
-                    console.log(error);
+                    console.error(error);
                 }
             });
     }, []);

@@ -4,7 +4,7 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/data-table-row.component';
-import {useDebouncedEffect} from '@/app/hooks';
+import {useDebouncedEffect} from '@/hooks';
 import {SERVICES, ServicesTypes} from '@/app/dashboard/config';
 import {
     LazyStateType,

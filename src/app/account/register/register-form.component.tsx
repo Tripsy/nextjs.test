@@ -12,7 +12,7 @@ import {
     RegisterFormValues
 } from '@/app/account/register/register-form.definition';
 import {FormResult} from '@/components/form-result.component';
-import {useDebouncedEffect} from '@/app/hooks';
+import {useDebouncedEffect} from '@/hooks';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';

@@ -1,12 +1,12 @@
 'use server';
 
 import {NextRequest, NextResponse} from 'next/server';
-import {buildBackendApiUrl} from '@/lib/api';
+import {getRemoteApiUrl} from '@/lib/api';
 import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
 
 async function handler(req: NextRequest, path: string[]) {
     const token = await getSessionToken();
-    const url = buildBackendApiUrl(path.join('/'));
+    const url = getRemoteApiUrl(path.join('/'));
 
     const headers = {
         'Content-Type': 'application/json',

@@ -14,8 +14,8 @@ const settings = {
         sessionMaxAge: 60 * Number(process.env.SESSION_MAX_AGE || 10800),
         sessionLoginRedirect: process.env.SESSION_LOGIN_REDIRECT || undefined,
     },
-    backend: {
-        api_url: process.env.BACKEND_API_URL || '',
+    remoteApi: {
+        url: process.env.REMOTE_API_URL || '',
     },
     middleware: {
         rate_limit_window: Number(process.env.RATE_LIMIT_WINDOW) || 60, // seconds

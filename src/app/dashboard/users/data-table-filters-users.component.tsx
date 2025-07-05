@@ -1,11 +1,11 @@
 import {TableFiltersType} from '@/types/data-table.type';
 import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
 import React, {useEffect, useState} from 'react';
-import {useDebouncedEffect} from '@/app/hooks';
+import {useDebouncedEffect} from '@/hooks';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
 import {Checkbox, CheckboxChangeEvent} from 'primereact/checkbox';
 import {Nullable} from 'primereact/ts-helpers';
-import {capitalizeFirstLetter, formatDateFromFilter, getValidDate, parseDate} from '@/lib/utils/string';
+import {capitalizeFirstLetter} from '@/lib/utils/string';
 import {IconField} from 'primereact/iconfield';
 import {InputIcon} from 'primereact/inputicon';
 import {Icons} from '@/components/icon.component';
@@ -13,6 +13,7 @@ import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {Button} from 'primereact/button';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
+import {formatDate, getValidDate, stringToDate} from '@/lib/utils/date';
 
 export const DataTableFiltersUsers = ({
     filters,
@@ -60,7 +61,7 @@ export const DataTableFiltersUsers = ({
         setTempFilters({
             ...tempFilters,
             create_date_start: {
-                value: formatDateFromFilter(e.value),
+                value: formatDate(e.value),
                 matchMode: 'dateAfter'
             },
         });
@@ -70,7 +71,7 @@ export const DataTableFiltersUsers = ({
         setTempFilters({
             ...tempFilters,
             create_date_end: {
-                value: formatDateFromFilter(e.value),
+                value: formatDate(e.value),
                 matchMode: 'dateBefore'
             },
         });
@@ -155,7 +156,7 @@ export const DataTableFiltersUsers = ({
                         <Calendar
                             id="search-create-date-start"
                             className="text-sm h-11"
-                            value={parseDate(tempFilters.create_date_start?.value)}
+                            value={stringToDate(tempFilters.create_date_start?.value)}
                             onChange={handleCreateDateStartChange}
                             placeholder="Start Date"
                             showIcon
@@ -166,7 +167,7 @@ export const DataTableFiltersUsers = ({
                         <Calendar
                             id="search-date-create-end"
                             className="text-sm h-11"
-                            value={parseDate(tempFilters.create_date_end?.value)}
+                            value={stringToDate(tempFilters.create_date_end?.value)}
                             onChange={handleCreateDateEndChange}
                             placeholder="End Date"
                             showIcon

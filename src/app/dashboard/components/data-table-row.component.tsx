@@ -1,6 +1,6 @@
 import {Icons} from '@/components/icon.component';
 import ValueError from '@/lib/exceptions/value.error';
-import {formatDate} from '@/lib/utils/string';
+import {formatDate} from '@/lib/utils/date';
 
 const statusList = {
     active: {

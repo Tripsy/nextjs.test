@@ -12,7 +12,7 @@ import {
     faEnvelopesBulk,
     faUserGroup, IconDefinition
 } from '@fortawesome/free-solid-svg-icons';
-import {useDebouncedEffect} from '@/app/hooks';
+import {useDebouncedEffect} from '@/hooks';
 import {AwesomeIcon} from '@/components/icon.component';
 
 type SideMenuGroupProps = {

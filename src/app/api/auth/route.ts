@@ -1,6 +1,9 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {ResponseFetch} from '@/lib/api';
+import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {app} from '@/config/settings';
+import {AuthModel, handleAuthResponse} from '@/lib/models/auth.model';
+import {ApiError} from '@/lib/exceptions/api.error';
+import {appendSessionToken, forwardedHeaders, getSessionToken} from '@/lib/utils/system';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch<null>>> {
     try {
@@ -20,15 +23,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
             success: true
         });
 
-        response.cookies.set(app('user.sessionToken'), token, {
-            httpOnly: true,
-            secure: app('environment') === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: app('user.sessionMaxAge'),
-        });
-
-        return response;
+        return appendSessionToken(response, token);
     } catch (error) {
         return NextResponse.json({
             data: null,
@@ -48,4 +43,55 @@ export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {
     response.cookies.delete(app('user.sessionToken'));
 
     return response;
+}
+
+export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<AuthModel>>> {
+    try {
+        const sessionToken = await getSessionToken();
+
+        if (!sessionToken) {
+            return NextResponse.json({
+                data: null,
+                message: 'Could not retrieve auth model',
+                success: false
+            }, {status: 401});
+        }
+
+        const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
+            .setRequestMode('remote-api')
+            .doFetch('/account/details', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${sessionToken}`,
+                    ...forwardedHeaders(req)
+                }
+            });
+
+        const authModel = handleAuthResponse(fetchResponse);
+
+        // TODO : delete session token if auth model is null
+        // TODO :  caching
+
+        const response = NextResponse.json({
+            data: authModel,
+            message: 'Ok',
+            success: true
+        });
+
+        return appendSessionToken(response, sessionToken); // This will actually refresh the session token
+    } catch (error: unknown) {
+        if (error instanceof ApiError) {
+            return NextResponse.json({
+                data: null,
+                message: error.message,
+                success: false
+            }, {status: error.status});
+        }
+
+        return NextResponse.json({
+            data: null,
+            message: error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)',
+            success: false
+        }, {status: 500});
+    }
 }

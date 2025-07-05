@@ -8,13 +8,19 @@ import {app} from '@/config/settings';
 import {lang} from '@/config/lang';
 import Link from 'next/link';
 import Routes from '@/lib/routes';
+import {useAuth} from '@/providers/auth.provider';
 
 export default function Logout() {
     const [state, setState] = useState(defaultLogoutState);
+    const {setAuth} = useAuth();
 
     useEffect(() => {
         const logout = async () => {
-            return await logoutAction();
+            const result = await logoutAction();
+
+            setAuth(null); // Clear auth state immediately after successful logout
+
+            return result;
         };
 
         logout()
@@ -25,7 +31,7 @@ export default function Logout() {
                     situation: 'error',
                 });
                 if (app('environment') === 'development') {
-                    console.log(error);
+                    console.error(error);
                 }
             });
     }, []);
@@ -36,7 +42,7 @@ export default function Logout() {
                 Logout
             </h1>
             <div className="mb-8 text-sm text-center md:max-w-xs">
-                {state.situation  === null && (
+                {state.situation === null && (
                     <div>
                         <Icons.Loading className="animate-spin"/> Your session will end. See you next time!
                     </div>
@@ -52,17 +58,17 @@ export default function Logout() {
                             <span className="text-sm text-gray-500 dark:text-base-content">
                                 What next? You can go back to {' '}
 
-                            <Link
-                                href={Routes.get('login')}
-                                className="link link-info link-hover text-sm"
-                            >
+                                <Link
+                                    href={Routes.get('login')}
+                                    className="link link-info link-hover text-sm"
+                                >
                                 login
                             </Link>
                                 {' '}or navigate to{' '}
-                            <Link
-                                href={Routes.get('home')}
-                                className="link link-info link-hover text-sm"
-                            >
+                                <Link
+                                    href={Routes.get('home')}
+                                    className="link link-info link-hover text-sm"
+                                >
                                 home page
                             </Link>
                             </span>

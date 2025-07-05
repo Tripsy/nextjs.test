@@ -2,10 +2,10 @@ import {ApiError} from '@/lib/exceptions/api.error';
 import Routes from '@/lib/routes';
 import {app} from '@/config/settings';
 
-export function buildBackendApiUrl(path: string): string {
+export function getRemoteApiUrl(path: string): string {
     path = path.replace(/^\//, ''); // Remove first / if exist
 
-    return app('backend.api_url') + '/' + path;
+    return app('remoteApi.url') + '/' + path;
 }
 
 export type ResponseFetch<T> = {
@@ -18,7 +18,7 @@ export function getResponseData<T = any>(response: ResponseFetch<T> | undefined)
     return response?.data as T;
 }
 
-export type RequestMode = 'same-site' | 'use-proxy' | 'back-end' | 'custom';
+export type RequestMode = 'same-site' | 'use-proxy' | 'remote-api' | 'custom';
 
 export class ApiRequest {
     static readonly ABORT_TIMEOUT: number = 10000; // 10s
@@ -119,8 +119,8 @@ export class ApiRequest {
                 return this.buildProxyRoute(path);
             case 'same-site':
                 return Routes.get(path);
-            case 'back-end':
-                return buildBackendApiUrl(path);
+            case 'remote-api':
+                return getRemoteApiUrl(path);
             default:
                 return path;
         }

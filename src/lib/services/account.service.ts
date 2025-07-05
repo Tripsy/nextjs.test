@@ -1,10 +1,8 @@
-`use server`;
-
-import {ApiRequest, ResponseFetch} from '@/lib/api';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {RegisterFormValues} from '@/app/account/register/register-form.definition';
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
-import {AuthModel, handleAuthResponse} from '@/lib/models/auth.model';
+import {AuthModel} from '@/lib/models/auth.model';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()
@@ -47,7 +45,7 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
             success: true,
         };
     } catch (error: unknown) {
-        // TODO: Log error
+        console.error(error);
 
         return {
             success: false,
@@ -57,10 +55,23 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
 }
 
 export async function getAuth(): Promise<AuthModel> {
-    const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
-        .doFetch('/account/details');
+    try {
+        const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
+            .setRequestMode('same-site')
+            .doFetch('auth', {
+                method: 'GET',
+            });
 
-    return handleAuthResponse(fetchResponse);
+        if (fetchResponse?.success) {
+            return getResponseData(fetchResponse) || null;
+        } else {
+            console.error(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
+        }
+    } catch (error: unknown) {
+        console.error(error);
+    }
+
+    return null;
 }
 
 export async function logoutAccount(): Promise<any> {
@@ -83,7 +94,7 @@ export async function clearAuth(): Promise<ResponseFetch<null>> {
             success: true,
         };
     } catch (error: unknown) {
-        // TODO: Log error
+        console.error(error);
 
         return {
             success: false,

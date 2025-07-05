@@ -21,7 +21,6 @@ export function handleAuthResponse(fetchResponse: ResponseFetch<AuthModel> | und
         const responseData = getResponseData(fetchResponse);
 
         if (responseData) {
-            // TODO maybe include refresh session token here & caching. ..look for normalizeDates
             return normalizeDates(responseData) as AuthModel;
         } else {
             throw new Error('Could not retrieve auth model (eg: empty response data)');
