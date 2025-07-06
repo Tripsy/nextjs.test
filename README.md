@@ -1,21 +1,21 @@
 # TODO
 
-1. auth
-   - instead of using getAuth from auth.provider - consider suppling a prop from req via middleware - yeah it's a good idea
-   - auth provider can use cached data - check test.ts for cases when auth should be refreshed
+1. check if app() works in components
+2. auth
+   - check test.ts for cases when setAuth should be triggered
    - TODO: could be moved in a ProtectedRoute component       .... (this will not be global) aut.provider should be global
    - if role is not admin or operator redirect outside dashboard if operator and doesn't have role just show restricted
-2. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
-3. recover password & other account pages
-4. email-confirm
+3. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
+4. recover password & other account pages
+5. email-confirm
     - do updates back-end first
-5. Remove border bottom from paginator
-6. Use `register` for inspiration and update filters
-7. check data-table-users.component.ts notes
+6. Remove border bottom from paginator
+7. Use `register` for inspiration and update filters
+8. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-8. terms page
-9. Them switcher has a glitch on first click
-10. Replace all console.error with logging
+9. terms page
+10. Them switcher has a glitch on first click
+11. Replace all console.error with logging
    
 # IDEAS
 
@@ -47,3 +47,11 @@
 https://nexus.daisyui.com/auth/register
 
 # SAMPLES
+
+Multi-Device Logout
+tsx
+// When logging out from other devices
+socket.on('force-logout', () => {
+setAuth(null); // Immediately reflect logout
+showNotification('Logged out from another device');
+});

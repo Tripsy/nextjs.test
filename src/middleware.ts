@@ -1,7 +1,7 @@
 import type {NextRequest} from 'next/server';
 import {NextResponse} from 'next/server';
 import Routes, {RouteAuthRequirement, RouteMatch} from '@/lib/routes';
-import {appendSessionToken, forwardedHeaders, getSessionToken} from '@/lib/utils/system';
+import {appendSessionToken, forwardedHeaders, getSessionToken, removeSessionToken} from '@/lib/utils/system';
 import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {AuthModel, handleAuthResponse, isAdmin, isOperator} from '@/lib/models/auth.model';
 import {app} from '@/config/settings';
@@ -114,10 +114,8 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch): 
                     });
 
                 const authModel = handleAuthResponse(fetchResponse);
-
-                // TODO : delete session token if auth model is null
                 
-                if (routeMatch.props.authRequirement === RouteAuthRequirement.PROTECTED) {
+                if (authModel && routeMatch.props.authRequirement === RouteAuthRequirement.PROTECTED) {
                     // TODO check permissions here
                     if (!isAdmin(authModel) && !isOperator(authModel)) {
                         return NextResponse.redirect(
@@ -128,7 +126,17 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch): 
 
                 const response = responseOk();
 
-                return appendSessionToken(response, sessionToken); // This will actually refresh the session token                
+                // Set auth data as a header
+                if (authModel) {
+                    response.headers.set(
+                        'x-auth-data',
+                        JSON.stringify(authModel)
+                    );
+
+                    return appendSessionToken(response, sessionToken); // This will actually refresh the session token
+                } else {
+                    return removeSessionToken(response);
+                }
             } catch (error: unknown) {
                 if (error instanceof ApiError) {
                     if ([401, 404].includes(error.status)) {

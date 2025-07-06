@@ -1,8 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
 import {app} from '@/config/settings';
-import {AuthModel} from '@/lib/models/auth.model';
-import {ResponseFetch} from '@/lib/api';
 
 export function getClientIp(req: NextRequest): string | undefined {
     // 1. First try x-forwarded-for header (common in proxies)
@@ -29,12 +27,25 @@ export function getClientIp(req: NextRequest): string | undefined {
     return ip;
 }
 
+/**
+ * Get the session token from the cookie
+ *
+ * @returns Session token
+ */
 export async function getSessionToken(): Promise<string | undefined> {
     const cookieStore = await cookies();
 
     return cookieStore.get(app('user.sessionToken'))?.value;
 }
 
+/**
+ * Appends the session token cookie to the response
+ *
+ * @template T - The response type
+ * @param res - NextResponse object
+ * @param token - Session token
+ * @returns Modified NextResponse with session cookie set
+ */
 export function appendSessionToken<T = unknown>(res: NextResponse<T>, token: string | undefined): NextResponse<T> {
     if (token) {
         res.cookies.set(app('user.sessionToken'), token, {
@@ -45,6 +56,19 @@ export function appendSessionToken<T = unknown>(res: NextResponse<T>, token: str
             maxAge: app('user.sessionMaxAge'),
         });
     }
+
+    return res;
+}
+
+/**
+ * Removes the session token cookie from the response
+ *
+ * @template T - The response type
+ * @param res - NextResponse object
+ * @returns Modified NextResponse with session cookie cleared
+ */
+export function removeSessionToken<T = unknown>(res: NextResponse<T>): NextResponse<T> {
+    res.cookies.delete(app('user.sessionToken'));
 
     return res;
 }

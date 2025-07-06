@@ -3,7 +3,7 @@ import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {app} from '@/config/settings';
 import {AuthModel, handleAuthResponse} from '@/lib/models/auth.model';
 import {ApiError} from '@/lib/exceptions/api.error';
-import {appendSessionToken, forwardedHeaders, getSessionToken} from '@/lib/utils/system';
+import {appendSessionToken, forwardedHeaders, getSessionToken, removeSessionToken} from '@/lib/utils/system';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch<null>>> {
     try {
@@ -69,16 +69,23 @@ export async function GET(req: NextRequest): Promise<NextResponse<ResponseFetch<
 
         const authModel = handleAuthResponse(fetchResponse);
 
-        // TODO : delete session token if auth model is null
-        // TODO :  caching
+        if (authModel) {
+            const response = NextResponse.json({
+                data: authModel,
+                message: 'Ok',
+                success: true
+            });
 
-        const response = NextResponse.json({
-            data: authModel,
-            message: 'Ok',
-            success: true
-        });
+            return appendSessionToken(response, sessionToken); // This will actually refresh the session token
+        } else {
+            const response = NextResponse.json({
+                data: null,
+                message: 'Could not retrieve auth model',
+                success: false
+            }, {status: 401});
 
-        return appendSessionToken(response, sessionToken); // This will actually refresh the session token
+            return removeSessionToken(response);
+        }
     } catch (error: unknown) {
         if (error instanceof ApiError) {
             return NextResponse.json({

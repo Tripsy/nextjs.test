@@ -3,6 +3,7 @@ import {RegisterFormValues} from '@/app/account/register/register-form.definitio
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';
+import {app} from '@/config/settings';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()
@@ -54,13 +55,26 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
     }
 }
 
-export async function getAuth(): Promise<AuthModel> {
+export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<AuthModel> {
     try {
-        const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
-            .setRequestMode('same-site')
-            .doFetch('auth', {
-                method: 'GET',
-            });
+        let fetchResponse: ResponseFetch<AuthModel> | undefined;
+
+        if (source === 'same-site') {
+            fetchResponse = await new ApiRequest()
+                .setRequestMode('same-site')
+                .doFetch('auth', {
+                    method: 'GET',
+                });
+        } else {
+            fetchResponse = await new ApiRequest()
+                .setRequestMode('remote-api')
+                .doFetch('/account/details', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${sessionToken}`,
+                    }
+                });
+        }
 
         if (fetchResponse?.success) {
             return getResponseData(fetchResponse) || null;
@@ -68,7 +82,7 @@ export async function getAuth(): Promise<AuthModel> {
             console.error(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
         }
     } catch (error: unknown) {
-        console.error(error);
+        console.error('getAuth', error);
     }
 
     return null;
