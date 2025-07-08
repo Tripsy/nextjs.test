@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import React from 'react';
 import Home from '@/app/home/home.component';
 

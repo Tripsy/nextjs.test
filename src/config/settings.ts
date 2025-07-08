@@ -12,7 +12,6 @@ const settings = {
         // LoginFailedAttemptsLockTime: 900, // block logins for 15 minutes when too many failed attempts
         sessionToken: process.env.SESSION_TOKEN || 'session',
         sessionMaxAge: 60 * Number(process.env.SESSION_MAX_AGE || 10800),
-        sessionLoginRedirect: process.env.SESSION_LOGIN_REDIRECT || undefined,
     },
     remoteApi: {
         url: process.env.REMOTE_API_URL || '',

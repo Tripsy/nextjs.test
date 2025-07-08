@@ -55,3 +55,24 @@ socket.on('force-logout', () => {
 setAuth(null); // Immediately reflect logout
 showNotification('Logged out from another device');
 });
+
+
+// TODO: maybe UserMenu should get auth as prop  ...the loading part doesn't have sense based on the fact this is a dashboard component
+// however this logic is good for other parts of the website
+export function UserMenu() {
+const router = useRouter();
+
+    const {loading, auth} = useAuth();
+
+    // // TODO: could be moved in a ProtectedRoute component
+    // useEffect(() => {
+    //     if (!loading && !isAuthenticated(auth)) {
+    //         router.push(Routes.get('login'));
+    //     }
+    // }, [loading, auth]);
+
+    if (loading) {
+        return (
+            <div className="w-8 h-8 animate-pulse rounded-full bg-gray-300" />
+        );
+    }

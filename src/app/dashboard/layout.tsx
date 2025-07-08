@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import {DashboardProvider} from '@/app/dashboard/providers/dashboard.provider';
 import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
 import {SideMenu} from '@/app/dashboard/components/side-menu.component';

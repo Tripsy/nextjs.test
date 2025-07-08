@@ -7,7 +7,7 @@ import {Icons} from '@/components/icon.component';
 import {app} from '@/config/settings';
 import {lang} from '@/config/lang';
 import Link from 'next/link';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import {useAuth} from '@/providers/auth.provider';
 
 export default function Logout() {

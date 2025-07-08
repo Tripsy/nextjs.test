@@ -32,11 +32,15 @@ export function isValidDateInstance(date: unknown): date is Date {
  * @returns Valid Date object
  * @throws {Error} If the input is not a valid date string or cannot be parsed
  */
-export function stringToDate(dateString: string): Date {
+export function stringToDate(dateString: string | null): Date | null {
+    if (!dateString) {
+        return null;
+    }
+
     const trimmedString = dateString.trim();
 
     if (!trimmedString) {
-        throw new Error('Empty date string');
+        return null;
     }
 
     // Special handling for ISO 8601 date-only format (YYYY-MM-DD)

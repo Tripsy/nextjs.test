@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import {ToggleTheme} from '@/components/toggle-theme';
 
 function Header() {

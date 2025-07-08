@@ -1,26 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import React, {useEffect} from 'react';
-import Routes from '@/lib/routes';
+import React from 'react';
+import Routes from '@/config/routes';
 import {useAuth} from '@/providers/auth.provider';
-import {isAuthenticated} from '@/lib/models/auth.model';
-import {useRouter} from 'next/navigation';
 import {getNameInitials} from '@/lib/utils/string';
 
-// TODO: maybe UserMenu should get auth as prop  ...the loading part doesn't have sense based on the fact this is a dashboard component
-// however this logic is good for other parts of the website
 export function UserMenu() {
-    const router = useRouter();
-
     const {loading, auth} = useAuth();
-
-    // // TODO: could be moved in a ProtectedRoute component
-    // useEffect(() => {
-    //     if (!loading && !isAuthenticated(auth)) {
-    //         router.push(Routes.get('login'));
-    //     }
-    // }, [loading, auth]);
 
     if (loading) {
         return (

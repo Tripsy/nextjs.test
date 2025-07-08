@@ -1,5 +1,5 @@
 import {ApiError} from '@/lib/exceptions/api.error';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import {app} from '@/config/settings';
 
 export function getRemoteApiUrl(path: string): string {

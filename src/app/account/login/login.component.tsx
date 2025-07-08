@@ -4,7 +4,7 @@ import React, {useActionState, useEffect, useState} from 'react';
 import {loginAction, loginValidate} from '@/app/account/login/login.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import Link from 'next/link';
 import {
     AuthTokenListType, AuthTokenType,
@@ -14,10 +14,9 @@ import {
 } from '@/app/account/login/login.definition';
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
-import {readCookie, removeCookie} from '@/lib/utils/js';
-import {app} from '@/config/settings';
 import {formatDate} from '@/lib/utils/date';
 import {useDebouncedEffect} from '@/hooks';
+import {useAuth} from '@/providers/auth.provider';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
@@ -140,6 +139,8 @@ function AuthTokenList({status, tokens}: {
 export default function Login() {
     const router = useRouter();
 
+    const {refreshAuth} = useAuth();
+
     const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -182,10 +183,19 @@ export default function Login() {
 
     useEffect(() => {
         if (state?.situation === 'success' && router) {
-            const redirectUrl = readCookie(app('user.sessionLoginRedirect')) || Routes.get('dashboard');
+            // Reset the last refresh timestamp to retrieve the auth on next render
+            refreshAuth().catch(error => {
+                console.error('Failed to refresh auth:', error);
+            });
 
-            // Clean up the cookie so it doesn't stick around
-            removeCookie(app('user.sessionLoginRedirect'));
+            // Get the redirect URL from query params with a fallback
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirectUrl = searchParams.get('from') || Routes.get('home');
+
+            // Clean up the URL by removing the param
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('from');
+            window.history.replaceState({}, '', newUrl.toString());
 
             router.push(redirectUrl);
         }

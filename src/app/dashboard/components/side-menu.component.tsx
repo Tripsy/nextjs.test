@@ -1,8 +1,8 @@
 'use client';
 
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState, useMemo} from 'react';
 import Link from 'next/link';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import {
     faDiagramProject,
     faUserLock,
@@ -14,18 +14,20 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import {useDebouncedEffect} from '@/hooks';
 import {AwesomeIcon} from '@/components/icon.component';
+import {useAuth} from '@/providers/auth.provider';
+import {hasPermission} from '@/lib/models/auth.model';
 
 type SideMenuGroupProps = {
     groupKey: string;
-    defaultOpen?: boolean;
     title: string;
+    defaultOpen?: boolean;
     children: React.ReactNode;
 };
 
-function SideMenuGroup({groupKey, defaultOpen, title, children}: SideMenuGroupProps) {
+function SideMenuGroup({groupKey, title, defaultOpen = false, children}: SideMenuGroupProps) {
     const groupKeyStorage = `side-menu-open-${groupKey}`;
 
-    const [open, setOpen] = useState<boolean>(() => defaultOpen ?? false);
+    const [open, setOpen] = useState<boolean>(() => defaultOpen);
 
     useLayoutEffect(() => {
         const openStorage: string | null = localStorage.getItem(groupKeyStorage);
@@ -44,6 +46,12 @@ function SideMenuGroup({groupKey, defaultOpen, title, children}: SideMenuGroupPr
 
         setOpen(previousState => !previousState);
     };
+
+    const validChildren = React.Children.toArray(children).filter(Boolean);
+
+    if (validChildren.length === 0) {
+        return null;
+    }
 
     return (
         <details open={open} className="side-menu-group">
@@ -75,26 +83,88 @@ function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
 }
 
 export function SideMenu() {
+    const {auth} = useAuth();
+
+    // Memoize the menu groups to prevent unnecessary re-renders
+    const menuGroups = useMemo(() => {
+        const groups = [
+            {
+                key: 'content',
+                title: 'Content',
+                items: [
+                    { href: '', label: 'Projects', icon: faDiagramProject, permission: true }
+                ]
+            },
+            {
+                key: 'settings',
+                title: 'Settings',
+                items: [
+                    { href: '', label: 'Templates', icon: faFileLines, permission: true }
+                ]
+            },
+            {
+                key: 'logs',
+                title: 'Logs',
+                items: [
+                    { href: '', label: 'Log Data', icon: faDatabase, permission: true },
+                    { href: '', label: 'Cron History', icon: faFileWaveform, permission: true },
+                    { href: '', label: 'Mail Queue', icon: faEnvelopesBulk, permission: true }
+                ]
+            },
+            {
+                key: 'users',
+                title: 'Users',
+                defaultOpen: true,
+                items: [
+                    {
+                        href: Routes.get('user-find'),
+                        label: 'Users',
+                        icon: faUserGroup,
+                        permission: hasPermission(auth, 'user.find')
+                    },
+                    {
+                        href: Routes.get('permission-find'),
+                        label: 'Permissions',
+                        icon: faUserLock,
+                        permission: hasPermission(auth, 'permission.find')
+                    }
+                ]
+            }
+        ];
+
+        return groups.map(group => {
+            const visible = group.items.some(item => item.permission);
+
+            // Don't render groups with no visible items
+            if (!visible) {
+                return null;
+            }
+
+            return (
+                <SideMenuGroup
+                    key={group.key}
+                    groupKey={`side-menu-${group.key}`}
+                    title={group.title}
+                    defaultOpen={group.defaultOpen}
+                >
+                    {group.items.map((item, index) => (
+                        item.permission && (
+                            <SideMenuGroupItem
+                                key={index}
+                                href={item.href}
+                                label={item.label}
+                                icon={item.icon}
+                            />
+                        )
+                    ))}
+                </SideMenuGroup>
+            );
+        });
+    }, [auth]);
+
     return (
         <nav className="side-menu-section">
-            <SideMenuGroup groupKey="side-menu-content" title="Content">
-                <SideMenuGroupItem href="#" label="Projects" icon={faDiagramProject} />
-            </SideMenuGroup>
-
-            <SideMenuGroup groupKey="side-menu-settings" title="Settings">
-                <SideMenuGroupItem href="#" label="Templates" icon={faFileLines} />
-            </SideMenuGroup>
-
-            <SideMenuGroup groupKey="side-menu-logs" title="Logs">
-                <SideMenuGroupItem href="#" label="Log Data" icon={faDatabase} />
-                <SideMenuGroupItem href="#" label="Cron History" icon={faFileWaveform} />
-                <SideMenuGroupItem href="#" label="Mail Queue" icon={faEnvelopesBulk} />
-            </SideMenuGroup>
-
-            <SideMenuGroup groupKey="side-menu-users" defaultOpen title="Users">
-                <SideMenuGroupItem href={Routes.get('user-list')} label="Users" icon={faUserGroup} />
-                <SideMenuGroupItem href="#" label="Permissions" icon={faUserLock} />
-            </SideMenuGroup>
+            {menuGroups}
         </nav>
     );
 }

@@ -4,7 +4,7 @@ import React, {useActionState, useEffect, useState} from 'react';
 import {registerAction, registerValidate} from '@/app/account/register/register.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
-import Routes from '@/lib/routes';
+import Routes from '@/config/routes';
 import Link from 'next/link';
 import {
     defaultRegisterFormState,

@@ -13,7 +13,7 @@ export default function Error({error, reset}: { error: Error; reset: () => void 
         <div className="card bg-base-100 shadow-lg m-4 sm:m-6 lg:m-8">
             <div className="card-body">
                 <h2 className="card-title">
-                    <Icons.Error className="w-5 h-5 text-error" />
+                    <Icons.Error className="w-5 h-5 text-error"/>
                     Something went wrong!
                 </h2>
                 <p>

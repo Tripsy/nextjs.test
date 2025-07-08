@@ -1,6 +1,6 @@
 import ValueError from '@/lib/exceptions/value.error';
 
-export enum RouteAuthRequirement {
+export enum RouteAuth {
     PROTECTED = 'protected', // Admin OR Operator
     AUTHENTICATED = 'authenticated',
     UNAUTHENTICATED = 'unauthenticated',
@@ -9,11 +9,12 @@ export enum RouteAuthRequirement {
 
 type RouteProps = {
     type?: string;
-    authRequirement?: RouteAuthRequirement
+    auth?: RouteAuth
+    permission?: string
 };
 
 type RoutesData = {
-    [key: string]: {path: string} & RouteProps;
+    [key: string]: { path: string } & RouteProps;
 };
 
 export type RouteMatch = {
@@ -25,11 +26,12 @@ class RouteBuilder {
     constructor(
         private readonly parent: RoutesCollection,
         private readonly type: string,
-        private _authRequirement?: RouteAuthRequirement
-    ) {}
+        private _routeAuth?: RouteAuth
+    ) {
+    }
 
-    public authRequirement(requirement: RouteAuthRequirement): this {
-        this._authRequirement = requirement;
+    public auth(routeAuth: RouteAuth): this {
+        this._routeAuth = routeAuth;
 
         return this;
     }
@@ -37,7 +39,7 @@ class RouteBuilder {
     public add(name: string, path: string, props: Partial<RouteProps> = {}): this {
         this.parent.add(name, path, {
             type: this.type,
-            authRequirement: props.authRequirement ?? this._authRequirement ?? RouteAuthRequirement.PUBLIC,
+            auth: props.auth ?? this._routeAuth ?? RouteAuth.PUBLIC,
             ...props
         });
         return this;
@@ -52,7 +54,7 @@ class RoutesCollection {
             throw new ValueError('Route name and path are required');
         }
 
-        this.data[name] = { path, ...props };
+        this.data[name] = {path, ...props};
 
         return this;
     }
@@ -137,16 +139,17 @@ Routes.group('api')
     .add('auth', '/api/auth');
 
 // Account
-Routes.group('account').authRequirement(RouteAuthRequirement.UNAUTHENTICATED)
+Routes.group('account').auth(RouteAuth.UNAUTHENTICATED)
     .add('login', '/account/login')
-    .add('logout', '/account/logout', {authRequirement: RouteAuthRequirement.AUTHENTICATED})
+    .add('logout', '/account/logout', {auth: RouteAuth.AUTHENTICATED})
     .add('register', '/account/register')
     .add('password-recover', '/account/password-recover');
 
 // Dashboard
-Routes.group('dashboard').authRequirement(RouteAuthRequirement.PROTECTED)
+Routes.group('dashboard').auth(RouteAuth.PROTECTED)
     .add('dashboard', '/dashboard')
-    .add('user-list', '/dashboard/users')
-    .add('user-view', '/dashboard/users/:key');
+    .add('user-find', '/dashboard/users', {permission: 'user.find'})
+    .add('permission-find', '/dashboard/permissions', {permission: 'permission.find'});
+// .add('user-view', '/dashboard/users/:key');
 
 export default Routes;

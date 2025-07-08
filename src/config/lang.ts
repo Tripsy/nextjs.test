@@ -5,6 +5,12 @@ const en = {
     'app': {
         'name': app('name'),
     },
+    'auth': {
+        'message': {
+            'already_logged_in': "Already logged in",
+            "unauthorized`": "Access denied",
+        }
+    },
     'login': {
         'meta': {
             'title': `Login | ${app('name')}`,
@@ -14,11 +20,10 @@ const en = {
             'password': 'Please enter your password',
         },
         'message': {
-            "could_not_login": "We couldn\'t log you in. Verify your details and try again.",
-            "already_logged_in": "Already logged in",
-            'auth_success': 'Authenticated successfully',
+            "could_not_login": "We couldn't log you in. Verify your details and try again.",
+            'auth_success': "Authenticated successfully",
             "auth_error": "Login failed due to an authentication error.",
-            "not_active": "We couldn\'t log you in. Your account is not active.",
+            "not_active": "We couldn't log you in. Your account is not active.",
             "max_active_sessions": "Too many active sessions",
             "too_many_login_attempts": "Too many failed login attempts. Please try again later."
         }

@@ -11,9 +11,12 @@ type AuthContextType = {
     refreshAuth: () => Promise<void>;
 };
 
+// TODO doesn't refresh after login so you reach dashboard and you don't see the user component
+// Has to do something with the refresh interval
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const REFRESH_INTERVAL = 3 * 60 * 1000; // 10 minutes // TODO adjust to 10 minutes
 
 const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel | null }) => {
     const [auth, setAuth] = useState<AuthModel | null>(initAuth);
