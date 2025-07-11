@@ -12,13 +12,14 @@ import {useAuth} from '@/providers/auth.provider';
 
 export default function Logout() {
     const [state, setState] = useState(defaultLogoutState);
-    const {setAuth} = useAuth();
+    const {setAuth, setLastRefreshAuth} = useAuth();
 
     useEffect(() => {
         const logout = async () => {
             const result = await logoutAction();
 
             setAuth(null); // Clear auth state immediately after successful logout
+            setLastRefreshAuth(Date.now()); // Clear last refresh timestamp - prevent auto refresh after logout
 
             return result;
         };

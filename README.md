@@ -1,21 +1,24 @@
 # TODO
 
 1. check if app() works in components
-2. auth
+2. make the status/error page functional
+3. auth
+   - disable middleware and test login
+   - there is a glitch with protect-route and login page ...there is a brief moment after login where it show already logged in - 
+      bottom line we can't use protected-route.component for login & logout page
    - check test.ts for cases when setAuth should be triggered
-   - TODO: could be moved in a ProtectedRoute component       .... (this will not be global) aut.provider should be global
-   - if role is not admin or operator redirect outside dashboard if operator and doesn't have role just show restricted
-3. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
-4. recover password & other account pages
-5. email-confirm
+   - implement / test protected component
+4. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
+5. recover password & other account pages
+6. email-confirm
     - do updates back-end first
-6. Remove border bottom from paginator
-7. Use `register` for inspiration and update filters
-8. check data-table-users.component.ts notes
+7. Remove border bottom from paginator
+8. Use `register` for inspiration and update filters on dashboard/users 
+9. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-9. terms page
-10. Them switcher has a glitch on first click
-11. Replace all console.error with logging
+10. terms page
+11. Them switcher has a glitch on first click
+12. Replace all console.error with logging
    
 # IDEAS
 
@@ -31,7 +34,7 @@
 
 - authorization checks are done both via middleware and via protected-route.component (TODO: not yet build)
 - middleware.ts has a special config which controls via `matcher` what requests are handled by middleware
-- middleware.ts will add special headers via `responseOk` - for production ready it will need some revision
+- middleware.ts will add special headers via `responseSuccess` - for production ready it will need some revision
 
 # BUGS & ISSUES
 
@@ -76,3 +79,27 @@ const router = useRouter();
             <div className="w-8 h-8 animate-pulse rounded-full bg-gray-300" />
         );
     }
+
+
+<Notice type="error" message="Testing error layout" />
+
+<Notice type="warning" message="Testing error layout" />
+
+<Notice type="loading" />
+
+<Notice type="info" message="Testing info layout" />
+
+<Notice type="success" message="Testing info layout" />
+
+
+export default function Page() {
+return (
+<ProtectedRoute routeAuth={RouteAuth.UNAUTHENTICATED} className="fit-container md:min-w-[22rem]">
+<section className="fit-container">
+<div className="standard-box p-4 sm:p-8 shadow-md md:w-[22rem]">
+<Login/>
+</div>
+</section>
+</ProtectedRoute>
+);
+}

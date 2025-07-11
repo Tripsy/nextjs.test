@@ -7,7 +7,6 @@ import {app} from '@/config/settings';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()
-        .setAcceptedErrorCodes([409])
         .doFetch('/account/register', {
             method: 'POST',
             body: JSON.stringify(params),
@@ -82,6 +81,7 @@ export async function getAuth(source: string = 'same-site', sessionToken?: strin
             console.error(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
         }
     } catch (error: unknown) {
+        // TODO: maybe ignore 401 errors
         console.error('getAuth', error);
     }
 

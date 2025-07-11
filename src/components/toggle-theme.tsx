@@ -2,10 +2,10 @@
 
 import React from 'react';
 import {useTheme} from '@/providers/theme.provider';
-import { Icons } from './icon.component';
+import {Icons} from './icon.component';
 
 export function ToggleTheme() {
-    const { toggleTheme } = useTheme();
+    const {toggleTheme} = useTheme();
 
     const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
         toggleTheme(e.target.checked ? 'dark' : 'light');

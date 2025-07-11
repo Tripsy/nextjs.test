@@ -1,5 +1,4 @@
 import {UserModel, UserRoleEnum} from '@/lib/models/user.model';
-import {getResponseData, ResponseFetch} from '@/lib/api';
 import {normalizeDates} from '@/lib/utils/model';
 
 export type AuthModel = UserModel<Date>  & {
@@ -38,16 +37,6 @@ export function hasPermission(auth: AuthModel, permission?: string): boolean {
     return false;
 }
 
-export function handleAuthResponse(fetchResponse: ResponseFetch<AuthModel> | undefined): AuthModel {
-    if (fetchResponse?.success) {
-        const responseData = getResponseData(fetchResponse);
-
-        if (responseData) {
-            return normalizeDates(responseData) as AuthModel;
-        } else {
-            throw new Error('Could not retrieve auth model (eg: empty response data)');
-        }
-    } else {
-        throw new Error(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
-    }
+export function prepareAuthModel(data: AuthModel): AuthModel {
+    return normalizeDates(data) as AuthModel;
 }

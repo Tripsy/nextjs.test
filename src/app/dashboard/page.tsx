@@ -16,9 +16,7 @@ export default function Page() {
     return (
         <>
             <BreadcrumbSetter items={items}/>
-            <div>
-                Dashboard
-            </div>
+            Dashboard
         </>
     );
 }

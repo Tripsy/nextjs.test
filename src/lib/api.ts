@@ -31,7 +31,6 @@ export class ApiRequest {
     };
 
     private requestMode: RequestMode = 'use-proxy';
-    private acceptedErrorCodes: number[] = [];
 
     public setRequestMode(mode: RequestMode): this {
         this.requestMode = mode;
@@ -54,12 +53,6 @@ export class ApiRequest {
         return this;
     }
 
-    public setAcceptedErrorCodes(codes: number[]): this {
-        this.acceptedErrorCodes = codes;
-
-        return this;
-    }
-
     private async handleJsonResponse(res: Response) {
         try {
             return await res.json();
@@ -69,16 +62,6 @@ export class ApiRequest {
             }
 
             return null; // Explicitly return null for non-JSON error responses
-        }
-    }
-
-    private checkResponse(res: Response, responseBody: any) {
-        if (!res.ok && !this.acceptedErrorCodes.includes(res.status)) { // If this condition is not matched the `responseBody` is returned
-            throw new ApiError(
-                responseBody?.message || res.statusText || 'Unknown error',
-                res.status,
-                responseBody
-            );
         }
     }
 
@@ -149,11 +132,7 @@ export class ApiRequest {
                 return undefined;
             }
 
-            const responseBody = await this.handleJsonResponse(res);
-
-            this.checkResponse(res, responseBody); // Can throw ApiError or return `responseBody` depending on the res.status code
-
-            return responseBody;
+            return await this.handleJsonResponse(res);
         } catch (error) {
             clearTimeout(timeout);
 

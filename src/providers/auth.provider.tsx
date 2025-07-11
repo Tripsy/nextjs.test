@@ -3,16 +3,16 @@
 import React, {createContext, useState, ReactNode, useContext, useEffect, useMemo} from 'react';
 import {AuthModel} from '@/lib/models/auth.model';
 import {getAuth} from '@/lib/services/account.service';
+import {isExcludedRoute} from '@/config/routes';
+import {usePathname} from 'next/navigation';
 
 type AuthContextType = {
-    loading: boolean;
+    loadingAuth: boolean;
     auth: AuthModel | null;
     setAuth: (model: AuthModel | null) => void;
     refreshAuth: () => Promise<void>;
+    setLastRefreshAuth: (timestamp: number | null) => void;
 };
-
-// TODO doesn't refresh after login so you reach dashboard and you don't see the user component
-// Has to do something with the refresh interval
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -20,23 +20,29 @@ const REFRESH_INTERVAL = 3 * 60 * 1000; // 10 minutes // TODO adjust to 10 minut
 
 const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel | null }) => {
     const [auth, setAuth] = useState<AuthModel | null>(initAuth);
-    const [loading, setLoading] = useState(!initAuth);
-    const [lastRefresh, setLastRefresh] = useState<number | null>(null);
+    const [loadingAuth, setLoadingAuth] = useState(!initAuth);
+    const [lastRefreshAuth, setLastRefreshAuth] = useState<number | null>(null);
+
+    const pathname = usePathname();
+
+    const disableRefresh = useMemo(() => {
+        return isExcludedRoute(pathname);
+    }, [pathname]);
 
     const refreshAuth = async () => {
         try {
-            setLoading(true);
+            setLoadingAuth(true);
 
             const authData = await getAuth('same-site');
 
             setAuth(authData);
-            setLastRefresh(Date.now());
+            setLastRefreshAuth(Date.now());
 
             console.log('Auth refreshed', Date.now());
         } catch (error) {
             console.error('Auth refresh failed:', error);
         } finally {
-            setLoading(false);
+            setLoadingAuth(false);
         }
     };
 
@@ -47,15 +53,20 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
                 console.error('Failed to refresh auth:', error);
             });
         } else {
-            setLastRefresh(Date.now());
+            setLastRefreshAuth(Date.now());
         }
     }, [initAuth]);
 
     useEffect(() => {
+        // Don't refresh if disabled - based on excluded auth routes
+        if (disableRefresh) {
+            return;
+        }
+
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
                 // Refresh if it's been more than REFRESH_INTERVAL since last refresh
-                if (lastRefresh && Date.now() - lastRefresh > REFRESH_INTERVAL) {
+                if (lastRefreshAuth && Date.now() - lastRefreshAuth > REFRESH_INTERVAL) {
                     refreshAuth().catch(error => {
                         console.error('Failed to refresh auth:', error);
                     });
@@ -77,14 +88,15 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
             clearInterval(intervalId);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [lastRefresh]);
+    }, [lastRefreshAuth, disableRefresh]);
 
     const contextValue = useMemo(() => ({
-        loading,
+        loadingAuth,
         auth,
         setAuth,
-        refreshAuth
-    }), [loading, auth]);
+        refreshAuth,
+        setLastRefreshAuth
+    }), [loadingAuth, auth]);
 
     return (
         <AuthContext.Provider value={contextValue}>

@@ -1,11 +1,11 @@
 import ValueError from '@/lib/exceptions/value.error';
 
 export enum RouteAuth {
-    PROTECTED = 'protected', // Admin OR Operator
-    AUTHENTICATED = 'authenticated',
-    UNAUTHENTICATED = 'unauthenticated',
     PUBLIC = 'public',
-}
+    UNAUTHENTICATED = 'unauthenticated',
+    AUTHENTICATED = 'authenticated',
+    PROTECTED = 'protected', // Admin OR Operator
+} // Note: There shouldn't be any other types
 
 type RouteProps = {
     type?: string;
@@ -52,6 +52,11 @@ class RoutesCollection {
     public add(name: string, path: string, props?: RouteProps): this {
         if (!name || !path) {
             throw new ValueError('Route name and path are required');
+        }
+
+        props = {
+            ...props,
+            auth: props?.auth ?? RouteAuth.PUBLIC
         }
 
         this.data[name] = {path, ...props};
@@ -126,11 +131,16 @@ class RoutesCollection {
 
         return new RegExp(`^${pattern}(?:\\?.*)?$`); // Include optional query string
     }
+
+    public getRoutes(): RoutesData {
+        return this.data;
+    }
 }
 
 let Routes = new RoutesCollection();
 
 Routes.add('home', '/');
+Routes.add('status', '/status/:type');
 Routes.add('terms-and-conditions', '/terms-and-conditions');
 
 // API
@@ -151,5 +161,22 @@ Routes.group('dashboard').auth(RouteAuth.PROTECTED)
     .add('user-find', '/dashboard/users', {permission: 'user.find'})
     .add('permission-find', '/dashboard/permissions', {permission: 'permission.find'});
 // .add('user-view', '/dashboard/users/:key');
+
+/**
+ * Check if the given path is an excluded route (usually auth related routes)
+ * On successful login it doesn't redirect back to excluded routes
+ * `auth` is not refreshed periodically while on excluded routes
+ *
+ * @param pathname
+ */
+export function isExcludedRoute (pathname: string){
+    const excludeRoutes = [
+        Routes.get('login'),
+        Routes.get('register'),
+        Routes.get('password-recover')
+    ];
+
+    return excludeRoutes.includes(pathname);
+}
 
 export default Routes;

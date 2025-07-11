@@ -2,27 +2,36 @@ import type {NextRequest} from 'next/server';
 import {NextResponse} from 'next/server';
 import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
 import {appendSessionToken, forwardedHeaders, getSessionToken, removeSessionToken} from '@/lib/utils/system';
-import {ApiRequest, ResponseFetch} from '@/lib/api';
-import {AuthModel, handleAuthResponse, hasPermission} from '@/lib/models/auth.model';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
+import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
+import {ApiError} from '@/lib/exceptions/api.error';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
+/**
+ * Redirect to the login page
+ *
+ * @param req
+ */
 function redirectToLogin(req: NextRequest) {
     const loginUrl = new URL(Routes.get('login'), req.url);
 
-    if (![
-        Routes.get('login'),
-        Routes.get('register'),
-        Routes.get('logout'),
-    ].includes(req.nextUrl.pathname)) {
-        loginUrl.searchParams.set('from', req.nextUrl.pathname);
-    } // TODO: include URLs which should not be redirected back after login
+    loginUrl.searchParams.set('from', req.nextUrl.pathname);
 
     return NextResponse.redirect(loginUrl);
 }
 
-function responseError(req: NextRequest, error: Error | string) {
+/**
+ * Redirect to the error page
+ * The error message will be carried as a query param
+ *
+ * @param req
+ * @param error
+ */
+function redirectToError(req: NextRequest, error: Error | string) {
+    const redirectUrl = new URL(Routes.get('status', {type: 'error'}), req.url);
+    
     if (error) {
         let logMessage: string;
 
@@ -32,15 +41,20 @@ function responseError(req: NextRequest, error: Error | string) {
             logMessage = error;
         }
 
+        redirectUrl.searchParams.set('msg', logMessage);
+
         console.error(`[Middleware Error] ${req.nextUrl.pathname} →`, logMessage);
     }
-
-    return NextResponse.redirect(
-        new URL(Routes.get('home'), req.url) // TODO: maybe redirect to a custom error page
-    );
+    
+    return NextResponse.redirect(redirectUrl);
 }
 
-function responseOk() {
+/**
+ * Returns a success response
+ *
+ * @returns
+ */
+function responseSuccess() {
     const response = NextResponse.next();
 
     response.headers.set('X-Content-Type-Options', 'nosniff');
@@ -58,8 +72,15 @@ function responseOk() {
     return response;
 }
 
+/**
+ * Extends a success response to an authorized response
+ * It adds `x-auth-data` header & refreshes the session token
+ *
+ * @param sessionToken
+ * @param authModel
+ */
 function responseAuthorized(sessionToken: string, authModel: AuthModel) {
-    const response = responseOk();
+    const response = responseSuccess();
 
     // Set auth data as a header
     response.headers.set(
@@ -103,7 +124,7 @@ function responseAuthorized(sessionToken: string, authModel: AuthModel) {
 // }
 
 // async function handleInvalidSession(req: NextRequest): Promise<NextResponse> {
-//     const response = responseError(req, lang('auth.message.unauthorized'));
+//     const response = redirectToError(req, lang('auth.message.unauthorized'));
 //
 //     return removeSessionToken(response);
 // }
@@ -112,47 +133,75 @@ function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined
     switch (routeAuth) {
         case RouteAuth.UNAUTHENTICATED:
         case RouteAuth.PUBLIC:
-            return responseOk();
+            return responseSuccess();
         case RouteAuth.AUTHENTICATED:
         case RouteAuth.PROTECTED:
             return redirectToLogin(req);
         default:
-            return responseError(req, `Unknown route auth: ${routeAuth}`);
+            return redirectToError(req, `Unknown route auth: ${routeAuth}`);
     }
 }
 
+/**
+ * Fetches auth model
+ * Note:
+ *    - Do not throw errors from this method as it will break the middleware flow
+ *    - Error will be logged only if the response status is not 401
+ *
+ * @param req
+ * @param sessionToken
+ */
 async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<AuthModel> {
-    const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
-        .setRequestMode('remote-api')
-        .setAcceptedErrorCodes([401])
-        .doFetch('/account/details', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${sessionToken}`,
-                ...forwardedHeaders(req)
-            }
-        });
+    try {
+        const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
+            .setRequestMode('remote-api')
+            .doFetch('/account/details', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${sessionToken}`,
+                    ...forwardedHeaders(req)
+                }
+            });
 
-    return handleAuthResponse(fetchResponse);
+        if (fetchResponse?.success) {
+            const responseData = getResponseData(fetchResponse);
+
+            if (responseData) {
+                return prepareAuthModel(responseData);
+            }
+        }
+
+        return null;
+    } catch (error: unknown) {
+        if (error instanceof ApiError && error.status === 401) {
+            return null;
+        }
+
+        const logMessage = error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)';
+
+        console.error(`[Middleware] ${logMessage}`);
+
+        return null;
+    }
 }
 
 function handleInvalidAuth(req: NextRequest, routeAuth: RouteAuth | undefined): NextResponse {
     switch (routeAuth) {
         case RouteAuth.UNAUTHENTICATED:
         case RouteAuth.PUBLIC: {
-            const response = responseOk();
+            const response = responseSuccess();
 
             return removeSessionToken(response); // Session token exists but is invalid so it is removed
         }
         case RouteAuth.AUTHENTICATED:
         case RouteAuth.PROTECTED: {
             const msg = lang('auth.message.unauthorized');
-            const response = responseError(req, msg);
+            const response = redirectToError(req, msg);
 
             return removeSessionToken(response); // Session token exists but is invalid so it is removed
         }
         default: {
-            const response = responseError(req, `Unknown route auth: ${routeAuth}`);
+            const response = redirectToError(req, `Unknown route auth: ${routeAuth}`);
 
             return removeSessionToken(response);
         }
@@ -160,41 +209,33 @@ function handleInvalidAuth(req: NextRequest, routeAuth: RouteAuth | undefined): 
 }
 
 async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | undefined): Promise<NextResponse> {
-    // 1. Get session token
     const sessionToken = await getSessionToken();
 
-    const { auth: routeAuth, permission: routePermission } = routeMatch?.props || {
+    const {auth: routeAuth, permission: routePermission} = routeMatch?.props || {
         routeAuth: RouteAuth.PUBLIC, routePermission: undefined
     };
 
-    // 2. Check for missing session token
     if (!sessionToken) {
         return handleMissingSession(req, routeAuth);
     }
 
-    // 3. Handle auth
-    try {
-        // 3.1. Fetch auth model
-        const authModel = await fetchAuthModel(req, sessionToken);
+    const authModel = await fetchAuthModel(req, sessionToken);
 
-        // 3.2. Handle invalid auth model
-        if (!authModel) {
-            return handleInvalidAuth(req, routeAuth);
-        }
-
-        // 3.3. Check route permission
-        if (routeAuth === RouteAuth.PROTECTED) {
-            if (!hasPermission(authModel, routePermission)) {
-                return responseError(req, lang('auth.message.unauthorized'));
-            }
-        }
-
-        // 3.4. Create successful response
-        return responseAuthorized(sessionToken, authModel);
-    } catch (error) {
-        // 3.5. Return error
-        return responseError(req, error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)');
+    if (!authModel) {
+        return handleInvalidAuth(req, routeAuth);
     }
+
+    if (routeAuth === RouteAuth.UNAUTHENTICATED) {
+        return redirectToError(req, lang('auth.message.already_logged_in'));
+    }
+
+    if (routeAuth === RouteAuth.PROTECTED) {
+        if (!hasPermission(authModel, routePermission)) {
+            return redirectToError(req, lang('auth.message.unauthorized'));
+        }
+    }
+
+    return responseAuthorized(sessionToken, authModel);
 }
 
 export async function middleware(req: NextRequest) {
@@ -204,7 +245,7 @@ export async function middleware(req: NextRequest) {
     const routeMatch = Routes.match(pathname);
 
     if (!routeMatch) {
-        return responseOk();
+        return responseSuccess();
     }
 
     // // Rate limit
@@ -228,7 +269,7 @@ export async function middleware(req: NextRequest) {
         return await handleAuthRequirement(req, routeMatch);
     }
 
-    return responseOk();
+    return responseSuccess();
 }
 
 const EXCLUDE_STATICS = [

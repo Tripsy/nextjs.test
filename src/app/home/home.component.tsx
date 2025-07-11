@@ -6,15 +6,17 @@ import React from 'react';
 import {useAuth} from '@/providers/auth.provider';
 
 export default function Home() {
-    const {loading, auth} = useAuth();
+    const {loadingAuth, auth} = useAuth();
 
     return (
         <div>
             <h1>Home</h1>
-            {loading && (
+
+            {loadingAuth && (
                 <div className="w-8 h-8 animate-pulse rounded-full bg-gray-300" />
             )}
-            {!loading && auth?.name && (
+
+            {!loadingAuth && auth?.name && (
                 <>
                     <h2 className="text-3xl font-bold">
                         Hello, {auth.name}!
