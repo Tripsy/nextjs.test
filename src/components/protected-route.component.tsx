@@ -1,7 +1,7 @@
 'use client';
 
 import {useAuth} from '@/providers/auth.provider';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Routes, {RouteAuth} from '@/config/routes';
 import {Notice} from '@/components/notice.component';
 import {hasPermission} from '@/lib/models/auth.model';
@@ -11,7 +11,7 @@ import {lang} from '@/config/lang';
 type ProtectedRouteProps = {
     children: React.ReactNode;
     routeAuth: RouteAuth;
-    permission?: string;
+    routePermission?: string;
     className?: string;
     fallback?: React.ReactNode;
 }
@@ -20,8 +20,9 @@ const ProtectedRouteWrapper = ({children, className}: { children: React.ReactNod
     return <div className={className}>{children}</div>;
 };
 
-export default function ProtectedRoute({children, routeAuth, permission, className, fallback}: ProtectedRouteProps) {
+export default function ProtectedRoute({children, routeAuth, routePermission, className, fallback}: ProtectedRouteProps) {
     const {auth, loadingAuth} = useAuth();
+    const [permission, setPermission] = useState(routePermission);
 
     const router = useRouter();
     const pathname = usePathname();
@@ -31,6 +32,20 @@ export default function ProtectedRoute({children, routeAuth, permission, classNa
             router.push(`${Routes.get('login')}?from=${encodeURIComponent(pathname)}`);
         }
     }, [auth, loadingAuth, routeAuth]);
+
+    useEffect(() => {
+        if (!loadingAuth && routeAuth === RouteAuth.PROTECTED && auth && !routePermission) {
+            // Get current route's permission from route config
+            const routeMatch = Routes.match(pathname);
+            const matchedPermission = routeMatch?.props?.permission;
+
+            console.log('routeMatch', routeMatch);
+
+            if (matchedPermission) {
+                setPermission(matchedPermission);
+            }
+        }
+    }, [loadingAuth, auth, routeAuth, routePermission, pathname]);
 
     if (routeAuth === RouteAuth.PUBLIC) {
         return <>{children}</>;

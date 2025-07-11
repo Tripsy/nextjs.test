@@ -1,21 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
-import Routes, {RouteAuth} from '@/config/routes';
-import {DashboardProvider} from '@/app/dashboard/providers/dashboard.provider';
-import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
-import {SideMenu} from '@/app/dashboard/components/side-menu.component';
+import Routes from '@/config/routes';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {NavBreadcrumb} from '@/app/dashboard/components/nav-breadcrumb.component';
-import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
-import {UserMenu} from '@/app/dashboard/components/user-menu.component';
-import ProtectedRoute from '@/components/protected-route.component';
 
 function Header() {
     return (
         <header className="fixed z-90 w-full">
-            <div className="header-section">
-                <div className="h-full flex items-center">
-                    <SideMenuToggle/>
+            <div className="header-section justify-between">
+                <div className="h-full flex items-center ">
                     <Link
                         href={Routes.get('home')}
                         className="flex items-end hover:link-info"
@@ -24,14 +16,11 @@ function Header() {
                             nextjs
                             <sup className="text-xs">TEST</sup>
                         </span>
+
                     </Link>
-                </div>
-                <div className="w-full pl-16">
-                    <NavBreadcrumb position="desktop"/>
                 </div>
                 <div className="flex items-center">
                     <ToggleTheme/>
-                    <UserMenu/>
                 </div>
             </div>
         </header>
@@ -40,7 +29,7 @@ function Header() {
 
 function Footer() {
     return (
-        <footer className="footer sm:footer-horizontal relative bg-base-100 items-center p-4">
+        <footer className="footer sm:footer-horizontal relative z-3 bg-base-100 items-center p-4">
             <aside className="grid-flow-col items-center">
                 <svg
                     width="36"
@@ -94,23 +83,16 @@ function Footer() {
     );
 }
 
-export default function Layout({children}: { children: React.ReactNode }) {
+export default function LayoutDefault({children}: { children: React.ReactNode }) {
     return (
-        <DashboardProvider>
-            <div className="dashboard-layout">
-                <Header/>
-                <SideMenuSetter/>
-                <main className="main-section">
-                    <SideMenu/>
-                    <div className="content-section">
-                        <NavBreadcrumb position="mobile"/>
-                        <ProtectedRoute routeAuth={RouteAuth.PROTECTED}>
-                            {children}
-                        </ProtectedRoute>
-                    </div>
-                </main>
-                <Footer/>
-            </div>
-        </DashboardProvider>
+        <div className="default-layout">
+            <Header/>
+            <main className="main-section">
+                <div className="content-section">
+                    {children}
+                </div>
+            </main>
+            <Footer/>
+        </div>
     );
 }

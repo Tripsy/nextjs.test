@@ -5,8 +5,7 @@ import {Notice} from '@/components/notice.component';
 
 export default function Error({error, reset}: { error: Error; reset: () => void }) {
     useEffect(() => {
-        // TODO: log error
-        console.error('Error in dashboard:', error);
+        console.error('Error:', error);
     }, [error]);
 
     return (

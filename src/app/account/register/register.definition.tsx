@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {lang} from '@/config/lang';
 import {app} from '@/config/settings';
 
-export const RegisterFormSchema = z.object({
+export const RegisterSchema = z.object({
     name: z
         .string({
             message: lang('register.validation.name_invalid')
@@ -74,16 +74,16 @@ export type RegisterFormValues = {
     terms: boolean;
 };
 
-export type RegisterFormSituation = 'success' | 'error' | null;
+export type RegisterSituation = 'success' | 'error' | null;
 
-export type RegisterFormState = {
+export type RegisterState = {
     values: RegisterFormValues;
     errors: Partial<Record<keyof RegisterFormValues, string[]>>;
     message: string | null;
-    situation: RegisterFormSituation;
+    situation: RegisterSituation;
 };
 
-export const defaultRegisterFormState: RegisterFormState = {
+export const defaultRegisterState: RegisterState = {
     values: {
         name: '',
         email: '',

@@ -3,12 +3,27 @@
 import Link from 'next/link';
 import {useBreadcrumb} from '@/app/dashboard/providers/breadcrumb.provider';
 import Routes from '@/config/routes';
+import {useMediaQuery} from 'react-responsive';
 
-export const BreadcrumbHeader = () => {
+type NavBreadcrumbProps = {
+    position: 'mobile' | 'desktop';
+};
+
+export const NavBreadcrumb = ({position} : NavBreadcrumbProps) => {
     const {items} = useBreadcrumb();
 
+    const isMobile = useMediaQuery({maxWidth: 767});
+
+    if (isMobile && position === 'desktop') {
+        return null;
+    }
+
+    if (!isMobile && position === 'mobile') {
+        return null;
+    }
+
     return (
-        <div className="breadcrumbs text-sm">
+        <div className="breadcrumbs text-sm max-md:p-0 max-md:mb-6">
             <ul>
                 {items.map((item, idx) => (
                     <li key={idx}>

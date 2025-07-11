@@ -1,24 +1,20 @@
 # TODO
 
 1. check if app() works in components
-2. make the status/error page functional
-3. auth
-   - disable middleware and test login
-   - there is a glitch with protect-route and login page ...there is a brief moment after login where it show already logged in - 
-      bottom line we can't use protected-route.component for login & logout page
+2. auth
    - check test.ts for cases when setAuth should be triggered
    - implement / test protected component
-4. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
-5. recover password & other account pages
-6. email-confirm
+3. in dashboard we have error boundary ..if we catch 401 or 403 act accordingly 
+4. recover password & other account pages
+5. email-confirm
     - do updates back-end first
-7. Remove border bottom from paginator
-8. Use `register` for inspiration and update filters on dashboard/users 
-9. check data-table-users.component.ts notes
+6. Remove border bottom from paginator
+7. Use `register` for inspiration and update filters on dashboard/users 
+8. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-10. terms page
-11. Them switcher has a glitch on first click
-12. Replace all console.error with logging
+9. terms page
+10. Them switcher has a glitch on first click
+11. Replace all console.error with logging
    
 # IDEAS
 

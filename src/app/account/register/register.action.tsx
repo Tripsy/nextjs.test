@@ -1,8 +1,8 @@
 import {
-    RegisterFormSchema,
-    RegisterFormState,
+    RegisterSchema,
+    RegisterState,
     RegisterFormValues
-} from '@/app/account/register/register-form.definition';
+} from '@/app/account/register/register.definition';
 import {registerAccount} from '@/lib/services/account.service';
 
 export function registerFormValues(formData: FormData): RegisterFormValues {
@@ -17,14 +17,14 @@ export function registerFormValues(formData: FormData): RegisterFormValues {
 }
 
 export function registerValidate(values: RegisterFormValues) {
-    return RegisterFormSchema.safeParse(values);
+    return RegisterSchema.safeParse(values);
 }
 
-export async function registerAction(state: RegisterFormState, formData: FormData): Promise<RegisterFormState> {
+export async function registerAction(state: RegisterState, formData: FormData): Promise<RegisterState> {
     const values = registerFormValues(formData);
     const validated = registerValidate(values);
 
-    const result: RegisterFormState = {
+    const result: RegisterState = {
         ...state, // Spread existing state
         values, // Override with new values
         message: null,

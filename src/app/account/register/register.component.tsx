@@ -7,24 +7,42 @@ import clsx from 'clsx';
 import Routes from '@/config/routes';
 import Link from 'next/link';
 import {
-    defaultRegisterFormState,
-    RegisterFormState,
+    defaultRegisterState,
+    RegisterState,
     RegisterFormValues
-} from '@/app/account/register/register-form.definition';
+} from '@/app/account/register/register.definition';
 import {FormResult} from '@/components/form-result.component';
 import {useDebouncedEffect} from '@/hooks';
+import {useRouter} from 'next/navigation';
+import {useAuth} from '@/providers/auth.provider';
+import {lang} from '@/config/lang';
+import {Loading} from '@/components/loading.component';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function RegisterForm() {
-    const [state, action, pending] = useActionState(registerAction, defaultRegisterFormState);
+export default function Register() {
+    const router = useRouter();
+
+    const {loadingAuth, auth} = useAuth();
+
+    useEffect(() => {
+        if (!loadingAuth && auth) {
+            router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
+        }
+    }, [auth, loadingAuth, router]);
+
+    if (loadingAuth) {
+        return <Loading />;
+    }
+
+    const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterFormState.values);
-    const [errors, setErrors] = useState<RegisterFormState['errors']>({});
+    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterState.values);
+    const [errors, setErrors] = useState<RegisterState['errors']>({});
 
     const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
 

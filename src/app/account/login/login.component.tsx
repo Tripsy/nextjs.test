@@ -18,6 +18,7 @@ import {formatDate} from '@/lib/utils/date';
 import {useDebouncedEffect} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {lang} from '@/config/lang';
+import {Loading} from '@/components/loading.component';
 
 // Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
@@ -34,6 +35,10 @@ export default function Login() {
             router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
         }
     }, [auth, loadingAuth, router]);
+
+    if (loadingAuth) {
+        return <Loading />;
+    }
 
     const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
@@ -98,6 +103,7 @@ export default function Login() {
             setFormValues(prev => ({...prev, [fieldName]: value}));
             setDirtyFields(prev => ({...prev, [fieldName]: true}));
         };
+
 
     return (
         <form action={action} className="form-section">

@@ -1,5 +1,5 @@
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
-import {RegisterFormValues} from '@/app/account/register/register-form.definition';
+import {RegisterFormValues} from '@/app/account/register/register.definition';
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';

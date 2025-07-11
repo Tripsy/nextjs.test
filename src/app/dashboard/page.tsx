@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
-import BreadcrumbSetter from '@/app/dashboard/components/breadcrumb.setter';
+import NavBreadcrumbSetter from '@/app/dashboard/components/nav-breadcrumb.setter';
 import React from 'react';
 import {lang} from '@/config/lang';
 
@@ -15,7 +15,7 @@ export default function Page() {
 
     return (
         <>
-            <BreadcrumbSetter items={items}/>
+            <NavBreadcrumbSetter items={items}/>
             Dashboard
         </>
     );

@@ -16,7 +16,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const REFRESH_INTERVAL = 3 * 60 * 1000; // 10 minutes // TODO adjust to 10 minutes
+const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel | null }) => {
     const [auth, setAuth] = useState<AuthModel | null>(initAuth);
