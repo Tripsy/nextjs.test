@@ -62,7 +62,7 @@ function responseSuccess() {
     // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
     // `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
     // is good for security but some resources need to be whitelisted (ex: FontAwesome)
-    // if (app('environment') === 'production') {
+    // if (cfg('environment') === 'production') {
     //     response.headers.set(
     //         'Content-Security-Policy',
     //         "default-src 'self'; script-src 'self' 'unsafe-inline'"
@@ -107,10 +107,10 @@ function responseAuthorized(sessionToken: string, authModel: AuthModel) {
 //     const current = await redis.incr(key);
 //
 //     if (current === 1) {
-//         await redis.expire(key, app('middleware.rate_limit_window'));
+//         await redis.expire(key, cfg('middleware.rate_limit_window'));
 //     }
 //
-//     if (current > app('middleware.max_requests')) {
+//     if (current > cfg('middleware.max_requests')) {
 //         const ttl = await redis.ttl(key);
 //
 //         return {

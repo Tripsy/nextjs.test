@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 import {AuthModel, prepareAuthModel} from '@/lib/models/auth.model';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {appendSessionToken, forwardedHeaders, getSessionToken, removeSessionToken} from '@/lib/utils/system';
@@ -40,7 +40,7 @@ export async function DELETE(): Promise<NextResponse<ResponseFetch<null>>> {
         success: true
     });
 
-    response.cookies.delete(app('user.sessionToken'));
+    response.cookies.delete(cfg('user.sessionToken'));
 
     return response;
 }

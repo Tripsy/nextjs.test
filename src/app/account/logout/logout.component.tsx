@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {logoutAction} from '@/app/account/logout/logout.action';
 import {defaultLogoutState} from '@/app/account/logout/logout.definition';
 import {Icons} from '@/components/icon.component';
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 import {lang} from '@/config/lang';
 import Link from 'next/link';
 import Routes from '@/config/routes';
@@ -31,7 +31,7 @@ export default function Logout() {
                     message: lang('logout.message.error') ?? 'An error occurred during logout.',
                     situation: 'error',
                 });
-                if (app('environment') === 'development') {
+                if (cfg('environment') === 'development') {
                     console.error(error);
                 }
             });

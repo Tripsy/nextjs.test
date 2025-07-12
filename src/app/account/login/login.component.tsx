@@ -26,6 +26,14 @@ import {FormFieldError as RawFormFieldError} from '@/components/form-field-error
 const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Login() {
+    const [state, action, pending] = useActionState(loginAction, defaultLoginState);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [formValues, setFormValues] = useState<LoginFormValues>(defaultLoginState.values);
+    const [errors, setErrors] = useState<LoginState['errors']>({});
+
+    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof LoginFormValues, boolean>>>({});
+
     const router = useRouter();
 
     const {loadingAuth, auth, refreshAuth} = useAuth();
@@ -35,18 +43,6 @@ export default function Login() {
             router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
         }
     }, [auth, loadingAuth, router]);
-
-    if (loadingAuth) {
-        return <Loading />;
-    }
-
-    const [state, action, pending] = useActionState(loginAction, defaultLoginState);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const [formValues, setFormValues] = useState<LoginFormValues>(defaultLoginState.values);
-    const [errors, setErrors] = useState<LoginState['errors']>({});
-
-    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof LoginFormValues, boolean>>>({});
 
     // Debounced validation
     useDebouncedEffect(() => {
@@ -104,6 +100,9 @@ export default function Login() {
             setDirtyFields(prev => ({...prev, [fieldName]: true}));
         };
 
+    if (loadingAuth) {
+        return <Loading />;
+    }
 
     return (
         <form action={action} className="form-section">

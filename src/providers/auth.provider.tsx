@@ -37,8 +37,6 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
 
             setAuth(authData);
             setLastRefreshAuth(Date.now());
-
-            console.log('Auth refreshed', Date.now());
         } catch (error) {
             console.error('Auth refresh failed:', error);
         } finally {

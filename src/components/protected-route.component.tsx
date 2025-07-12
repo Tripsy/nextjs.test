@@ -39,8 +39,6 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
             const routeMatch = Routes.match(pathname);
             const matchedPermission = routeMatch?.props?.permission;
 
-            console.log('routeMatch', routeMatch);
-
             if (matchedPermission) {
                 setPermission(matchedPermission);
             }

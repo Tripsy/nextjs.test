@@ -30,6 +30,6 @@ const settings = {
     },
 };
 
-export function app(key: string): any {
+export function cfg(key: string): any {
     return getObjectValue(settings, key);
 }

@@ -1,11 +1,11 @@
 import {ApiError} from '@/lib/exceptions/api.error';
 import Routes from '@/config/routes';
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 
 export function getRemoteApiUrl(path: string): string {
     path = path.replace(/^\//, ''); // Remove first / if exist
 
-    return app('remoteApi.url') + '/' + path;
+    return cfg('remoteApi.url') + '/' + path;
 }
 
 export type ResponseFetch<T> = {
@@ -93,7 +93,7 @@ export class ApiRequest {
             proxyRoute += `?${rawQuery}`;
         }
 
-        return app('url') + proxyRoute;
+        return cfg('url') + proxyRoute;
     }
 
     private buildRequestUrl(path: string) {

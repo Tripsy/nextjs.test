@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 
 class RedisClient {
     private static instance: Redis;
@@ -7,9 +7,9 @@ class RedisClient {
     public static getInstance(): Redis {
         if (!RedisClient.instance) {
             RedisClient.instance = new Redis({
-                host: app('redis.host'),
-                port: app('redis.port'),
-                password: app('redis.password'),
+                host: cfg('redis.host'),
+                port: cfg('redis.port'),
+                password: cfg('redis.password'),
             });
 
             RedisClient.instance.on('error', (error) => {

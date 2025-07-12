@@ -24,6 +24,14 @@ import {FormFieldError as RawFormFieldError} from '@/components/form-field-error
 const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Register() {
+    const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterState.values);
+    const [errors, setErrors] = useState<RegisterState['errors']>({});
+
+    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
+
     const router = useRouter();
 
     const {loadingAuth, auth} = useAuth();
@@ -33,18 +41,6 @@ export default function Register() {
             router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
         }
     }, [auth, loadingAuth, router]);
-
-    if (loadingAuth) {
-        return <Loading />;
-    }
-
-    const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterState.values);
-    const [errors, setErrors] = useState<RegisterState['errors']>({});
-
-    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
 
     const handleChange = (fieldName: keyof RegisterFormValues) =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +73,10 @@ export default function Register() {
             setErrors(state.errors);
         }
     }, [state?.errors]);
+
+    if (loadingAuth) {
+        return <Loading />;
+    }
 
     if (state?.situation === 'success') {
         return (

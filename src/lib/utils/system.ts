@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 
 export function getClientIp(req: NextRequest): string | undefined {
     // 1. First try x-forwarded-for header (common in proxies)
@@ -35,7 +35,7 @@ export function getClientIp(req: NextRequest): string | undefined {
 export async function getSessionToken(): Promise<string | undefined> {
     const cookieStore = await cookies();
 
-    return cookieStore.get(app('user.sessionToken'))?.value;
+    return cookieStore.get(cfg('user.sessionToken'))?.value;
 }
 
 /**
@@ -48,12 +48,12 @@ export async function getSessionToken(): Promise<string | undefined> {
  */
 export function appendSessionToken<T = unknown>(res: NextResponse<T>, token: string | undefined): NextResponse<T> {
     if (token) {
-        res.cookies.set(app('user.sessionToken'), token, {
+        res.cookies.set(cfg('user.sessionToken'), token, {
             httpOnly: true,
-            secure: app('environment') === 'production',
+            secure: cfg('environment') === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: app('user.sessionMaxAge'),
+            maxAge: cfg('user.sessionMaxAge'),
         });
     }
 
@@ -68,7 +68,7 @@ export function appendSessionToken<T = unknown>(res: NextResponse<T>, token: str
  * @returns Modified NextResponse with session cookie cleared
  */
 export function removeSessionToken<T = unknown>(res: NextResponse<T>): NextResponse<T> {
-    res.cookies.delete(app('user.sessionToken'));
+    res.cookies.delete(cfg('user.sessionToken'));
 
     return res;
 }

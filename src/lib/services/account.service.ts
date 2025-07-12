@@ -3,7 +3,6 @@ import {RegisterFormValues} from '@/app/account/register/register.definition';
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';
-import {app} from '@/config/settings';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()

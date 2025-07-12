@@ -1,9 +1,9 @@
-import {app} from '@/config/settings';
+import {cfg} from '@/config/settings';
 import {getObjectValue, replaceVars} from '@/lib/utils/string';
 
 const en = {
     app: {
-        name: app('name'),
+        name: cfg('name'),
     },
     auth: {
         message: {
@@ -13,7 +13,7 @@ const en = {
     },
     login: {
         meta: {
-            title: `Login | ${app('name')}`,
+            title: `Login | ${cfg('name')}`,
         },
         validation: {
             email: "Please enter a valid email",
@@ -30,7 +30,7 @@ const en = {
     },
     logout: {
         meta: {
-            title: `Logout | ${app('name')}`,
+            title: `Logout | ${cfg('name')}`,
         },
         message: {
             success: "Logout successfully",
@@ -40,7 +40,7 @@ const en = {
     },
     register: {
         meta: {
-            title: `Create account | ${app('name')}`,
+            title: `Create account | ${cfg('name')}`,
         },
         validation: {
             name_invalid: "Set your name",
