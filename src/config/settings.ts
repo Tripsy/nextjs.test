@@ -3,7 +3,7 @@ import {getObjectValue} from '@/lib/utils/string';
 const settings = {
     environment: process.env.NODE_ENV || 'development',
     url: process.env.FRONTEND_URL || 'http://nextjs.test',
-    name: 'NextJs',
+    name: process.env.FRONTEND_APP_NAME || 'sample-nextjs-client',
     user: {
         nameMinLength: 3,
         passwordMinLength: 8,

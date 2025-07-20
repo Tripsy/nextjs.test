@@ -1,3 +1,5 @@
+import {v4 as uuid} from 'uuid';
+
 export function capitalizeFirstLetter(str: string): string {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
@@ -53,4 +55,8 @@ export function getNameInitials(name: string | undefined): string {
 
     // Multi-part name, take first letter of first two words
     return (parts[0][0] + '.'+ parts[1][0]).toUpperCase();
+}
+
+export function randomString(type: string = 'uuid'): string {
+    return uuid();
 }

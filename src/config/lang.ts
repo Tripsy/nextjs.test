@@ -5,6 +5,9 @@ const en = {
     app: {
         name: cfg('name'),
     },
+    error: {
+        csrf: 'Error occurred while processing your request. Please try again.',
+    },
     auth: {
         message: {
             already_logged_in: "Already logged in",

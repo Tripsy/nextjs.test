@@ -6,6 +6,7 @@ import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
 import {ApiError} from '@/lib/exceptions/api.error';
+import {appendCSRF} from '@/components/csrf';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
@@ -42,8 +43,6 @@ function redirectToError(req: NextRequest, error: Error | string) {
         }
 
         redirectUrl.searchParams.set('msg', logMessage);
-
-        console.error(`[Middleware Error] ${req.nextUrl.pathname} →`, logMessage);
     }
     
     return NextResponse.redirect(redirectUrl);
@@ -54,10 +53,18 @@ function redirectToError(req: NextRequest, error: Error | string) {
  *
  * @returns
  */
-function responseSuccess() {
-    const response = NextResponse.next();
+function responseSuccess(request: NextRequest) {
+    let response = NextResponse.next();
 
     response.headers.set('X-Content-Type-Options', 'nosniff');
+
+    if (
+        request.method === 'GET' &&
+        !request.headers.get('X-Requested-With') &&
+        request.headers.get('accept')?.includes('text/html')
+    ) {
+        response = appendCSRF(request, response);
+    }
 
     // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
     // `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
@@ -76,11 +83,12 @@ function responseSuccess() {
  * Extends a success response to an authorized response
  * It adds `x-auth-data` header & refreshes the session token
  *
+ * @param request
  * @param sessionToken
  * @param authModel
  */
-function responseAuthorized(sessionToken: string, authModel: AuthModel) {
-    const response = responseSuccess();
+function responseAuthorized(request: NextRequest, sessionToken: string, authModel: AuthModel) {
+    const response = responseSuccess(request);
 
     // Set auth data as a header
     response.headers.set(
@@ -133,7 +141,7 @@ function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined
     switch (routeAuth) {
         case RouteAuth.UNAUTHENTICATED:
         case RouteAuth.PUBLIC:
-            return responseSuccess();
+            return responseSuccess(req);
         case RouteAuth.AUTHENTICATED:
         case RouteAuth.PROTECTED:
             return redirectToLogin(req);
@@ -179,8 +187,6 @@ async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<A
 
         const logMessage = error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)';
 
-        console.error(`[Middleware] ${logMessage}`);
-
         return null;
     }
 }
@@ -189,7 +195,7 @@ function handleInvalidAuth(req: NextRequest, routeAuth: RouteAuth | undefined): 
     switch (routeAuth) {
         case RouteAuth.UNAUTHENTICATED:
         case RouteAuth.PUBLIC: {
-            const response = responseSuccess();
+            const response = responseSuccess(req);
 
             return removeSessionToken(response); // Session token exists but is invalid so it is removed
         }
@@ -235,17 +241,25 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
         }
     }
 
-    return responseAuthorized(sessionToken, authModel);
+    return responseAuthorized(req, sessionToken, authModel);
 }
 
 export async function middleware(req: NextRequest) {
+    if (['HEAD', 'OPTIONS'].includes(req.method)) {
+        return NextResponse.next();
+    }
+
+    // if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && !isValidCSRF(req)) {
+    //     return redirectToError(req, lang('error.csrf'));
+    // }
+
     // Match route
     const pathname = req.nextUrl.pathname;
 
     const routeMatch = Routes.match(pathname);
 
     if (!routeMatch) {
-        return responseSuccess();
+        return responseSuccess(req);
     }
 
     // // Rate limit
@@ -269,7 +283,7 @@ export async function middleware(req: NextRequest) {
         return await handleAuthRequirement(req, routeMatch);
     }
 
-    return responseSuccess();
+    return responseSuccess(req);
 }
 
 const EXCLUDE_STATICS = [
