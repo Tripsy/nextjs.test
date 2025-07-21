@@ -101,7 +101,7 @@ export class ApiRequest {
             case 'use-proxy':
                 return this.buildProxyRoute(path);
             case 'same-site':
-                return Routes.get(path);
+                return cfg('url') + Routes.get(path);
             case 'remote-api':
                 return getRemoteApiUrl(path);
             default:

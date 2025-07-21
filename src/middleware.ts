@@ -6,9 +6,42 @@ import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
 import {ApiError} from '@/lib/exceptions/api.error';
-import {appendCSRF} from '@/components/csrf';
+import {appendCsrfCookieToResponse, prepareCsrfToken} from '@/lib/csrf';
 
 // import {getRedisClient} from '@/config/init-redis.config';
+
+function blockedOrigin(req: NextRequest) {
+    const ALLOWED_ORIGIN = ['https://localhost:3000', 'http://nextjs.test'];
+
+    const origin = req.headers.get('origin');
+    const referer = req.headers.get('referer');
+
+    // Probably a same-origin browser request — allow it
+    if (!origin && !referer) {
+        return false;
+    }
+
+    // Check origin header
+    if (origin && ALLOWED_ORIGIN.includes(origin)) {
+        return false; // Not blocked
+    }
+
+    // Check referer header
+    if (referer) {
+        try {
+            const refererUrl = new URL(referer);
+            const refererOrigin = `${refererUrl.protocol}//${refererUrl.host}`;
+
+            if (ALLOWED_ORIGIN.includes(refererOrigin)) {
+                return false; // Not blocked
+            }
+        } catch (e) {
+            console.warn('Invalid referer URL:', referer);
+        }
+    }
+
+    return true; // Blocked
+}
 
 /**
  * Redirect to the login page
@@ -32,7 +65,7 @@ function redirectToLogin(req: NextRequest) {
  */
 function redirectToError(req: NextRequest, error: Error | string) {
     const redirectUrl = new URL(Routes.get('status', {type: 'error'}), req.url);
-    
+
     if (error) {
         let logMessage: string;
 
@@ -44,7 +77,7 @@ function redirectToError(req: NextRequest, error: Error | string) {
 
         redirectUrl.searchParams.set('msg', logMessage);
     }
-    
+
     return NextResponse.redirect(redirectUrl);
 }
 
@@ -63,7 +96,11 @@ function responseSuccess(request: NextRequest) {
         !request.headers.get('X-Requested-With') &&
         request.headers.get('accept')?.includes('text/html')
     ) {
-        response = appendCSRF(request, response);
+        const {csrfRefresh, csrfToken} = prepareCsrfToken(request);
+
+        if (csrfRefresh) {
+            response = appendCsrfCookieToResponse(response, csrfToken);
+        }
     }
 
     // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
@@ -185,8 +222,6 @@ async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<A
             return null;
         }
 
-        const logMessage = error instanceof Error ? error.message : 'Could not retrieve auth model (eg: unknown error)';
-
         return null;
     }
 }
@@ -245,8 +280,14 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
 }
 
 export async function middleware(req: NextRequest) {
+    // Allow preflight and HEAD requests unconditionally
     if (['HEAD', 'OPTIONS'].includes(req.method)) {
         return NextResponse.next();
+    }
+
+    // Block suspicious origins
+    if (blockedOrigin(req)) {
+        return new NextResponse('Forbidden', {status: 403});
     }
 
     // if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && !isValidCSRF(req)) {

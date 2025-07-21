@@ -1,7 +1,7 @@
 # TODO
 
-1. do updates on back-end first
-2. Add CSRF (Cross-Site Request Forgery) protection to your Next.js middleware involves generating and verifying a unique token for sensitive requests
+1. Check login flow
+2. Add CSRF for register
 3. recover password & other account pages
 4. Remove border bottom from paginator
 5. Use `register` for inspiration and update filters on dashboard/users 
@@ -86,3 +86,16 @@ setAuth(newAuth); // Sync across browser tabs
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
 }, []);
+
+
+// Token was automatically injected by middleware on page load
+const csrfToken = document.cookie.match(/X-CSRF-Token=([^;]+)/)?.[1];
+
+
+const response = await fetch('/api/submit', {
+method: 'POST',
+headers: {
+'X-CSRF-Token': csrfToken
+},
+body: JSON.stringify(data)
+});

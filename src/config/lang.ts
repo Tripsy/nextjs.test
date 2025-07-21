@@ -6,7 +6,7 @@ const en = {
         name: cfg('name'),
     },
     error: {
-        csrf: 'Error occurred while processing your request. Please try again.',
+        csrf: 'Error occurred while processing your request. Please reload page and try again.',
     },
     auth: {
         message: {

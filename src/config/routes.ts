@@ -146,7 +146,8 @@ Routes.add('terms-and-conditions', '/terms-and-conditions');
 // API
 Routes.group('api')
     .add('proxy', '/api/proxy/:path*')
-    .add('auth', '/api/auth');
+    .add('auth', '/api/auth')
+    .add('csrf', '/api/csrf');
 
 // Account
 Routes.group('account').auth(RouteAuth.UNAUTHENTICATED)

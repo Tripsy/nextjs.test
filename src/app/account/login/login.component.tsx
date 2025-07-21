@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useActionState, useEffect, useState} from 'react';
+import React, {JSX, useActionState, useEffect, useState} from 'react';
 import {loginAction, loginValidate} from '@/app/account/login/login.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
@@ -25,7 +25,7 @@ import {FormFieldError as RawFormFieldError} from '@/components/form-field-error
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function Login() {
+export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
     const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -106,6 +106,7 @@ export default function Login() {
 
     return (
         <form action={action} className="form-section">
+            {csrfInput}
             <h1 className="mb-2">
                 Sign In
             </h1>
