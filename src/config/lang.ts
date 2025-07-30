@@ -61,7 +61,8 @@ const en = {
         },
         message: {
             success: "Thank you for registering. Please check your email to confirm your account.",
-            // error: "We couldn\'t process your submission due to some errors.",
+            error: "We couldn\'t process your submission due to some errors.",
+            email_already_used: "Email already used by another account",
         }
     }
 };

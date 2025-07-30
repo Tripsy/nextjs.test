@@ -17,13 +17,12 @@ import {useRouter} from 'next/navigation';
 import {useAuth} from '@/providers/auth.provider';
 import {lang} from '@/config/lang';
 import {Loading} from '@/components/loading.component';
-
-// Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
+import {PageComponentPropsType} from '@/types/page-component.type';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function Register() {
+export default function Register({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -93,6 +92,7 @@ export default function Register() {
 
     return (
         <form action={action} className="form-section">
+            {csrfInput}
             <h1 className="mb-2">
                 Create Account
             </h1>

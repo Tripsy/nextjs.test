@@ -1,6 +1,6 @@
 'use client';
 
-import React, {JSX, useActionState, useEffect, useState} from 'react';
+import React, {useActionState, useEffect, useState} from 'react';
 import {loginAction, loginValidate} from '@/app/account/login/login.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
@@ -19,13 +19,12 @@ import {useDebouncedEffect} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {lang} from '@/config/lang';
 import {Loading} from '@/components/loading.component';
-
-// Memoize FormFieldError to avoid unnecessary re-renders
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
+import {PageComponentPropsType} from '@/types/page-component.type';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
+export default function Login({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -37,12 +36,6 @@ export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
     const router = useRouter();
 
     const {loadingAuth, auth, refreshAuth} = useAuth();
-
-    useEffect(() => {
-        if (!loadingAuth && auth) {
-            router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
-        }
-    }, [auth, loadingAuth, router]);
 
     // Debounced validation
     useDebouncedEffect(() => {
@@ -89,8 +82,12 @@ export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
             window.history.replaceState({}, '', newUrl.toString());
 
             router.push(redirectUrl);
+        } else {
+            if (!loadingAuth && auth) {
+                router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
+            }
         }
-    }, [state?.situation, router]);
+    }, [state?.situation, auth, loadingAuth, router]);
 
     const handleChange = (fieldName: keyof LoginFormValues) =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +98,7 @@ export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
         };
 
     if (loadingAuth) {
-        return <Loading />;
+        return <Loading/>;
     }
 
     return (
@@ -171,7 +168,7 @@ export default function Login({csrfInput}: { csrfInput: JSX.Element}   ) {
                 className="btn btn-info"
                 disabled={pending || !!Object.keys(errors).length}
                 type="submit"
-                    aria-busy={pending}
+                aria-busy={pending}
             >
                 {pending ? (
                     <span className="flex items-center gap-2">

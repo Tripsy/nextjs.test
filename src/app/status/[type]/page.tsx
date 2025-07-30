@@ -1,22 +1,15 @@
 import React from 'react';
 import {Notice} from '@/components/notice.component';
+import {useParams, useSearchParams} from 'next/navigation';
 
 type ParamsType = 'error' | 'warning' | 'info' | 'success';
-type SearchParamsType = {
-    msg?: string;
-};
 
-export default async function Page({
-   params,
-   searchParams,
-}: {
-    params: { type: ParamsType };
-    searchParams?: SearchParamsType;
-}) {
-    const {type} = await params;
-    const queryParams = await searchParams;
+export default function Page() {
+    const params = useParams<{ type: ParamsType }>();
+    const searchParams = useSearchParams();
 
-    const message = queryParams?.msg || '';
+    const type = params.type;
+    const message = searchParams.get('msg') || '';
 
     return (
         <div className="fit-container min-w-[22rem]">

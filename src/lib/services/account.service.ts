@@ -31,26 +31,17 @@ export async function removeTokenAccount(token: string): Promise<any> {
 }
 
 export async function createAuth(token: string): Promise<ResponseFetch<null>> {
-    try {
-        await new ApiRequest()
-            .setRequestMode('same-site')
-            .doFetch('auth', {
-                method: 'POST',
-                body: JSON.stringify({token}),
-            });
+    await new ApiRequest()
+        .setRequestMode('same-site')
+        .doFetch('auth', {
+            method: 'POST',
+            body: JSON.stringify({token}),
+        });
 
-        return {
-            message: lang('login.message.auth_success'),
-            success: true,
-        };
-    } catch (error: unknown) {
-        console.error(error);
-
-        return {
-            success: false,
-            message: error instanceof Error ? lang('login.message.auth_error') : 'Network request failed',
-        };
-    }
+    return {
+        message: lang('login.message.auth_success'),
+        success: true,
+    };
 }
 
 export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<AuthModel> {

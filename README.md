@@ -1,15 +1,18 @@
 # TODO
 
 1. Check login flow
-2. Add CSRF for register
-3. recover password & other account pages
-4. Remove border bottom from paginator
-5. Use `register` for inspiration and update filters on dashboard/users 
-6. check data-table-users.component.ts notes
+2. recover password & other account pages
+3. Remove border bottom from paginator
+4. Use `register` for inspiration and update filters on dashboard/users 
+5. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-7. terms page
-8. Theme switcher has a glitch on first click?
-9. Replace all console.error with logging
+6. terms page
+7. Theme switcher has a glitch on first click?
+8. Replace all console.error with logging
+
+
+https://nextjs.org/docs/app/api-reference/components/form
+https://nextjs.org/docs/app/api-reference/functions/use-params
    
 # IDEAS
 
@@ -86,16 +89,3 @@ setAuth(newAuth); // Sync across browser tabs
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
 }, []);
-
-
-// Token was automatically injected by middleware on page load
-const csrfToken = document.cookie.match(/X-CSRF-Token=([^;]+)/)?.[1];
-
-
-const response = await fetch('/api/submit', {
-method: 'POST',
-headers: {
-'X-CSRF-Token': csrfToken
-},
-body: JSON.stringify(data)
-});

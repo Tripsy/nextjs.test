@@ -1,9 +1,12 @@
 import {
     RegisterSchema,
     RegisterState,
-    RegisterFormValues
+    RegisterFormValues, RegisterSituation
 } from '@/app/account/register/register.definition';
 import {registerAccount} from '@/lib/services/account.service';
+import {csrfInputName, isValidCsrfToken} from '@/lib/csrf';
+import {lang} from '@/config/lang';
+import {ApiError} from '@/lib/exceptions/api.error';
 
 export function registerFormValues(formData: FormData): RegisterFormValues {
     return {
@@ -31,6 +34,17 @@ export async function registerAction(state: RegisterState, formData: FormData): 
         situation: null
     };
 
+    // Check CSRF token
+    const csrfToken = formData.get(csrfInputName) as string;
+
+    if (!await isValidCsrfToken(csrfToken)) {
+        return {
+            ...result,
+            message: lang('error.csrf'),
+            situation: 'error',
+        };
+    }
+
     if (!validated.success) {
         return {
             ...result,
@@ -38,12 +52,32 @@ export async function registerAction(state: RegisterState, formData: FormData): 
         };
     }
 
-    const fetchResponse = await registerAccount(validated.data);
+    try {
+        const fetchResponse = await registerAccount(validated.data);
 
-    return {
-        ...result,
-        errors: {},
-        message: fetchResponse.message,
-        situation: fetchResponse.success ? 'success' : 'error'
-    };
+        return {
+            ...result,
+            errors: {},
+            message: fetchResponse.message,
+            situation: fetchResponse.success ? 'success' : 'error'
+        };
+    } catch (error: unknown) {
+        let message: string = lang('register.message.error');
+        let situation: RegisterSituation = 'error';
+
+        if (error instanceof ApiError) {
+            switch (error.status) {
+                case 409:
+                    message = lang('register.message.email_already_used');
+                    break;
+            }
+        }
+
+        return {
+            ...result,
+            errors: {},
+            message: message,
+            situation: situation,
+        };
+    }
 }
