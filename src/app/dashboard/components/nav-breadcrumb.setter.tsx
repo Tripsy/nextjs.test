@@ -7,7 +7,7 @@ export default function NavBreadcrumbSetter({items}: { items: BreadcrumbType[] }
     const {setItems} = useBreadcrumb();
 
     useEffect(() => {
-        setItems(items);
+        setItems([...items]);
     }, [items]);
 
     return null;

@@ -68,7 +68,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
         setLazyState((prev) => ({
             ...prev,
             first: filtersChanged ? 0 : savedState?.first ?? prev.first,
-            filters: props.filters,
+            filters: {...props.filters},
         }));
     }, [props.filters]);
 
@@ -184,7 +184,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
                 field={column.field}
                 header={column.header}
                 style={column.style}
-                body={(rowData) => column.body?.(rowData, column) || rowData[column.field]}
+                body={(rowData) => column.body?.({...rowData}, column) || rowData[column.field]}
                 sortable={column.sortable ?? false}
             />
         ))

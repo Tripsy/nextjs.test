@@ -22,6 +22,7 @@ https://nextjs.org/docs/app/api-reference/functions/use-params
 # SEE ALSO
 
      https://nextjs.org/docs/app/getting-started/partial-prerendering
+     https://react.dev/learn/react-compiler/introduction
 
 # NOTES
 
@@ -41,6 +42,11 @@ https://nextjs.org/docs/app/api-reference/functions/use-params
 # INSPIRATION
 
 https://nexus.daisyui.com/auth/register
+
+# LEARNING
+
+- It is useful to remember which operations on arrays mutate them, and which don’t. For example, push, pop, reverse, 
+and sort will mutate the original array, but slice, filter, and map will create a new one.
 
 # SAMPLES
 

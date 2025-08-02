@@ -62,14 +62,14 @@ export default function Register({csrfInput}: PageComponentPropsType) {
     // Initialize form values from server state
     useEffect(() => {
         if (state?.values) {
-            setFormValues(state.values);
+            setFormValues({...state.values});
         }
     }, [state?.values]);
 
     // Combine server errors with local validation
     useEffect(() => {
         if (state?.errors) {
-            setErrors(state.errors);
+            setErrors({...state.errors});
         }
     }, [state?.errors]);
 

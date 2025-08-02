@@ -218,14 +218,14 @@ function AuthTokenList({status, tokens}: {
     status: { message: string, error: boolean },
     tokens: AuthTokenListType | undefined
 }) {
-    const [displayStatus, setDisplayStatus] = useState(status);
+    const [displayStatus, setDisplayStatus] = useState({...status});
     const [selectedToken, setSelectedToken] = useState<AuthTokenType | null>(null);
     const [loading, setLoading] = useState(false);
-    const [tokenList, setTokenList] = useState<AuthTokenListType>(tokens || []);
+    const [tokenList, setTokenList] = useState<AuthTokenListType>([...(tokens || [])]);
 
     useEffect(() => {
         if (tokens) {
-            setTokenList(tokens);
+            setTokenList([...tokens]);
         }
     }, [tokens]);
 
