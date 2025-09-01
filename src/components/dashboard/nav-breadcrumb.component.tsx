@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useBreadcrumb} from '@/app/dashboard/providers/breadcrumb.provider';
+import {useBreadcrumb} from '@/providers/dashboard/breadcrumb.provider';
 import Routes from '@/config/routes';
 import {useMediaQuery} from 'react-responsive';
 

@@ -15,27 +15,25 @@ export default function Logout() {
     const {setAuth, setLastRefreshAuth} = useAuth();
 
     useEffect(() => {
-        const logout = async () => {
-            const result = await logoutAction();
+        (async () => {
+            try {
+                const result = await logoutAction();
 
-            setAuth(null); // Clear auth state immediately after successful logout
-            setLastRefreshAuth(Date.now()); // Clear last refresh timestamp - prevent auto refresh after logout
-
-            return result;
-        };
-
-        logout()
-            .then(res => setState(res))
-            .catch(error => {
+                setAuth(null); // Clear auth state immediately after successful logout
+                setLastRefreshAuth(Date.now());  // Clear last refresh timestamp - prevent auto refresh after logout
+                setState(result);
+            } catch (error) {
                 setState({
                     message: lang('logout.message.error') ?? 'An error occurred during logout.',
                     situation: 'error',
                 });
+
                 if (cfg('environment') === 'development') {
                     console.error(error);
                 }
-            });
-    }, []);
+            }
+        })();
+    }, []); // TODO is this logic okay? should I use useEffectEvent?
 
     return (
         <>

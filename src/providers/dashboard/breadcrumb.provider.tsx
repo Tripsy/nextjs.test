@@ -13,7 +13,7 @@ const BreadcrumbProvider = ({children}: { children: ReactNode }) => {
     const [items, setItems] = useState<BreadcrumbType[]>([]);
 
     return (
-        <BreadcrumbContext.Provider value={{ items, setItems }}>
+        <BreadcrumbContext.Provider value={{items, setItems}}>
             {children}
         </BreadcrumbContext.Provider>
     );

@@ -12,10 +12,8 @@ import {
     RegisterFormValues
 } from '@/app/account/register/register.definition';
 import {FormResult} from '@/components/form-result.component';
-import {useDebouncedEffect} from '@/hooks';
-import {useRouter} from 'next/navigation';
+import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
-import {lang} from '@/config/lang';
 import {Loading} from '@/components/loading.component';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
@@ -26,20 +24,18 @@ export default function Register({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [formValues, setFormValues] = useState<RegisterFormValues>(defaultRegisterState.values);
-    const [errors, setErrors] = useState<RegisterState['errors']>({});
+    const [formValues, setFormValues] = useFormValues<RegisterFormValues>(
+        state?.values,
+        defaultRegisterState.values
+    );
+    const [errors, setErrors] = useFormErrors<RegisterState['errors']>(state?.errors);
 
     const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
 
-    const router = useRouter();
+    const {loadingAuth} = useAuth();
 
-    const {loadingAuth, auth} = useAuth();
-
-    useEffect(() => {
-        if (!loadingAuth && auth) {
-            router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
-        }
-    }, [auth, loadingAuth, router]);
+    // Redirect if already authenticated
+    useAuthRedirect();
 
     const handleChange = (fieldName: keyof RegisterFormValues) =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,20 +54,6 @@ export default function Register({csrfInput}: PageComponentPropsType) {
             setDirtyFields({});
         }
     }, [formValues, dirtyFields], 800);
-
-    // Initialize form values from server state
-    useEffect(() => {
-        if (state?.values) {
-            setFormValues({...state.values});
-        }
-    }, [state?.values]);
-
-    // Combine server errors with local validation
-    useEffect(() => {
-        if (state?.errors) {
-            setErrors({...state.errors});
-        }
-    }, [state?.errors]);
 
     if (loadingAuth) {
         return <Loading />;
@@ -96,11 +78,12 @@ export default function Register({csrfInput}: PageComponentPropsType) {
             <h1 className="mb-2">
                 Create Account
             </h1>
-            <div className="form-part form-description mb-6 md:max-w-sm">
+
+            <div className="form-description mb-6 md:max-w-sm">
                 Quick access. Extra benefits. Your gateway to personalized experiences.
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
                 <div className="form-element">
                     <label htmlFor="name">Name</label>
                     <div className={clsx('input', {'input-error': errors.name})}>
@@ -120,7 +103,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                 </div>
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
                 <div className="form-element">
                     <label htmlFor="email">Email Address</label>
                     <div className={clsx('input', {'input-error': errors.email})}>
@@ -140,63 +123,61 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                 </div>
             </div>
 
-            <div className="form-part flex flex-col gap-4">
-                <div>
-                    <div className="form-element">
-                        <label htmlFor="password">Password</label>
-                        <div className={clsx('input', {'input-error': errors.password})}>
-                            <Icons.Password className="opacity-60"/>
-                            <input
-                                id="password"
-                                name="password"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Password"
-                                autoComplete={"new-password"}
-                                disabled={pending}
-                                aria-invalid={!!errors.password}
-                                value={formValues.password ?? ''}
-                                onChange={handleChange('password')}
-                            />
-                            <button
-                                type="button"
-                                className="focus:outline-none hover:opacity-100 transition-opacity"
-                                onClick={() => setShowPassword(!showPassword)}
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? (
-                                    <Icons.Obscured className="opacity-60 hover:opacity-100"/>
-                                ) : (
-                                    <Icons.Visible className="opacity-60 hover:opacity-100"/>
-                                )}
-                            </button>
-                        </div>
-                        <FormFieldError messages={errors.password}/>
+            <div className="form-spacing">
+                <div className="form-element">
+                    <label htmlFor="password">Password</label>
+                    <div className={clsx('input', {'input-error': errors.password})}>
+                        <Icons.Password className="opacity-60"/>
+                        <input
+                            id="password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            autoComplete={"new-password"}
+                            disabled={pending}
+                            aria-invalid={!!errors.password}
+                            value={formValues.password ?? ''}
+                            onChange={handleChange('password')}
+                        />
+                        <button
+                            type="button"
+                            className="focus:outline-none hover:opacity-100 transition-opacity"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? (
+                                <Icons.Obscured className="opacity-60 hover:opacity-100"/>
+                            ) : (
+                                <Icons.Visible className="opacity-60 hover:opacity-100"/>
+                            )}
+                        </button>
                     </div>
-                </div>
-
-                <div>
-                    <div className="form-element">
-                        <label htmlFor="password_confirm">Confirm Password</label>
-                        <div className={clsx('input', {'input-error': errors.password_confirm})}>
-                            <Icons.Password className="opacity-60"/>
-                            <input
-                                id="password_confirm"
-                                name="password_confirm"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Password confirmation"
-                                autoComplete={"new-password"}
-                                disabled={pending}
-                                aria-invalid={!!errors.password_confirm}
-                                value={formValues.password_confirm ?? ''}
-                                onChange={handleChange('password_confirm')}
-                            />
-                        </div>
-                        <FormFieldError messages={errors.password_confirm}/>
-                    </div>
+                    <FormFieldError messages={errors.password}/>
                 </div>
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
+                <div className="form-element">
+                    <label htmlFor="password_confirm">Confirm Password</label>
+                    <div className={clsx('input', {'input-error': errors.password_confirm})}>
+                        <Icons.Password className="opacity-60"/>
+                        <input
+                            id="password_confirm"
+                            name="password_confirm"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password confirmation"
+                            autoComplete={"new-password"}
+                            disabled={pending}
+                            aria-invalid={!!errors.password_confirm}
+                            value={formValues.password_confirm ?? ''}
+                            onChange={handleChange('password_confirm')}
+                        />
+                    </div>
+                    <FormFieldError messages={errors.password_confirm}/>
+                </div>
+            </div>
+
+            <div className="form-spacing">
                 <div className="form-element">
                     <label>Preferred Language</label>
                     <div className="flex gap-4 mt-2">
@@ -237,7 +218,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                 </div>
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
                 <div className="form-element flex-row">
                     <input
                         id="terms"

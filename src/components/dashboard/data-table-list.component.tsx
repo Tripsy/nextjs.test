@@ -3,9 +3,9 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {StatusKey, TableRowDate, TableRowStatus} from '@/app/dashboard/components/data-table-row.component';
+import {StatusKey, TableRowDate, TableRowStatus} from '@/components/dashboard/data-table-row.component';
 import {useDebouncedEffect} from '@/hooks';
-import {SERVICES, ServicesTypes} from '@/app/dashboard/config';
+import {DataSourceConfig, DataSourceType} from '@/config/data-source';
 import {
     LazyStateType,
     DataTableColumnType,
@@ -21,35 +21,35 @@ type SelectionChangeEvent<T> = {
     value: T[];
 };
 
-export default function DataTableList<T extends keyof ServicesTypes>(props: DataTablePropsType<T>) {
+export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType<T>) {
     const tableStateKey = useMemo(() => `data-table-state-${props.dataSource}`, [props.dataSource]);
 
     const [error, setError] = useState<Error | null>(null);
 
-    // Render error UI if error exists
+    // This will trigger error boundary
     if (error) {
-        throw error; // This will trigger error boundary
+        throw error;
     }
 
     const [loading, setLoading] = useState(false);
 
-    const [data, setData] = useState<ServicesTypes[T]['entry'][]>([]);
+    const [data, setData] = useState<DataSourceType[T]['entry'][]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const getInitialLazyState = (): LazyStateType<ServicesTypes[T]['filter']> => {
-        const savedState = readFromLocalStorage<LazyStateType<ServicesTypes[T]['filter']>>(tableStateKey);
+    const getInitialLazyState = (): LazyStateType<DataSourceType[T]['filter']> => {
+        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
 
         return {
-            ...(SERVICES[props.dataSource]['defaultParams'] as LazyStateType<ServicesTypes[T]['filter']>),
+            ...(DataSourceConfig[props.dataSource]['defaultParams'] as LazyStateType<DataSourceType[T]['filter']>),
             ...(savedState || {})
         };
     };
 
-    const [lazyState, setLazyState] = useState<LazyStateType<ServicesTypes[T]['filter']>>(getInitialLazyState);
+    const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(getInitialLazyState);
 
-    const [selectedEntry, setSelectedEntry] = useState<ServicesTypes[T]['entry'][]>([]);
+    const [selectedEntry, setSelectedEntry] = useState<DataSourceType[T]['entry'][]>([]);
 
-    const prevSelectedEntryRef = useRef<ServicesTypes[T]['entry'][] | null>(null);
+    const prevSelectedEntryRef = useRef<DataSourceType[T]['entry'][] | null>(null);
 
     const clearSelectedEntry = () => {
         setSelectedEntry([]);
@@ -58,7 +58,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
     };
 
     useEffect(() => {
-        const savedState = readFromLocalStorage<LazyStateType<ServicesTypes[T]['filter']>>(tableStateKey);
+        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
         const filtersChanged = !isEqual(savedState?.filters, props.filters);
 
         if (filtersChanged) {
@@ -75,39 +75,44 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
     useEffect(() => {
         const abortController = new AbortController();
 
-        setLoading(true);
+        (async () => {
+            try {
+                setLoading(true);
 
-        loadLazyData()
-            .then(response => {
-                if (!abortController.signal.aborted) {
+                const response = await loadLazyData(abortController.signal);
+
+                if (response && !abortController.signal.aborted) {
                     setData(response.entries);
                     setTotalRecords(response.pagination.total);
                 }
-            })
-            .catch((err) => {
+            } catch (error) {
                 if (!abortController.signal.aborted) {
-                    setError(err);
+                    setError(error instanceof Error ? error : new Error(String(error)));
                 }
-            })
-            .finally(() => {
+            } finally {
                 if (!abortController.signal.aborted) {
                     setLoading(false);
                 }
-            });
+            }
+        })();
 
         return () => {
             abortController.abort();
         };
     }, [lazyState]);
 
-    const loadLazyData = async () => {
-        const findFunction = SERVICES[props.dataSource]['findFunction'];
+    const loadLazyData = async (signal?: AbortSignal) => {
+        if (signal?.aborted) {
+            return;
+        } // Don't proceed if already aborted
+
+        const findFunction = DataSourceConfig[props.dataSource]['findFunction'];
 
         if (!findFunction) {
             throw new Error(`No fetch function found for ${props.dataSource}`);
         }
 
-        const mapFiltersToApiPayload = (filters: ServicesTypes[T]['filter']): Record<string, any> => {
+        const mapFiltersToApiPayload = (filters: DataSourceType[T]['filter']): Record<string, any> => {
             return Object.entries(filters).reduce((acc, [key, filterObj]) => {
                 if (filterObj?.value != null && filterObj.value !== '') {
                     acc[key === 'global' ? 'term' : key] = filterObj.value;
@@ -126,7 +131,11 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
 
         const data = await findFunction(params);
 
-        if (data === undefined) {
+        if (signal?.aborted) {
+            return;
+        } // Don't proceed if already aborted
+
+        if (!data) {
             throw new Error(`Could not retrieve ${props.dataSource} data`);
         }
 
@@ -154,7 +163,7 @@ export default function DataTableList<T extends keyof ServicesTypes>(props: Data
         }));
     }, []);
 
-    const onSelectionChange = useCallback((event: SelectionChangeEvent<ServicesTypes[T]['entry']>) => {
+    const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['entry']>) => {
         setSelectedEntry(event.value);
 
         if (props.onSelectionChange) {

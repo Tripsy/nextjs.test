@@ -6,17 +6,17 @@ import {
 } from '@/lib/services/user.service';
 import {UserModel} from '@/lib/models/user.model';
 
-export type ServicesTypes = {
+export type DataSourceType = {
     users: {
         filter: UserTableFiltersType;
         entry: UserModel;
     };
 };
 
-export const SERVICES: {
-    [K in keyof ServicesTypes]: {
-        findFunction: DataTableFindFunction<ServicesTypes[K]['entry']>;
-        defaultParams: LazyStateType<ServicesTypes[K]['filter']>;
+export const DataSourceConfig: {
+    [K in keyof DataSourceType]: {
+        findFunction: DataTableFindFunction<DataSourceType[K]['entry']>;
+        defaultParams: LazyStateType<DataSourceType[K]['filter']>;
     }
 } = {
     users: {

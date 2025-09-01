@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import {useSideMenu} from '@/app/dashboard/providers/side-menu.provider';
+import {useSideMenu} from '@/providers/dashboard/side-menu.provider';
 import {Icons} from '@/components/icon.component';
 
 export function SideMenuToggle() {

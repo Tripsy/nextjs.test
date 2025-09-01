@@ -1,13 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes, {RouteAuth} from '@/config/routes';
-import {DashboardProvider} from '@/app/dashboard/providers/dashboard.provider';
-import {SideMenuToggle} from '@/app/dashboard/components/side-menu-toggle.component';
-import {SideMenu} from '@/app/dashboard/components/side-menu.component';
+import {DashboardProvider} from '@/providers/dashboard/dashboard.provider';
+import {SideMenuToggle} from '@/components/dashboard/side-menu-toggle.component';
+import {SideMenu} from '@/components/dashboard/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {NavBreadcrumb} from '@/app/dashboard/components/nav-breadcrumb.component';
-import SideMenuSetter from '@/app/dashboard/components/side-menu.setter';
-import {UserMenu} from '@/app/dashboard/components/user-menu.component';
+import {NavBreadcrumb} from '@/components/dashboard/nav-breadcrumb.component';
+import SideMenuSetter from '@/components/dashboard/side-menu.setter';
+import {UserMenu} from '@/components/dashboard/user-menu.component';
 import ProtectedRoute from '@/components/protected-route.component';
 
 function Header() {

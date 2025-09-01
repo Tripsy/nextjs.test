@@ -1,5 +1,5 @@
 import React from 'react';
-import {ServicesTypes} from '@/app/dashboard/config';
+import {DataSourceType} from '@/config/data-source';
 
 export type LazyStateType<TFilter> = {
     first: number;
@@ -9,15 +9,15 @@ export type LazyStateType<TFilter> = {
     filters: TFilter;
 };
 
-export type DataTablePropsType<T extends keyof ServicesTypes> = {
+export type DataTablePropsType<T extends keyof DataSourceType> = {
     dataSource: T;
     dataKey: string;
     columns: DataTableColumnsType;
-    filters: ServicesTypes[T]['filter'];
+    filters: DataSourceType[T]['filter'];
     selectionMode: 'checkbox' | 'multiple' | null;
-    onRowSelect?: (entry: ServicesTypes[T]['entry']) => void;
-    onRowUnselect?: (entry: ServicesTypes[T]['entry']) => void;
-    onSelectionChange?: (selectedEntries: ServicesTypes[T]['entry'][]) => void;
+    onRowSelect?: (entry: DataSourceType[T]['entry']) => void;
+    onRowUnselect?: (entry: DataSourceType[T]['entry']) => void;
+    onSelectionChange?: (selectedEntries: DataSourceType[T]['entry'][]) => void;
     scrollHeight?: string;
 };
 

@@ -3,6 +3,7 @@ import {RegisterFormValues} from '@/app/account/register/register.definition';
 import {LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';
+import {ApiError} from '@/lib/exceptions/api.error';
 
 export async function registerAccount(params: RegisterFormValues): Promise<any> {
     return await new ApiRequest()
@@ -68,14 +69,19 @@ export async function getAuth(source: string = 'same-site', sessionToken?: strin
         if (fetchResponse?.success) {
             return getResponseData(fetchResponse) || null;
         } else {
-            console.error(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
+            console.warn(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
         }
-    } catch (error: unknown) {
-        // TODO: maybe ignore 401 errors
-        console.error('getAuth', error);
-    }
 
-    return null;
+        return null;
+    } catch (error: unknown) {
+        if (error instanceof ApiError && error.status === 401) {
+            console.warn('Authentication expired', error);
+        } else {
+            console.error('Failed to fetch auth', error);
+        }
+
+        return null;
+    }
 }
 
 export async function logoutAccount(): Promise<any> {
@@ -87,22 +93,28 @@ export async function logoutAccount(): Promise<any> {
 
 export async function clearAuth(): Promise<ResponseFetch<null>> {
     try {
-        await new ApiRequest()
+        const fetchResponse = await new ApiRequest()
             .setRequestMode('same-site')
-            .doFetch('auth', {
+            .doFetch<null>('auth', {
                 method: 'DELETE',
             });
 
         return {
-            message: lang('logout.message.success'),
+            message:  fetchResponse?.message || lang('logout.message.success'),
             success: true,
         };
     } catch (error: unknown) {
-        console.error(error);
+        console.error('Logout failed:', error);
+
+        let message: string = lang('logout.message.error') || 'An error occurred during logout.';
+
+        if (error instanceof Error) {
+            message = error.message;
+        }
 
         return {
             success: false,
-            message: error instanceof Error ? lang('logout.message.error') : 'Network request failed',
+            message: message,
         };
     }
 }

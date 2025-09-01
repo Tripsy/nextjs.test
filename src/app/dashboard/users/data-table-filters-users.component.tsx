@@ -15,6 +15,29 @@ import {Button} from 'primereact/button';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {formatDate, getValidDate, stringToDate} from '@/lib/utils/date';
 
+// TODO rewrite the handle functions with a useReducer
+/*
+function filtersReducer(state: UserTableFiltersType, action: FilterAction): UserTableFiltersType {
+  switch (action.type) {
+    case 'SET_TERM':
+      return { ...state, global: { value: action.value, matchMode: 'contains' } };
+    case 'SET_STATUS':
+      return { ...state, status: { value: action.value, matchMode: 'equals' } };
+    case 'SET_ROLE':
+      return { ...state, role: { value: action.value, matchMode: 'equals' } };
+    case 'SET_IS_DELETED':
+      return { ...state, is_deleted: { value: action.value, matchMode: 'equals' } };
+    case 'SET_CREATE_DATE_START':
+      return { ...state, create_date_start: { value: action.value, matchMode: 'dateAfter' } };
+    case 'SET_CREATE_DATE_END':
+      return { ...state, create_date_end: { value: action.value, matchMode: 'dateBefore' } };
+    case 'RESET':
+      return UserTableFilters;
+    default:
+      return state;
+  }
+}
+ */
 export const DataTableFiltersUsers = ({
     filters,
     setFilterAction,

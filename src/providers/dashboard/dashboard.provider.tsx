@@ -1,6 +1,6 @@
 import React from 'react';
-import {SideMenuProvider} from '@/app/dashboard/providers/side-menu.provider';
-import {BreadcrumbProvider} from '@/app/dashboard/providers/breadcrumb.provider';
+import {SideMenuProvider} from '@/providers/dashboard/side-menu.provider';
+import {BreadcrumbProvider} from '@/providers/dashboard/breadcrumb.provider';
 
 export function DashboardProvider({children}: { children: React.ReactNode }) {
     return (

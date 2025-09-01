@@ -1,6 +1,6 @@
 import React from 'react';
-import NavBreadcrumbSetter from '@/app/dashboard/components/nav-breadcrumb.setter';
-import {BreadcrumbType} from '@/app/dashboard/providers/breadcrumb.provider';
+import NavBreadcrumbSetter from '@/components/dashboard/nav-breadcrumb.setter';
+import {BreadcrumbType} from '@/providers/dashboard/breadcrumb.provider';
 import type {Metadata} from 'next';
 import {DataTableUsers} from '@/app/dashboard/users/data-table-users.component';
 import {lang} from '@/config/lang';

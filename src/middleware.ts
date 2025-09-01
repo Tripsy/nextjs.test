@@ -11,7 +11,7 @@ import {appendCsrfCookieToResponse, prepareCsrfToken} from '@/lib/csrf';
 // import {getRedisClient} from '@/config/init-redis.config';
 
 function blockedOrigin(req: NextRequest) {
-    const ALLOWED_ORIGIN = ['https://localhost:3000', 'http://nextjs.test'];
+    const ALLOWED_ORIGIN = ['http://localhost:3000', 'http://nextjs.test'];
 
     const origin = req.headers.get('origin');
     const referer = req.headers.get('referer');
@@ -327,17 +327,8 @@ export async function middleware(req: NextRequest) {
     return responseSuccess(req);
 }
 
-const EXCLUDE_STATICS = [
-    '_next',
-    'favicon.ico',
-    'robots.txt',
-    '.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)'
-];
-
 export const config = {
     matcher: [
-        `/((?!${EXCLUDE_STATICS.join('|')}).*)`, // Exclude static assets and special files
-        // '/api/:path*', // Exclude all API routes (note: they are skipped in the middleware; if we keep the exclusion here the rate limit will not trigger)
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)).*)',
     ],
-    // runtime: 'nodejs', // default is edge; lack of support for Redis is not resolved by uncommenting this at the moment
 };

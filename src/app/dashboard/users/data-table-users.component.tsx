@@ -8,7 +8,7 @@ import DataTableList, {
     CapitalizeBodyTemplate,
     DateBodyTemplate,
     StatusBodyTemplate
-} from '@/app/dashboard/components/data-table-list.component';
+} from '@/components/dashboard/data-table-list.component';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import {Loading} from '@/components/loading.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
@@ -46,7 +46,6 @@ export const DataTableUsers = (): JSX.Element => {
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
-        // This effect only runs on client-side after mount
         const savedState = readFromLocalStorage<LazyStateType<UserTableFiltersType>>('data-table-state-users');
 
         if (savedState?.filters) {

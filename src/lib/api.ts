@@ -3,7 +3,7 @@ import Routes from '@/config/routes';
 import {cfg} from '@/config/settings';
 
 export function getRemoteApiUrl(path: string): string {
-    path = path.replace(/^\//, ''); // Remove first / if exist
+    path = path.replace(/^\//, ''); // Remove first `/` if exist
 
     return cfg('remoteApi.url') + '/' + path;
 }
@@ -38,20 +38,41 @@ export class ApiRequest {
         return this;
     }
 
-    public setRequestInit(options: RequestInit): this { // TODO: this works but may fail depending on how data is provided (eg: Headers Object vs. Object)
-        const headers = {
-            ...this.requestInit.headers,
-            ...options.headers
-        };
+    // public setRequestInit(options: RequestInit): this { // TODO: REMOVE -  this works but may fail depending on how data is provided (eg: Headers Object vs. Object)
+    //     const headers = {
+    //         ...this.requestInit.headers,
+    //         ...options.headers
+    //     };
+    //
+    //     this.requestInit = {
+    //         ...this.requestInit,
+    //         ...options,
+    //         headers: headers,
+    //     };
+    //
+    //     return this;
+    // }
+
+    public setRequestInit(options: RequestInit): this {
+        const mergedHeaders = new Headers(this.requestInit.headers || {});
+
+        if (options.headers) {
+            const incomingHeaders = new Headers(options.headers);
+
+            incomingHeaders.forEach((value, key) => {
+                mergedHeaders.set(key, value);
+            });
+        }
 
         this.requestInit = {
             ...this.requestInit,
             ...options,
-            headers: headers,
+            headers: mergedHeaders,
         };
 
         return this;
     }
+
 
     private async handleJsonResponse(res: Response) {
         try {

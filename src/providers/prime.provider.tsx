@@ -2,38 +2,47 @@
 
 import {PrimeReactProvider} from 'primereact/api';
 import {useTheme} from '@/providers/theme.provider';
-import {ReactNode, useEffect} from 'react';
+import {ReactNode, useEffect, useRef} from 'react';
 
 export const PrimeProvider = ({children}: { children: ReactNode }) => {
     const {theme} = useTheme();
+    const linksAdded = useRef(false);
 
     useEffect(() => {
-        // Load or update theme CSS dynamically
-        const themeLink = document.getElementById('prime-theme') as HTMLLinkElement | null;
-        const coreLink = document.getElementById('prime-core') as HTMLLinkElement | null;
+        const themeLinkId = 'prime-theme';
+        const coreLinkId = 'prime-core';
+        const themeUrl = `https://unpkg.com/primereact/resources/themes/lara-${theme}-blue/theme.css`;
+        const coreUrl = 'https://unpkg.com/primereact/resources/primereact.min.css';
 
-        if (!themeLink) {
-            const link = document.createElement('link');
-            link.id = 'prime-theme';
-            link.rel = 'stylesheet';
-            link.href = `https://unpkg.com/primereact/resources/themes/lara-${theme}-blue/theme.css`;
-            document.head.appendChild(link);
+        if (!linksAdded.current) {
+            // Theme stylesheet
+            let themeLink = document.getElementById(themeLinkId) as HTMLLinkElement;
+
+            if (!themeLink) {
+                themeLink = document.createElement('link');
+                themeLink.id = themeLinkId;
+                themeLink.rel = 'stylesheet';
+                document.head.appendChild(themeLink);
+            }
+
+            themeLink.href = themeUrl;
+
+            if (!document.getElementById(coreLinkId)) {
+                const coreLink = document.createElement('link');
+                coreLink.id = coreLinkId;
+                coreLink.rel = 'stylesheet';
+                coreLink.href = coreUrl;
+                document.head.appendChild(coreLink);
+            }
+
+            linksAdded.current = true;
         } else {
-            themeLink.href = `https://unpkg.com/primereact/resources/themes/lara-${theme}-blue/theme.css`;
-        }
+            const themeLink = document.getElementById(themeLinkId) as HTMLLinkElement;
 
-        if (!coreLink) {
-            const link = document.createElement('link');
-            link.id = 'prime-core';
-            link.rel = 'stylesheet';
-            link.href = 'https://unpkg.com/primereact/resources/primereact.min.css';
-            document.head.appendChild(link);
+            if (themeLink) {
+                themeLink.href = themeUrl;
+            }
         }
-
-        return () => {
-            themeLink?.remove();
-            coreLink?.remove();
-        };
     }, [theme]);
 
     return (

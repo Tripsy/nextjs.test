@@ -161,6 +161,7 @@ Routes.group('dashboard').auth(RouteAuth.PROTECTED)
     .add('dashboard', '/dashboard')
     .add('user-find', '/dashboard/users', {permission: 'user.find'})
     .add('permission-find', '/dashboard/permissions', {permission: 'permission.find'});
+
 // .add('user-view', '/dashboard/users/:key');
 
 /**
@@ -170,7 +171,7 @@ Routes.group('dashboard').auth(RouteAuth.PROTECTED)
  *
  * @param pathname
  */
-export function isExcludedRoute (pathname: string){
+export function isExcludedRoute(pathname: string) {
     const excludeRoutes = [
         Routes.get('login'),
         Routes.get('register'),

@@ -1,19 +1,18 @@
 # TODO
 
-1. Check login flow
-2. recover password & other account pages
-3. Remove border bottom from paginator
-4. Use `register` for inspiration and update filters on dashboard/users 
-5. check data-table-users.component.ts notes
+1. Finish react documentation recap
+2. Recap nextjs documentation
+3. Check login flow
+4. recover password & other account pages
+5. Remove border bottom from paginator
+6. Rewrite filters with useContext https://react.dev/learn/scaling-up-with-reducer-and-context
+7. Use `register` for inspiration and update filters on dashboard/users 
+8. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-6. terms page
-7. Theme switcher has a glitch on first click?
-8. Replace all console.error with logging
+9. terms page
+10. Theme switcher has a glitch on first click?
+11. Replace all console.error with logging
 
-
-https://nextjs.org/docs/app/api-reference/components/form
-https://nextjs.org/docs/app/api-reference/functions/use-params
-   
 # IDEAS
 
 1. dashboard - add history to keep track of last 10 pages
@@ -38,6 +37,8 @@ https://nextjs.org/docs/app/api-reference/functions/use-params
 # RESOURCES
 
      https://primereact.org/datatable/
+     https://nextjs.org/docs/app/api-reference/functions/use-params
+     https://nextjs.org/docs/app/api-reference/components/form
 
 # INSPIRATION
 
@@ -47,6 +48,9 @@ https://nexus.daisyui.com/auth/register
 
 - It is useful to remember which operations on arrays mutate them, and which don’t. For example, push, pop, reverse, 
 and sort will mutate the original array, but slice, filter, and map will create a new one.
+- When you choose whether to put some logic into an event handler or an Effect, the main question you need to answer 
+is what kind of logic it is from the user’s perspective. If this logic is caused by a particular interaction, 
+keep it in the event handler. If it’s caused by the user seeing the component on the screen, keep it in the Effect.
 
 # SAMPLES
 

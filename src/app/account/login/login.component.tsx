@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useActionState, useEffect, useState} from 'react';
+import React, {useActionState, useEffect, useMemo, useState} from 'react';
 import {loginAction, loginValidate} from '@/app/account/login/login.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
@@ -15,9 +15,8 @@ import {
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useDebouncedEffect} from '@/hooks';
+import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
-import {lang} from '@/config/lang';
 import {Loading} from '@/components/loading.component';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
@@ -28,14 +27,21 @@ export default function Login({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(loginAction, defaultLoginState);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [formValues, setFormValues] = useState<LoginFormValues>(defaultLoginState.values);
-    const [errors, setErrors] = useState<LoginState['errors']>({});
+    const [formValues, setFormValues] = useFormValues<LoginFormValues>(
+        state?.values,
+        defaultLoginState.values
+    );
+
+    const [errors, setErrors] = useFormErrors<LoginState['errors']>(state?.errors);
 
     const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof LoginFormValues, boolean>>>({});
 
     const router = useRouter();
 
-    const {loadingAuth, auth, refreshAuth} = useAuth();
+    const {loadingAuth, setLastRefreshAuth} = useAuth();
+
+    // Redirect if already authenticated
+    useAuthRedirect();
 
     // Debounced validation
     useDebouncedEffect(() => {
@@ -47,33 +53,21 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         }
     }, [formValues, dirtyFields], 800);
 
-    // Initialize form values from server state
-    useEffect(() => {
-        if (state?.values) {
-            setFormValues(state.values);
-        }
-    }, [state?.values]);
-
-    // Combine server errors with local validation
-    useEffect(() => {
-        if (state?.errors) {
-            setErrors(state.errors);
-        }
-    }, [state?.errors]);
-
+    // TODO do I need this to be an useEffect
     useEffect(() => {
         if (state?.situation === 'success' && router) {
             // Reset the last refresh timestamp to retrieve the auth on next render
-            refreshAuth().catch(error => {
-                console.error('Failed to refresh auth:', error);
-            });
+            setLastRefreshAuth(null); // TODO should be replaced with useEffectEvent
 
             // Get the redirect URL from query params with a fallback
             const fromParam = new URLSearchParams(window.location.search).get('from');
-            let redirectUrl = Routes.get('home');
+
+            let redirectUrl;
 
             if (fromParam && !isExcludedRoute(fromParam)) {
                 redirectUrl = fromParam;
+            } else {
+                redirectUrl = Routes.get('home');
             }
 
             // Clean up the URL by removing the param
@@ -82,12 +76,8 @@ export default function Login({csrfInput}: PageComponentPropsType) {
             window.history.replaceState({}, '', newUrl.toString());
 
             router.push(redirectUrl);
-        } else {
-            if (!loadingAuth && auth) {
-                router.push(`${Routes.get('status', {type: 'error'})}?msg=${encodeURIComponent(lang('auth.message.already_logged_in'))}`);
-            }
         }
-    }, [state?.situation, auth, loadingAuth, router]);
+    }, [state?.situation, router]);
 
     const handleChange = (fieldName: keyof LoginFormValues) =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,11 +97,11 @@ export default function Login({csrfInput}: PageComponentPropsType) {
             <h1 className="mb-2">
                 Sign In
             </h1>
-            <div className="form-part form-description mb-6 md:max-w-xs">
+            <div className="form-spacing form-description mb-6 md:max-w-xs">
                 Secure login. Resume your personalized experience.
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
                 <div className="form-element">
                     <label htmlFor="email">Email Address</label>
                     <div className={clsx('input', {'input-error': errors.email})}>
@@ -131,7 +121,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
                 </div>
             </div>
 
-            <div className="form-part">
+            <div className="form-spacing">
                 <div className="form-element">
                     <label htmlFor="password">Password</label>
                     <div className={clsx('input', {'input-error': errors.password})}>
@@ -192,7 +182,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
             {state?.situation === 'max_active_sessions' && state.message && (
                 <>
                     <AuthTokenList
-                        tokens={state.body?.authValidTokens}
+                        tokens={state.body?.authValidTokens || []}
                         status={{
                             message: state.message,
                             error: true
@@ -216,17 +206,15 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
 function AuthTokenList({status, tokens}: {
     status: { message: string, error: boolean },
-    tokens: AuthTokenListType | undefined
+    tokens: AuthTokenListType | []
 }) {
     const [displayStatus, setDisplayStatus] = useState({...status});
-    const [selectedToken, setSelectedToken] = useState<AuthTokenType | null>(null);
+    const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [tokenList, setTokenList] = useState<AuthTokenListType>([...(tokens || [])]);
 
     useEffect(() => {
-        if (tokens) {
-            setTokenList([...tokens]);
-        }
+        setTokenList([...tokens]);
     }, [tokens]);
 
     useEffect(() => {
@@ -241,14 +229,14 @@ function AuthTokenList({status, tokens}: {
         try {
             setLoading(true);
 
-            await removeTokenAccount(selectedToken.ident);
+            await removeTokenAccount(selectedToken);
 
             setDisplayStatus({
                 message: 'Session destroyed successfully. You can retry logging in',
                 error: false
             });
 
-            setTokenList(prev => prev.filter(token => token.ident !== selectedToken.ident));
+            setTokenList(prev => prev.filter(token => token.ident !== selectedToken));
         } catch (err) {
             setDisplayStatus({
                 message: 'Error deleting session',
@@ -259,6 +247,11 @@ function AuthTokenList({status, tokens}: {
             setSelectedToken(null);
         }
     };
+
+    const selectedTokenData: AuthTokenType | undefined = useMemo(
+        () => tokenList.find(token => token.ident === selectedToken),
+        [selectedToken, tokenList]
+    );
 
     return (
         <>
@@ -285,7 +278,7 @@ function AuthTokenList({status, tokens}: {
                         </div>
                         <div
                             className="mt-2 btn btn-neutral btn-delete w-full"
-                            onClick={() => setSelectedToken(token)}
+                            onClick={() => setSelectedToken(token.ident)}
                         >
                             <Icons.Action.Destroy/> Destroy Session
                         </div>
@@ -299,7 +292,7 @@ function AuthTokenList({status, tokens}: {
                                 Are you sure you want to destroy the session?
                             </p>
                             <p className="font-mono text-xs break-words mt-2">
-                                {selectedToken.label}
+                                {selectedTokenData?.label}
                             </p>
                             <div className="flex justify-end gap-2 mt-4">
                                 <button
