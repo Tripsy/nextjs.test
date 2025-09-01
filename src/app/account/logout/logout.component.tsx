@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {logoutAction} from '@/app/account/logout/logout.action';
-import {defaultLogoutState} from '@/app/account/logout/logout.definition';
+import {LogoutDefaultState} from '@/app/account/logout/logout.definition';
 import {Icons} from '@/components/icon.component';
 import {cfg} from '@/config/settings';
 import {lang} from '@/config/lang';
@@ -11,7 +11,7 @@ import Routes from '@/config/routes';
 import {useAuth} from '@/providers/auth.provider';
 
 export default function Logout() {
-    const [state, setState] = useState(defaultLogoutState);
+    const [state, setState] = useState(LogoutDefaultState);
     const {setAuth, setLastRefreshAuth} = useAuth();
 
     useEffect(() => {

@@ -2,8 +2,8 @@ import {FontAwesomeIcon, FontAwesomeIconProps} from '@fortawesome/react-fontawes
 import {
     faArrowRightToBracket,
     faBan,
-    faBars, faBomb,
-    faCircleCheck,
+    faBars,
+    faCircleCheck, faCircleExclamation,
     faCircleInfo,
     faClock, faEnvelope, faEye, faEyeSlash, faKey, faLock,
     faMagnifyingGlass,
@@ -50,7 +50,7 @@ export const Icons = {
         <AwesomeIcon icon={faUserCheck} {...props} />
     ),
     Error: (props: Partial<FontAwesomeIconProps>) => (
-        <AwesomeIcon icon={faBomb} {...props} />
+        <AwesomeIcon icon={faCircleExclamation} {...props} />
     ),
     Warning: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faTriangleExclamation} {...props} />

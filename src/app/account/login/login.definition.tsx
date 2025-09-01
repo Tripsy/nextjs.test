@@ -32,7 +32,7 @@ export type LoginState = {
     body?: { authValidTokens: AuthTokenListType } | undefined;
 };
 
-export const defaultLoginState: LoginState = {
+export const LoginDefaultState: LoginState = {
     values: {
         email: '',
         password: '',

@@ -5,7 +5,7 @@ export type LogoutState = {
     situation: LogoutSituation;
 };
 
-export const defaultLogoutState: LogoutState = {
+export const LogoutDefaultState: LogoutState = {
     message: null,
     situation: null
 };

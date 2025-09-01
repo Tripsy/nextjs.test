@@ -37,7 +37,7 @@ export const RegisterSchema = z.object({
         .string({
             message: lang('register.validation.password_confirm_required')
         })
-        .min(1, {
+        .nonempty({
             message: lang('register.validation.password_confirm_required')
         })
         .trim(),
@@ -83,7 +83,7 @@ export type RegisterState = {
     situation: RegisterSituation;
 };
 
-export const defaultRegisterState: RegisterState = {
+export const RegisterDefaultState: RegisterState = {
     values: {
         name: '',
         email: '',

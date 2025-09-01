@@ -1,18 +1,17 @@
 'use client';
 
-import React, {useActionState, useEffect, useState} from 'react';
+import React, {useActionState, useState} from 'react';
 import {registerAction, registerValidate} from '@/app/account/register/register.action';
 import {Icons} from '@/components/icon.component';
 import clsx from 'clsx';
 import Routes from '@/config/routes';
 import Link from 'next/link';
 import {
-    defaultRegisterState,
-    RegisterState,
+    RegisterDefaultState,
     RegisterFormValues
 } from '@/app/account/register/register.definition';
 import {FormResult} from '@/components/form-result.component';
-import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValues} from '@/hooks';
+import {useAuthRedirect, useFormValidation, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {Loading} from '@/components/loading.component';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
@@ -21,39 +20,38 @@ import {PageComponentPropsType} from '@/types/page-component.type';
 const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Register({csrfInput}: PageComponentPropsType) {
-    const [state, action, pending] = useActionState(registerAction, defaultRegisterState);
+    const [state, action, pending] = useActionState(registerAction, RegisterDefaultState);
     const [showPassword, setShowPassword] = useState(false);
-
-    const [formValues, setFormValues] = useFormValues<RegisterFormValues>(
-        state?.values,
-        defaultRegisterState.values
-    );
-    const [errors, setErrors] = useFormErrors<RegisterState['errors']>(state?.errors);
-
-    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof RegisterFormValues, boolean>>>({});
 
     const {loadingAuth} = useAuth();
 
     // Redirect if already authenticated
     useAuthRedirect();
 
-    const handleChange = (fieldName: keyof RegisterFormValues) =>
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const [formValues, setFormValues] = useFormValues<RegisterFormValues>(
+        state?.values,
+        RegisterDefaultState.values
+    );
 
-            setFormValues(prev => ({...prev, [fieldName]: value}));
-            setDirtyFields(prev => ({...prev, [fieldName]: true}));
-        };
+    const {
+        errors,
+        submitted,
+        isSubmitted,
+        markFieldAsTouched,
+    } = useFormValidation({
+        values: formValues,
+        validate: registerValidate,
+        debounceDelay: 800,
+    });
 
-    // Debounced validation
-    useDebouncedEffect(() => {
-        if (Object.keys(dirtyFields).length > 0) {
-            const validated = registerValidate(formValues);
+    const handleChange = (name: keyof RegisterFormValues, value: string | boolean) => {
+        setFormValues(prev => ({...prev, [name]: value}));
+        markFieldAsTouched(name);
+    };
 
-            setErrors(validated.success ? {} : validated.error.flatten().fieldErrors);
-            setDirtyFields({});
-        }
-    }, [formValues, dirtyFields], 800);
+    const handleSubmit = () => {
+        isSubmitted(true);
+    };
 
     if (loadingAuth) {
         return <Loading />;
@@ -73,7 +71,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
     }
 
     return (
-        <form action={action} className="form-section">
+        <form action={action} className="form-section" onSubmit={handleSubmit}>
             {csrfInput}
             <h1 className="mb-2">
                 Create Account
@@ -96,7 +94,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.name}
                             value={formValues.name ?? ''}
-                            onChange={handleChange('name')}
+                            onChange={(e) => handleChange('name', e.target.value)}
                         />
                     </div>
                     <FormFieldError messages={errors.name}/>
@@ -116,7 +114,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.email}
                             value={formValues.email ?? ''}
-                            onChange={handleChange('email')}
+                            onChange={(e) => handleChange('email', e.target.value)}
                         />
                     </div>
                     <FormFieldError messages={errors.email}/>
@@ -137,7 +135,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.password}
                             value={formValues.password ?? ''}
-                            onChange={handleChange('password')}
+                            onChange={(e) => handleChange('password', e.target.value)}
                         />
                         <button
                             type="button"
@@ -170,7 +168,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.password_confirm}
                             value={formValues.password_confirm ?? ''}
-                            onChange={handleChange('password_confirm')}
+                            onChange={(e) => handleChange('password_confirm', e.target.value)}
                         />
                     </div>
                     <FormFieldError messages={errors.password_confirm}/>
@@ -193,7 +191,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                                 disabled={pending}
                                 aria-invalid={!!errors.language}
                                 checked={formValues.language === 'en'}
-                                onChange={handleChange('language')}
+                                onChange={(e) => handleChange('language', e.target.value)}
                             />
                             <span className="text-sm">English</span>
                         </label>
@@ -209,7 +207,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                                 disabled={pending}
                                 aria-invalid={!!errors.language}
                                 checked={formValues.language === 'ro'}
-                                onChange={handleChange('language')}
+                                onChange={(e) => handleChange('language', e.target.value)}
                             />
                             <span className="text-sm">Română</span>
                         </label>
@@ -231,7 +229,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                         disabled={pending}
                         aria-invalid={!!errors.terms}
                         checked={formValues.terms}
-                        onChange={handleChange('terms')}
+                        onChange={(e) => handleChange('terms', e.target.checked)}
                     />
                     <label className="flex items-center font-normal" htmlFor="terms">
                         <span className="text-sm text-gray-500 dark:text-base-content">
@@ -249,12 +247,21 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                 </div>
             </div>
 
-            <button className="btn btn-info" disabled={pending || !!Object.keys(errors).length} type="submit"
-                    aria-busy={pending}>
+            <button
+                type="submit"
+                className="btn btn-info"
+                disabled={pending || (submitted && Object.keys(errors).length > 0)}
+                aria-busy={pending}
+            >
                 {pending ? (
                     <span className="flex items-center gap-2">
                       <Icons.Loading className="w-4 h-4 animate-spin"/>
                       Please wait...
+                    </span>
+                ) : submitted && Object.keys(errors).length > 0 ? (
+                    <span className="flex items-center gap-2">
+                        <Icons.Error className="w-4 h-4 animate-pulse" />
+                        Fix errors
                     </span>
                 ) : (
                     <span className="flex items-center gap-2">
@@ -263,6 +270,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                     </span>
                 )}
             </button>
+
             {state?.situation === 'error' && state.message && (
                 <div className="form-submit-error">
                     <Icons.Error/> {state.message}

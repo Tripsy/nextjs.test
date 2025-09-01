@@ -1,7 +1,7 @@
 # TODO
 
-1. Finish react documentation recap
-2. Recap nextjs documentation
+1. Test Register Template not found (eg: email-confirm-create - ro - email)
+2. Recap NextJs documentation
 3. Check login flow
 4. recover password & other account pages
 5. Remove border bottom from paginator

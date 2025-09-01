@@ -8,33 +8,25 @@ import Routes, {isExcludedRoute} from '@/config/routes';
 import Link from 'next/link';
 import {
     AuthTokenListType, AuthTokenType,
-    defaultLoginState,
+    LoginDefaultState,
     LoginState,
     LoginFormValues
 } from '@/app/account/login/login.definition';
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValues} from '@/hooks';
+import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValidation, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {Loading} from '@/components/loading.component';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
+import {registerValidate} from '@/app/account/register/register.action';
+import {RegisterFormValues} from '@/app/account/register/register.definition';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Login({csrfInput}: PageComponentPropsType) {
-    const [state, action, pending] = useActionState(loginAction, defaultLoginState);
-    const [showPassword, setShowPassword] = useState(false);
-
-    const [formValues, setFormValues] = useFormValues<LoginFormValues>(
-        state?.values,
-        defaultLoginState.values
-    );
-
-    const [errors, setErrors] = useFormErrors<LoginState['errors']>(state?.errors);
-
-    const [dirtyFields, setDirtyFields] = useState<Partial<Record<keyof LoginFormValues, boolean>>>({});
+    const [state, action, pending] = useActionState(loginAction, LoginDefaultState);
 
     const router = useRouter();
 
@@ -43,15 +35,32 @@ export default function Login({csrfInput}: PageComponentPropsType) {
     // Redirect if already authenticated
     useAuthRedirect();
 
-    // Debounced validation
-    useDebouncedEffect(() => {
-        if (Object.keys(dirtyFields).length > 0) {
-            const validated = loginValidate(formValues);
+    const [showPassword, setShowPassword] = useState(false);
 
-            setErrors(validated.success ? {} : validated.error.flatten().fieldErrors);
-            setDirtyFields({});
-        }
-    }, [formValues, dirtyFields], 800);
+    const [formValues, setFormValues] = useFormValues<LoginFormValues>(
+        state?.values,
+        LoginDefaultState.values
+    );
+
+    const {
+        errors,
+        submitted,
+        isSubmitted,
+        markFieldAsTouched,
+    } = useFormValidation({
+        values: formValues,
+        validate: loginValidate,
+        debounceDelay: 800,
+    });
+
+    const handleChange = (name: keyof LoginFormValues, value: string | boolean) => {
+        setFormValues(prev => ({...prev, [name]: value}));
+        markFieldAsTouched(name);
+    };
+
+    const handleSubmit = () => {
+        isSubmitted(true);
+    };
 
     // TODO do I need this to be an useEffect
     useEffect(() => {
@@ -79,20 +88,12 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         }
     }, [state?.situation, router]);
 
-    const handleChange = (fieldName: keyof LoginFormValues) =>
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-
-            setFormValues(prev => ({...prev, [fieldName]: value}));
-            setDirtyFields(prev => ({...prev, [fieldName]: true}));
-        };
-
     if (loadingAuth) {
         return <Loading/>;
     }
 
     return (
-        <form action={action} className="form-section">
+        <form action={action} className="form-section" onSubmit={handleSubmit}>
             {csrfInput}
             <h1 className="mb-2">
                 Sign In
@@ -114,7 +115,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.email}
                             value={formValues.email ?? ''}
-                            onChange={handleChange('email')}
+                            onChange={(e) => handleChange('email', e.target.value)}
                         />
                     </div>
                     <FormFieldError messages={errors.email}/>
@@ -135,7 +136,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
                             disabled={pending}
                             aria-invalid={!!errors.password}
                             value={formValues.password ?? ''}
-                            onChange={handleChange('password')}
+                            onChange={(e) => handleChange('password', e.target.value)}
                         />
                         <button
                             type="button"
@@ -155,20 +156,25 @@ export default function Login({csrfInput}: PageComponentPropsType) {
             </div>
 
             <button
-                className="btn btn-info"
-                disabled={pending || !!Object.keys(errors).length}
                 type="submit"
+                className="btn btn-info"
+                disabled={pending || (submitted && Object.keys(errors).length > 0)}
                 aria-busy={pending}
             >
                 {pending ? (
                     <span className="flex items-center gap-2">
-                      <Icons.Loading className="w-4 h-4 animate-spin"/>
-                      Please wait...
+                        <Icons.Loading className="w-4 h-4 animate-spin"/>
+                        Please wait...
+                    </span>
+                ) : submitted && Object.keys(errors).length > 0 ? (
+                    <span className="flex items-center gap-2">
+                        <Icons.Error className="w-4 h-4 animate-pulse" />
+                        Fix errors
                     </span>
                 ) : (
                     <span className="flex items-center gap-2">
-                      <Icons.Login/>
-                      Login
+                        <Icons.Login/>
+                        Login
                     </span>
                 )}
             </button>
