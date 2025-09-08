@@ -8,24 +8,24 @@ export async function logoutAction(): Promise<LogoutState> {
     try {
         const fetchResponse: ResponseFetch<null> = await logoutAccount();
 
-        if (fetchResponse.success) {
+        if (fetchResponse?.success) {
             const authResponse = await clearAuth();
 
-            if (!authResponse.success) {
+            if (!authResponse?.success) {
                 return {
-                    message: authResponse.message || null,
+                    message: authResponse?.message || null,
                     situation: 'error'
                 };
             }
         }
 
         return {
-            message: fetchResponse.message || null,
-            situation: fetchResponse.success ? 'success' : 'error'
+            message: fetchResponse?.message || null,
+            situation: fetchResponse?.success ? 'success' : 'error'
         };
     } catch (error: unknown) {
         let message: string = lang('logout.message.error') ?? 'An error occurred during logout.';
-        let situation: LogoutSituation = 'error';
+        const situation: LogoutSituation = 'error';
 
         if (error instanceof ApiError) {
             switch (error.status) {

@@ -6,7 +6,8 @@ import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
 
 async function handler(req: NextRequest, path: string[]) {
     const token = await getSessionToken();
-    const url = getRemoteApiUrl(path.join('/'));
+    const baseUrl = getRemoteApiUrl(path.join('/'));
+    const url = `${baseUrl}${req.nextUrl.search || ''}`;
 
     const headers = {
         'Content-Type': 'application/json',

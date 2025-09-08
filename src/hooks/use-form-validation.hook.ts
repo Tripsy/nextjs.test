@@ -1,13 +1,14 @@
 import {useState, useCallback} from 'react';
 import {useDebouncedEffect} from '@/hooks/use-debounced-effect.hook';
+import {ZodError} from 'zod';
 
-interface UseFormValidationProps<T extends Record<string, any>> {
+interface UseFormValidationProps<T> {
     values: T;
-    validate: (values: T) => { success: boolean; error?: any };
+    validate: (values: T) => { success: boolean; error?: ZodError<T> };
     debounceDelay?: number;
 }
 
-export function useFormValidation<T extends Record<string, any>>({
+export function useFormValidation<T extends Record<string, unknown>>({
     values,
     validate,
     debounceDelay = 800,
@@ -47,16 +48,16 @@ export function useFormValidation<T extends Record<string, any>>({
             if (validated.success) {
                 setErrors({});
             } else {
-                const fieldErrors = validated.error?.flatten?.().fieldErrors || {};
+                const fieldErrors = (validated.error?.flatten().fieldErrors || {}) as Partial<Record<keyof T, string[]>>;
 
-                const filteredErrors = submitted
-                    ? fieldErrors
-                    : Object.keys(fieldErrors)
-                        .filter(key => touchedFields[key as keyof T])
+                const filteredErrors = submitted ? fieldErrors :
+                    (Object.keys(fieldErrors) as (keyof T)[])
+                        .filter(key => touchedFields[key])
                         .reduce((acc, key) => {
-                            acc[key as keyof T] = fieldErrors[key as keyof T];
+                            acc[key] = fieldErrors[key]; // ✅ now TS is happy
                             return acc;
                         }, {} as Partial<Record<keyof T, string[]>>);
+
 
                 setErrors(filteredErrors);
             }

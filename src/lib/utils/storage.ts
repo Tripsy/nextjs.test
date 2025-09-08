@@ -7,7 +7,7 @@ export function readFromLocalStorage<T>(key: string): T | null {
         }
 
         return JSON.parse(data) as T;
-    } catch (error) {
+    } catch {
         return null;
     }
 }

@@ -1,6 +1,9 @@
 import {Icons} from '@/components/icon.component';
 import ValueError from '@/lib/exceptions/value.error';
 import {formatDate} from '@/lib/utils/date';
+import {DataTableColumnType} from '@/types/data-table.type';
+import {capitalizeFirstLetter} from '@/lib/utils/string';
+import React from 'react';
 
 const statusList = {
     active: {
@@ -45,3 +48,29 @@ export function TableRowStatus({status}: { status: StatusKey }) {
 export function TableRowDate({date}: { date: Date | string }) {
     return <span>{date ? formatDate(date) : '-'}</span>;
 }
+
+export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: string }) => {
+    const status = entry.deleted_at ? 'deleted' : entry.status;
+
+    return <TableRowStatus status={status}/>;
+};
+
+export const DateBodyTemplate = <T extends Record<string, unknown>>(
+    entry: T,
+    column: DataTableColumnType<T>
+) => {
+    const value = entry[column.field];
+
+    // Only treat it as Date or string if possible
+    const date: Date | string = value instanceof Date ? value : new Date(value as string);
+
+    return <TableRowDate date={date} />;
+};
+
+export const CapitalizeBodyTemplate = <T extends Record<string, unknown>>(
+    entry: T,
+    column: DataTableColumnType<T>
+) => {
+    const value = entry[column.field];
+    return capitalizeFirstLetter(String(value));
+};

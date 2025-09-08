@@ -11,6 +11,8 @@ export function formatCurrency(value: number, currency: string = 'USD'): string 
     });
 }
 
+export type ObjectValue = string | number | boolean | null | undefined | ObjectValue[] | { [key: string]: ObjectValue };
+
 /**
  * Get the value of a key in an object
  * ex: key = "user.create"
@@ -19,8 +21,16 @@ export function formatCurrency(value: number, currency: string = 'USD'): string 
  * @param {string} key - The key to get the value of
  * @returns {any} - The value of the key
  */
-export function getObjectValue(obj: Record<string, any>, key: string): any {
-    return key.split('.').reduce((acc, part) => acc && acc[part], obj);
+export function getObjectValue(
+    obj: { [key: string]: ObjectValue },
+    key: string
+): ObjectValue | undefined {
+    return key.split('.').reduce<ObjectValue | undefined>((acc, part) => {
+        if (acc && typeof acc === "object" && !Array.isArray(acc) && part in acc) {
+            return (acc as { [key: string]: ObjectValue })[part];
+        }
+        return undefined;
+    }, obj);
 }
 
 /**
@@ -57,6 +67,6 @@ export function getNameInitials(name: string | undefined): string {
     return (parts[0][0] + '.'+ parts[1][0]).toUpperCase();
 }
 
-export function randomString(type: string = 'uuid'): string {
+export function randomString(): string {
     return uuid();
 }

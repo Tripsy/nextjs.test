@@ -12,9 +12,9 @@ export type ResponseFetch<T> = {
     data?: T;
     message: string;
     success: boolean;
-};
+} | undefined;
 
-export function getResponseData<T = any>(response: ResponseFetch<T> | undefined): T | undefined {
+export function getResponseData<T>(response: ResponseFetch<T>): T | undefined {
     return response?.data as T;
 }
 
@@ -93,14 +93,10 @@ export class ApiRequest {
 
         // Handle network errors or aborted requests
         if (error instanceof Error && error.name === 'AbortError') {
-            throw new ApiError('Request timeout', 408, null);
+            throw new ApiError('Request timeout', 408);
         }
 
-        throw new ApiError(
-            error instanceof Error ? error.message : 'Network request failed',
-            0,
-            null
-        );
+        throw new ApiError(error instanceof Error ? error.message : 'Network request failed', 0);
     }
 
     private buildProxyRoute(path: string) {
@@ -130,7 +126,7 @@ export class ApiRequest {
         }
     }
 
-    public async doFetch<T = any>(path: string, requestInit: RequestInit = {}): Promise<ResponseFetch<T> | undefined> {
+    public async doFetch<T>(path: string, requestInit: RequestInit = {}): Promise<ResponseFetch<T>> {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), ApiRequest.ABORT_TIMEOUT);
 

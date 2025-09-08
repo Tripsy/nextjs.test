@@ -33,7 +33,7 @@ export default function Logout() {
                 }
             }
         })();
-    }, []); // TODO is this logic okay? should I use useEffectEvent?
+    }, [setAuth, setLastRefreshAuth]);
 
     return (
         <>

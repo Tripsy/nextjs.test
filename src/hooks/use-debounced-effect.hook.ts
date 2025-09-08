@@ -1,13 +1,13 @@
-import {useEffect} from 'react';
+import {DependencyList, useEffect} from 'react';
 
 export function useDebouncedEffect(
     effect: () => void,
-    deps: any[],
+    deps: DependencyList,
     delay: number
 ) {
     useEffect(() => {
         const handler = setTimeout(() => effect(), delay);
 
         return () => clearTimeout(handler);
-    }, [...deps, delay]);
+    }, [deps, delay, effect]);
 }

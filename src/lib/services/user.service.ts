@@ -1,4 +1,4 @@
-import {ApiRequest, getResponseData} from '@/lib/api';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {DataTableFilterMetaData} from 'primereact/datatable';
 import {
     LazyStateType,
@@ -33,7 +33,7 @@ export const UserTableParams: LazyStateType<UserTableFiltersType> = {
     filters: UserTableFilters
 };
 
-export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel>> => {
+export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel> | undefined> => {
     const query = new URLSearchParams({
         order_by: String(params.order_by),
         direction: params.direction,
@@ -42,8 +42,8 @@ export const findUser = async (params: DataTableFindParamsType): Promise<DataTab
         filter: JSON.stringify(params.filter)
     });
 
-    const response = await new ApiRequest()
+    const response: ResponseFetch<DataTableFindResponseType<UserModel>> = await new ApiRequest()
         .doFetch(`/users?${query}`);
 
-    return getResponseData(response);
+    return getResponseData<DataTableFindResponseType<UserModel>>(response);
 }

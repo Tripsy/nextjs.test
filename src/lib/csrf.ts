@@ -18,7 +18,7 @@ export function prepareCsrfToken(request: NextRequest): {csrfRefresh: boolean, c
 
     return {
         csrfRefresh: csrfRefresh,
-        csrfToken: existingToken || randomString('uuid')
+        csrfToken: existingToken || randomString()
     }
 }
 
@@ -51,7 +51,7 @@ export async function fetchCsrfToken() {
     try {
         const result = await new ApiRequest()
             .setRequestMode('same-site')
-            .doFetch('csrf', {
+            .doFetch<{csrfToken: string}>('csrf', {
                 method: 'GET'
             });
 

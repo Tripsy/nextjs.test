@@ -4,17 +4,18 @@ import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.servic
 import React, {JSX, useCallback, useEffect, useState} from 'react';
 import {Icons} from '@/components/icon.component';
 import {LazyStateType, DataTableColumnsType, DataTablePropsType} from '@/types/data-table.type';
-import DataTableList, {
-    CapitalizeBodyTemplate,
-    DateBodyTemplate,
-    StatusBodyTemplate
-} from '@/components/dashboard/data-table-list.component';
+import DataTableList from '@/components/dashboard/data-table-list.component';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import {Loading} from '@/components/loading.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
 import {UserModel} from '@/lib/models/user.model';
+import {
+    CapitalizeBodyTemplate,
+    DateBodyTemplate,
+    StatusBodyTemplate
+} from '@/components/dashboard/data-table-row.component';
 
-export const onRowSelect = (entry: UserModel) => {
+export const handleRowSelect = (entry: UserModel) => {
     console.log('show')
     console.log(entry)
     // toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: `Name: ${event.data.name}`, life: 3000 });
@@ -27,7 +28,7 @@ export const onRowUnselect = (entry: UserModel) => {
 };
 
 export const DataTableUsers = (): JSX.Element => {
-    const TableColumns: DataTableColumnsType = [
+    const TableColumns: DataTableColumnsType<UserModel> = [
         {field: 'id', header: 'ID', sortable: true},
         {field: 'name', header: 'Name', sortable: true},
         {field: 'email', header: 'Email'},
@@ -81,9 +82,9 @@ export const DataTableUsers = (): JSX.Element => {
         <div className="standard-box p-4 shadow-md">
             <DataTableFiltersUsers filters={filters} setFilterAction={setFilters} />
 
-            // TODO
-            // make this a separate component  DataTableActions
-            // when single entry is selected show edit / activate / deactivate & restore
+            {/*// TODO*/}
+            {/*// make this a separate component  DataTableActions*/}
+            {/*// when single entry is selected show edit / activate / deactivate & restore*/}
             <div className="my-6 pt-4 border-t border-line flex justify-between">
                 <div className="flex items-center gap-2">
                     {isMultipleSelectionMode(selectionMode) && (
@@ -109,7 +110,7 @@ export const DataTableUsers = (): JSX.Element => {
             <DataTableList
                 dataSource="users" dataKey="id" columns={TableColumns}
                 filters={filters}
-                selectionMode="checkbox" onSelectionChange={handleSelectionChange} onRowSelect={onRowSelect} onRowUnselect={onRowUnselect}
+                selectionMode="checkbox" onSelectionChange={handleSelectionChange} onRowSelect={handleRowSelect} onRowUnselect={onRowUnselect}
                 scrollHeight="400px"
             />
         </div>

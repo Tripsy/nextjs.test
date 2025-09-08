@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {Notice} from '@/components/notice.component';
 import {useParams, useSearchParams} from 'next/navigation';

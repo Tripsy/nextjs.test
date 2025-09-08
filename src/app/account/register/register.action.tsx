@@ -58,12 +58,12 @@ export async function registerAction(state: RegisterState, formData: FormData): 
         return {
             ...result,
             errors: {},
-            message: fetchResponse.message,
-            situation: fetchResponse.success ? 'success' : 'error'
+            message: fetchResponse?.message || null,
+            situation: fetchResponse?.success ? 'success' : 'error'
         };
     } catch (error: unknown) {
         let message: string = lang('register.message.error');
-        let situation: RegisterSituation = 'error';
+        const situation: RegisterSituation = 'error';
 
         if (error instanceof ApiError) {
             switch (error.status) {

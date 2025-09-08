@@ -8,7 +8,7 @@ class RedisClient {
         if (!RedisClient.instance) {
             RedisClient.instance = new Redis({
                 host: cfg('redis.host'),
-                port: cfg('redis.port'),
+                port: parseInt(cfg('redis.port')),
                 password: cfg('redis.password'),
             });
 

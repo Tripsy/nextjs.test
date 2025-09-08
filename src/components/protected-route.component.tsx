@@ -27,11 +27,13 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
     const router = useRouter();
     const pathname = usePathname();
 
+    const validRouteAuth = useMemo(() => new Set(['authenticated', 'protected', 'unauthenticated']), []);
+
     useEffect(() => {
         if (!loadingAuth && [RouteAuth.AUTHENTICATED, RouteAuth.PROTECTED].includes(routeAuth) && !auth) {
             router.push(`${Routes.get('login')}?from=${encodeURIComponent(pathname)}`);
         }
-    }, [auth, loadingAuth, routeAuth]);
+    }, [auth, loadingAuth, pathname, routeAuth, router]);
 
     useEffect(() => {
         if (!loadingAuth && routeAuth === RouteAuth.PROTECTED && auth && !routePermission) {
@@ -48,8 +50,6 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
     if (routeAuth === RouteAuth.PUBLIC) {
         return <>{children}</>;
     }
-
-    const validRouteAuth = useMemo(() => new Set(['authenticated', 'protected', 'unauthenticated']), []);
 
     if (!validRouteAuth.has(routeAuth)) {
         return (

@@ -51,16 +51,16 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
     }
 
     try {
-        const fetchResponse: ResponseFetch<{token: string}> = await loginAccount(validated.data);
+        const fetchResponse = await loginAccount(validated.data);
 
-        if (fetchResponse.success && fetchResponse.data?.token) {
+        if (fetchResponse?.success && fetchResponse.data && 'token' in fetchResponse.data) {
             const authResponse = await createAuth(fetchResponse.data.token);
 
-            if (!authResponse.success) {
+            if (!authResponse?.success) {
                 return {
                     ...result,
                     errors: {},
-                    message: authResponse.message || null,
+                    message: authResponse?.message || null,
                     situation: 'error'
                 };
             }
@@ -69,13 +69,13 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
         return {
             ...result,
             errors: {},
-            message: fetchResponse.message || null,
-            situation: fetchResponse.success ? 'success' : 'error'
+            message: fetchResponse?.message || null,
+            situation: fetchResponse?.success ? 'success' : 'error'
         };
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
         let situation: LoginSituation = 'error';
-        let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> | undefined = undefined;
+        let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> = undefined;
 
         if (error instanceof ApiError) {
             switch (error.status) {
@@ -85,7 +85,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
                 case 403:
                     message = lang('login.message.max_active_sessions');
                     situation = 'max_active_sessions';
-                    responseBody = error.response
+                    responseBody = error.response as ResponseFetch<{ authValidTokens: AuthTokenListType }>
                     break;
                 case 406:
                     situation = 'success'; // Already logged in

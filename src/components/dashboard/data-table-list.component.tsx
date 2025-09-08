@@ -3,17 +3,15 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {StatusKey, TableRowDate, TableRowStatus} from '@/components/dashboard/data-table-row.component';
 import {useDebouncedEffect} from '@/hooks';
 import {DataSourceConfig, DataSourceType} from '@/config/data-source';
 import {
     LazyStateType,
     DataTableColumnType,
-    DataTableFindParamsType, DataTablePropsType
+    DataTablePropsType, DataTableFindParamsFilterType
 } from '@/types/data-table.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import isEqual from 'fast-deep-equal';
-import {capitalizeFirstLetter} from '@/lib/utils/string';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
 
 type SelectionChangeEvent<T> = {
@@ -51,11 +49,11 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
 
     const prevSelectedEntryRef = useRef<DataSourceType[T]['entry'][] | null>(null);
 
-    const clearSelectedEntry = () => {
+    const clearSelectedEntry = useCallback(() => {
         setSelectedEntry([]);
         props.onSelectionChange?.([]); // Notify parent of selection changes
         prevSelectedEntryRef.current = null;
-    };
+    }, []);
 
     useEffect(() => {
         const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
@@ -70,7 +68,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             first: filtersChanged ? 0 : savedState?.first ?? prev.first,
             filters: {...props.filters},
         }));
-    }, [props.filters]);
+    }, [clearSelectedEntry, props.filters, tableStateKey]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -79,7 +77,46 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             try {
                 setLoading(true);
 
-                const response = await loadLazyData(abortController.signal);
+                const mapFiltersToApiPayload = (filters: DataSourceType[T]['filter']): DataTableFindParamsFilterType => {
+                    return Object.entries(filters).reduce((acc, [key, filterObj]) => {
+                        if (filterObj?.value != null && filterObj.value !== '') {
+                            acc[key === 'global' ? 'term' : key] = filterObj.value;
+                        }
+                        return acc;
+                    }, {} as DataTableFindParamsFilterType);
+                };
+
+                const loadLazyData = async (dataSource: T, signal?: AbortSignal) => {
+                    if (signal?.aborted) {
+                        return;
+                    } // Don't proceed if already aborted
+
+                    const findFunction = DataSourceConfig[dataSource]['findFunction'];
+
+                    if (!findFunction) {
+                        throw new Error(`No fetch function found for ${dataSource}`);
+                    }
+
+                    const data = await findFunction({
+                        order_by: lazyState.sortField,
+                        direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
+                        limit: lazyState.rows,
+                        page: lazyState.rows > 0 ? Math.floor(lazyState.first / lazyState.rows) + 1 : 1,
+                        filter: mapFiltersToApiPayload(lazyState.filters),
+                    });
+
+                    if (signal?.aborted) {
+                        return;
+                    } // Don't proceed if already aborted
+
+                    if (!data) {
+                        throw new Error(`Could not retrieve ${dataSource} data`);
+                    }
+
+                    return data;
+                };
+
+                const response = await loadLazyData(props.dataSource, abortController.signal);
 
                 if (response && !abortController.signal.aborted) {
                     setData(response.entries);
@@ -99,48 +136,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         return () => {
             abortController.abort();
         };
-    }, [lazyState]);
-
-    const loadLazyData = async (signal?: AbortSignal) => {
-        if (signal?.aborted) {
-            return;
-        } // Don't proceed if already aborted
-
-        const findFunction = DataSourceConfig[props.dataSource]['findFunction'];
-
-        if (!findFunction) {
-            throw new Error(`No fetch function found for ${props.dataSource}`);
-        }
-
-        const mapFiltersToApiPayload = (filters: DataSourceType[T]['filter']): Record<string, any> => {
-            return Object.entries(filters).reduce((acc, [key, filterObj]) => {
-                if (filterObj?.value != null && filterObj.value !== '') {
-                    acc[key === 'global' ? 'term' : key] = filterObj.value;
-                }
-                return acc;
-            }, {} as Record<string, any>);
-        };
-
-        const params: DataTableFindParamsType = {
-            order_by: lazyState.sortField,
-            direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
-            limit: lazyState.rows,
-            page: lazyState.rows > 0 ? Math.floor(lazyState.first / lazyState.rows) + 1 : 1,
-            filter: mapFiltersToApiPayload(lazyState.filters),
-        };
-
-        const data = await findFunction(params);
-
-        if (signal?.aborted) {
-            return;
-        } // Don't proceed if already aborted
-
-        if (!data) {
-            throw new Error(`Could not retrieve ${props.dataSource} data`);
-        }
-
-        return data;
-    };
+    }, [lazyState, props.dataSource]);
 
     const onPage = useCallback((event: DataTablePageEvent) => {
         clearSelectedEntry();
@@ -150,7 +146,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             first: event.first,
             rows: event.rows,
         }));
-    }, []);
+    }, [clearSelectedEntry]);
 
     const onSort = useCallback((event: DataTableSortEvent) => {
         clearSelectedEntry();
@@ -161,7 +157,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             sortField: event.sortField,
             sortOrder: event.sortOrder,
         }));
-    }, []);
+    }, [clearSelectedEntry]);
 
     const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['entry']>) => {
         setSelectedEntry(event.value);
@@ -187,7 +183,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
     }, [selectedEntry], 1000);
 
     const tableColumns = useMemo(() => (
-        props.columns.map((column: DataTableColumnType) => (
+        props.columns.map((column: DataTableColumnType<DataSourceType[T]['entry']>) => (
             <Column
                 key={column.field}
                 field={column.field}
@@ -234,19 +230,3 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         </DataTable>
     );
 }
-
-export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: string }) => {
-    const status = entry.deleted_at ? 'deleted' : entry.status;
-
-    return <TableRowStatus status={status}/>;
-};
-
-export const DateBodyTemplate = (entry: Record<string, any>, column: DataTableColumnType) => {
-    const date: Date | string = entry[column.field];
-
-    return <TableRowDate date={date}/>;
-};
-
-export const CapitalizeBodyTemplate = (entry: Record<string, any>, column: DataTableColumnType) => {
-    return capitalizeFirstLetter(entry[column.field]);
-};

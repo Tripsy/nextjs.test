@@ -1,6 +1,6 @@
-import {getObjectValue} from '@/lib/utils/string';
+import {getObjectValue, ObjectValue} from '@/lib/utils/string';
 
-const settings = {
+const settingsConfig: { [key: string]: ObjectValue } = {
     environment: process.env.NODE_ENV || 'development',
     url: process.env.FRONTEND_URL || 'http://nextjs.test',
     name: process.env.FRONTEND_APP_NAME || 'sample-nextjs-client',
@@ -30,6 +30,6 @@ const settings = {
     },
 };
 
-export function cfg(key: string): any {
-    return getObjectValue(settings, key);
+export function cfg(key: string): string {
+    return getObjectValue(settingsConfig, key) as string;
 }

@@ -9,19 +9,15 @@ import Link from 'next/link';
 import {
     AuthTokenListType, AuthTokenType,
     LoginDefaultState,
-    LoginState,
     LoginFormValues
 } from '@/app/account/login/login.definition';
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useAuthRedirect, useDebouncedEffect, useFormErrors, useFormValidation, useFormValues} from '@/hooks';
+import {useAuthRedirect, useFormValidation, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
-import {Loading} from '@/components/loading.component';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
-import {registerValidate} from '@/app/account/register/register.action';
-import {RegisterFormValues} from '@/app/account/register/register.definition';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
@@ -30,7 +26,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
     const router = useRouter();
 
-    const {loadingAuth, setLastRefreshAuth} = useAuth();
+    const {setLastRefreshAuth} = useAuth();
 
     // Redirect if already authenticated
     useAuthRedirect();
@@ -58,15 +54,10 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    const handleSubmit = () => {
-        isSubmitted(true);
-    };
-
-    // TODO do I need this to be an useEffect
     useEffect(() => {
         if (state?.situation === 'success' && router) {
             // Reset the last refresh timestamp to retrieve the auth on next render
-            setLastRefreshAuth(null); // TODO should be replaced with useEffectEvent
+            setLastRefreshAuth(null);
 
             // Get the redirect URL from query params with a fallback
             const fromParam = new URLSearchParams(window.location.search).get('from');
@@ -86,14 +77,16 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
             router.push(redirectUrl);
         }
-    }, [state?.situation, router]);
-
-    if (loadingAuth) {
-        return <Loading/>;
-    }
+    }, [state?.situation, router, setLastRefreshAuth]);
 
     return (
-        <form action={action} className="form-section" onSubmit={handleSubmit}>
+        <form
+            action={async (formData) => {
+                isSubmitted(true);
+                action(formData);
+            }}
+            className="form-section"
+        >
             {csrfInput}
             <h1 className="mb-2">
                 Sign In
@@ -243,7 +236,7 @@ function AuthTokenList({status, tokens}: {
             });
 
             setTokenList(prev => prev.filter(token => token.ident !== selectedToken));
-        } catch (err) {
+        } catch {
             setDisplayStatus({
                 message: 'Error deleting session',
                 error: true

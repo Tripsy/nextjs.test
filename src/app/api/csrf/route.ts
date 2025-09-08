@@ -34,7 +34,7 @@ export async function GET(request: NextRequest): Promise<NextResponseCsrfToken> 
         }
 
         return response;
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             {
                 data: {

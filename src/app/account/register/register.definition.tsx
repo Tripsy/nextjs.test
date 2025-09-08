@@ -7,8 +7,8 @@ export const RegisterSchema = z.object({
         .string({
             message: lang('register.validation.name_invalid')
         })
-        .min(cfg('user.nameMinLength'), {
-            message: lang('register.validation.name_min', {min: cfg('user.nameMinLength').toString()}),
+        .min(parseInt(cfg('user.nameMinLength')), {
+            message: lang('register.validation.name_min', {min: cfg('user.nameMinLength')}),
         })
         .trim(),
     email: z
@@ -21,8 +21,8 @@ export const RegisterSchema = z.object({
         .trim(),
     password: z
         .string({message: lang('register.validation.password_invalid')})
-        .min(cfg('user.passwordMinLength'), {
-            message: lang('register.validation.password_min', {min: cfg('user.passwordMinLength').toString()}),
+        .min(parseInt(cfg('user.passwordMinLength')), {
+            message: lang('register.validation.password_min', {min: cfg('user.passwordMinLength')}),
         })
         .refine((value) => /[A-Z]/.test(value), {
             message: lang('register.validation.password_condition_capital_letter'),

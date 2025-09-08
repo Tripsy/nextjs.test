@@ -35,7 +35,7 @@ function blockedOrigin(req: NextRequest) {
             if (ALLOWED_ORIGIN.includes(refererOrigin)) {
                 return false; // Not blocked
             }
-        } catch (e) {
+        } catch {
             console.warn('Invalid referer URL:', referer);
         }
     }
@@ -198,7 +198,7 @@ function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined
  */
 async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<AuthModel> {
     try {
-        const fetchResponse: ResponseFetch<AuthModel> | undefined = await new ApiRequest()
+        const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
             .setRequestMode('remote-api')
             .doFetch('/account/details', {
                 method: 'GET',

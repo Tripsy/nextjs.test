@@ -12,7 +12,7 @@ export type LazyStateType<TFilter> = {
 export type DataTablePropsType<T extends keyof DataSourceType> = {
     dataSource: T;
     dataKey: string;
-    columns: DataTableColumnsType;
+    columns: DataTableColumnsType<DataSourceType[T]['entry']>;
     filters: DataSourceType[T]['filter'];
     selectionMode: 'checkbox' | 'multiple' | null;
     onRowSelect?: (entry: DataSourceType[T]['entry']) => void;
@@ -21,15 +21,17 @@ export type DataTablePropsType<T extends keyof DataSourceType> = {
     scrollHeight?: string;
 };
 
+export type DataTableFindParamsFilterType = Record<string, string | number | boolean>;
+
 export type DataTableFindParamsType = {
     order_by: string;
     direction: 'ASC' | 'DESC';
     limit: number;
     page: number;
-    filter: Record<string, any>;
+    filter: DataTableFindParamsFilterType;
 };
 
-export type DataTableFindResponseType<TEntry = Record<string, any>> = {
+export type DataTableFindResponseType<TEntry> = {
     entries: TEntry[];
     pagination: {
         page: number;
@@ -38,19 +40,19 @@ export type DataTableFindResponseType<TEntry = Record<string, any>> = {
     };
 };
 
-export type DataTableFindFunction<TEntry = Record<string, any>> = (
+export type DataTableFindFunction<TEntry> = (
     params: DataTableFindParamsType
-) => Promise<DataTableFindResponseType<TEntry>>;
+) => Promise<DataTableFindResponseType<TEntry> | undefined>;
 
-export type DataTableColumnType = {
-    field: string;
+export type DataTableColumnType<TEntry> = {
+    field: keyof TEntry & string;
     header: string;
     sortable?: boolean;
-    body?: (rowData: any, column: DataTableColumnType) => React.JSX.Element | string;
+    body?: (rowData: TEntry, column: DataTableColumnType<TEntry>) => React.JSX.Element | string;
     style?: React.CSSProperties;
 };
 
-export type DataTableColumnsType = DataTableColumnType[];
+export type DataTableColumnsType<TEntry> = DataTableColumnType<TEntry>[];
 
 export type TableFiltersType<TFilter> = {
     filters: TFilter;

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ResponseFetch
         });
 
         return appendSessionToken(response, token);
-    } catch (error) {
+    } catch {
         return NextResponse.json({
             data: null,
             message: 'Invalid request body',

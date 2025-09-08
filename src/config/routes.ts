@@ -137,7 +137,7 @@ class RoutesCollection {
     }
 }
 
-let Routes = new RoutesCollection();
+const Routes = new RoutesCollection();
 
 Routes.add('home', '/');
 Routes.add('status', '/status/:type');

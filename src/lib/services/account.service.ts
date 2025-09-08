@@ -1,11 +1,12 @@
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {RegisterFormValues} from '@/app/account/register/register.definition';
-import {LoginFormValues} from '@/app/account/login/login.definition';
+import {AuthTokenListType, LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';
 import {ApiError} from '@/lib/exceptions/api.error';
+import {UserModel} from '@/lib/models/user.model';
 
-export async function registerAccount(params: RegisterFormValues): Promise<any> {
+export async function registerAccount(params: RegisterFormValues): Promise<ResponseFetch<UserModel>> {
     return await new ApiRequest()
         .doFetch('/account/register', {
             method: 'POST',
@@ -13,7 +14,7 @@ export async function registerAccount(params: RegisterFormValues): Promise<any> 
         });
 }
 
-export async function loginAccount(params: LoginFormValues): Promise<any> {
+export async function loginAccount(params: LoginFormValues): Promise<ResponseFetch<{token: string} | { authValidTokens: AuthTokenListType }>> {
     return await new ApiRequest()
         .doFetch('/account/login', {
             method: 'POST',
@@ -21,7 +22,7 @@ export async function loginAccount(params: LoginFormValues): Promise<any> {
         });
 }
 
-export async function removeTokenAccount(token: string): Promise<any> {
+export async function removeTokenAccount(token: string): Promise<ResponseFetch<null>> {
     return await new ApiRequest()
         .doFetch('/account/token', {
             method: 'DELETE',
@@ -47,7 +48,7 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
 
 export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<AuthModel> {
     try {
-        let fetchResponse: ResponseFetch<AuthModel> | undefined;
+        let fetchResponse: ResponseFetch<AuthModel>;
 
         if (source === 'same-site') {
             fetchResponse = await new ApiRequest()
@@ -84,7 +85,7 @@ export async function getAuth(source: string = 'same-site', sessionToken?: strin
     }
 }
 
-export async function logoutAccount(): Promise<any> {
+export async function logoutAccount(): Promise<ResponseFetch<null>> {
     return await new ApiRequest()
         .doFetch('/account/logout', {
             method: 'DELETE'

@@ -49,10 +49,6 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    const handleSubmit = () => {
-        isSubmitted(true);
-    };
-
     if (loadingAuth) {
         return <Loading />;
     }
@@ -63,7 +59,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                 title="Account Created"
             >
                 <div>
-                    <p>We've sent a verification email to <span className="font-semibold">{formValues.email}</span>.</p>
+                    <p>We&apos;ve sent a verification email to <span className="font-semibold">{formValues.email}</span>.</p>
                     <p>Please check your inbox and click the verification link to activate your account.</p>
                 </div>
             </FormResult>
@@ -71,7 +67,13 @@ export default function Register({csrfInput}: PageComponentPropsType) {
     }
 
     return (
-        <form action={action} className="form-section" onSubmit={handleSubmit}>
+        <form
+            action={async (formData) => {
+                isSubmitted(true);
+                action(formData);
+            }}
+            className="form-section"
+        >
             {csrfInput}
             <h1 className="mb-2">
                 Create Account
@@ -189,7 +191,6 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                                     'radio-info': !errors.language
                                 })}
                                 disabled={pending}
-                                aria-invalid={!!errors.language}
                                 checked={formValues.language === 'en'}
                                 onChange={(e) => handleChange('language', e.target.value)}
                             />
@@ -205,7 +206,6 @@ export default function Register({csrfInput}: PageComponentPropsType) {
                                     'radio-info': !errors.language
                                 })}
                                 disabled={pending}
-                                aria-invalid={!!errors.language}
                                 checked={formValues.language === 'ro'}
                                 onChange={(e) => handleChange('language', e.target.value)}
                             />

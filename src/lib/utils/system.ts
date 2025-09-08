@@ -53,7 +53,7 @@ export function appendSessionToken<T = unknown>(res: NextResponse<T>, token: str
             secure: cfg('environment') === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: cfg('user.sessionMaxAge'),
+            maxAge: parseInt(cfg('user.sessionMaxAge')),
         });
     }
 

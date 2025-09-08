@@ -11,8 +11,10 @@ export function useFormValues<T>(
     }));
 
     useEffect(() => {
-        if (externalValues && !isEqual(formValues, externalValues)) {
-            setFormValues({...externalValues});
+        if (externalValues) {
+            setFormValues(prev =>
+                isEqual(prev, externalValues) ? prev : {...externalValues}
+            );
         }
     }, [externalValues]);
 

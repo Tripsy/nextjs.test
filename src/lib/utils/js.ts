@@ -18,7 +18,7 @@ export const setCookie = function (name: string, value: string, expireSeconds: n
     let expires = '';
 
     if (expireSeconds) {
-        let date = new Date();
+        const date = new Date();
 
         date.setTime(date.getTime() + expireSeconds * 1000);
 

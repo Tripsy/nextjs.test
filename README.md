@@ -1,17 +1,18 @@
 # TODO
 
-1. Test Register Template not found (eg: email-confirm-create - ro - email)
-2. Recap NextJs documentation
-3. Check login flow
-4. recover password & other account pages
-5. Remove border bottom from paginator
-6. Rewrite filters with useContext https://react.dev/learn/scaling-up-with-reducer-and-context
-7. Use `register` for inspiration and update filters on dashboard/users 
-8. check data-table-users.component.ts notes
+1. setup eslinst
+2. Test Register Template not found (eg: email-confirm-create - ro - email)
+3. Recap NextJs documentation
+4. Check login flow
+5. recover password & other account pages
+6. Remove border bottom from paginator
+7. Rewrite filters with useContext https://react.dev/learn/scaling-up-with-reducer-and-context
+8. Use `register` for inspiration and update filters on dashboard/users 
+9. check data-table-users.component.ts notes
      consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-9. terms page
-10. Theme switcher has a glitch on first click?
-11. Replace all console.error with logging
+10. terms page
+11. Theme switcher has a glitch on first click?
+12. Replace all console.error with logging
 
 # IDEAS
 
