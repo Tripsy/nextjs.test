@@ -178,6 +178,16 @@
         @apply border-none ml-0;
     }
 
+    /* Data table */
+
+    .dashboard-layout .p-paginator.data-table-paginator {
+        @apply relative !border-b-0;
+    }
+
+    .dashboard-layout .p-paginator.data-table-paginator .data-table-paginator-showing {
+        @apply absolute left-0 hidden md:block text-sm px-4;
+    }
+
     /* Default layout */
 
     .default-layout {

@@ -1,10 +1,10 @@
-import {TableFiltersType} from '@/types/data-table.type';
-import {UserTableFilters, UserTableFiltersType} from '@/lib/services/user.service';
-import React, {useEffect, useState} from 'react';
-import {useDebouncedEffect} from '@/hooks';
+'use client';
+
+import {UserTableFiltersType, UserTableParams} from '@/lib/services/user.service';
+import React, {useCallback} from 'react';
+import {useDataTableFilters} from '@/hooks';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
-import {Checkbox, CheckboxChangeEvent} from 'primereact/checkbox';
-import {Nullable} from 'primereact/ts-helpers';
+import {Checkbox} from 'primereact/checkbox';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
 import {IconField} from 'primereact/iconfield';
 import {InputIcon} from 'primereact/inputicon';
@@ -13,107 +13,61 @@ import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {Button} from 'primereact/button';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
-import {formatDate, getValidDate, stringToDate} from '@/lib/utils/date';
+import {getValidDate, stringToDate} from '@/lib/utils/date';
+import {Loading} from '@/components/loading.component';
+import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 
-// TODO rewrite the handle functions with a useReducer
-/*
-function filtersReducer(state: UserTableFiltersType, action: FilterAction): UserTableFiltersType {
-  switch (action.type) {
-    case 'SET_TERM':
-      return { ...state, global: { value: action.value, matchMode: 'contains' } };
-    case 'SET_STATUS':
-      return { ...state, status: { value: action.value, matchMode: 'equals' } };
-    case 'SET_ROLE':
-      return { ...state, role: { value: action.value, matchMode: 'equals' } };
-    case 'SET_IS_DELETED':
-      return { ...state, is_deleted: { value: action.value, matchMode: 'equals' } };
-    case 'SET_CREATE_DATE_START':
-      return { ...state, create_date_start: { value: action.value, matchMode: 'dateAfter' } };
-    case 'SET_CREATE_DATE_END':
-      return { ...state, create_date_end: { value: action.value, matchMode: 'dateBefore' } };
-    case 'RESET':
-      return UserTableFilters;
-    default:
-      return state;
-  }
+type FiltersActionUsers = FiltersAction<UserTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
+
+function filtersReducerUsers(state: UserTableFiltersType, action: FiltersActionUsers): UserTableFiltersType {
+    switch (action.type) {
+        case 'SET_ROLE':
+            return {...state, role: {value: action.value, matchMode: 'equals'}};
+        default:
+            return filtersReducer<UserTableFiltersType>(state, action);
+    }
 }
- */
-export const DataTableFiltersUsers = ({
-    filters,
-    setFilterAction,
-}: TableFiltersType<UserTableFiltersType>): React.JSX.Element => {
-    const [tempFilters, setTempFilters] = useState(filters);
 
-    useEffect(() => {
-        setTempFilters(filters); // sync on external changes (like localStorage restore)
-    }, [filters]);
+const statuses = Object.values(UserStatusEnum).map((status) => ({
+    label: capitalizeFirstLetter(status),
+    value: status,
+}));
 
-    useDebouncedEffect(() => {
-        setFilterAction(tempFilters);
-    }, [tempFilters], 1000);
+const roles = Object.values(UserRoleEnum).map((role) => ({
+    label: capitalizeFirstLetter(role),
+    value: role,
+}));
 
-    const handleTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTempFilters({
-            ...tempFilters,
-            global: {value: e.target.value, matchMode: 'contains'},
-        });
-    };
+export const DataTableFiltersUsers = (): React.JSX.Element => {
+    const {loading, tempFilters, dispatchFilters} = useDataTableFilters<'users'>(filtersReducerUsers);
 
-    const handleStatusChange = (e: DropdownChangeEvent) => {
-        setTempFilters({
-            ...tempFilters,
-            status: {value: e.value, matchMode: 'equals'},
-        });
-    };
+    const {
+        handleTermChange,
+        handleStatusChange,
+        handleIsDeletedChange,
+        handleCreateDateStartChange,
+        handleCreateDateEndChange
+    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<UserTableFiltersType>>);
 
-    const handleRoleChange = (e: DropdownChangeEvent) => {
-        setTempFilters({
-            ...tempFilters,
-            role: {value: e.value, matchMode: 'equals'},
-        });
-    };
+    const dispatchFiltersSpecific = dispatchFilters as React.Dispatch<FiltersActionUsers>;
 
-    const handleIsDeletedChange = (e: CheckboxChangeEvent) => {
-        setTempFilters({
-            ...tempFilters,
-            is_deleted: { value: e.target.checked, matchMode: 'equals' },
-        });
-    };
+    const handleRoleChange = useCallback(
+        (e: DropdownChangeEvent) => dispatchFiltersSpecific({type: 'SET_ROLE', value: e.value}),
+        [dispatchFiltersSpecific]
+    );
 
-    const handleCreateDateStartChange = (e: { value: Nullable<Date> }) => {
-        setTempFilters({
-            ...tempFilters,
-            create_date_start: {
-                value: formatDate(e.value),
-                matchMode: 'dateAfter'
-            },
-        });
-    };
+    const handleReset = useCallback(() => {
+        dispatchFilters({type: 'SYNC', state: UserTableParams.filters});
+    }, [dispatchFilters]);
 
-    const handleCreateDateEndChange = (e: { value: Nullable<Date> }) => {
-        setTempFilters({
-            ...tempFilters,
-            create_date_end: {
-                value: formatDate(e.value),
-                matchMode: 'dateBefore'
-            },
-        });
-    };
-
-    const handleReset = () => {
-        setTempFilters(UserTableFilters);
-        // The debounced effect will automatically trigger setFilterAction
-    };
-
-    const statuses = Object.values(UserStatusEnum).map((status) => ({
-        label: capitalizeFirstLetter(status),
-        value: status,
-    }));
-
-    const roles = Object.values(UserRoleEnum).map((role) => ({
-        label: capitalizeFirstLetter(role),
-        value: role,
-    }));
+    // Show loading state while hydrating
+    if (!loading) {
+        return (
+            <div className="flex justify-center items-center h-32 text-xl">
+                <Loading text="Please wait..."/>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-wrap gap-4 mb-4">

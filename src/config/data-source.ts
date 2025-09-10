@@ -13,14 +13,25 @@ export type DataSourceType = {
     };
 };
 
-export const DataSourceConfig: {
+const DataSourceConfig: {
     [K in keyof DataSourceType]: {
-        findFunction: DataTableFindFunction<DataSourceType[K]['entry']>;
         defaultParams: LazyStateType<DataSourceType[K]['filter']>;
+        findFunction: DataTableFindFunction<DataSourceType[K]['entry']>;
+        onRowSelect?: (entry: DataSourceType[K]['entry']) => void;
+        onRowUnselect?: (entry: DataSourceType[K]['entry']) => void;
     }
 } = {
     users: {
-        findFunction: findUser,
         defaultParams: UserTableParams,
+        findFunction: findUser,
+        onRowSelect: (entry: UserModel) => console.log('selected',entry),
+        onRowUnselect: (entry: UserModel) => console.log('unselected', entry),
     },
 };
+
+export function getDataSourceConfig<
+    K extends keyof DataSourceType,
+    P extends keyof typeof DataSourceConfig[K]
+>(dataSource: K, prop: P): (typeof DataSourceConfig)[K][P] {
+    return DataSourceConfig[dataSource][prop];
+}

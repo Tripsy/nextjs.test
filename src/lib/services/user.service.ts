@@ -16,21 +16,19 @@ export type UserTableFiltersType = {
     is_deleted: DataTableFilterMetaData;
 };
 
-export const UserTableFilters: UserTableFiltersType = {
-    global: {value: null, matchMode: 'contains'},
-    role: {value: null, matchMode: 'equals'},
-    status: {value: null, matchMode: 'equals'},
-    create_date_start: {value: null, matchMode: 'equals'},
-    create_date_end: {value: null, matchMode: 'equals'},
-    is_deleted: {value: null, matchMode: 'equals'},
-};
-
 export const UserTableParams: LazyStateType<UserTableFiltersType> = {
     first: 0,
     rows: 10,
     sortField: 'id',
     sortOrder: -1,
-    filters: UserTableFilters
+    filters: {
+        global: {value: null, matchMode: 'contains'},
+        role: {value: null, matchMode: 'equals'},
+        status: {value: null, matchMode: 'equals'},
+        create_date_start: {value: null, matchMode: 'equals'},
+        create_date_end: {value: null, matchMode: 'equals'},
+        is_deleted: {value: null, matchMode: 'equals'},
+    }
 };
 
 export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel> | undefined> => {

@@ -9,15 +9,11 @@ export type LazyStateType<TFilter> = {
     filters: TFilter;
 };
 
+export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
+
 export type DataTablePropsType<T extends keyof DataSourceType> = {
-    dataSource: T;
     dataKey: string;
     columns: DataTableColumnsType<DataSourceType[T]['entry']>;
-    filters: DataSourceType[T]['filter'];
-    selectionMode: 'checkbox' | 'multiple' | null;
-    onRowSelect?: (entry: DataSourceType[T]['entry']) => void;
-    onRowUnselect?: (entry: DataSourceType[T]['entry']) => void;
-    onSelectionChange?: (selectedEntries: DataSourceType[T]['entry'][]) => void;
     scrollHeight?: string;
 };
 
@@ -53,8 +49,3 @@ export type DataTableColumnType<TEntry> = {
 };
 
 export type DataTableColumnsType<TEntry> = DataTableColumnType<TEntry>[];
-
-export type TableFiltersType<TFilter> = {
-    filters: TFilter;
-    setFilterAction: (filters: TFilter) => void;
-};

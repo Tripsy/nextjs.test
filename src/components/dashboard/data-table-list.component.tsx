@@ -1,10 +1,9 @@
 'use client';
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {useDebouncedEffect} from '@/hooks';
-import {DataSourceConfig, DataSourceType} from '@/config/data-source';
+import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
 import {
     LazyStateType,
     DataTableColumnType,
@@ -13,6 +12,7 @@ import {
 import {readFromLocalStorage} from '@/lib/utils/storage';
 import isEqual from 'fast-deep-equal';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
+import {useDataTable} from '@/providers/dashboard/data-table-provider';
 
 type SelectionChangeEvent<T> = {
     originalEvent: React.SyntheticEvent;
@@ -20,7 +20,9 @@ type SelectionChangeEvent<T> = {
 };
 
 export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType<T>) {
-    const tableStateKey = useMemo(() => `data-table-state-${props.dataSource}`, [props.dataSource]);
+    const {dataSource, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, filters} = useDataTable<T>();
+
+    const tableStateKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
 
     const [error, setError] = useState<Error | null>(null);
 
@@ -36,39 +38,30 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
 
     const getInitialLazyState = (): LazyStateType<DataSourceType[T]['filter']> => {
         const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
+        const defaultState = getDataSourceConfig(dataSource, 'defaultParams');
 
         return {
-            ...(DataSourceConfig[props.dataSource]['defaultParams'] as LazyStateType<DataSourceType[T]['filter']>),
+            ...defaultState,
             ...(savedState || {})
         };
     };
 
     const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(getInitialLazyState);
 
-    const [selectedEntry, setSelectedEntry] = useState<DataSourceType[T]['entry'][]>([]);
-
-    const prevSelectedEntryRef = useRef<DataSourceType[T]['entry'][] | null>(null);
-
-    const clearSelectedEntry = useCallback(() => {
-        setSelectedEntry([]);
-        props.onSelectionChange?.([]); // Notify parent of selection changes
-        prevSelectedEntryRef.current = null;
-    }, []);
-
     useEffect(() => {
         const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
-        const filtersChanged = !isEqual(savedState?.filters, props.filters);
+        const filtersChanged = !isEqual(savedState?.filters, filters);
 
         if (filtersChanged) {
-            clearSelectedEntry();
+            clearSelectedEntries();
         }
 
         setLazyState((prev) => ({
             ...prev,
             first: filtersChanged ? 0 : savedState?.first ?? prev.first,
-            filters: {...props.filters},
+            filters: {...filters},
         }));
-    }, [clearSelectedEntry, props.filters, tableStateKey]);
+    }, [clearSelectedEntries, filters, tableStateKey]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -86,12 +79,12 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
                     }, {} as DataTableFindParamsFilterType);
                 };
 
-                const loadLazyData = async (dataSource: T, signal?: AbortSignal) => {
+                const loadLazyData = async (signal?: AbortSignal) => {
                     if (signal?.aborted) {
                         return;
                     } // Don't proceed if already aborted
 
-                    const findFunction = DataSourceConfig[dataSource]['findFunction'];
+                    const findFunction = getDataSourceConfig(dataSource, 'findFunction');
 
                     if (!findFunction) {
                         throw new Error(`No fetch function found for ${dataSource}`);
@@ -116,7 +109,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
                     return data;
                 };
 
-                const response = await loadLazyData(props.dataSource, abortController.signal);
+                const response = await loadLazyData(abortController.signal);
 
                 if (response && !abortController.signal.aborted) {
                     setData(response.entries);
@@ -136,20 +129,20 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         return () => {
             abortController.abort();
         };
-    }, [lazyState, props.dataSource]);
+    }, [dataSource, lazyState]);
 
     const onPage = useCallback((event: DataTablePageEvent) => {
-        clearSelectedEntry();
+        clearSelectedEntries();
 
         setLazyState(prev => ({
             ...prev,
             first: event.first,
             rows: event.rows,
         }));
-    }, [clearSelectedEntry]);
+    }, [clearSelectedEntries]);
 
     const onSort = useCallback((event: DataTableSortEvent) => {
-        clearSelectedEntry();
+        clearSelectedEntries();
 
         setLazyState(prev => ({
             ...prev,
@@ -157,30 +150,11 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             sortField: event.sortField,
             sortOrder: event.sortOrder,
         }));
-    }, [clearSelectedEntry]);
+    }, [clearSelectedEntries]);
 
     const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['entry']>) => {
-        setSelectedEntry(event.value);
-
-        if (props.onSelectionChange) {
-            props.onSelectionChange(event.value); // Notify parent of selection changes
-        }
-    }, [props.onSelectionChange]);
-
-    useDebouncedEffect(() => {
-        const prevSelected = prevSelectedEntryRef.current;
-        const selected = selectedEntry;
-
-        if (selected.length === 1 && props.onRowSelect) {
-            props.onRowSelect(selected[0]);
-        }
-
-        if (selected.length === 0 && prevSelected && prevSelected.length === 1 && props.onRowUnselect) {
-            props.onRowUnselect(prevSelected[0]);
-        }
-
-        prevSelectedEntryRef.current = selected;
-    }, [selectedEntry], 1000);
+        setSelectedEntries(event.value);
+    }, [setSelectedEntries]);
 
     const tableColumns = useMemo(() => (
         props.columns.map((column: DataTableColumnType<DataSourceType[T]['entry']>) => (
@@ -198,7 +172,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
     const paginatorTemplate = useMemo(() => ({
         layout: 'CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
         CurrentPageReport: (options: PaginatorCurrentPageReportOptions) => (
-            <div className="absolute left-0 hidden md:block text-sm">
+            <div className="data-table-paginator-showing">
                 Showing {options.first} to {options.last} of {options.totalRecords} entries
             </div>
         )
@@ -207,7 +181,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
     return (
         <DataTable
             value={data} lazy
-            dataKey={props.dataKey} selectionMode={props.selectionMode} selection={selectedEntry}
+            dataKey={props.dataKey} selectionMode={selectionMode} selection={selectedEntries}
             metaKeySelection={false}
             selectionPageOnly={true} onSelectionChange={onSelectionChange}
             first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords}
@@ -220,9 +194,9 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             filters={lazyState.filters}
             paginator rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate={paginatorTemplate}
-            paginatorClassName="relative"
+            paginatorClassName="data-table-paginator"
         >
-            {props.selectionMode === 'multiple' && (
+            {selectionMode === 'multiple' && (
                 <Column selectionMode="multiple" headerStyle={{width: '1rem'}}/>
             )}
 

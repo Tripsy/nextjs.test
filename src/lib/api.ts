@@ -38,21 +38,6 @@ export class ApiRequest {
         return this;
     }
 
-    // public setRequestInit(options: RequestInit): this { // TODO: REMOVE -  this works but may fail depending on how data is provided (eg: Headers Object vs. Object)
-    //     const headers = {
-    //         ...this.requestInit.headers,
-    //         ...options.headers
-    //     };
-    //
-    //     this.requestInit = {
-    //         ...this.requestInit,
-    //         ...options,
-    //         headers: headers,
-    //     };
-    //
-    //     return this;
-    // }
-
     public setRequestInit(options: RequestInit): this {
         const mergedHeaders = new Headers(this.requestInit.headers || {});
 
