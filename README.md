@@ -4,7 +4,6 @@
 2. Recap NextJs documentation
 3. Check login flow
 4. recover password & other account pages
-5. For single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
 6. terms page
 7. Theme switcher has a glitch on first click?
 8. Replace all console.error with logging
