@@ -1,6 +1,6 @@
 'use client';
 
-import {UserTableFiltersType, UserTableParams} from '@/lib/services/user.service';
+import {UserTableFiltersType} from '@/lib/services/user.service';
 import React, {useCallback} from 'react';
 import {useDataTableFilters} from '@/hooks';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
@@ -11,7 +11,6 @@ import {InputIcon} from 'primereact/inputicon';
 import {Icons} from '@/components/icon.component';
 import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
-import {Button} from 'primereact/button';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {getValidDate, stringToDate} from '@/lib/utils/date';
 import {Loading} from '@/components/loading.component';
@@ -55,10 +54,6 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         (e: DropdownChangeEvent) => dispatchFiltersSpecific({type: 'SET_ROLE', value: e.value}),
         [dispatchFiltersSpecific]
     );
-
-    const handleReset = useCallback(() => {
-        dispatchFilters({type: 'SYNC', state: UserTableParams.filters});
-    }, [dispatchFilters]);
 
     // Show loading state while hydrating
     if (!loading) {
@@ -153,7 +148,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-1 justify-center">
+            <div className="flex flex-col justify-center">
                 <div>&nbsp;</div>
                 <div className="flex items-center gap-2">
                     <Checkbox
@@ -165,16 +160,6 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                         Show Deleted
                     </label>
                 </div>
-            </div>
-            <div className="flex items-end">
-                <Button
-                    size="small"
-                    onClick={handleReset}
-                    severity="secondary"
-                    text raised
-                >
-                    Reset Filters
-                </Button>
             </div>
         </div>
     );

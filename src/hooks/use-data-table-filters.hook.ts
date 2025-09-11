@@ -11,26 +11,19 @@ export function useDataTableFilters<K extends keyof DataSourceType>(
 ) {
     const reducer = customReducer ? customReducer : filtersReducer;
 
-    const {filters, setFilters} = useDataTable<K>();
+    const {dataStorageKey, defaultFilters, filters, setFilters} = useDataTable<K>();
     const [loading, setLoading] = useState(false);
-    // const [tempFilters, dispatchFilters] = useReducer(
-    //     reducer as React.Reducer<DataSourceType[K]['filter'], FiltersAction<DataSourceType[K]['filter']>>,
-    //     filters
-    // );
-    const [tempFilters, dispatchFilters] = useReducer(
-        reducer,
-        filters
-    );
+    const [tempFilters, dispatchFilters] = useReducer(reducer, filters);
 
     useEffect(() => {
-        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[K]['filter']>>('data-table-state-users');
+        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[K]['filter']>>(dataStorageKey);
 
         if (savedState?.filters) {
             setFilters(savedState.filters);
         }
 
         setLoading(true);
-    }, [setFilters]);
+    }, [dataStorageKey, setFilters]);
 
     useEffect(() => {
         dispatchFilters({type: 'SYNC', state: filters});
@@ -40,5 +33,5 @@ export function useDataTableFilters<K extends keyof DataSourceType>(
         setFilters(tempFilters);
     }, [tempFilters], 1000);
 
-    return {loading, tempFilters, dispatchFilters};
+    return {loading, defaultFilters, tempFilters, dispatchFilters};
 }

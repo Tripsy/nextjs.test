@@ -10,7 +10,6 @@ import {
     DataTablePropsType, DataTableFindParamsFilterType
 } from '@/types/data-table.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
-import isEqual from 'fast-deep-equal';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
 import {useDataTable} from '@/providers/dashboard/data-table-provider';
 
@@ -20,9 +19,7 @@ type SelectionChangeEvent<T> = {
 };
 
 export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType<T>) {
-    const {dataSource, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, filters} = useDataTable<T>();
-
-    const tableStateKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
+    const {dataSource, dataStorageKey, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, filters} = useDataTable<T>();
 
     const [error, setError] = useState<Error | null>(null);
 
@@ -37,7 +34,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
     const [totalRecords, setTotalRecords] = useState(0);
 
     const getInitialLazyState = (): LazyStateType<DataSourceType[T]['filter']> => {
-        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
+        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(dataStorageKey);
         const defaultState = getDataSourceConfig(dataSource, 'defaultParams');
 
         return {
@@ -48,20 +45,30 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
 
     const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(getInitialLazyState);
 
-    useEffect(() => {
-        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(tableStateKey);
-        const filtersChanged = !isEqual(savedState?.filters, filters);
+    // useEffect(() => {
+    //     const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(dataStorageKey);
+    //     const filtersChanged = !isEqual(savedState?.filters, filters);
+    //
+    //     if (filtersChanged) {
+    //         clearSelectedEntries();
+    //     }
+    //
+    //     setLazyState((prev) => ({
+    //         ...prev,
+    //         first: filtersChanged ? 0 : savedState?.first ?? prev.first,
+    //         filters: {...filters},
+    //     }));
+    // }, [clearSelectedEntries, filters, dataStorageKey]);
 
-        if (filtersChanged) {
-            clearSelectedEntries();
-        }
+    useEffect(() => {
+        clearSelectedEntries();
 
         setLazyState((prev) => ({
             ...prev,
-            first: filtersChanged ? 0 : savedState?.first ?? prev.first,
+            first: 0,
             filters: {...filters},
         }));
-    }, [clearSelectedEntries, filters, tableStateKey]);
+    }, [clearSelectedEntries, filters, dataStorageKey]);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -190,7 +197,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
             stripedRows
             scrollable scrollHeight={props.scrollHeight || 'flex'}
             resizableColumns reorderableColumns
-            stateStorage="local" stateKey={tableStateKey}
+            stateStorage="local" stateKey={dataStorageKey}
             filters={lazyState.filters}
             paginator rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate={paginatorTemplate}

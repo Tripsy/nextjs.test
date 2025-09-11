@@ -4,13 +4,10 @@
 2. Recap NextJs documentation
 3. Check login flow
 4. recover password & other account pages
-
-5. Use `register` for inspiration and update filters on dashboard/users 
-6. check data-table-users.component.ts notes
-     consider idea - for single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
-7. terms page
-8. Theme switcher has a glitch on first click?
-9. Replace all console.error with logging
+5. For single selection: onRowSelect - present actions (edit / delete) - at mouse position (see statamic)
+6. terms page
+7. Theme switcher has a glitch on first click?
+8. Replace all console.error with logging
 
 # IDEAS
 

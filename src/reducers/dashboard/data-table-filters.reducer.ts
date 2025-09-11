@@ -50,5 +50,8 @@ export function createFilterHandlers<FiltersType>(
 
         handleCreateDateEndChange: (e: { value: Nullable<Date> }) =>
             dispatch({ type: 'SET_CREATE_DATE_END', value: formatDate(e.value) }),
+
+        handleReset: (defaultFilters: FiltersType) =>
+            dispatch({ type: 'SYNC', state: defaultFilters }),
     };
 }

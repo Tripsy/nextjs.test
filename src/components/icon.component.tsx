@@ -1,6 +1,6 @@
 import {FontAwesomeIcon, FontAwesomeIconProps} from '@fortawesome/react-fontawesome';
 import {
-    faArrowRightToBracket,
+    faArrowRightToBracket, faArrowsRotate,
     faBan,
     faBars,
     faCircleCheck, faCircleExclamation,
@@ -99,6 +99,9 @@ export const Icons = {
         ),
         Destroy: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faPlugCircleXmark} {...props} />
+        ),
+        Reset: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faArrowsRotate} {...props} />
         )
     }
 };

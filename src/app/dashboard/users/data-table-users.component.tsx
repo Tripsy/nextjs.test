@@ -25,18 +25,6 @@ const TableColumns: DataTableColumnsType<UserModel> = [
     {field: 'created_at', header: 'Created At', sortable: true, body: DateBodyTemplate},
 ];
 
-// export const onRowSelectUser = (entry: UserModel) => {
-//     console.log('show')
-//     console.log(entry)
-//     // toast.current?.show({ severity: 'info', summary: 'Product Selected', detail: `Name: ${event.data.name}`, life: 3000 });
-// };
-//
-// export const onRowUnselectUser = (entry: UserModel) => {
-//     console.log('hide')
-//     console.log(entry)
-//     // toast.current?.show({ severity: 'warn', summary: 'Product Unselected', detail: `Name: ${event.data.name}`, life: 3000 });
-// };
-
 //TODO
 // const handleDeleteSelected = () => {
 //     // Your delete logic here
@@ -52,7 +40,7 @@ export const DataTableUsers = (): JSX.Element => {
     }
 
     return (
-        <DataTableProvider dataSource="users" selectionMode={null} defaultFilters={UserTableParams.filters}>
+        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultFilters={UserTableParams.filters}>
             <div className="standard-box p-4 shadow-md">
                 <DataTableFiltersUsers/>
                 <DataTableActions/>

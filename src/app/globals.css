@@ -78,10 +78,6 @@
         }
     }
 
-    .btn-info {
-        @apply dark:text-primary-content;
-    }
-
     /* Badges */
 
     .badge-neutral {

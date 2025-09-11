@@ -1,16 +1,18 @@
 'use client';
 
-import React, {createContext, useState, ReactNode, useContext, useRef, useCallback} from 'react';
+import React, {createContext, useState, ReactNode, useContext, useRef, useCallback, useMemo} from 'react';
 import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
 import {useDebouncedEffect} from '@/hooks';
 import {DataTableSelectionModeType} from '@/types/data-table.type';
 
 type DataTableContextType<K extends keyof DataSourceType> = {
     dataSource: K;
+    dataStorageKey: string;
     selectionMode: DataTableSelectionModeType;
     selectedEntries: DataSourceType[K]['entry'][];
     setSelectedEntries: React.Dispatch<React.SetStateAction<DataSourceType[K]['entry'][]>>;
     clearSelectedEntries: () => void;
+    defaultFilters: DataSourceType[K]['filter'];
     filters: DataSourceType[K]['filter'];
     setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['filter']>>;
 };
@@ -38,6 +40,8 @@ function DataTableProvider<K extends keyof DataSourceType>({
         setSelectedEntries([]);
     }, []);
 
+    const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
+
     useDebouncedEffect(() => {
         const onRowSelect = getDataSourceConfig(dataSource, 'onRowSelect');
         const onRowUnselect = getDataSourceConfig(dataSource, 'onRowUnselect');
@@ -56,7 +60,7 @@ function DataTableProvider<K extends keyof DataSourceType>({
     }, [selectedEntries], 1000);
 
     return (
-        <DataTableContext.Provider value={{dataSource, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, filters, setFilters}}>
+        <DataTableContext.Provider value={{dataSource, dataStorageKey, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, defaultFilters, filters, setFilters}}>
             {children}
         </DataTableContext.Provider>
     );

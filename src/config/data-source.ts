@@ -24,7 +24,7 @@ const DataSourceConfig: {
     users: {
         defaultParams: UserTableParams,
         findFunction: findUser,
-        onRowSelect: (entry: UserModel) => console.log('selected',entry),
+        onRowSelect: (entry: UserModel) => console.log('selected', entry),
         onRowUnselect: (entry: UserModel) => console.log('unselected', entry),
     },
 };
