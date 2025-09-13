@@ -25,10 +25,10 @@ export const Icons = {
     SideMenuClosed: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faBars} {...props} />
     ),
-    ToggleThemeDay: (props: Partial<FontAwesomeIconProps>) => (
+    ThemeLight: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faSun} {...props} />
     ),
-    ToggleThemeNight: (props: Partial<FontAwesomeIconProps>) => (
+    ThemeDark: (props: Partial<FontAwesomeIconProps>) => (
         <AwesomeIcon icon={faMoon} {...props} />
     ),
     Loading: (props: Partial<FontAwesomeIconProps>) => (

@@ -19,14 +19,16 @@ const ThemeProvider = ({children}: { children: ReactNode }) => {
         setTheme(initial);
 
         document.documentElement.setAttribute('data-theme', initial);
+    }, []);
+
+    // Update DOM and storage whenever theme changes
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
     }, [theme]);
 
     const toggleTheme = (value: Theme) => {
         setTheme(value);
-
-        document.documentElement.setAttribute('data-theme', value);
-
-        localStorage.setItem('theme', value);
     };
 
     return (
