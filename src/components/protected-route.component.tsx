@@ -1,12 +1,13 @@
 'use client';
 
 import {useAuth} from '@/providers/auth.provider';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import Routes, {RouteAuth} from '@/config/routes';
 import {Notice} from '@/components/notice.component';
 import {hasPermission} from '@/lib/models/auth.model';
 import {usePathname, useRouter} from 'next/navigation';
 import {lang} from '@/config/lang';
+import {Loading} from '@/components/loading.component';
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -21,53 +22,42 @@ const ProtectedRouteWrapper = ({children, className}: { children: React.ReactNod
 };
 
 export default function ProtectedRoute({children, routeAuth, routePermission, className, fallback}: ProtectedRouteProps) {
-    const {auth, loadingAuth} = useAuth();
-    const [permission, setPermission] = useState(routePermission);
+    const {authStatus, auth} = useAuth();
 
     const router = useRouter();
     const pathname = usePathname();
 
-    const validRouteAuth = useMemo(() => new Set(['authenticated', 'protected', 'unauthenticated']), []);
-
+    // Redirect to login page if not authenticated and route is protected or authenticated
     useEffect(() => {
-        if (!loadingAuth && [RouteAuth.AUTHENTICATED, RouteAuth.PROTECTED].includes(routeAuth) && !auth) {
+        if ([RouteAuth.AUTHENTICATED, RouteAuth.PROTECTED].includes(routeAuth) && authStatus === 'unauthenticated') {
             router.push(`${Routes.get('login')}?from=${encodeURIComponent(pathname)}`);
         }
-    }, [auth, loadingAuth, pathname, routeAuth, router]);
+    }, [authStatus, pathname, routeAuth, router]);
 
-    useEffect(() => {
-        if (!loadingAuth && routeAuth === RouteAuth.PROTECTED && auth && !routePermission) {
-            // Get current route's permission from route config
-            const routeMatch = Routes.match(pathname);
-            const matchedPermission = routeMatch?.props?.permission;
-
-            if (matchedPermission) {
-                setPermission(matchedPermission);
-            }
+    const permission = useMemo(() => {
+        if (routePermission) {
+            return routePermission;
         }
-    }, [loadingAuth, auth, routeAuth, routePermission, pathname]);
 
+        if (routeAuth === RouteAuth.PROTECTED && authStatus === 'authenticated') {
+            return Routes.match(pathname)?.props?.permission;
+        }
+
+        return undefined;
+    }, [routePermission, routeAuth, authStatus, pathname]);
+
+    // Is a public route so return content
     if (routeAuth === RouteAuth.PUBLIC) {
         return <>{children}</>;
     }
 
-    if (!validRouteAuth.has(routeAuth)) {
-        return (
-            <ProtectedRouteWrapper className={className}>
-                <Notice type="error" message="Implementation error">{fallback}</Notice>
-            </ProtectedRouteWrapper>
-        );
+    // Loading
+    if (authStatus === 'loading') {
+        return <Loading/>;
     }
 
-    if (loadingAuth) {
-        return (
-            <ProtectedRouteWrapper className={className}>
-                <Notice type="loading">{fallback}</Notice>
-            </ProtectedRouteWrapper>
-        );
-    }
-
-    if (auth && routeAuth === RouteAuth.UNAUTHENTICATED) {
+    // If this is an unauthenticated route and the user is authenticated
+    if (routeAuth === RouteAuth.UNAUTHENTICATED && authStatus === 'authenticated') {
         // TODO add a navigate to home page in the fallback OR better do a redirect
         return (
             <ProtectedRouteWrapper className={className}>
@@ -76,7 +66,8 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
         );
     }
 
-    if (auth && routeAuth === RouteAuth.PROTECTED && permission && !hasPermission(auth, permission)) {
+    // If this is a protected route and the user doesn't have the required permission
+    if (routeAuth === RouteAuth.PROTECTED && !hasPermission(auth, permission)) {
         return (
             <ProtectedRouteWrapper className={className}>
                 <Notice type="warning" message={lang('auth.message.unauthorized')}>{fallback}</Notice>

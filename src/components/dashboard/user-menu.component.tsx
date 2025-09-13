@@ -7,9 +7,9 @@ import {useAuth} from '@/providers/auth.provider';
 import {getNameInitials} from '@/lib/utils/string';
 
 export function UserMenu() {
-    const {loadingAuth, auth} = useAuth();
+    const {auth, authStatus} = useAuth();
 
-    if (loadingAuth) {
+    if (authStatus === 'loading') {
         return (
             <div className="w-8 h-8 animate-pulse rounded-full bg-gray-300" />
         );

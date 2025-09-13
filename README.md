@@ -1,9 +1,12 @@
 # TODO
 
-1. Test Register Template not found (eg: email-confirm-create - ro - email)
-2. Recap NextJs documentation
-3. Check login flow
-4. recover password & other account pages
+
+1. Bug: When session expire the login page is displayed a csrf token is present but the back-end cookie is already gone
+    - redirectToLogin probably needs to append the csrf token
+2. Test Register Template not found (eg: email-confirm-create - ro - email)
+3. Recap NextJs documentation
+4. Check login flow
+5. recover password & other account pages
 6. terms page
 7. Theme switcher has a glitch on first click?
 8. Replace all console.error with logging

@@ -14,7 +14,7 @@ import {
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useAuthRedirect, useFormValidation, useFormValues} from '@/hooks';
+import {useFormValidation, useFormValues} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
@@ -23,15 +23,10 @@ const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Login({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(loginAction, LoginDefaultState);
+    const {refreshAuth} = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
-
-    const {setLastRefreshAuth} = useAuth();
-
-    // Redirect if already authenticated
-    useAuthRedirect();
-
-    const [showPassword, setShowPassword] = useState(false);
 
     const [formValues, setFormValues] = useFormValues<LoginFormValues>(
         state?.values,
@@ -56,8 +51,9 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
     useEffect(() => {
         if (state?.situation === 'success' && router) {
-            // Reset the last refresh timestamp to retrieve the auth on next render
-            setLastRefreshAuth(null);
+            (async () => {
+                await refreshAuth();
+            })();
 
             // Get the redirect URL from query params with a fallback
             const fromParam = new URLSearchParams(window.location.search).get('from');
@@ -77,7 +73,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
             router.push(redirectUrl);
         }
-    }, [state?.situation, router, setLastRefreshAuth]);
+    }, [state?.situation, router, refreshAuth]);
 
     return (
         <form

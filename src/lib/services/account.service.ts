@@ -1,9 +1,8 @@
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
+import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {RegisterFormValues} from '@/app/account/register/register.definition';
 import {AuthTokenListType, LoginFormValues} from '@/app/account/login/login.definition';
 import {lang} from '@/config/lang';
 import {AuthModel} from '@/lib/models/auth.model';
-import {ApiError} from '@/lib/exceptions/api.error';
 import {UserModel} from '@/lib/models/user.model';
 
 export async function registerAccount(params: RegisterFormValues): Promise<ResponseFetch<UserModel>> {
@@ -46,43 +45,27 @@ export async function createAuth(token: string): Promise<ResponseFetch<null>> {
     };
 }
 
-export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<AuthModel> {
-    try {
-        let fetchResponse: ResponseFetch<AuthModel>;
+export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<ResponseFetch<AuthModel>> {
+    let fetchResponse: ResponseFetch<AuthModel>;
 
-        if (source === 'same-site') {
-            fetchResponse = await new ApiRequest()
-                .setRequestMode('same-site')
-                .doFetch('auth', {
-                    method: 'GET',
-                });
-        } else {
-            fetchResponse = await new ApiRequest()
-                .setRequestMode('remote-api')
-                .doFetch('/account/details', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${sessionToken}`,
-                    }
-                });
-        }
-
-        if (fetchResponse?.success) {
-            return getResponseData(fetchResponse) || null;
-        } else {
-            console.warn(fetchResponse?.message || 'Could not retrieve auth model (eg: request failed)');
-        }
-
-        return null;
-    } catch (error: unknown) {
-        if (error instanceof ApiError && error.status === 401) {
-            console.warn('Authentication expired', error);
-        } else {
-            console.error('Failed to fetch auth', error);
-        }
-
-        return null;
+    if (source === 'same-site') {
+        fetchResponse = await new ApiRequest()
+            .setRequestMode('same-site')
+            .doFetch('auth', {
+                method: 'GET',
+            });
+    } else {
+        fetchResponse = await new ApiRequest()
+            .setRequestMode('remote-api')
+            .doFetch('/account/details', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${sessionToken}`,
+                }
+            });
     }
+
+    return fetchResponse;
 }
 
 export async function logoutAccount(): Promise<ResponseFetch<null>> {

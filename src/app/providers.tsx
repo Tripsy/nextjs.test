@@ -11,7 +11,7 @@ export async function Providers({children}: { children: React.ReactNode }) {
     const headersList = await headers();
     const authHeader = headersList.get('x-auth-data');
 
-    let initAuth: AuthModel | null = null;
+    let initAuth: AuthModel = null;
 
     try {
         initAuth = authHeader ? JSON.parse(authHeader) : null;
@@ -20,10 +20,15 @@ export async function Providers({children}: { children: React.ReactNode }) {
     }
 
     // Fallback if header is not present
+    // This is server component so the auth is retrieved from remote API
     if (!initAuth) {
         const sessionToken = await getSessionToken();
 
-        initAuth = sessionToken ? await getAuth('remote-api', sessionToken) : null;
+        if (sessionToken) {
+            const authResponse = await getAuth('remote-api', sessionToken);
+
+            initAuth = authResponse?.success && authResponse?.data ? authResponse?.data : null;
+        }
     }
 
     return (

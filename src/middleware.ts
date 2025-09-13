@@ -98,6 +98,8 @@ function responseSuccess(request: NextRequest) {
     ) {
         const {csrfRefresh, csrfToken} = prepareCsrfToken(request);
 
+        // console.log(csrfRefresh, csrfToken);
+
         if (csrfRefresh) {
             response = appendCsrfCookieToResponse(response, csrfToken);
         }

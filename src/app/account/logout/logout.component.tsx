@@ -4,36 +4,23 @@ import React, {useEffect, useState} from 'react';
 import {logoutAction} from '@/app/account/logout/logout.action';
 import {LogoutDefaultState} from '@/app/account/logout/logout.definition';
 import {Icons} from '@/components/icon.component';
-import {cfg} from '@/config/settings';
-import {lang} from '@/config/lang';
 import Link from 'next/link';
 import Routes from '@/config/routes';
 import {useAuth} from '@/providers/auth.provider';
 
 export default function Logout() {
     const [state, setState] = useState(LogoutDefaultState);
-    const {setAuth, setLastRefreshAuth} = useAuth();
+    const {setAuth, setAuthStatus} = useAuth();
 
     useEffect(() => {
         (async () => {
-            try {
-                const result = await logoutAction();
+            const result = await logoutAction();
 
-                setAuth(null); // Clear auth state immediately after successful logout
-                setLastRefreshAuth(Date.now());  // Clear last refresh timestamp - prevent auto refresh after logout
-                setState(result);
-            } catch (error) {
-                setState({
-                    message: lang('logout.message.error') ?? 'An error occurred during logout.',
-                    situation: 'error',
-                });
-
-                if (cfg('environment') === 'development') {
-                    console.error(error);
-                }
-            }
+            setAuth(null); // Clear auth state immediately after successful logout
+            setAuthStatus('unauthenticated');
+            setState(result);
         })();
-    }, [setAuth, setLastRefreshAuth]);
+    }, [setAuth, setAuthStatus]);
 
     return (
         <>

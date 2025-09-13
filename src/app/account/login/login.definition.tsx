@@ -29,7 +29,7 @@ export type LoginState = {
     errors: Partial<Record<keyof LoginFormValues, string[]>>;
     message: string | null;
     situation: LoginSituation;
-    body?: { authValidTokens: AuthTokenListType } | undefined;
+    body?: { authValidTokens: AuthTokenListType };
 };
 
 export const LoginDefaultState: LoginState = {

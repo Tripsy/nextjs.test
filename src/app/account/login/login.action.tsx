@@ -7,7 +7,6 @@ import {
 import {createAuth, loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
-import {getResponseData, ResponseFetch} from '@/lib/api';
 import {csrfInputName, isValidCsrfToken} from '@/lib/csrf';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
@@ -75,7 +74,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
         let situation: LoginSituation = 'error';
-        let responseBody: ResponseFetch<{ authValidTokens: AuthTokenListType }> = undefined;
+        let responseBody: { authValidTokens: AuthTokenListType } | undefined = undefined;
 
         if (error instanceof ApiError) {
             switch (error.status) {
@@ -85,7 +84,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
                 case 403:
                     message = lang('login.message.max_active_sessions');
                     situation = 'max_active_sessions';
-                    responseBody = error.response as ResponseFetch<{ authValidTokens: AuthTokenListType }>
+                    responseBody = error.response?.data as { authValidTokens: AuthTokenListType }
                     break;
                 case 406:
                     situation = 'success'; // Already logged in
@@ -101,7 +100,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
             errors: {},
             message: message,
             situation: situation,
-            body: getResponseData(responseBody)
+            body: responseBody
         };
     }
 }

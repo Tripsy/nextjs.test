@@ -11,9 +11,7 @@ import {
     RegisterFormValues
 } from '@/app/account/register/register.definition';
 import {FormResult} from '@/components/form-result.component';
-import {useAuthRedirect, useFormValidation, useFormValues} from '@/hooks';
-import {useAuth} from '@/providers/auth.provider';
-import {Loading} from '@/components/loading.component';
+import {useFormValidation, useFormValues} from '@/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
 
@@ -22,11 +20,6 @@ const FormFieldError = React.memo(RawFormFieldError);
 export default function Register({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(registerAction, RegisterDefaultState);
     const [showPassword, setShowPassword] = useState(false);
-
-    const {loadingAuth} = useAuth();
-
-    // Redirect if already authenticated
-    useAuthRedirect();
 
     const [formValues, setFormValues] = useFormValues<RegisterFormValues>(
         state?.values,
@@ -48,10 +41,6 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         setFormValues(prev => ({...prev, [name]: value}));
         markFieldAsTouched(name);
     };
-
-    if (loadingAuth) {
-        return <Loading />;
-    }
 
     if (state?.situation === 'success') {
         return (

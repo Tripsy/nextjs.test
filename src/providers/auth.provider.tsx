@@ -5,23 +5,26 @@ import {AuthModel} from '@/lib/models/auth.model';
 import {getAuth} from '@/lib/services/account.service';
 import {isExcludedRoute} from '@/config/routes';
 import {usePathname} from 'next/navigation';
+import {ApiError} from '@/lib/exceptions/api.error';
+
+type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated' | 'error';
 
 type AuthContextType = {
-    loadingAuth: boolean;
-    auth: AuthModel | null;
-    setAuth: (model: AuthModel | null) => void;
+    auth: AuthModel;
+    setAuth: (model: AuthModel) => void;
+    authStatus: AuthStatus;
+    setAuthStatus: (status: AuthStatus) => void;
     refreshAuth: () => Promise<void>;
-    setLastRefreshAuth: (timestamp: number | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
-const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel | null }) => {
-    const [auth, setAuth] = useState<AuthModel | null>(initAuth);
-    const [loadingAuth, setLoadingAuth] = useState(!initAuth);
-    const [lastRefreshAuth, setLastRefreshAuth] = useState<number | null>(null);
+const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel }) => {
+    const [auth, setAuth] = useState<AuthModel>(initAuth);
+    const [authStatus, setAuthStatus] = useState<AuthStatus>(initAuth ? 'authenticated' : 'loading');
+    const [authLastRefresh, setAuthLastRefresh] = useState<number | null>(null);
 
     const pathname = usePathname();
 
@@ -31,27 +34,36 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
 
     const refreshAuth = async () => {
         try {
-            setLoadingAuth(true);
+            const authResponse = await getAuth('same-site');
 
-            const authData = await getAuth('same-site');
+            const authData = authResponse?.success && authResponse?.data ? authResponse?.data : null;
 
             setAuth(authData);
-            setLastRefreshAuth(Date.now());
-        } catch (error) {
-            console.error('Auth refresh failed:', error);
-        } finally {
-            setLoadingAuth(false);
+            setAuthLastRefresh(Date.now());
+
+            if (authData) {
+                setAuthStatus('authenticated');
+            } else {
+                setAuthStatus('unauthenticated');
+            }
+        } catch (error: unknown) {
+            if (error instanceof ApiError && error.status === 401) {
+                setAuthStatus('unauthenticated');
+                setAuthLastRefresh(Date.now());
+            } else {
+                setAuthStatus('error');
+            }
         }
     };
 
     useEffect(() => {
         // Initial fetch if no initAuth provided
         if (!initAuth) {
-            refreshAuth().catch(error => {
-                console.error('Failed to refresh auth:', error);
-            });
+            (async () => {
+                await refreshAuth();
+            })();
         } else {
-            setLastRefreshAuth(Date.now());
+            setAuthLastRefresh(Date.now());
         }
     }, [initAuth]);
 
@@ -61,22 +73,18 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
             return;
         }
 
-        const handleVisibilityChange = () => {
+        const handleVisibilityChange = async () => {
             if (document.visibilityState === 'visible') {
                 // Refresh if it's been more than REFRESH_INTERVAL since last refresh
-                if (lastRefreshAuth && Date.now() - lastRefreshAuth > REFRESH_INTERVAL) {
-                    refreshAuth().catch(error => {
-                        console.error('Failed to refresh auth:', error);
-                    });
+                if (authLastRefresh && Date.now() - authLastRefresh > REFRESH_INTERVAL) {
+                    await refreshAuth();
                 }
             }
         };
 
-        const intervalId = setInterval(() => {
+        const intervalId = setInterval(async () => {
             if (document.visibilityState === 'visible') {
-                refreshAuth().catch(error => {
-                    console.error('Failed to refresh auth:', error);
-                });
+                await refreshAuth();
             }
         }, REFRESH_INTERVAL);
 
@@ -86,15 +94,15 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
             clearInterval(intervalId);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [lastRefreshAuth, disableRefresh]);
+    }, [authLastRefresh, disableRefresh]);
 
     const contextValue = useMemo(() => ({
-        loadingAuth,
         auth,
         setAuth,
-        refreshAuth,
-        setLastRefreshAuth
-    }), [loadingAuth, auth]);
+        authStatus,
+        setAuthStatus,
+        refreshAuth
+    }), [authStatus, auth]);
 
     return (
         <AuthContext.Provider value={contextValue}>

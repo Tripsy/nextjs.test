@@ -58,7 +58,6 @@ export class ApiRequest {
         return this;
     }
 
-
     private async handleJsonResponse(res: Response) {
         try {
             return await res.json();
