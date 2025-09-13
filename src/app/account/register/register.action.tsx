@@ -41,7 +41,7 @@ export async function registerAction(state: RegisterState, formData: FormData): 
         return {
             ...result,
             message: lang('error.csrf'),
-            situation: 'error',
+            situation: 'csrf_error',
         };
     }
 

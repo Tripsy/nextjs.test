@@ -74,7 +74,7 @@ export type RegisterFormValues = {
     terms: boolean;
 };
 
-export type RegisterSituation = 'success' | 'error' | null;
+export type RegisterSituation = 'success' | 'error' | 'csrf_error' | null;
 
 export type RegisterState = {
     values: RegisterFormValues;

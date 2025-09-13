@@ -22,7 +22,7 @@ export type LoginFormValues = {
     password: string;
 };
 
-export type LoginSituation = 'success' | 'error' | 'max_active_sessions' | null;
+export type LoginSituation = 'success' | 'error' | 'csrf_error' | 'max_active_sessions' | null;
 
 export type LoginState = {
     values: LoginFormValues;

@@ -11,7 +11,7 @@ import {
     RegisterFormValues
 } from '@/app/account/register/register.definition';
 import {FormResult} from '@/components/form-result.component';
-import {useFormValidation, useFormValues} from '@/hooks';
+import {useFormValidation, useFormValues, useLocationReload} from '@/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
 
@@ -41,6 +41,8 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         setFormValues(prev => ({...prev, [name]: value}));
         markFieldAsTouched(name);
     };
+
+    // useLocationReload(state?.situation === 'csrf_error');
 
     if (state?.situation === 'success') {
         return (

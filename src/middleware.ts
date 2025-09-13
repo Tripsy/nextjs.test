@@ -6,7 +6,7 @@ import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
 import {ApiError} from '@/lib/exceptions/api.error';
-import {appendCsrfCookieToResponse, prepareCsrfToken} from '@/lib/csrf';
+import {appendCsrfToken} from '@/lib/csrf';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
@@ -46,25 +46,27 @@ function blockedOrigin(req: NextRequest) {
 /**
  * Redirect to the login page
  *
- * @param req
+ * @param request
  */
-function redirectToLogin(req: NextRequest) {
-    const loginUrl = new URL(Routes.get('login'), req.url);
+function redirectToLogin(request: NextRequest) {
+    const loginUrl = new URL(Routes.get('login'), request.url);
 
-    loginUrl.searchParams.set('from', req.nextUrl.pathname);
+    loginUrl.searchParams.set('from', request.nextUrl.pathname);
 
-    return NextResponse.redirect(loginUrl);
+    const response = NextResponse.redirect(loginUrl);
+
+    return appendCsrfToken(request, response);
 }
 
 /**
  * Redirect to the error page
  * The error message will be carried as a query param
  *
- * @param req
+ * @param request
  * @param error
  */
-function redirectToError(req: NextRequest, error: Error | string) {
-    const redirectUrl = new URL(Routes.get('status', {type: 'error'}), req.url);
+function redirectToError(request: NextRequest, error: Error | string) {
+    const redirectUrl = new URL(Routes.get('status', {type: 'error'}), request.url);
 
     if (error) {
         let logMessage: string;
@@ -96,13 +98,7 @@ function responseSuccess(request: NextRequest) {
         !request.headers.get('X-Requested-With') &&
         request.headers.get('accept')?.includes('text/html')
     ) {
-        const {csrfRefresh, csrfToken} = prepareCsrfToken(request);
-
-        // console.log(csrfRefresh, csrfToken);
-
-        if (csrfRefresh) {
-            response = appendCsrfCookieToResponse(response, csrfToken);
-        }
+        response = appendCsrfToken(request, response);
     }
 
     // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)

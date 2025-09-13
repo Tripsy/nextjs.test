@@ -174,6 +174,7 @@ Routes.group('dashboard').auth(RouteAuth.PROTECTED)
 export function isExcludedRoute(pathname: string) {
     const excludeRoutes = [
         Routes.get('login'),
+        Routes.get('logout'),
         Routes.get('register'),
         Routes.get('password-recover')
     ];

@@ -22,7 +22,7 @@ export function prepareCsrfToken(request: NextRequest): {csrfRefresh: boolean, c
     }
 }
 
-export function appendCsrfCookieToResponse(response: NextResponse, csrfToken: string): NextResponse {
+export function responseWithCsrfToken(response: NextResponse, csrfToken: string): NextResponse {
     response.cookies.set(csrfCookieName, csrfToken, {
         httpOnly: true,
         secure: cfg('environment') === 'production',
@@ -43,6 +43,16 @@ export function appendCsrfCookieToResponse(response: NextResponse, csrfToken: st
         maxAge: csrfMaxAge
     });
 
+    return response;
+}
+
+export function appendCsrfToken(request: NextRequest, response: NextResponse): NextResponse
+{
+    const {csrfRefresh, csrfToken} = prepareCsrfToken(request);
+
+    if (csrfRefresh) {
+        response = responseWithCsrfToken(response, csrfToken);
+    }
 
     return response;
 }

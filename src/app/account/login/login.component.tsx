@@ -14,7 +14,7 @@ import {
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useFormValidation, useFormValues} from '@/hooks';
+import {useFormValidation, useFormValues, useLocationReload} from '@/hooks';
 import {useAuth} from '@/providers/auth.provider';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
@@ -48,6 +48,8 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         setFormValues(prev => ({...prev, [name]: value}));
         markFieldAsTouched(name);
     };
+
+    useLocationReload(state?.situation === 'csrf_error');
 
     useEffect(() => {
         if (state?.situation === 'success' && router) {

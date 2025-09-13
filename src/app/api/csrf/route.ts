@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {ResponseFetch} from '@/lib/api';
-import {appendCsrfCookieToResponse, csrfCookieName, prepareCsrfToken} from '@/lib/csrf';
+import {csrfCookieName, prepareCsrfToken, responseWithCsrfToken} from '@/lib/csrf';
 
 type NextResponseCsrfToken = NextResponse<ResponseFetch<{
     csrfToken: string
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest): Promise<NextResponseCsrfToken> 
 
         // Refresh CSRF cookie if needed
         if (csrfRefresh) {
-            response = appendCsrfCookieToResponse(response, csrfToken) as NextResponseCsrfToken;
+            response = responseWithCsrfToken(response, csrfToken) as NextResponseCsrfToken;
         }
 
         return response;

@@ -38,7 +38,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
         return {
             ...result,
             message: lang('error.csrf'),
-            situation: 'error',
+            situation: 'csrf_error',
         };
     }
 
