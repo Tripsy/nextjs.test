@@ -15,7 +15,6 @@ import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
 import {useFormValidation, useFormValues, useLocationReload} from '@/hooks';
-import {useAuth} from '@/providers/auth.provider';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
 
@@ -23,7 +22,6 @@ const FormFieldError = React.memo(RawFormFieldError);
 
 export default function Login({csrfInput}: PageComponentPropsType) {
     const [state, action, pending] = useActionState(loginAction, LoginDefaultState);
-    const {refreshAuth} = useAuth();
     const [showPassword, setShowPassword] = useState(false);
 
     const router = useRouter();
@@ -51,31 +49,37 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
     useLocationReload(state?.situation === 'csrf_error');
 
+
     useEffect(() => {
         if (state?.situation === 'success' && router) {
-            (async () => {
-                await refreshAuth();
-            })();
-
-            // Get the redirect URL from query params with a fallback
+            // Get the original destination from query params
             const fromParam = new URLSearchParams(window.location.search).get('from');
 
             let redirectUrl;
 
-            if (fromParam && !isExcludedRoute(fromParam)) {
-                redirectUrl = fromParam;
+            if (fromParam) {
+                const decodedFrom = decodeURIComponent(fromParam);
+
+                // Parse the decoded URL to extract just the pathname
+                const url = new URL(decodedFrom, window.location.origin);
+                const pathname = url.pathname;
+
+                // Check only the pathname against excluded routes
+                if (!isExcludedRoute(pathname)) {
+                    // Add or update the from=login parameter
+                    url.searchParams.set('from', 'login');
+
+                    redirectUrl = url.pathname + url.search;
+                } else {
+                    redirectUrl = Routes.get('home') + '?from=login';
+                }
             } else {
-                redirectUrl = Routes.get('home');
+                redirectUrl = Routes.get('home') + '?from=login';
             }
 
-            // Clean up the URL by removing the param
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.delete('from');
-            window.history.replaceState({}, '', newUrl.toString());
-
-            router.push(redirectUrl);
+            router.replace(redirectUrl);
         }
-    }, [state?.situation, router, refreshAuth]);
+    }, [state?.situation, router]);
 
     return (
         <form

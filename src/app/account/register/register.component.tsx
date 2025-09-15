@@ -42,7 +42,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    // useLocationReload(state?.situation === 'csrf_error');
+    useLocationReload(state?.situation === 'csrf_error');
 
     if (state?.situation === 'success') {
         return (

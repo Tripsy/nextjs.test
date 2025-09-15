@@ -51,7 +51,12 @@ function blockedOrigin(req: NextRequest) {
 function redirectToLogin(request: NextRequest) {
     const loginUrl = new URL(Routes.get('login'), request.url);
 
-    loginUrl.searchParams.set('from', request.nextUrl.pathname);
+    // Create the full destination URL with all query params
+    const currentUrl = new URL(request.url);
+    const destinationPath = currentUrl.pathname + currentUrl.search;
+
+    // URL-encode the full destination including query params
+    loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
 
     const response = NextResponse.redirect(loginUrl);
 
