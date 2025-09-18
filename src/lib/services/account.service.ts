@@ -1,8 +1,6 @@
 import {ApiRequest, ResponseFetch} from '@/lib/api';
 import {RegisterFormValues} from '@/app/account/register/register.definition';
 import {AuthTokenListType, LoginFormValues} from '@/app/account/login/login.definition';
-import {lang} from '@/config/lang';
-import {AuthModel} from '@/lib/models/auth.model';
 import {UserModel} from '@/lib/models/user.model';
 
 export async function registerAccount(params: RegisterFormValues): Promise<ResponseFetch<UserModel>> {
@@ -31,74 +29,9 @@ export async function removeTokenAccount(token: string): Promise<ResponseFetch<n
         });
 }
 
-export async function createAuth(token: string): Promise<ResponseFetch<null>> {
-    await new ApiRequest()
-        .setRequestMode('same-site')
-        .doFetch('auth', {
-            method: 'POST',
-            body: JSON.stringify({token}),
-        });
-
-    return {
-        message: lang('login.message.auth_success'),
-        success: true,
-    };
-}
-
-export async function getAuth(source: string = 'same-site', sessionToken?: string): Promise<ResponseFetch<AuthModel>> {
-    let fetchResponse: ResponseFetch<AuthModel>;
-
-    if (source === 'same-site') {
-        fetchResponse = await new ApiRequest()
-            .setRequestMode('same-site')
-            .doFetch('auth', {
-                method: 'GET',
-            });
-    } else {
-        fetchResponse = await new ApiRequest()
-            .setRequestMode('remote-api')
-            .doFetch('/account/details', {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${sessionToken}`,
-                }
-            });
-    }
-
-    return fetchResponse;
-}
-
 export async function logoutAccount(): Promise<ResponseFetch<null>> {
     return await new ApiRequest()
         .doFetch('/account/logout', {
             method: 'DELETE'
         });
-}
-
-export async function clearAuth(): Promise<ResponseFetch<null>> {
-    try {
-        const fetchResponse = await new ApiRequest()
-            .setRequestMode('same-site')
-            .doFetch<null>('auth', {
-                method: 'DELETE',
-            });
-
-        return {
-            message:  fetchResponse?.message || lang('logout.message.success'),
-            success: true,
-        };
-    } catch (error: unknown) {
-        console.error('Logout failed:', error);
-
-        let message: string = lang('logout.message.error') || 'An error occurred during logout.';
-
-        if (error instanceof Error) {
-            message = error.message;
-        }
-
-        return {
-            success: false,
-            message: message,
-        };
-    }
 }

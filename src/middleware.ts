@@ -1,12 +1,13 @@
 import type {NextRequest} from 'next/server';
 import {NextResponse} from 'next/server';
 import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
-import {appendSessionToken, forwardedHeaders, getSessionToken, removeSessionToken} from '@/lib/utils/system';
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
-import {ApiError} from '@/lib/exceptions/api.error';
 import {appendCsrfToken} from '@/lib/csrf';
+import {getCookie} from '@/lib/utils/session';
+import {cfg} from '@/config/settings';
+import {apiHeaders} from '@/lib/utils/system';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
@@ -136,7 +137,16 @@ function responseAuthorized(request: NextRequest, sessionToken: string, authMode
         JSON.stringify(authModel)
     );
 
-    return appendSessionToken(response, sessionToken); // This will actually refresh the session token
+    // TODO: Do i need to append token every tine?
+    response.cookies.set(cfg('user.sessionToken'), sessionToken, {
+        httpOnly: true,
+        secure: cfg('environment') === 'production',
+        path: '/',
+        sameSite: 'lax',
+        maxAge: parseInt(cfg('user.sessionMaxAge')),
+    });
+
+    return response; // This will actually refresh the session token
 }
 
 // /**
@@ -171,12 +181,6 @@ function responseAuthorized(request: NextRequest, sessionToken: string, authMode
 //     };
 // }
 
-// async function handleInvalidSession(req: NextRequest): Promise<NextResponse> {
-//     const response = redirectToError(req, lang('auth.message.unauthorized'));
-//
-//     return removeSessionToken(response);
-// }
-
 function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined): NextResponse {
     switch (routeAuth) {
         case RouteAuth.UNAUTHENTICATED:
@@ -192,14 +196,13 @@ function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined
 
 /**
  * Fetches auth model
+ *
  * Note:
  *    - Do not throw errors from this method as it will break the middleware flow
- *    - Error will be logged only if the response status is not 401
  *
- * @param req
  * @param sessionToken
  */
-async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<AuthModel> {
+async function fetchAuthModel(sessionToken: string): Promise<AuthModel> {
     try {
         const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
             .setRequestMode('remote-api')
@@ -207,7 +210,7 @@ async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<A
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${sessionToken}`,
-                    ...forwardedHeaders(req)
+                    ...await apiHeaders()
                 }
             });
 
@@ -220,11 +223,7 @@ async function fetchAuthModel(req: NextRequest, sessionToken: string): Promise<A
         }
 
         return null;
-    } catch (error: unknown) {
-        if (error instanceof ApiError && error.status === 401) {
-            return null;
-        }
-
+    } catch {
         return null;
     }
 }
@@ -235,35 +234,41 @@ function handleInvalidAuth(req: NextRequest, routeAuth: RouteAuth | undefined): 
         case RouteAuth.PUBLIC: {
             const response = responseSuccess(req);
 
-            return removeSessionToken(response); // Session token exists but is invalid so it is removed
+            response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+
+            return response;
         }
         case RouteAuth.AUTHENTICATED:
         case RouteAuth.PROTECTED: {
             const msg = lang('auth.message.unauthorized');
             const response = redirectToError(req, msg);
 
-            return removeSessionToken(response); // Session token exists but is invalid so it is removed
+            response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+
+            return response;
         }
         default: {
-            const response = redirectToError(req, `Unknown route auth: ${routeAuth}`);
-
-            return removeSessionToken(response);
+            return redirectToError(req, `Unknown route auth: ${routeAuth}`);
         }
     }
 }
 
 async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | undefined): Promise<NextResponse> {
-    const sessionToken = await getSessionToken();
+    const sessionToken = await getCookie(cfg('user.sessionToken'));
 
     const {auth: routeAuth, permission: routePermission} = routeMatch?.props || {
         routeAuth: RouteAuth.PUBLIC, routePermission: undefined
     };
 
     if (!sessionToken) {
+        if (routeMatch?.name === 'logout') {
+            return responseSuccess(req);
+        }
+
         return handleMissingSession(req, routeAuth);
     }
 
-    const authModel = await fetchAuthModel(req, sessionToken);
+    const authModel = await fetchAuthModel(sessionToken);
 
     if (!authModel) {
         return handleInvalidAuth(req, routeAuth);
@@ -283,6 +288,11 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
 }
 
 export async function middleware(req: NextRequest) {
+    // Skip middleware for Server Actions
+    if (req.headers.get('next-action')) {
+        return NextResponse.next();
+    }
+
     // Allow preflight and HEAD requests unconditionally
     if (['HEAD', 'OPTIONS'].includes(req.method)) {
         return NextResponse.next();
@@ -323,7 +333,7 @@ export async function middleware(req: NextRequest) {
     // }
 
     // Skip auth check for proxy routes - they will fail at remote API if is the case
-    if (!['proxy', 'auth'].includes(routeMatch.name)) {
+    if (!['proxy'].includes(routeMatch.name)) {
         return await handleAuthRequirement(req, routeMatch);
     }
 

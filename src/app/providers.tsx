@@ -2,10 +2,9 @@ import React from 'react';
 import {PrimeProvider} from '@/providers/prime.provider';
 import {AuthProvider} from '@/providers/auth.provider';
 import {ThemeProvider} from '@/providers/theme.provider';
-import {getAuth} from '@/lib/services/account.service';
-import {getSessionToken} from '@/lib/utils/system';
 import {headers} from 'next/headers';
 import {AuthModel} from '@/lib/models/auth.model';
+import {getAuth} from '@/actions/auth.actions';
 
 export async function Providers({children}: { children: React.ReactNode }) {
     const headersList = await headers();
@@ -20,15 +19,10 @@ export async function Providers({children}: { children: React.ReactNode }) {
     }
 
     // Fallback if header is not present
-    // This is server component so the auth is retrieved from remote API
     if (!initAuth) {
-        const sessionToken = await getSessionToken();
+        const authResponse = await getAuth();
 
-        if (sessionToken) {
-            const authResponse = await getAuth('remote-api', sessionToken);
-
-            initAuth = authResponse?.success && authResponse?.data ? authResponse?.data : null;
-        }
+        initAuth = authResponse?.success && authResponse?.data ? authResponse?.data : null;
     }
 
     return (

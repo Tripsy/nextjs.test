@@ -1,5 +1,9 @@
 # TODO
 
+1. csrf - drop same site ..got server actions
+
+2. Logout - issue with redirect after logout which goes to login 
+
 1. Test Register Template not found (eg: email-confirm-create - ro - email)
 2. Recap NextJs documentation
 3. recover password & other account pages

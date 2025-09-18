@@ -2,23 +2,25 @@
 
 import {NextRequest, NextResponse} from 'next/server';
 import {getRemoteApiUrl} from '@/lib/api';
-import {forwardedHeaders, getSessionToken} from '@/lib/utils/system';
+import {apiHeaders} from '@/lib/utils/system';
+import {getCookie} from '@/lib/utils/session';
+import {cfg} from '@/config/settings';
 
-async function handler(req: NextRequest, path: string[]) {
-    const token = await getSessionToken();
+async function handler(request: NextRequest, path: string[]) {
+    const token = await getCookie(cfg('user.sessionToken'));
     const baseUrl = getRemoteApiUrl(path.join('/'));
-    const url = `${baseUrl}${req.nextUrl.search || ''}`;
+    const url = `${baseUrl}${request.nextUrl.search || ''}`;
 
     const headers = {
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
-        ...forwardedHeaders(req),
+        ...await apiHeaders(request.headers),
     };
 
-    const body = ['GET', 'HEAD'].includes(req.method) ? undefined : await req.text();
+    const body = ['GET', 'HEAD'].includes(request.method) ? undefined : await request.text();
 
     const backendRes = await fetch(url, {
-        method: req.method,
+        method: request.method,
         headers,
         body,
         next: {revalidate: 0}, // Do not cache

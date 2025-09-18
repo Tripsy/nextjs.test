@@ -5,7 +5,7 @@ import React, {useEffect, useMemo} from 'react';
 import Routes, {RouteAuth} from '@/config/routes';
 import {Notice} from '@/components/notice.component';
 import {hasPermission} from '@/lib/models/auth.model';
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import {lang} from '@/config/lang';
 import {Loading} from '@/components/loading.component';
 
@@ -22,29 +22,10 @@ const ProtectedRouteWrapper = ({children, className}: { children: React.ReactNod
 };
 
 export default function ProtectedRoute({children, routeAuth, routePermission, className, fallback}: ProtectedRouteProps) {
-    const {authStatus, setAuthStatus, auth, refreshAuth} = useAuth();
+    const {authStatus, auth} = useAuth();
 
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
-
-    // Check if coming from login and refresh auth
-    useEffect(() => {
-        const fromLogin = searchParams.get('from') === 'login';
-
-        if (fromLogin && authStatus !== 'authenticated') {
-            setAuthStatus('loading');
-
-            // Clean up the URL
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.delete('from');
-            window.history.replaceState({}, '', newUrl.toString());
-
-            (async () => {
-                await refreshAuth();
-            })();
-        }
-    }, [searchParams, authStatus, refreshAuth, setAuthStatus]);
 
     // Redirect to login page if not authenticated and route is protected or authenticated
     useEffect(() => {
@@ -78,7 +59,7 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
     if (routeAuth === RouteAuth.UNAUTHENTICATED && authStatus === 'authenticated') {
         return (
             <ProtectedRouteWrapper className={className}>
-                <Notice type="warning" message={lang('auth.message.already_logged_in')}>{fallback}</Notice>
+                <Notice type="warning" message="test">{fallback}</Notice>
             </ProtectedRouteWrapper>
         );
     }

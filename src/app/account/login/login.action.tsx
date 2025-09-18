@@ -4,10 +4,11 @@ import {
     LoginState,
     LoginFormValues
 } from '@/app/account/login/login.definition';
-import {createAuth, loginAccount} from '@/lib/services/account.service';
+import {loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
 import {csrfInputName, isValidCsrfToken} from '@/lib/csrf';
+import {createAuth} from '@/actions/auth.actions';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
     return {
@@ -55,22 +56,26 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
         if (fetchResponse?.success && fetchResponse.data && 'token' in fetchResponse.data) {
             const authResponse = await createAuth(fetchResponse.data.token);
 
-            if (!authResponse?.success) {
+            if (authResponse?.success) {
                 return {
                     ...result,
-                    errors: {},
+                    message: authResponse?.message || null,
+                    situation: 'success'
+                };
+            } else {
+                return {
+                    ...result,
                     message: authResponse?.message || null,
                     situation: 'error'
                 };
             }
+        } else {
+            return {
+                ...result,
+                message: fetchResponse?.message || null,
+                situation: 'error'
+            };
         }
-
-        return {
-            ...result,
-            errors: {},
-            message: fetchResponse?.message || null,
-            situation: fetchResponse?.success ? 'success' : 'error'
-        };
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
         let situation: LoginSituation = 'error';
@@ -97,7 +102,6 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
 
         return {
             ...result,
-            errors: {},
             message: message,
             situation: situation,
             body: responseBody

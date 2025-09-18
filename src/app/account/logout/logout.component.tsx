@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {logoutAction} from '@/app/account/logout/logout.action';
 import {LogoutDefaultState} from '@/app/account/logout/logout.definition';
 import {Icons} from '@/components/icon.component';
@@ -16,9 +16,9 @@ export default function Logout() {
         (async () => {
             const result = await logoutAction();
 
+            setState(result);
             setAuth(null); // Clear auth state immediately after successful logout
             setAuthStatus('unauthenticated');
-            setState(result);
         })();
     }, [setAuth, setAuthStatus]);
 

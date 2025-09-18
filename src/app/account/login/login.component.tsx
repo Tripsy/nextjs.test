@@ -49,7 +49,6 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
     useLocationReload(state?.situation === 'csrf_error');
 
-
     useEffect(() => {
         if (state?.situation === 'success' && router) {
             // Get the original destination from query params

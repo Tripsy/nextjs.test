@@ -1,8 +1,9 @@
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
 import {ResponseFetch} from '@/lib/api';
-import {clearAuth, logoutAccount} from '@/lib/services/account.service';
+import {logoutAccount} from '@/lib/services/account.service';
 import {LogoutSituation, LogoutState} from '@/app/account/logout/logout.definition';
+import {clearAuth} from '@/actions/auth.actions';
 
 export async function logoutAction(): Promise<LogoutState> {
     try {
@@ -11,20 +12,25 @@ export async function logoutAction(): Promise<LogoutState> {
         if (fetchResponse?.success) {
             const authResponse = await clearAuth();
 
-            if (!authResponse?.success) {
+            if (authResponse?.success) {
                 return {
-                    message: authResponse?.message || null,
+                    message: authResponse?.message,
+                    situation: 'success'
+                };
+            } else {
+                return {
+                    message: authResponse?.message || lang('logout.message.error'),
                     situation: 'error'
                 };
             }
+        } else {
+            return {
+                message: fetchResponse?.message || lang('logout.message.error'),
+                situation: 'error'
+            };
         }
-
-        return {
-            message: fetchResponse?.message || null,
-            situation: fetchResponse?.success ? 'success' : 'error'
-        };
     } catch (error: unknown) {
-        let message: string = lang('logout.message.error') ?? 'An error occurred during logout.';
+        let message: string = lang('logout.message.error');
         const situation: LogoutSituation = 'error';
 
         if (error instanceof ApiError) {
