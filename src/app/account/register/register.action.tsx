@@ -48,6 +48,7 @@ export async function registerAction(state: RegisterState, formData: FormData): 
     if (!validated.success) {
         return {
             ...result,
+            situation: 'error',
             errors: validated.error.flatten().fieldErrors
         };
     }

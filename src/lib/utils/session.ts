@@ -37,8 +37,86 @@ export async function getCookie(name: string): Promise<string | undefined> {
 
 export async function deleteCookie(name: string, path?: string): Promise<void> {
     const cookieStore = await cookies();
+
     cookieStore.delete({
         name,
         path: path ?? '/',
     });
+}
+
+export type TrackedCookie = {
+    name: string;
+    value?: string;
+    action: 'set' | 'none';
+}
+
+export function getTrackedCookieName(name: string): string {
+    return `${name}-expiration`;
+}
+
+export async function getTrackedCookie(name: string, expireIn: number = 1200): Promise<TrackedCookie> {
+    const output: TrackedCookie = {
+        name: name,
+        value: undefined,
+        action: 'set'
+    };
+
+    const cookieStore = await cookies();
+
+    const sessionToken = cookieStore.get(name)?.value;
+
+    if (!sessionToken) {
+        return output;
+    }
+
+    output.value = sessionToken;
+
+    const expirationTimeString = cookieStore.get(getTrackedCookieName(name))?.value;
+    const expirationTime = expirationTimeString ? Number(expirationTimeString) : 0;
+
+    if (expirationTime - Date.now() > expireIn * 1000) {
+        output.action = 'none';
+    }
+
+    return output;
+}
+
+export async function setupTrackedCookie(
+    cookie: TrackedCookie,
+    options?: CookieOptions
+): Promise<void> {
+    if (cookie.action === 'none') {
+        return;
+    }
+
+    if (!cookie.value) {
+        return;
+    }
+
+    const cookieStore = await cookies();
+
+    cookieStore.set(cookie.name, cookie.value, {
+        httpOnly: options?.httpOnly ?? false,
+        secure: options?.secure ?? cfg('environment') === 'production',
+        path: options?.path ?? '/',
+        sameSite: options?.sameSite ?? 'lax',
+        maxAge: options?.maxAge,
+        expires: options?.expires,
+        domain: options?.domain,
+    });
+
+    const maxAgeMs = options?.maxAge ? options.maxAge * 1000 : undefined;
+    const expirationTime = maxAgeMs ? Date.now() + maxAgeMs : undefined;
+
+    if (expirationTime) {
+        cookieStore.set(getTrackedCookieName(cookie.name), expirationTime.toString(), {
+            httpOnly: options?.httpOnly ?? false,
+            secure: options?.secure ?? cfg('environment') === 'production',
+            path: options?.path ?? '/',
+            sameSite: options?.sameSite ?? 'lax',
+            maxAge: options?.maxAge,
+            expires: options?.expires,
+            domain: options?.domain,
+        });
+    }
 }

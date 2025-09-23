@@ -17,14 +17,12 @@ export type DataTablePropsType<T extends keyof DataSourceType> = {
     scrollHeight?: string;
 };
 
-export type DataTableFindParamsFilterType = Record<string, string | number | boolean>;
-
 export type DataTableFindParamsType = {
     order_by: string;
     direction: 'ASC' | 'DESC';
     limit: number;
     page: number;
-    filter: DataTableFindParamsFilterType;
+    filter: string;
 };
 
 export type DataTableFindResponseType<TEntry> = {

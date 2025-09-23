@@ -16,7 +16,7 @@ export type UserTableFiltersType = {
     is_deleted: DataTableFilterMetaData;
 };
 
-export const UserTableParams: LazyStateType<UserTableFiltersType> = {
+export const UserTableDefaultState: LazyStateType<UserTableFiltersType> = {
     first: 0,
     rows: 10,
     sortField: 'id',
@@ -33,11 +33,11 @@ export const UserTableParams: LazyStateType<UserTableFiltersType> = {
 
 export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel> | undefined> => {
     const query = new URLSearchParams({
-        order_by: String(params.order_by),
+        order_by: params.order_by,
         direction: params.direction,
         limit: String(params.limit),
         page: String(params.page),
-        filter: JSON.stringify(params.filter)
+        filter: params.filter
     });
 
     const response: ResponseFetch<DataTableFindResponseType<UserModel>> = await new ApiRequest()

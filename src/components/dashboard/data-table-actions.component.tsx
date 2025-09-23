@@ -9,9 +9,8 @@ import {createFilterHandlers, filtersReducer} from '@/reducers/dashboard/data-ta
 import {DataSourceType} from '@/config/data-source';
 
 export function DataTableActions<K extends keyof DataSourceType>() {
-    const {selectionMode, selectedEntries} = useDataTable();
-
-    const {defaultFilters, dispatchFilters} = useDataTableFilters<K>(filtersReducer);
+    const {selectionMode, defaultState, selectedEntries} = useDataTable();
+    const {dispatchFilters} = useDataTableFilters<K>(filtersReducer);
 
     const {
         handleReset
@@ -42,7 +41,7 @@ export function DataTableActions<K extends keyof DataSourceType>() {
             <div className="flex gap-4">
                 <button
                     className="btn btn-warning rounded"
-                    onClick={() => handleReset(defaultFilters)}
+                    onClick={() => handleReset(defaultState.filters)}
                     title="Reset filters"
                 >
                     <Icons.Action.Reset className="w-4 h-4"/>

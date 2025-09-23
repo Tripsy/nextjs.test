@@ -5,7 +5,7 @@ import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
 import {appendCsrfToken} from '@/lib/csrf';
-import {getCookie} from '@/lib/utils/session';
+import {getTrackedCookie, getTrackedCookieName, TrackedCookie} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';
 import {apiHeaders} from '@/lib/utils/system';
 
@@ -122,31 +122,42 @@ function responseSuccess(request: NextRequest) {
 
 /**
  * Extends a success response to an authorized response
- * It adds `x-auth-data` header & refreshes the session token
+ * It adds `x-auth-data` header & refreshes the session token when needed
  *
  * @param request
  * @param sessionToken
  * @param authModel
  */
-function responseAuthorized(request: NextRequest, sessionToken: string, authModel: AuthModel) {
+function responseAuthorized(request: NextRequest, sessionToken: TrackedCookie, authModel: AuthModel) {
     const response = responseSuccess(request);
 
     // Set auth data as a header
-    response.headers.set(
-        'x-auth-data',
-        JSON.stringify(authModel)
-    );
+    response.headers.set('x-auth-data', JSON.stringify(authModel));
+    
+    if (sessionToken.action === 'set' && sessionToken.value) {
+        const cookieSessionName = cfg('user.sessionToken');
+        const cookieSessionAge = Number(cfg('user.sessionMaxAge'));
+        
+        response.cookies.set(cookieSessionName, sessionToken.value, {
+            httpOnly: true,
+            secure: cfg('environment') === 'production',
+            path: '/',
+            sameSite: 'lax',
+            maxAge: cookieSessionAge,
+        });
 
-    // TODO: Do i need to append token every tine?
-    response.cookies.set(cfg('user.sessionToken'), sessionToken, {
-        httpOnly: true,
-        secure: cfg('environment') === 'production',
-        path: '/',
-        sameSite: 'lax',
-        maxAge: parseInt(cfg('user.sessionMaxAge')),
-    });
+        const cookieSessionExpiration = Date.now() + (cookieSessionAge * 1000);
 
-    return response; // This will actually refresh the session token
+        response.cookies.set(getTrackedCookieName(cookieSessionName), String(cookieSessionExpiration), {
+            httpOnly: true,
+            secure: cfg('environment') === 'production',
+            path: '/',
+            sameSite: 'lax',
+            maxAge: cookieSessionAge,
+        });        
+    }
+
+    return response;
 }
 
 // /**
@@ -181,35 +192,22 @@ function responseAuthorized(request: NextRequest, sessionToken: string, authMode
 //     };
 // }
 
-function handleMissingSession(req: NextRequest, routeAuth: RouteAuth | undefined): NextResponse {
-    switch (routeAuth) {
-        case RouteAuth.UNAUTHENTICATED:
-        case RouteAuth.PUBLIC:
-            return responseSuccess(req);
-        case RouteAuth.AUTHENTICATED:
-        case RouteAuth.PROTECTED:
-            return redirectToLogin(req);
-        default:
-            return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-    }
-}
-
 /**
  * Fetches auth model
  *
  * Note:
  *    - Do not throw errors from this method as it will break the middleware flow
  *
- * @param sessionToken
+ * @param token
  */
-async function fetchAuthModel(sessionToken: string): Promise<AuthModel> {
+async function fetchAuthModel(token: string): Promise<AuthModel> {
     try {
         const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
             .setRequestMode('remote-api')
             .doFetch('/account/details', {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${sessionToken}`,
+                    Authorization: `Bearer ${token}`,
                     ...await apiHeaders()
                 }
             });
@@ -228,53 +226,55 @@ async function fetchAuthModel(sessionToken: string): Promise<AuthModel> {
     }
 }
 
-function handleInvalidAuth(req: NextRequest, routeAuth: RouteAuth | undefined): NextResponse {
-    switch (routeAuth) {
-        case RouteAuth.UNAUTHENTICATED:
-        case RouteAuth.PUBLIC: {
-            const response = responseSuccess(req);
-
-            response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
-
-            return response;
-        }
-        case RouteAuth.AUTHENTICATED:
-        case RouteAuth.PROTECTED: {
-            const msg = lang('auth.message.unauthorized');
-            const response = redirectToError(req, msg);
-
-            response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
-
-            return response;
-        }
-        default: {
-            return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-        }
-    }
-}
-
 async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | undefined): Promise<NextResponse> {
-    const sessionToken = await getCookie(cfg('user.sessionToken'));
+    const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
 
     const {auth: routeAuth, permission: routePermission} = routeMatch?.props || {
         routeAuth: RouteAuth.PUBLIC, routePermission: undefined
     };
 
-    if (!sessionToken) {
-        if (routeMatch?.name === 'logout') {
-            return responseSuccess(req);
+    if (!sessionToken.value) {
+        switch (routeAuth) {
+            case RouteAuth.UNAUTHENTICATED:
+            case RouteAuth.PUBLIC:
+                return responseSuccess(req);
+            case RouteAuth.AUTHENTICATED:
+            case RouteAuth.PROTECTED:
+                return redirectToLogin(req);
+            default:
+                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
         }
-
-        return handleMissingSession(req, routeAuth);
     }
 
-    const authModel = await fetchAuthModel(sessionToken);
+    const authModel = await fetchAuthModel(sessionToken.value);
 
     if (!authModel) {
-        return handleInvalidAuth(req, routeAuth);
+        switch (routeAuth) {
+            case RouteAuth.UNAUTHENTICATED:
+            case RouteAuth.PUBLIC: {
+                const response = responseSuccess(req);
+
+                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+
+                return response;
+            }
+            case RouteAuth.AUTHENTICATED:
+            case RouteAuth.PROTECTED: {
+                const msg = lang('auth.message.unauthorized');
+                const response = redirectToError(req, msg);
+
+                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+
+                return response;
+            }
+            default: {
+                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
+            }
+        }
     }
 
     if (routeAuth === RouteAuth.UNAUTHENTICATED) {
+        console.log(routeMatch)
         return redirectToError(req, lang('auth.message.already_logged_in'));
     }
 

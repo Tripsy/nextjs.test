@@ -4,7 +4,6 @@ import {AuthProvider} from '@/providers/auth.provider';
 import {ThemeProvider} from '@/providers/theme.provider';
 import {headers} from 'next/headers';
 import {AuthModel} from '@/lib/models/auth.model';
-import {getAuth} from '@/actions/auth.actions';
 
 export async function Providers({children}: { children: React.ReactNode }) {
     const headersList = await headers();
@@ -16,13 +15,6 @@ export async function Providers({children}: { children: React.ReactNode }) {
         initAuth = authHeader ? JSON.parse(authHeader) : null;
     } catch (error: unknown) {
         console.error('Failed to parse auth header', error);
-    }
-
-    // Fallback if header is not present
-    if (!initAuth) {
-        const authResponse = await getAuth();
-
-        initAuth = authResponse?.success && authResponse?.data ? authResponse?.data : null;
     }
 
     return (

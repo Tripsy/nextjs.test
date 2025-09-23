@@ -13,7 +13,6 @@ import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {getValidDate, stringToDate} from '@/lib/utils/date';
-import {Loading} from '@/components/loading.component';
 import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 
 type FiltersActionUsers = FiltersAction<UserTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
@@ -38,7 +37,7 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
 }));
 
 export const DataTableFiltersUsers = (): React.JSX.Element => {
-    const {loading, tempFilters, dispatchFilters} = useDataTableFilters<'users'>(filtersReducerUsers);
+    const {tempFilters, dispatchFilters} = useDataTableFilters<'users'>(filtersReducerUsers);
 
     const {
         handleTermChange,
@@ -54,15 +53,6 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         (e: DropdownChangeEvent) => dispatchFiltersSpecific({type: 'SET_ROLE', value: e.value}),
         [dispatchFiltersSpecific]
     );
-
-    // Show loading state while hydrating
-    if (!loading) {
-        return (
-            <div className="flex justify-center items-center h-32 text-xl">
-                <Loading text="Please wait..."/>
-            </div>
-        );
-    }
 
     return (
         <div className="flex flex-wrap gap-4 mb-4">

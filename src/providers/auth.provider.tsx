@@ -2,7 +2,6 @@
 
 import React, {createContext, useState, ReactNode, useContext, useEffect, useMemo, useCallback} from 'react';
 import {AuthModel} from '@/lib/models/auth.model';
-import {useSearchParams} from 'next/navigation';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {getAuth} from '@/actions/auth.actions';
 
@@ -16,24 +15,16 @@ type AuthContextType = {
     refreshAuth: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 const REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAuth?: AuthModel }) => {
     const [auth, setAuth] = useState<AuthModel>(initAuth);
     const [authStatus, setAuthStatus] = useState<AuthStatus>('loading');
 
-    const searchParams = useSearchParams();
-
-    const fromLogin = useMemo(
-        () => searchParams.get('from') === 'login',
-        [searchParams]
-    );
-
     const refreshAuth = useCallback(async () => {
         try {
-            console.log('refreshAuth');
             setAuthStatus('loading');
 
             const authResponse = await getAuth();
@@ -68,30 +59,8 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
         }
     }, [initAuth, refreshAuth]);
 
-    // Check if coming from login and refresh auth
     useEffect(() => {
-        if (fromLogin && authStatus === 'unauthenticated') {
-            // Clean up the URL
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.delete('from');
-            window.history.replaceState({}, '', newUrl.toString());
-
-            (async () => {
-                await refreshAuth();
-            })();
-        }
-    }, [authStatus, fromLogin, refreshAuth]);
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                (async () => {
-                    await refreshAuth();
-                })();
-            }
-        }, REFRESH_INTERVAL);
-
-        const handleVisibilityChange = () => {
+        const refreshIfVisible = () => {
             if (document.visibilityState === 'visible') {
                 (async () => {
                     await refreshAuth();
@@ -99,11 +68,12 @@ const AuthProvider = ({children, initAuth = null}: { children: ReactNode, initAu
             }
         };
 
-        document.addEventListener('visibilitychange', handleVisibilityChange);
+        const intervalId = setInterval(refreshIfVisible, REFRESH_INTERVAL);
+        document.addEventListener('visibilitychange', refreshIfVisible);
 
         return () => {
             clearInterval(intervalId);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener('visibilitychange', refreshIfVisible);
         };
     }, [refreshAuth]);
 

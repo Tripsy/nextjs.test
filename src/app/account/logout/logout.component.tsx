@@ -12,15 +12,28 @@ export default function Logout() {
     const [state, setState] = useState(LogoutDefaultState);
     const {setAuth, setAuthStatus} = useAuth();
 
+    const hasExecuted = useRef(false);
+
     useEffect(() => {
+        if (hasExecuted.current) {
+            return;
+        }
+
+        hasExecuted.current = true;
+
         (async () => {
             const result = await logoutAction();
 
             setState(result);
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (state?.situation === 'success') {
             setAuth(null); // Clear auth state immediately after successful logout
             setAuthStatus('unauthenticated');
-        })();
-    }, [setAuth, setAuthStatus]);
+        }
+    }, [setAuth, setAuthStatus, state?.situation]);
 
     return (
         <>

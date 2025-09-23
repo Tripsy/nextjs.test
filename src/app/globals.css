@@ -114,6 +114,24 @@
         height: var(--header-height);
     }
 
+    .dashboard-layout .header-section .breadcrumbs.mobile {
+        display: none;
+    }
+
+    .dashboard-layout .header-section .breadcrumbs.desktop {
+        display: block;
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-layout .header-section .breadcrumbs.mobile {
+            display: block;
+        }
+
+        .dashboard-layout .header-section .breadcrumbs.desktop {
+            display: none;
+        }
+    }
+
     .dashboard-layout .main-section {
         @apply relative flex bg-base-200;
 

@@ -1,22 +1,25 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import isEqual from 'fast-deep-equal';
 
 export function useFormValues<T>(
-    externalValues: T | undefined,
+    stateValues: T | undefined,
     defaultValues: T
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
+
     const [formValues, setFormValues] = useState<T>(() => ({
         ...defaultValues,
-        ...(externalValues || {})
+        ...(stateValues || {})
     }));
 
+    const prevExternalValuesRef = useRef<T | undefined>(stateValues);
+
     useEffect(() => {
-        if (externalValues) {
-            setFormValues(prev =>
-                isEqual(prev, externalValues) ? prev : {...externalValues}
-            );
+        if (stateValues && !isEqual(prevExternalValuesRef.current, stateValues)) {
+            setFormValues({...stateValues});
+
+            prevExternalValuesRef.current = stateValues;
         }
-    }, [externalValues]);
+    }, [stateValues]);
 
     return [formValues, setFormValues];
 }

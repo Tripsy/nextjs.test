@@ -14,7 +14,7 @@ import {
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
-import {useFormValidation, useFormValues, useLocationReload} from '@/hooks';
+import {useFormValidation, useFormValues} from '@/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
 import {PageComponentPropsType} from '@/types/page-component.type';
 
@@ -34,10 +34,10 @@ export default function Login({csrfInput}: PageComponentPropsType) {
     const {
         errors,
         submitted,
-        isSubmitted,
-        markFieldAsTouched,
+        setSubmitted,
+        markFieldAsTouched
     } = useFormValidation({
-        values: formValues,
+        formValues: formValues,
         validate: loginValidate,
         debounceDelay: 800,
     });
@@ -47,14 +47,15 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    useLocationReload(state?.situation === 'csrf_error');
+    // TODO
+    // useLocationReload(state?.situation === 'csrf_error');
 
     useEffect(() => {
         if (state?.situation === 'success' && router) {
             // Get the original destination from query params
             const fromParam = new URLSearchParams(window.location.search).get('from');
 
-            let redirectUrl;
+            let redirectUrl = Routes.get('home');
 
             if (fromParam) {
                 const decodedFrom = decodeURIComponent(fromParam);
@@ -65,15 +66,8 @@ export default function Login({csrfInput}: PageComponentPropsType) {
 
                 // Check only the pathname against excluded routes
                 if (!isExcludedRoute(pathname)) {
-                    // Add or update the from=login parameter
-                    url.searchParams.set('from', 'login');
-
-                    redirectUrl = url.pathname + url.search;
-                } else {
-                    redirectUrl = Routes.get('home') + '?from=login';
+                    redirectUrl = url.toString();
                 }
-            } else {
-                redirectUrl = Routes.get('home') + '?from=login';
             }
 
             router.replace(redirectUrl);
@@ -83,7 +77,7 @@ export default function Login({csrfInput}: PageComponentPropsType) {
     return (
         <form
             action={async (formData) => {
-                isSubmitted(true);
+                setSubmitted(true);
                 action(formData);
             }}
             className="form-section"

@@ -11,7 +11,7 @@ import {
     StatusBodyTemplate
 } from '@/components/dashboard/data-table-row.component';
 import {DataTableActions} from '@/components/dashboard/data-table-actions.component';
-import {UserTableParams} from '@/lib/services/user.service';
+import {UserTableDefaultState} from '@/lib/services/user.service';
 import {DataTableProvider} from '@/providers/dashboard/data-table-provider';
 import {Loading} from '@/components/loading.component';
 import {useMounted} from '@/hooks';
@@ -40,7 +40,7 @@ export const DataTableUsers = (): JSX.Element => {
     }
 
     return (
-        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultFilters={UserTableParams.filters}>
+        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultState={UserTableDefaultState}>
             <div className="standard-box p-4 shadow-md">
                 <DataTableFiltersUsers/>
                 <DataTableActions/>

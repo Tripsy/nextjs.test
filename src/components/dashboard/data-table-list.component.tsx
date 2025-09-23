@@ -7,9 +7,8 @@ import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
 import {
     LazyStateType,
     DataTableColumnType,
-    DataTablePropsType, DataTableFindParamsFilterType
+    DataTablePropsType
 } from '@/types/data-table.type';
-import {readFromLocalStorage} from '@/lib/utils/storage';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
 import {useDataTable} from '@/providers/dashboard/data-table-provider';
 
@@ -19,7 +18,16 @@ type SelectionChangeEvent<T> = {
 };
 
 export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType<T>) {
-    const {dataSource, dataStorageKey, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, filters} = useDataTable<T>();
+    const {
+        dataSource,
+        dataStorageKey,
+        selectionMode,
+        initState,
+        selectedEntries,
+        setSelectedEntries,
+        clearSelectedEntries,
+        filters
+    } = useDataTable<T>();
 
     const [error, setError] = useState<Error | null>(null);
 
@@ -33,32 +41,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
     const [data, setData] = useState<DataSourceType[T]['entry'][]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const getInitialLazyState = (): LazyStateType<DataSourceType[T]['filter']> => {
-        const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(dataStorageKey);
-        const defaultState = getDataSourceConfig(dataSource, 'defaultParams');
-
-        return {
-            ...defaultState,
-            ...(savedState || {})
-        };
-    };
-
-    const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(getInitialLazyState);
-
-    // useEffect(() => {
-    //     const savedState = readFromLocalStorage<LazyStateType<DataSourceType[T]['filter']>>(dataStorageKey);
-    //     const filtersChanged = !isEqual(savedState?.filters, filters);
-    //
-    //     if (filtersChanged) {
-    //         clearSelectedEntries();
-    //     }
-    //
-    //     setLazyState((prev) => ({
-    //         ...prev,
-    //         first: filtersChanged ? 0 : savedState?.first ?? prev.first,
-    //         filters: {...filters},
-    //     }));
-    // }, [clearSelectedEntries, filters, dataStorageKey]);
+    const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(initState);
 
     useEffect(() => {
         clearSelectedEntries();
@@ -70,21 +53,24 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         }));
     }, [clearSelectedEntries, filters, dataStorageKey]);
 
+    const findFunctionFilter = useMemo(() => {
+        const params = Object.entries(lazyState.filters).reduce((acc, [key, filterObj]) => {
+            if (filterObj?.value != null && filterObj.value !== '') {
+                acc[key === 'global' ? 'term' : String(key)] = filterObj.value;
+            }
+            return acc;
+        }, {} as Record<string, string>);
+
+        return JSON.stringify(params);
+    }, [lazyState.filters]);
+
     useEffect(() => {
+        console.log('lazyState changed');
         const abortController = new AbortController();
 
         (async () => {
             try {
                 setLoading(true);
-
-                const mapFiltersToApiPayload = (filters: DataSourceType[T]['filter']): DataTableFindParamsFilterType => {
-                    return Object.entries(filters).reduce((acc, [key, filterObj]) => {
-                        if (filterObj?.value != null && filterObj.value !== '') {
-                            acc[key === 'global' ? 'term' : key] = filterObj.value;
-                        }
-                        return acc;
-                    }, {} as DataTableFindParamsFilterType);
-                };
 
                 const loadLazyData = async (signal?: AbortSignal) => {
                     if (signal?.aborted) {
@@ -102,7 +88,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
                         direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
                         limit: lazyState.rows,
                         page: lazyState.rows > 0 ? Math.floor(lazyState.first / lazyState.rows) + 1 : 1,
-                        filter: mapFiltersToApiPayload(lazyState.filters),
+                        filter: findFunctionFilter,
                     });
 
                     if (signal?.aborted) {
@@ -136,7 +122,7 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         return () => {
             abortController.abort();
         };
-    }, [dataSource, lazyState]);
+    }, [dataSource, lazyState.sortField, lazyState.sortOrder, lazyState.rows, lazyState.first, findFunctionFilter]);
 
     const onPage = useCallback((event: DataTablePageEvent) => {
         clearSelectedEntries();

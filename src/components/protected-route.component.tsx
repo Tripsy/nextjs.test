@@ -59,7 +59,7 @@ export default function ProtectedRoute({children, routeAuth, routePermission, cl
     if (routeAuth === RouteAuth.UNAUTHENTICATED && authStatus === 'authenticated') {
         return (
             <ProtectedRouteWrapper className={className}>
-                <Notice type="warning" message="test">{fallback}</Notice>
+                <Notice type="warning" message={lang('auth.message.already_logged_in')}>{fallback}</Notice>
             </ProtectedRouteWrapper>
         );
     }

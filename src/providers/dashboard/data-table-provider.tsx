@@ -3,35 +3,45 @@
 import React, {createContext, useState, ReactNode, useContext, useRef, useCallback, useMemo} from 'react';
 import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
 import {useDebouncedEffect} from '@/hooks';
-import {DataTableSelectionModeType} from '@/types/data-table.type';
+import {DataTableSelectionModeType, LazyStateType} from '@/types/data-table.type';
+import {readFromLocalStorage} from '@/lib/utils/storage';
 
 type DataTableContextType<K extends keyof DataSourceType> = {
     dataSource: K;
     dataStorageKey: string;
     selectionMode: DataTableSelectionModeType;
+    defaultState: LazyStateType<DataSourceType[K]['filter']>;
+    initState: LazyStateType<DataSourceType[K]['filter']>;
+    filters: DataSourceType[K]['filter'];
+    setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['filter']>>;
     selectedEntries: DataSourceType[K]['entry'][];
     setSelectedEntries: React.Dispatch<React.SetStateAction<DataSourceType[K]['entry'][]>>;
     clearSelectedEntries: () => void;
-    defaultFilters: DataSourceType[K]['filter'];
-    filters: DataSourceType[K]['filter'];
-    setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['filter']>>;
 };
 
 const DataTableContext = createContext<DataTableContextType<keyof DataSourceType> | undefined>(undefined);
 
 function DataTableProvider<K extends keyof DataSourceType>({
-    dataSource,
-    selectionMode,
-    defaultFilters,
-    children,
+   dataSource,
+   selectionMode,
+   defaultState,
+   children
 }: {
-    dataSource: K;
-    selectionMode: DataTableSelectionModeType;
-    defaultFilters: DataSourceType[K]['filter'];
-    children: ReactNode;
+    dataSource: K,
+    selectionMode: DataTableSelectionModeType,
+    defaultState: LazyStateType<DataSourceType[K]['filter']>
+    children: ReactNode
 }) {
+    const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
 
-    const [filters, setFilters] = useState<DataSourceType[K]['filter']>(defaultFilters);
+    const initState = useMemo((): LazyStateType<DataSourceType[K]['filter']> => {
+        return {
+            ...defaultState,
+            ...(readFromLocalStorage<LazyStateType<DataSourceType[K]['filter']>>(dataStorageKey) || {})
+        };
+    }, [dataStorageKey, defaultState]);
+
+    const [filters, setFilters] = useState<DataSourceType[K]['filter']>(initState.filters);
     const [selectedEntries, setSelectedEntries] = useState<DataSourceType[K]['entry'][]>([]);
 
     const prevSelectedEntriesRef = useRef<DataSourceType[K]['entry'][]>([]);
@@ -39,8 +49,6 @@ function DataTableProvider<K extends keyof DataSourceType>({
     const clearSelectedEntries = useCallback(() => {
         setSelectedEntries([]);
     }, []);
-
-    const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
 
     useDebouncedEffect(() => {
         const onRowSelect = getDataSourceConfig(dataSource, 'onRowSelect');
@@ -60,7 +68,18 @@ function DataTableProvider<K extends keyof DataSourceType>({
     }, [selectedEntries], 1000);
 
     return (
-        <DataTableContext.Provider value={{dataSource, dataStorageKey, selectionMode, selectedEntries, setSelectedEntries, clearSelectedEntries, defaultFilters, filters, setFilters}}>
+        <DataTableContext.Provider value={{
+            dataSource,
+            dataStorageKey,
+            selectionMode,
+            defaultState,
+            initState,
+            filters,
+            setFilters,
+            selectedEntries,
+            setSelectedEntries,
+            clearSelectedEntries
+        }}>
             {children}
         </DataTableContext.Provider>
     );

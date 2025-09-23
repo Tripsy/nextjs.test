@@ -29,6 +29,12 @@ export default function Home() {
                         >
                             Logout
                         </Link>
+                        <Link
+                            href={Routes.get('login')}
+                            className="link link-info link-hover"
+                        >
+                            Login
+                        </Link>
                     </p>
                 </>
             )}

@@ -133,7 +133,16 @@ export class ApiRequest {
                 return undefined;
             }
 
-            return await this.handleJsonResponse(res);
+            const jsonResponse: ResponseFetch<T> = await this.handleJsonResponse(res);
+
+            if (!res.ok) {
+                const error = new ApiError(`HTTP ${res.status} Error`, res.status, jsonResponse);
+                this.handleError(error);
+
+                return undefined;
+            }
+
+            return jsonResponse;
         } catch (error) {
             clearTimeout(timeout);
 

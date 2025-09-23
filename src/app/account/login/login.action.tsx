@@ -46,6 +46,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
     if (!validated.success) {
         return {
             ...result,
+            situation: 'error',
             errors: validated.error.flatten().fieldErrors
         };
     }
@@ -89,7 +90,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
                 case 403:
                     message = lang('login.message.max_active_sessions');
                     situation = 'max_active_sessions';
-                    responseBody = error.response?.data as { authValidTokens: AuthTokenListType }
+                    responseBody = error.body?.data as { authValidTokens: AuthTokenListType }
                     break;
                 case 406:
                     situation = 'success'; // Already logged in

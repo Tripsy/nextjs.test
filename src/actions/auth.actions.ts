@@ -1,7 +1,7 @@
 'use server';
 
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
-import {deleteCookie, getCookie, setCookie} from '@/lib/utils/session';
+import {deleteCookie, getTrackedCookie, setupTrackedCookie} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';
 import {lang} from '@/config/lang';
 import {AuthModel, prepareAuthModel} from '@/lib/models/auth.model';
@@ -16,9 +16,13 @@ export async function createAuth(sessionToken: string): Promise<ResponseFetch<nu
         };
     }
 
-    await setCookie(cfg('user.sessionToken'), sessionToken, {
+    await setupTrackedCookie({
+        action: 'set',
+        name: cfg('user.sessionToken'),
+        value: sessionToken
+    }, {
         httpOnly: true,
-        maxAge: parseInt(cfg('user.sessionMaxAge')),
+        maxAge: Number(cfg('user.sessionMaxAge')),
     });
 
     return {
@@ -29,9 +33,9 @@ export async function createAuth(sessionToken: string): Promise<ResponseFetch<nu
 
 export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
     try {
-        const sessionToken = await getCookie(cfg('user.sessionToken'));
+        const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
 
-        if (!sessionToken) {
+        if (!sessionToken.value) {
             return {
                 data: null,
                 message: 'Could not retrieve auth model (eg: no session token)',
@@ -44,7 +48,7 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
             .doFetch('/account/details', {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${sessionToken}`,
+                    Authorization: `Bearer ${sessionToken.value}`,
                     ...await apiHeaders()
                 }
             });
@@ -54,10 +58,10 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 
             if (responseData) {
                 const authModel = prepareAuthModel(responseData);
-
-                await setCookie(cfg('user.sessionToken'), sessionToken, {
+                
+                await setupTrackedCookie(sessionToken, {
                     httpOnly: true,
-                    maxAge: parseInt(cfg('user.sessionMaxAge')),
+                    maxAge: Number(cfg('user.sessionMaxAge')),
                 });
 
                 return {
