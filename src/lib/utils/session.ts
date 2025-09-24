@@ -6,7 +6,7 @@ export type CookieOptions = {
     secure?: boolean;
     path?: string;
     sameSite?: 'lax' | 'strict' | 'none';
-    maxAge?: number;
+    maxAge: number;
     expires?: Date;
     domain?: string;
 };
@@ -61,18 +61,16 @@ export async function getTrackedCookie(name: string, expireIn: number = 1200): P
         action: 'set'
     };
 
-    const cookieStore = await cookies();
+    const cookieValue = await getCookie(name);
 
-    const sessionToken = cookieStore.get(name)?.value;
-
-    if (!sessionToken) {
+    if (!cookieValue) {
         return output;
     }
 
-    output.value = sessionToken;
+    output.value = cookieValue;
 
-    const expirationTimeString = cookieStore.get(getTrackedCookieName(name))?.value;
-    const expirationTime = expirationTimeString ? Number(expirationTimeString) : 0;
+    const cookieExpirationValue = await getCookie(getTrackedCookieName(name));
+    const expirationTime = cookieExpirationValue ? Number(cookieExpirationValue) : 0;
 
     if (expirationTime - Date.now() > expireIn * 1000) {
         output.action = 'none';
@@ -83,7 +81,7 @@ export async function getTrackedCookie(name: string, expireIn: number = 1200): P
 
 export async function setupTrackedCookie(
     cookie: TrackedCookie,
-    options?: CookieOptions
+    options: CookieOptions
 ): Promise<void> {
     if (cookie.action === 'none') {
         return;
@@ -93,30 +91,9 @@ export async function setupTrackedCookie(
         return;
     }
 
-    const cookieStore = await cookies();
+    await setCookie(cookie.name, cookie.value, options);
 
-    cookieStore.set(cookie.name, cookie.value, {
-        httpOnly: options?.httpOnly ?? false,
-        secure: options?.secure ?? cfg('environment') === 'production',
-        path: options?.path ?? '/',
-        sameSite: options?.sameSite ?? 'lax',
-        maxAge: options?.maxAge,
-        expires: options?.expires,
-        domain: options?.domain,
-    });
+    const expirationTime = Date.now() + options.maxAge * 1000;
 
-    const maxAgeMs = options?.maxAge ? options.maxAge * 1000 : undefined;
-    const expirationTime = maxAgeMs ? Date.now() + maxAgeMs : undefined;
-
-    if (expirationTime) {
-        cookieStore.set(getTrackedCookieName(cookie.name), expirationTime.toString(), {
-            httpOnly: options?.httpOnly ?? false,
-            secure: options?.secure ?? cfg('environment') === 'production',
-            path: options?.path ?? '/',
-            sameSite: options?.sameSite ?? 'lax',
-            maxAge: options?.maxAge,
-            expires: options?.expires,
-            domain: options?.domain,
-        });
-    }
+    await setCookie(getTrackedCookieName(cookie.name), expirationTime.toString(), options);
 }

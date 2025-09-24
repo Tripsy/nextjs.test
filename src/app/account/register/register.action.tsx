@@ -4,9 +4,10 @@ import {
     RegisterFormValues, RegisterSituation
 } from '@/app/account/register/register.definition';
 import {registerAccount} from '@/lib/services/account.service';
-import {csrfInputName, isValidCsrfToken} from '@/lib/csrf';
 import {lang} from '@/config/lang';
 import {ApiError} from '@/lib/exceptions/api.error';
+import {cfg} from '@/config/settings';
+import {isValidCsrfToken} from '@/actions/csrf.action';
 
 export function registerFormValues(formData: FormData): RegisterFormValues {
     return {
@@ -35,7 +36,7 @@ export async function registerAction(state: RegisterState, formData: FormData): 
     };
 
     // Check CSRF token
-    const csrfToken = formData.get(csrfInputName) as string;
+    const csrfToken = formData.get(cfg('csrf.inputName')) as string;
 
     if (!await isValidCsrfToken(csrfToken)) {
         return {

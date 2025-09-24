@@ -4,6 +4,11 @@ const settingsConfig: { [key: string]: ObjectValue } = {
     environment: process.env.NODE_ENV || 'development',
     url: process.env.FRONTEND_URL || 'http://nextjs.test',
     name: process.env.FRONTEND_APP_NAME || 'sample-nextjs-client',
+    csrf: {
+        cookieName: 'x-csrf-secret',
+        cookieMaxAge: 60 * 60, // 1 hour
+        inputName: 'x-csrf-token',
+    },
     user: {
         nameMinLength: 3,
         passwordMinLength: 8,

@@ -16,13 +16,17 @@ import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
 import {useFormValidation, useFormValues} from '@/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
-import {PageComponentPropsType} from '@/types/page-component.type';
+import {FormCsrf} from '@/components/form-csrf';
+import {cfg} from '@/config/settings';
+import {useAuth} from '@/providers/auth.provider';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function Login({csrfInput}: PageComponentPropsType) {
+export default function Login() {
     const [state, action, pending] = useActionState(loginAction, LoginDefaultState);
     const [showPassword, setShowPassword] = useState(false);
+
+    const {refreshAuth} = useAuth();
 
     const router = useRouter();
 
@@ -47,11 +51,12 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    // TODO
-    // useLocationReload(state?.situation === 'csrf_error');
-
     useEffect(() => {
         if (state?.situation === 'success' && router) {
+            (async () => {
+                await refreshAuth();
+            })();
+
             // Get the original destination from query params
             const fromParam = new URLSearchParams(window.location.search).get('from');
 
@@ -74,6 +79,14 @@ export default function Login({csrfInput}: PageComponentPropsType) {
         }
     }, [state?.situation, router]);
 
+    if (state?.situation === 'csrf_error') {
+        return (
+            <div className="text-error">
+                <Icons.Error className="w-5 h-5"/> {state.message}
+            </div>
+        );
+    }
+
     return (
         <form
             action={async (formData) => {
@@ -82,7 +95,8 @@ export default function Login({csrfInput}: PageComponentPropsType) {
             }}
             className="form-section"
         >
-            {csrfInput}
+            <FormCsrf inputName={cfg('csrf.inputName')} />
+
             <h1 className="mb-2">
                 Sign In
             </h1>

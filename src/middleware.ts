@@ -4,7 +4,6 @@ import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
 import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
-import {appendCsrfToken} from '@/lib/csrf';
 import {getTrackedCookie, getTrackedCookieName, TrackedCookie} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';
 import {apiHeaders} from '@/lib/utils/system';
@@ -59,9 +58,7 @@ function redirectToLogin(request: NextRequest) {
     // URL-encode the full destination including query params
     loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
 
-    const response = NextResponse.redirect(loginUrl);
-
-    return appendCsrfToken(request, response);
+    return NextResponse.redirect(loginUrl);
 }
 
 /**
@@ -94,18 +91,10 @@ function redirectToError(request: NextRequest, error: Error | string) {
  *
  * @returns
  */
-function responseSuccess(request: NextRequest) {
-    let response = NextResponse.next();
+async function responseSuccess() {
+    const response = NextResponse.next();
 
     response.headers.set('X-Content-Type-Options', 'nosniff');
-
-    if (
-        request.method === 'GET' &&
-        !request.headers.get('X-Requested-With') &&
-        request.headers.get('accept')?.includes('text/html')
-    ) {
-        response = appendCsrfToken(request, response);
-    }
 
     // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
     // `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
@@ -124,37 +113,36 @@ function responseSuccess(request: NextRequest) {
  * Extends a success response to an authorized response
  * It adds `x-auth-data` header & refreshes the session token when needed
  *
- * @param request
  * @param sessionToken
  * @param authModel
  */
-function responseAuthorized(request: NextRequest, sessionToken: TrackedCookie, authModel: AuthModel) {
-    const response = responseSuccess(request);
+async function responseAuthorized(sessionToken: TrackedCookie, authModel: AuthModel) {
+    const response = await responseSuccess();
 
     // Set auth data as a header
     response.headers.set('x-auth-data', JSON.stringify(authModel));
-    
+
     if (sessionToken.action === 'set' && sessionToken.value) {
-        const cookieSessionName = cfg('user.sessionToken');
-        const cookieSessionAge = Number(cfg('user.sessionMaxAge'));
-        
-        response.cookies.set(cookieSessionName, sessionToken.value, {
+        const cookieName = cfg('user.sessionToken');
+        const cookieMaxAge = Number(cfg('user.sessionMaxAge'));
+
+        response.cookies.set(cookieName, sessionToken.value, {
             httpOnly: true,
             secure: cfg('environment') === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: cookieSessionAge,
+            maxAge: cookieMaxAge,
         });
 
-        const cookieSessionExpiration = Date.now() + (cookieSessionAge * 1000);
+        const cookieExpireValue = Date.now() + (cookieMaxAge * 1000);
 
-        response.cookies.set(getTrackedCookieName(cookieSessionName), String(cookieSessionExpiration), {
+        response.cookies.set(getTrackedCookieName(cookieName), String(cookieExpireValue), {
             httpOnly: true,
             secure: cfg('environment') === 'production',
             path: '/',
             sameSite: 'lax',
-            maxAge: cookieSessionAge,
-        });        
+            maxAge: cookieMaxAge,
+        });
     }
 
     return response;
@@ -237,7 +225,7 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
         switch (routeAuth) {
             case RouteAuth.UNAUTHENTICATED:
             case RouteAuth.PUBLIC:
-                return responseSuccess(req);
+                return await responseSuccess();
             case RouteAuth.AUTHENTICATED:
             case RouteAuth.PROTECTED:
                 return redirectToLogin(req);
@@ -252,7 +240,7 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
         switch (routeAuth) {
             case RouteAuth.UNAUTHENTICATED:
             case RouteAuth.PUBLIC: {
-                const response = responseSuccess(req);
+                const response = await responseSuccess();
 
                 response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
 
@@ -274,7 +262,6 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
     }
 
     if (routeAuth === RouteAuth.UNAUTHENTICATED) {
-        console.log(routeMatch)
         return redirectToError(req, lang('auth.message.already_logged_in'));
     }
 
@@ -284,7 +271,7 @@ async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | 
         }
     }
 
-    return responseAuthorized(req, sessionToken, authModel);
+    return responseAuthorized(sessionToken, authModel);
 }
 
 export async function middleware(req: NextRequest) {
@@ -303,17 +290,13 @@ export async function middleware(req: NextRequest) {
         return new NextResponse('Forbidden', {status: 403});
     }
 
-    // if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) && !isValidCSRF(req)) {
-    //     return redirectToError(req, lang('error.csrf'));
-    // }
-
     // Match route
     const pathname = req.nextUrl.pathname;
 
     const routeMatch = Routes.match(pathname);
 
     if (!routeMatch) {
-        return responseSuccess(req);
+        return responseSuccess();
     }
 
     // // Rate limit
@@ -337,7 +320,7 @@ export async function middleware(req: NextRequest) {
         return await handleAuthRequirement(req, routeMatch);
     }
 
-    return responseSuccess(req);
+    return responseSuccess();
 }
 
 export const config = {

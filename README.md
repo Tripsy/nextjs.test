@@ -1,12 +1,10 @@
 # TODO
 
-1. csrf - drop same site ..got server actions
-2. Login - csrf refresh is so quiet
-3. Test Register Template not found (eg: email-confirm-create - ro - email)
-4. Recap NextJs documentation
-5. recover password & other account pages
-6. terms page
-7. Replace all console.error with logging
+1. Test Register Template not found (eg: email-confirm-create - ro - email)
+2. Recap NextJs documentation
+3. recover password & other account pages
+4. terms page
+5. Replace all console.error with logging
 
 # IDEAS
 
@@ -20,7 +18,6 @@
 
 # NOTES
 
-- authorization checks are done both via middleware and via protected-route.component (TODO: not yet build)
 - middleware.ts has a special config which controls via `matcher` what requests are handled by middleware
 - middleware.ts will add special headers via `responseSuccess` - for production ready it will need some revision
 

@@ -13,11 +13,12 @@ import {
 import {FormResult} from '@/components/form-result.component';
 import {useFormValidation, useFormValues} from '@/hooks';
 import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
-import {PageComponentPropsType} from '@/types/page-component.type';
+import {cfg} from '@/config/settings';
+import {FormCsrf} from '@/components/form-csrf';
 
 const FormFieldError = React.memo(RawFormFieldError);
 
-export default function Register({csrfInput}: PageComponentPropsType) {
+export default function Register() {
     const [state, action, pending] = useActionState(registerAction, RegisterDefaultState);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -32,7 +33,7 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         setSubmitted,
         markFieldAsTouched
     } = useFormValidation({
-        values: formValues,
+        formValues: formValues,
         validate: registerValidate,
         debounceDelay: 800,
     });
@@ -42,7 +43,13 @@ export default function Register({csrfInput}: PageComponentPropsType) {
         markFieldAsTouched(name);
     };
 
-    // useLocationReload(state?.situation === 'csrf_error');
+    if (state?.situation === 'csrf_error') {
+        return (
+            <div className="text-error">
+                <Icons.Error className="w-5 h-5"/> {state.message}
+            </div>
+        );
+    }
 
     if (state?.situation === 'success') {
         return (
@@ -65,7 +72,8 @@ export default function Register({csrfInput}: PageComponentPropsType) {
             }}
             className="form-section"
         >
-            {csrfInput}
+            <FormCsrf inputName={cfg('csrf.inputName')} />
+
             <h1 className="mb-2">
                 Create Account
             </h1>

@@ -7,8 +7,9 @@ import {
 import {loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
 import {lang} from '@/config/lang';
-import {csrfInputName, isValidCsrfToken} from '@/lib/csrf';
 import {createAuth} from '@/actions/auth.actions';
+import {cfg} from '@/config/settings';
+import {isValidCsrfToken} from '@/actions/csrf.action';
 
 export function loginFormValues(formData: FormData): LoginFormValues {
     return {
@@ -33,7 +34,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
     };
 
     // Check CSRF token
-    const csrfToken = formData.get(csrfInputName) as string;
+    const csrfToken = formData.get(cfg('csrf.inputName')) as string;
 
     if (!await isValidCsrfToken(csrfToken)) {
         return {
