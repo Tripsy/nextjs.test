@@ -1,6 +1,6 @@
 # TODO
 
-1. Test Register Template not found (eg: email-confirm-create - ro - email)
+1. table - add / edit / delete actions
 2. Recap NextJs documentation
 3. recover password & other account pages
 4. terms page

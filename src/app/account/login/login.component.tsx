@@ -77,7 +77,7 @@ export default function Login() {
 
             router.replace(redirectUrl);
         }
-    }, [state?.situation, router]);
+    }, [state?.situation, router, refreshAuth]);
 
     if (state?.situation === 'csrf_error') {
         return (
