@@ -1,8 +1,8 @@
 import {
     AuthTokenListType,
-    LoginSchema, LoginSituation,
-    LoginState,
-    LoginFormValues
+    LoginSchema,
+    LoginFormFieldsType,
+    LoginStateType, LoginSituationType
 } from '@/app/account/login/login.definition';
 import {loginAccount} from '@/lib/services/account.service';
 import {ApiError} from '@/lib/exceptions/api.error';
@@ -11,22 +11,22 @@ import {createAuth} from '@/actions/auth.actions';
 import {cfg} from '@/config/settings';
 import {isValidCsrfToken} from '@/actions/csrf.action';
 
-export function loginFormValues(formData: FormData): LoginFormValues {
+export function loginFormValues(formData: FormData): LoginFormFieldsType {
     return {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     };
 }
 
-export function loginValidate(values: LoginFormValues) {
+export function loginValidate(values: LoginFormFieldsType) {
     return LoginSchema.safeParse(values);
 }
 
-export async function loginAction(state: LoginState, formData: FormData): Promise<LoginState> {
+export async function loginAction(state: LoginStateType, formData: FormData): Promise<LoginStateType> {
     const values = loginFormValues(formData);
     const validated = loginValidate(values);
 
-    const result: LoginState = {
+    const result: LoginStateType = {
         ...state, // Spread existing state
         values, // Override with new values
         message: null,
@@ -80,7 +80,7 @@ export async function loginAction(state: LoginState, formData: FormData): Promis
         }
     } catch (error: unknown) {
         let message: string = lang('login.message.could_not_login');
-        let situation: LoginSituation = 'error';
+        let situation: LoginSituationType = 'error';
         let responseBody: { authValidTokens: AuthTokenListType } | undefined = undefined;
 
         if (error instanceof ApiError) {

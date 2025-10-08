@@ -1,6 +1,5 @@
 'use client';
 
-import {UserTableFiltersType} from '@/lib/services/user.service';
 import React, {useCallback} from 'react';
 import {useDataTableFilters} from '@/hooks';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
@@ -14,15 +13,18 @@ import {Calendar} from 'primereact/calendar';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {getValidDate, stringToDate} from '@/lib/utils/date';
 import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
+import {FormPart} from '@/components/form/form-part.component';
+import {FormElement} from '@/components/form/form-element.component';
+import {UsersTableFiltersType} from '@/app/dashboard/users/users.definition';
 
-type FiltersActionUsers = FiltersAction<UserTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
+type FiltersActionUsers = FiltersAction<UsersTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
 
-function filtersReducerUsers(state: UserTableFiltersType, action: FiltersActionUsers): UserTableFiltersType {
+function filtersReducerUsers(state: UsersTableFiltersType, action: FiltersActionUsers): UsersTableFiltersType {
     switch (action.type) {
         case 'SET_ROLE':
             return {...state, role: {value: action.value, matchMode: 'equals'}};
         default:
-            return filtersReducer<UserTableFiltersType>(state, action);
+            return filtersReducer<UsersTableFiltersType>(state, action);
     }
 }
 
@@ -45,7 +47,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         handleIsDeletedChange,
         handleCreateDateStartChange,
         handleCreateDateEndChange
-    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<UserTableFiltersType>>);
+    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<UsersTableFiltersType>>);
 
     const dispatchFiltersSpecific = dispatchFilters as React.Dispatch<FiltersActionUsers>;
 
@@ -55,80 +57,69 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
     );
 
     return (
-        <div className="flex flex-wrap gap-4 mb-4">
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-global" className="text-sm font-medium">
-                    ID / Email / Name
-                </label>
-                <div>
+        <div className="form-section flex-row flex-wrap gap-4 mb-4">
+            <FormPart>
+                <FormElement labelText="ID / Email / Name" labelFor="search-global">
                     <IconField iconPosition="left">
-                        <InputIcon>
-                            <div className="flex items-center">
-                                <Icons.Search className="w-4 h-4"/>
-                            </div>
+                        <InputIcon className="flex items-center">
+                            <Icons.Search className="w-4 h-4"/>
                         </InputIcon>
                         <InputText
-                            id="search-global"
                             className="p-inputtext-sm"
+                            id="search-global"
                             placeholder="Search"
                             value={tempFilters.global.value ?? ''}
                             onChange={handleTermChange}
                         />
                     </IconField>
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-status" className="text-sm font-medium">
-                    Status
-                </label>
-                <div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Status" labelFor="search-status">
                     <Dropdown
-                        id="search-status"
                         className="p-inputtext-sm"
+                        panelStyle={{ fontSize: '0.875rem' }}
+                        id="search-status"
                         value={tempFilters.status.value}
                         options={statuses}
                         onChange={handleStatusChange}
                         placeholder="-any-"
                         showClear
                     />
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-role" className="text-sm font-medium">
-                    Role
-                </label>
-                <div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Role" labelFor="search-role">
                     <Dropdown
-                        id="search-role"
                         className="p-inputtext-sm"
+                        panelStyle={{ fontSize: '0.875rem' }}
+                        id="search-role"
                         value={tempFilters.role.value}
                         options={roles}
                         onChange={handleRoleChange}
                         placeholder="-any-"
                         showClear
                     />
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-create-date-start" className="text-sm font-medium">
-                    Created Date
-                </label>
-                <div className="flex gap-2">
-                    <div className="max-w-[180px] w-full">
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Created Date" labelFor="search-create-date-start">
+                    <div className="flex gap-2">
                         <Calendar
+                            className="p-inputtext-sm h-11 w-[160px]"
                             id="search-create-date-start"
-                            className="text-sm h-11"
                             value={stringToDate(tempFilters.create_date_start?.value)}
                             onChange={handleCreateDateStartChange}
                             placeholder="Start Date"
                             showIcon
                             maxDate={getValidDate(tempFilters.create_date_end?.value)}
                         />
-                    </div>
-                    <div className="max-w-[180px] w-full">
                         <Calendar
+                            className="p-inputtext-sm h-11 w-[160px]"
                             id="search-date-create-end"
-                            className="text-sm h-11"
                             value={stringToDate(tempFilters.create_date_end?.value)}
                             onChange={handleCreateDateEndChange}
                             placeholder="End Date"
@@ -136,21 +127,24 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                             minDate={getValidDate(tempFilters.create_date_start?.value)}
                         />
                     </div>
-                </div>
-            </div>
-            <div className="flex flex-col justify-center">
-                <div>&nbsp;</div>
-                <div className="flex items-center gap-2">
-                    <Checkbox
-                        inputId="is_deleted"
-                        checked={tempFilters.is_deleted?.value ?? false}
-                        onChange={handleIsDeletedChange}
-                    />
-                    <label htmlFor="is_deleted" className="text-sm whitespace-nowrap">
-                        Show Deleted
-                    </label>
-                </div>
-            </div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart className="flex flex-col justify-center">
+                <>
+                    <div>&nbsp;</div>
+                    <div className="flex items-center gap-2">
+                        <Checkbox
+                            inputId="is_deleted"
+                            checked={tempFilters.is_deleted?.value ?? false}
+                            onChange={handleIsDeletedChange}
+                        />
+                        <label htmlFor="is_deleted" className="text-sm whitespace-nowrap">
+                            Show Deleted
+                        </label>
+                    </div>
+                </>
+            </FormPart>
         </div>
     );
 };

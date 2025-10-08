@@ -1,6 +1,40 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
 import {cfg} from '@/config/settings';
+import {FormSituationType} from '@/stores/form.type';
+import {LanguageEnum} from '@/lib/enums';
+
+export type RegisterFormFieldsType = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirm: string;
+    language: LanguageEnum;
+    terms: boolean;
+};
+
+export type RegisterSituationType = FormSituationType | 'csrf_error';
+
+export type RegisterStateType = {
+    values: RegisterFormFieldsType;
+    errors: Partial<Record<keyof RegisterFormFieldsType, string[]>>;
+    message: string | null;
+    situation: RegisterSituationType;
+};
+
+export const RegisterState: RegisterStateType = {
+    values: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirm: '',
+        language: LanguageEnum.RO,
+        terms: false,
+    },
+    errors: {},
+    message: null,
+    situation: null
+};
 
 export const RegisterSchema = z.object({
     name: z
@@ -42,57 +76,19 @@ export const RegisterSchema = z.object({
         })
         .trim(),
     language: z
-        .string({
-            message: lang('register.validation.language_invalid')
-        })
-        .length(2, {
-            message: lang('register.validation.language_invalid')
-        })
-        .trim(),
+        .nativeEnum(LanguageEnum, {message: lang('register.validation.language_invalid')}),
     terms: z.literal(true, {
         errorMap: () => ({
             message: lang('register.validation.terms_required')
         }),
     }),
 })
-.superRefine(({password, password_confirm}, ctx) => {
-    if (password !== password_confirm) {
-        ctx.addIssue({
-            path: ['password_confirm'],
-            message: lang('register.validation.password_confirm_mismatch'),
-            code: z.ZodIssueCode.custom,
-        });
-    }
-});
-
-export type RegisterFormValues = {
-    name: string;
-    email: string;
-    password: string;
-    password_confirm: string;
-    language: string;
-    terms: boolean;
-};
-
-export type RegisterSituation = 'success' | 'error' | 'csrf_error' | null;
-
-export type RegisterState = {
-    values: RegisterFormValues;
-    errors: Partial<Record<keyof RegisterFormValues, string[]>>;
-    message: string | null;
-    situation: RegisterSituation;
-};
-
-export const RegisterDefaultState: RegisterState = {
-    values: {
-        name: '',
-        email: '',
-        password: '',
-        password_confirm: '',
-        language: 'en',
-        terms: false,
-    },
-    errors: {},
-    message: null,
-    situation: null
-};
+    .superRefine(({password, password_confirm}, ctx) => {
+        if (password !== password_confirm) {
+            ctx.addIssue({
+                path: ['password_confirm'],
+                message: lang('register.validation.password_confirm_mismatch'),
+                code: z.ZodIssueCode.custom,
+            });
+        }
+    });

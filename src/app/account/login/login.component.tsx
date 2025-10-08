@@ -3,37 +3,39 @@
 import React, {useActionState, useEffect, useMemo, useState} from 'react';
 import {loginAction, loginValidate} from '@/app/account/login/login.action';
 import {Icons} from '@/components/icon.component';
-import clsx from 'clsx';
 import Routes, {isExcludedRoute} from '@/config/routes';
 import Link from 'next/link';
 import {
     AuthTokenListType, AuthTokenType,
-    LoginDefaultState,
-    LoginFormValues
+    LoginState,
+    LoginFormFieldsType
 } from '@/app/account/login/login.definition';
 import {useRouter} from 'next/navigation';
 import {removeTokenAccount} from '@/lib/services/account.service';
 import {formatDate} from '@/lib/utils/date';
 import {useFormValidation, useFormValues} from '@/hooks';
-import {FormFieldError as RawFormFieldError} from '@/components/form-field-error.component';
-import {FormCsrf} from '@/components/form-csrf';
+import {FormElementError as RawFormElementError} from '@/components/form/form-element-error.component';
+import {FormCsrf} from '@/components/form/form-csrf';
 import {cfg} from '@/config/settings';
 import {useAuth} from '@/providers/auth.provider';
+import {FormElement} from '@/components/form/form-element.component';
+import {FormPart} from '@/components/form/form-part.component';
+import {FormError} from '@/components/form/form-error.component';
+import {IconField} from 'primereact/iconfield';
+import {InputIcon} from 'primereact/inputicon';
+import {InputText} from 'primereact/inputtext';
 
-const FormFieldError = React.memo(RawFormFieldError);
+const FormElementError = React.memo(RawFormElementError);
 
 export default function Login() {
-    const [state, action, pending] = useActionState(loginAction, LoginDefaultState);
+    const [state, action, pending] = useActionState(loginAction, LoginState);
     const [showPassword, setShowPassword] = useState(false);
 
     const {refreshAuth} = useAuth();
 
     const router = useRouter();
 
-    const [formValues, setFormValues] = useFormValues<LoginFormValues>(
-        state?.values,
-        LoginDefaultState.values
-    );
+    const [formValues, setFormValues] = useFormValues<LoginFormFieldsType>(state.values);
 
     const {
         errors,
@@ -46,7 +48,7 @@ export default function Login() {
         debounceDelay: 800,
     });
 
-    const handleChange = (name: keyof LoginFormValues, value: string | boolean) => {
+    const handleChange = (name: keyof LoginFormFieldsType, value: string | boolean) => {
         setFormValues(prev => ({...prev, [name]: value}));
         markFieldAsTouched(name);
     };
@@ -97,98 +99,115 @@ export default function Login() {
         >
             <FormCsrf inputName={cfg('csrf.inputName')} />
 
-            <h1 className="mb-2">
+            <h1>
                 Sign In
             </h1>
-            <div className="form-spacing form-description mb-6 md:max-w-xs">
-                Secure login. Resume your personalized experience.
-            </div>
 
-            <div className="form-spacing">
-                <div className="form-element">
-                    <label htmlFor="email">Email Address</label>
-                    <div className={clsx('input', {'input-error': errors.email})}>
-                        <Icons.Email className="opacity-60"/>
-                        <input
-                            id="email"
-                            name="email"
-                            placeholder="eg: example@domain.com"
-                            autoComplete={"email"}
-                            disabled={pending}
-                            aria-invalid={!!errors.email}
-                            value={formValues.email ?? ''}
-                            onChange={(e) => handleChange('email', e.target.value)}
-                        />
-                    </div>
-                    <FormFieldError messages={errors.email}/>
-                </div>
-            </div>
+            <FormPart className="text-sm text-center md:max-w-xs">
+                <>
+                    Secure login. Resume your personalized experience.
+                </>
+            </FormPart>
 
-            <div className="form-spacing">
-                <div className="form-element">
-                    <label htmlFor="password">Password</label>
-                    <div className={clsx('input', {'input-error': errors.password})}>
-                        <Icons.Password className="opacity-60"/>
-                        <input
-                            id="password"
-                            name="password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            autoComplete={"current-password"}
-                            disabled={pending}
-                            aria-invalid={!!errors.password}
-                            value={formValues.password ?? ''}
-                            onChange={(e) => handleChange('password', e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            className="focus:outline-none hover:opacity-100 transition-opacity"
-                            onClick={() => setShowPassword(!showPassword)}
-                            aria-label={showPassword ? "Hide password" : "Show password"}
-                        >
-                            {showPassword ? (
-                                <Icons.Obscured className="opacity-60 hover:opacity-100"/>
-                            ) : (
-                                <Icons.Visible className="opacity-60 hover:opacity-100"/>
-                            )}
-                        </button>
-                    </div>
-                    <FormFieldError messages={errors.password}/>
-                </div>
-            </div>
+            <FormPart>
+                <FormElement labelText="Email Address" labelFor="email">
+                    <>
+                        <IconField iconPosition="left">
+                            <InputIcon className="flex items-center">
+                                <Icons.Email className="opacity-60"/>
+                            </InputIcon>
+                            <InputText
+                                className="p-inputtext-sm w-full"
+                                id="email"
+                                name="email"
+                                placeholder="eg: example@domain.com"
+                                autoComplete={"email"}
+                                disabled={pending}
+                                invalid={!!errors.email}
+                                value={formValues.email ?? ''}
+                                onChange={(e) => handleChange('email', e.target.value)}
+                            />
+                        </IconField>
+                        <FormElementError messages={errors.email}/>
+                    </>
+                </FormElement>
+            </FormPart>
 
-            <button
-                type="submit"
-                className="btn btn-info"
-                disabled={pending || (submitted && Object.keys(errors).length > 0)}
-                aria-busy={pending}
-            >
-                {pending ? (
-                    <span className="flex items-center gap-2">
-                        <Icons.Loading className="w-4 h-4 animate-spin"/>
-                        Please wait...
-                    </span>
-                ) : submitted && Object.keys(errors).length > 0 ? (
-                    <span className="flex items-center gap-2">
-                        <Icons.Error className="w-4 h-4 animate-pulse" />
-                        Fix errors
-                    </span>
-                ) : (
-                    <span className="flex items-center gap-2">
-                        <Icons.Login/>
-                        Login
-                    </span>
-                )}
-            </button>
+            <FormPart>
+                <FormElement labelText="Password" labelFor="password">
+                    <>
+                        <div className="relative">
+                            <IconField iconPosition="left">
+                                <InputIcon className="flex items-center">
+                                    <Icons.Password className="opacity-60"/>
+                                </InputIcon>
+                                <InputText
+                                    className="p-inputtext-sm w-full !pr-10"
+                                    id="password"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Password"
+                                    autoComplete={"current-password"}
+                                    disabled={pending}
+                                    invalid={!!errors.password}
+                                    value={formValues.password ?? ''}
+                                    onChange={(e) => handleChange('password', e.target.value)}
+                                />
+                            </IconField>
+                            <button
+                                type="button"
+                                className="absolute right-3 top-3 focus:outline-none hover:opacity-100 transition-opacity"
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (
+                                    <Icons.Obscured className="opacity-60 hover:opacity-100 w-4 h-4"/>
+                                ) : (
+                                    <Icons.Visible className="opacity-60 hover:opacity-100 w-4 h-4"/>
+                                )}
+                            </button>
+                        </div>
+                        <FormElementError messages={errors.password}/>
+                    </>
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <button
+                    type="submit"
+                    className="btn btn-info w-full"
+                    disabled={pending || (submitted && Object.keys(errors).length > 0)}
+                    aria-busy={pending}
+                >
+                    {pending ? (
+                        <span className="flex items-center gap-2">
+                            <Icons.Loading className="w-4 h-4 animate-spin"/>
+                            Please wait...
+                        </span>
+                    ) : submitted && Object.keys(errors).length > 0 ? (
+                        <span className="flex items-center gap-2">
+                            <Icons.Error className="w-4 h-4 animate-pulse" />
+                            Login
+                        </span>
+                    ) : (
+                        <span className="flex items-center gap-2">
+                            <Icons.Login/>
+                            Login
+                        </span>
+                    )}
+                </button>
+            </FormPart>
 
             {state?.situation === 'error' && state.message && (
-                <div className="form-submit-error">
-                    <Icons.Error/> {state.message}
-                </div>
+                <FormError>
+                    <>
+                        <Icons.Error/> {state.message}
+                    </>
+                </FormError>
             )}
 
             {state?.situation === 'max_active_sessions' && state.message && (
-                <>
+                <FormPart>
                     <AuthTokenList
                         tokens={state.body?.authValidTokens || []}
                         status={{
@@ -196,18 +215,20 @@ export default function Login() {
                             error: true
                         }}
                     />
-                </>
+                </FormPart>
             )}
 
-            <p className="mt-4 text-center">
-                <span className="text-sm text-gray-500 dark:text-base-content">Not registered yet? </span>
-                <Link
-                    href={Routes.get('register')}
-                    className="link link-info link-hover text-sm"
-                >
-                    Create an account
-                </Link>
-            </p>
+            <FormPart className="text-center">
+                <>
+                    <span className="text-sm text-gray-500 dark:text-base-content">Not registered yet? </span>
+                    <Link
+                        href={Routes.get('register')}
+                        className="link link-info link-hover text-sm"
+                    >
+                        Create an account
+                    </Link>
+                </>
+            </FormPart>
         </form>
     )
 }
@@ -264,18 +285,22 @@ function AuthTokenList({status, tokens}: {
     return (
         <>
             {displayStatus.error && displayStatus.message && (
-                <div className="form-submit-error">
-                    <Icons.Error/> {displayStatus.message}
-                </div>
+                <FormError>
+                    <div>
+                        <Icons.Error/> {displayStatus.message}
+                    </div>
+                </FormError>
             )}
 
             {!displayStatus.error && displayStatus.message && (
-                <div className="form-submit-info">
-                    <Icons.Ok/> {displayStatus.message}
-                </div>
+                <FormError className="text-info">
+                    <div>
+                        <Icons.Ok/> {displayStatus.message}
+                    </div>
+                </FormError>
             )}
 
-            <div className="space-y-4 mt-2">
+            <div className="space-y-4">
                 {tokenList.map((token: AuthTokenType) => (
                     <div key={token.ident} className="p-4 border border-line rounded shadow-sm">
                         <div className="text-sm">

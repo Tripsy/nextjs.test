@@ -34,7 +34,7 @@ export type DataTableFindResponseType<TEntry> = {
     };
 };
 
-export type DataTableFindFunction<TEntry> = (
+export type DataTableFindFunctionType<TEntry> = (
     params: DataTableFindParamsType
 ) => Promise<DataTableFindResponseType<TEntry> | undefined>;
 

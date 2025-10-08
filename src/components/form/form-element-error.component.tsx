@@ -1,14 +1,15 @@
 import {JSX} from 'react';
+import clsx from 'clsx';
 
-export const FormFieldError = ({
+export const FormElementError = ({
    messages,
-   className = 'form-tooltip-error'
+   className
 }: {
     messages?: string[],
     className?: string
 }): JSX.Element | null => (
     messages?.length ? (
-        <div className={className}>
+        <div className={clsx('form-element-error', className)}>
             {messages.length === 1 ? messages[0] : (
                 <ul>
                     {messages.map(msg => <li key={msg}>- {msg}</li>)}

@@ -4,15 +4,11 @@ import Link from 'next/link';
 import {useBreadcrumb} from '@/providers/dashboard/breadcrumb.provider';
 import Routes from '@/config/routes';
 
-type NavBreadcrumbProps = {
-    position: 'mobile' | 'desktop';
-};
-
-export const NavBreadcrumb = ({position} : NavBreadcrumbProps) => {
+export const NavBreadcrumb = () => {
     const {items} = useBreadcrumb();
 
     return (
-        <div className={`breadcrumbs text-sm max-md:p-0 max-md:mb-6 ${position}`}>
+        <div className="breadcrumbs text-sm max-md:p-0 max-md:mb-6">
             <ul>
                 {items.map((item, idx) => (
                     <li key={idx}>

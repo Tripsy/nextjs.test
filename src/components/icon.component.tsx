@@ -7,11 +7,11 @@ import {
     faCircleInfo,
     faClock, faEnvelope, faEye, faEyeSlash, faKey, faLock,
     faMagnifyingGlass,
-    faMoon, faPenToSquare, faPlugCircleXmark,
+    faMoon, faPenToSquare, faCircleXmark,
     faPlus, faSpinner,
     faSun, faThumbsUp,
     faTrashCan,
-    faTriangleExclamation, faUser, faUserCheck
+    faTriangleExclamation, faUser, faUserCheck, faPlugCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
 
 export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIconProps) {
@@ -96,6 +96,9 @@ export const Icons = {
         ),
         Delete: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faTrashCan} {...props} />
+        ),
+        Cancel: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faCircleXmark} {...props} />
         ),
         Destroy: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faPlugCircleXmark} {...props} />

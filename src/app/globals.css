@@ -55,6 +55,9 @@
     --color-line: oklab(0.97807 -0.00659901 -0.0282392 / 0.2);
 }
 
+@layer base {
+}
+
 @layer utilities {
     /* General */
 
@@ -72,11 +75,15 @@
         @apply hover:text-white hover:bg-error border-none;
     }
 
-    @media (prefers-color-scheme: dark) {
-        .btn-neutral {
-            background-color: oklch(50% 0.043 257.281);
-        }
+    .btn-cancel {
+        @apply hover:text-white hover:bg-warning border-none;
     }
+
+    /*@media (prefers-color-scheme: dark) {*/
+    /*    .btn-neutral {*/
+    /*        background-color: oklch(50% 0.043 257.281);*/
+    /*    }*/
+    /*}*/
 
     /* Badges */
 
@@ -101,7 +108,7 @@
     }
 }
 
-@layer base {
+@layer components {
     /* Dashboard layout */
 
     .dashboard-layout {
@@ -114,20 +121,20 @@
         height: var(--header-height);
     }
 
-    .dashboard-layout .header-section .breadcrumbs.mobile {
+    .dashboard-layout .header-section .breadcrumbs {
         display: none;
     }
 
-    .dashboard-layout .header-section .breadcrumbs.desktop {
+    .dashboard-layout .content-section .breadcrumbs {
         display: block;
     }
 
-    @media (max-width: 767px) {
-        .dashboard-layout .header-section .breadcrumbs.mobile {
+    @media (min-width: 768px) {
+        .dashboard-layout .header-section .breadcrumbs {
             display: block;
         }
 
-        .dashboard-layout .header-section .breadcrumbs.desktop {
+        .dashboard-layout .content-section .breadcrumbs {
             display: none;
         }
     }
@@ -208,60 +215,43 @@
         @apply bg-base-200 text-base-content;
     }
 
-    .default-layout .header-section {
-        @apply flex items-center bg-base-100 shadow-md px-6;
+        .default-layout .header-section {
+            @apply flex items-center bg-base-100 shadow-md px-6;
 
-        height: var(--header-height);
-    }
+            height: var(--header-height);
+        }
 
-    .default-layout .main-section {
-        @apply relative flex bg-base-200;
+        .default-layout .main-section {
+            @apply relative flex bg-base-200;
 
-        padding-top: var(--header-height);
-    }
+            padding-top: var(--header-height);
+        }
 
-    .default-layout .main-section .content-section {
-        @apply w-full py-8;
+        .default-layout .main-section .content-section {
+            @apply w-full py-8;
 
-        min-height: calc(100vh - 8rem);
-    }
+            min-height: calc(100vh - 8rem);
+        }
 
     /* Form section */
 
     .form-section {
-        @apply flex flex-col gap-2;
+        @apply flex flex-col gap-6;
     }
 
         .form-section h1 {
             @apply text-xl font-semibold text-center;
         }
 
-        .form-section .form-description {
-            @apply text-sm text-center;
+        .form-section .form-part .form-element {
+            @apply w-full relative flex flex-col gap-2;
         }
 
-        /* .input is coming from primreact */
-        .form-section .input {
-            @apply !w-full;
-        }
-
-        .form-section .form-spacing {
-            @apply mb-4;
-        }
-
-        .form-section .form-spacing .form-element {
-            @apply w-full relative flex flex-col gap-2 mb-2;
-        }
-
-        .form-section .form-spacing label {
+        .form-section .form-part .form-element label {
             @apply text-sm font-semibold;
         }
 
-        .form-section .form-spacing .form-element-error {
-            @apply text-error text-sm;
-        }
-
-        .form-section .form-element .form-tooltip-error {
+        .form-section .form-element .form-element-error {
             @apply
                 w-full
                 text-error dark:text-base-content
@@ -276,23 +266,19 @@
             }
         }
 
-        .form-section .form-element:hover .form-tooltip-error {
+        .form-section .form-element:hover .form-element-error {
             @apply opacity-100 pointer-events-auto;
         }
 
-        .form-section .form-submit-error {
-            @apply mt-2 text-error text-sm;
+        .form-section .form-error {
+            @apply text-error text-sm;
         }
 
-        .form-section .form-submit-info {
-            @apply mt-2 text-info text-sm;
+        .form-section .form-info {
+            @apply text-info text-sm;
         }
 
-    .form-result h1 {
-        @apply text-xl font-semibold
-    }
-
-    .form-result .form-result-content {
-        @apply mt-4 text-sm;
+    .dashboard-layout .form-section h1 {
+        @apply text-left pb-4 border-b border-[var(--color-line)];
     }
 }

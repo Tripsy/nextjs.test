@@ -1,14 +1,13 @@
-import {LazyStateType, DataTableFindFunction} from '@/types/data-table.type';
+import {LazyStateType, DataTableFindFunctionType} from '@/types/data-table.type';
 import {
-    findUser,
-    UserTableFiltersType,
-    UserTableDefaultState
-} from '@/lib/services/user.service';
+    findUser
+} from '@/lib/services/users.service';
 import {UserModel} from '@/lib/models/user.model';
+import {UsersTableFiltersType, UsersTableState} from '@/app/dashboard/users/users.definition';
 
 export type DataSourceType = {
     users: {
-        filter: UserTableFiltersType;
+        filter: UsersTableFiltersType;
         entry: UserModel;
     };
 };
@@ -16,13 +15,13 @@ export type DataSourceType = {
 const DataSourceConfig: {
     [K in keyof DataSourceType]: {
         defaultState: LazyStateType<DataSourceType[K]['filter']>;
-        findFunction: DataTableFindFunction<DataSourceType[K]['entry']>;
+        findFunction: DataTableFindFunctionType<DataSourceType[K]['entry']>;
         onRowSelect?: (entry: DataSourceType[K]['entry']) => void;
         onRowUnselect?: (entry: DataSourceType[K]['entry']) => void;
     }
 } = {
     users: {
-        defaultState: UserTableDefaultState,
+        defaultState: UsersTableState,
         findFunction: findUser,
         onRowSelect: (entry: UserModel) => console.log('selected', entry),
         onRowUnselect: (entry: UserModel) => console.log('unselected', entry),

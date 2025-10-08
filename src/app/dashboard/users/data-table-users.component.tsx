@@ -2,19 +2,20 @@
 
 import React, {JSX} from 'react';
 import {DataTableColumnsType} from '@/types/data-table.type';
-import DataTableList from '@/components/dashboard/data-table-list.component';
+import DataTableList from '@/app/dashboard/_components/data-table-list.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
 import {UserModel} from '@/lib/models/user.model';
 import {
     CapitalizeBodyTemplate,
     DateBodyTemplate,
     StatusBodyTemplate
-} from '@/components/dashboard/data-table-row.component';
-import {DataTableActions} from '@/components/dashboard/data-table-actions.component';
-import {UserTableDefaultState} from '@/lib/services/user.service';
+} from '@/app/dashboard/_components/data-table-row.component';
+import {DataTableActions} from '@/app/dashboard/_components/data-table-actions.component';
 import {DataTableProvider} from '@/providers/dashboard/data-table-provider';
 import {Loading} from '@/components/loading.component';
 import {useMounted} from '@/hooks';
+import {FormManageUsers} from '@/app/dashboard/users/form-manage-users.component';
+import {UsersTableState} from '@/app/dashboard/users/users.definition';
 
 const TableColumns: DataTableColumnsType<UserModel> = [
     {field: 'id', header: 'ID', sortable: true},
@@ -40,7 +41,7 @@ export const DataTableUsers = (): JSX.Element => {
     }
 
     return (
-        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultState={UserTableDefaultState}>
+        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultState={UsersTableState}>
             <div className="standard-box p-4 shadow-md">
                 <DataTableFiltersUsers/>
                 <DataTableActions/>
@@ -50,6 +51,7 @@ export const DataTableUsers = (): JSX.Element => {
                     scrollHeight="400px"
                 />
             </div>
+            <FormManageUsers/>
         </DataTableProvider>
     );
 }

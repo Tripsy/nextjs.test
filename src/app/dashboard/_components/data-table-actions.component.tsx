@@ -7,10 +7,13 @@ import {DataTableSelectionModeType} from '@/types/data-table.type';
 import {useDataTableFilters} from '@/hooks';
 import {createFilterHandlers, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 import {DataSourceType} from '@/config/data-source';
+import {useUserStore} from '@/app/dashboard/users/users.action';
 
 export function DataTableActions<K extends keyof DataSourceType>() {
     const {selectionMode, defaultState, selectedEntries} = useDataTable();
     const {dispatchFilters} = useDataTableFilters<K>(filtersReducer);
+    // const { openAdd, openEdit, openDelete } = useUserStore();
+    const { openAdd } = useUserStore();
 
     const {
         handleReset
@@ -18,6 +21,18 @@ export function DataTableActions<K extends keyof DataSourceType>() {
 
     const isMultipleSelectionMode = (selectionMode: DataTableSelectionModeType) =>
         selectionMode === 'multiple';
+
+    // const handleEdit = () => {
+    //     if (selectedEntries.length === 1) {
+    //         openEdit(selectedEntries[0]);
+    //     }
+    // };
+    //
+    // const handleDelete = () => {
+    //     if (selectedEntries.length > 0) {
+    //         openDelete(selectedEntries);
+    //     }
+    // };
 
     return (
         <div className="my-6 pt-4 border-t border-line flex justify-between">
@@ -32,7 +47,7 @@ export function DataTableActions<K extends keyof DataSourceType>() {
                 {/*TODO: other actions: edit / activate / deactivate & restore*/}
                 {/*TODO: for single selection present actions at mouse position (ex: statamic)*/}
                 {selectedEntries.length > 0 && (
-                    <button className="btn btn-md btn-delete">
+                    <button className="btn btn-delete rounded">
                         <Icons.Action.Delete className="w-4 h-4"/>
                         Delete
                     </button>
@@ -51,6 +66,7 @@ export function DataTableActions<K extends keyof DataSourceType>() {
                 <button
                     className="btn btn-info rounded"
                     title="Add new entry"
+                    onClick={openAdd}
                 >
                     <Icons.Action.Add className="w-4 h-4"/>
                     Add
