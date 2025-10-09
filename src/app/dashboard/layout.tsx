@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes, {RouteAuth} from '@/config/routes';
-import {DashboardProvider} from '@/providers/dashboard/dashboard.provider';
+import {DashboardProvider} from '@/app/dashboard/_providers/dashboard.provider';
 import {SideMenuToggle} from '@/app/dashboard/_components/side-menu-toggle.component';
 import {SideMenu} from '@/app/dashboard/_components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';

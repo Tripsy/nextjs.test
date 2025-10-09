@@ -1,6 +1,6 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
-import {FormSituationType} from '@/stores/form.type';
+import {FormSituationType} from '@/lib/types';
 
 export type LoginFormFieldsType = {
     email: string;

@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {BreadcrumbType} from '@/providers/dashboard/breadcrumb.provider';
+import {BreadcrumbType} from '@/app/dashboard/_providers/breadcrumb.provider';
 import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
 import React from 'react';
 import {lang} from '@/config/lang';

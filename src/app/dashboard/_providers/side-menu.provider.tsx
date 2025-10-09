@@ -19,7 +19,7 @@ const SideMenuProvider = ({children}: { children: ReactNode }) => {
         let status: Status;
 
         if (isLargeScreen()) {
-            const saved = localStorage.getItem('dashboard-side-menu') as Status;
+            const saved = localStorage.getItem('_providers-side-menu') as Status;
 
             status = saved || 'open';
         } else {
@@ -39,7 +39,7 @@ const SideMenuProvider = ({children}: { children: ReactNode }) => {
     const toggleStatus = (status: Status): void => {
         setStatus(status);
 
-        localStorage.setItem('dashboard-side-menu', status);
+        localStorage.setItem('_providers-side-menu', status);
     };
 
     return (

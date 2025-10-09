@@ -1,22 +1,23 @@
 'use client';
 
 import React, {createContext, useState, ReactNode, useContext, useRef, useCallback, useMemo} from 'react';
-import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
+import {DataSourceType, DataTableSelectionModeType, getDataSourceConfig, DataTableStateType} from '@/config/data-source';
 import {useDebouncedEffect} from '@/hooks';
-import {DataTableSelectionModeType, LazyStateType} from '@/types/data-table.type';
 import {readFromLocalStorage} from '@/lib/utils/storage';
+import {ManageStoreType} from '@/app/dashboard/_stores/manage.store';
 
 type DataTableContextType<K extends keyof DataSourceType> = {
     dataSource: K;
     dataStorageKey: string;
     selectionMode: DataTableSelectionModeType;
-    defaultState: LazyStateType<DataSourceType[K]['filter']>;
-    initState: LazyStateType<DataSourceType[K]['filter']>;
-    filters: DataSourceType[K]['filter'];
-    setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['filter']>>;
-    selectedEntries: DataSourceType[K]['entry'][];
-    setSelectedEntries: React.Dispatch<React.SetStateAction<DataSourceType[K]['entry'][]>>;
+    tableStateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+    tableStateInit: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+    filters: DataSourceType[K]['dataTableFilter'];
+    setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['dataTableFilter']>>;
+    selectedEntries: DataSourceType[K]['model'][];
+    setSelectedEntries: React.Dispatch<React.SetStateAction<DataSourceType[K]['model'][]>>;
     clearSelectedEntries: () => void;
+    manageStore: ManageStoreType<K>;
 };
 
 const DataTableContext = createContext<DataTableContextType<keyof DataSourceType> | undefined>(undefined);
@@ -24,27 +25,28 @@ const DataTableContext = createContext<DataTableContextType<keyof DataSourceType
 function DataTableProvider<K extends keyof DataSourceType>({
    dataSource,
    selectionMode,
-   defaultState,
+   manageStore,
    children
 }: {
     dataSource: K,
     selectionMode: DataTableSelectionModeType,
-    defaultState: LazyStateType<DataSourceType[K]['filter']>
+    manageStore: ManageStoreType<K>,
     children: ReactNode
 }) {
     const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
+    const tableStateDefault = getDataSourceConfig(dataSource, 'dataTableState');
 
-    const initState = useMemo((): LazyStateType<DataSourceType[K]['filter']> => {
+    const tableStateInit = useMemo((): DataTableStateType<DataSourceType[K]['dataTableFilter']> => {
         return {
-            ...defaultState,
-            ...(readFromLocalStorage<LazyStateType<DataSourceType[K]['filter']>>(dataStorageKey) || {})
+            ...tableStateDefault,
+            ...(readFromLocalStorage<DataTableStateType<DataSourceType[K]['dataTableFilter']>>(dataStorageKey) || {})
         };
-    }, [dataStorageKey, defaultState]);
+    }, [dataStorageKey, tableStateDefault]);
 
-    const [filters, setFilters] = useState<DataSourceType[K]['filter']>(initState.filters);
-    const [selectedEntries, setSelectedEntries] = useState<DataSourceType[K]['entry'][]>([]);
+    const [filters, setFilters] = useState<DataSourceType[K]['dataTableFilter']>(tableStateInit.filters);
+    const [selectedEntries, setSelectedEntries] = useState<DataSourceType[K]['model'][]>([]);
 
-    const prevSelectedEntriesRef = useRef<DataSourceType[K]['entry'][]>([]);
+    const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
 
     const clearSelectedEntries = useCallback(() => {
         setSelectedEntries([]);
@@ -72,13 +74,14 @@ function DataTableProvider<K extends keyof DataSourceType>({
             dataSource,
             dataStorageKey,
             selectionMode,
-            defaultState,
-            initState,
+            tableStateDefault,
+            tableStateInit,
             filters,
             setFilters,
             selectedEntries,
             setSelectedEntries,
-            clearSelectedEntries
+            clearSelectedEntries,
+            manageStore
         }}>
             {children}
         </DataTableContext.Provider>

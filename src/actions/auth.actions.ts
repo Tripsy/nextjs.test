@@ -1,6 +1,6 @@
 'use server';
 
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
 import {deleteCookie, getTrackedCookie, setupTrackedCookie} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';
 import {lang} from '@/config/lang';

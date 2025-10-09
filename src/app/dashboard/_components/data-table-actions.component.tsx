@@ -2,18 +2,18 @@
 
 import React from 'react';
 import {Icons} from '@/components/icon.component';
-import {useDataTable} from '@/providers/dashboard/data-table-provider';
-import {DataTableSelectionModeType} from '@/types/data-table.type';
+import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
 import {useDataTableFilters} from '@/hooks';
 import {createFilterHandlers, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
-import {DataSourceType} from '@/config/data-source';
-import {useUserStore} from '@/app/dashboard/users/users.action';
+import {DataSourceType, DataTableSelectionModeType} from '@/config/data-source';
+import {useStore} from 'zustand/react';
 
 export function DataTableActions<K extends keyof DataSourceType>() {
-    const {selectionMode, defaultState, selectedEntries} = useDataTable();
+    const {selectionMode, tableStateDefault, selectedEntries, manageStore} = useDataTable();
     const {dispatchFilters} = useDataTableFilters<K>(filtersReducer);
-    // const { openAdd, openEdit, openDelete } = useUserStore();
-    const { openAdd } = useUserStore();
+
+    const openCreate = useStore(manageStore, (state) => state.openCreate);
+    const openUpdate = useStore(manageStore, (state) => state.openUpdate);
 
     const {
         handleReset
@@ -22,17 +22,15 @@ export function DataTableActions<K extends keyof DataSourceType>() {
     const isMultipleSelectionMode = (selectionMode: DataTableSelectionModeType) =>
         selectionMode === 'multiple';
 
-    // const handleEdit = () => {
-    //     if (selectedEntries.length === 1) {
-    //         openEdit(selectedEntries[0]);
-    //     }
-    // };
-    //
-    // const handleDelete = () => {
-    //     if (selectedEntries.length > 0) {
-    //         openDelete(selectedEntries);
-    //     }
-    // };
+    const handleCreate = () => {
+        openCreate();
+    };
+
+    const handleUpdate = () => {
+        if (selectedEntries.length === 1) {
+            openUpdate(selectedEntries[0]);
+        }
+    };
 
     return (
         <div className="my-6 pt-4 border-t border-line flex justify-between">
@@ -47,16 +45,31 @@ export function DataTableActions<K extends keyof DataSourceType>() {
                 {/*TODO: other actions: edit / activate / deactivate & restore*/}
                 {/*TODO: for single selection present actions at mouse position (ex: statamic)*/}
                 {selectedEntries.length > 0 && (
-                    <button className="btn btn-delete rounded">
-                        <Icons.Action.Delete className="w-4 h-4"/>
-                        Delete
-                    </button>
+                    <div className="flex gap-4">
+                        <button
+                            className="btn btn-hover hover:text-white hover:bg-error rounded"
+                            title="Delete selected entries"
+                        >
+                            <Icons.Action.Delete className="w-4 h-4"/>
+                            Delete
+                        </button>
+                        {selectedEntries.length === 1 && (
+                        <button
+                            className="btn btn-hover hover:text-white hover:bg-success rounded"
+                            title="Update selected entry"
+                            onClick={handleUpdate}
+                        >
+                            <Icons.Action.Edit className="w-4 h-4"/>
+                            Update
+                        </button>
+                        )}
+                    </div>
                 )}
             </div>
             <div className="flex gap-4">
                 <button
                     className="btn btn-warning rounded"
-                    onClick={() => handleReset(defaultState.filters)}
+                    onClick={() => handleReset(tableStateDefault.filters)}
                     title="Reset filters"
                 >
                     <Icons.Action.Reset className="w-4 h-4"/>
@@ -65,11 +78,11 @@ export function DataTableActions<K extends keyof DataSourceType>() {
                 {/*TODO: not all the components have add button */}
                 <button
                     className="btn btn-info rounded"
-                    title="Add new entry"
-                    onClick={openAdd}
+                    title="Create new entry"
+                    onClick={handleCreate}
                 >
                     <Icons.Action.Add className="w-4 h-4"/>
-                    Add
+                    Create
                 </button>
             </div>
         </div>

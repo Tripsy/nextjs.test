@@ -3,9 +3,9 @@
 import {Icons} from '@/components/icon.component';
 import ValueError from '@/lib/exceptions/value.error';
 import {formatDate} from '@/lib/utils/date';
-import {DataTableColumnType} from '@/types/data-table.type';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
 import React from 'react';
+import {DataTableColumnType} from '@/config/data-source';
 
 const statusList = {
     active: {

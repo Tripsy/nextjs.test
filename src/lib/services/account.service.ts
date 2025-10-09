@@ -1,4 +1,4 @@
-import {ApiRequest, ResponseFetch} from '@/lib/api';
+import {ApiRequest, ResponseFetch} from '@/lib/utils/api';
 import {RegisterFormFieldsType} from '@/app/account/register/register.definition';
 import {AuthTokenListType, LoginFormFieldsType} from '@/app/account/login/login.definition';
 import {UserModel} from '@/lib/models/user.model';

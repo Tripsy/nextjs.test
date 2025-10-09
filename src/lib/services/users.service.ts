@@ -1,37 +1,8 @@
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
-import {DataTableFilterMetaData} from 'primereact/datatable';
-import {
-    LazyStateType,
-    DataTableFindParamsType,
-    DataTableFindResponseType
-} from '@/types/data-table.type';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
 import {UserModel} from '@/lib/models/user.model';
+import {FindFunctionParamsType, FindFunctionResponseType} from '@/config/data-source';
 
-export type UserTableFiltersType = {
-    global: DataTableFilterMetaData;
-    role: DataTableFilterMetaData;
-    status: DataTableFilterMetaData;
-    create_date_start: DataTableFilterMetaData;
-    create_date_end: DataTableFilterMetaData;
-    is_deleted: DataTableFilterMetaData;
-};
-
-export const UserTableDefaultState: LazyStateType<UserTableFiltersType> = {
-    first: 0,
-    rows: 10,
-    sortField: 'id',
-    sortOrder: -1,
-    filters: {
-        global: {value: null, matchMode: 'contains'},
-        role: {value: null, matchMode: 'equals'},
-        status: {value: null, matchMode: 'equals'},
-        create_date_start: {value: null, matchMode: 'equals'},
-        create_date_end: {value: null, matchMode: 'equals'},
-        is_deleted: {value: null, matchMode: 'equals'},
-    }
-};
-
-export const findUser = async (params: DataTableFindParamsType): Promise<DataTableFindResponseType<UserModel> | undefined> => {
+export const findUsers = async (params: FindFunctionParamsType): Promise<FindFunctionResponseType<UserModel> | undefined> => {
     const query = new URLSearchParams({
         order_by: params.order_by,
         direction: params.direction,
@@ -40,8 +11,13 @@ export const findUser = async (params: DataTableFindParamsType): Promise<DataTab
         filter: params.filter
     });
 
-    const response: ResponseFetch<DataTableFindResponseType<UserModel>> = await new ApiRequest()
+    const response: ResponseFetch<FindFunctionResponseType<UserModel>> = await new ApiRequest()
         .doFetch(`/users?${query}`);
 
-    return getResponseData<DataTableFindResponseType<UserModel>>(response);
+    return getResponseData<FindFunctionResponseType<UserModel>>(response);
 }
+
+// TODO
+// createUsers
+// updateUsers
+// deleteUsers

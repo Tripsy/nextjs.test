@@ -1,8 +1,8 @@
 import {z} from 'zod';
 import {lang} from '@/config/lang';
 import {cfg} from '@/config/settings';
-import {FormSituationType} from '@/stores/form.type';
 import {LanguageEnum} from '@/lib/enums';
+import {FormSituationType} from '@/lib/types';
 
 export type RegisterFormFieldsType = {
     name: string;

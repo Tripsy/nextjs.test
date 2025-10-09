@@ -3,26 +3,26 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {DataTable, DataTablePageEvent, DataTableSortEvent} from 'primereact/datatable';
 import {Column} from 'primereact/column';
-import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
 import {
-    LazyStateType,
-    DataTableColumnType,
+    DataSourceType,
+    getDataSourceConfig,
+    DataTableStateType,
     DataTablePropsType
-} from '@/types/data-table.type';
+} from '@/config/data-source';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
-import {useDataTable} from '@/providers/dashboard/data-table-provider';
+import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
 
 type SelectionChangeEvent<T> = {
     originalEvent: React.SyntheticEvent;
     value: T[];
 };
 
-export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType<T>) {
+export default function DataTableList<T extends keyof DataSourceType>(props: DataTablePropsType) {
     const {
         dataSource,
         dataStorageKey,
         selectionMode,
-        initState,
+        tableStateInit,
         selectedEntries,
         setSelectedEntries,
         clearSelectedEntries,
@@ -38,10 +38,10 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
 
     const [loading, setLoading] = useState(false);
 
-    const [data, setData] = useState<DataSourceType[T]['entry'][]>([]);
+    const [data, setData] = useState<DataSourceType[T]['model'][]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const [lazyState, setLazyState] = useState<LazyStateType<DataSourceType[T]['filter']>>(initState);
+    const [lazyState, setLazyState] = useState<DataTableStateType<DataSourceType[T]['dataTableFilter']>>(tableStateInit);
 
     useEffect(() => {
         clearSelectedEntries();
@@ -145,22 +145,28 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         }));
     }, [clearSelectedEntries]);
 
-    const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['entry']>) => {
+    const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['model']>) => {
         setSelectedEntries(event.value);
     }, [setSelectedEntries]);
 
-    const tableColumns = useMemo(() => (
-        props.columns.map((column: DataTableColumnType<DataSourceType[T]['entry']>) => (
-            <Column
-                key={column.field}
-                field={column.field}
-                header={column.header}
-                style={column.style}
-                body={(rowData) => column.body?.({...rowData}, column) || rowData[column.field]}
-                sortable={column.sortable ?? false}
-            />
-        ))
-    ), [props.columns]);
+    const columns = getDataSourceConfig(dataSource, 'dataTableColumns');
+
+    const tableColumns = useMemo(
+        () =>
+            columns.map((column) => (
+                <Column
+                    key={column.field}
+                    field={column.field}
+                    header={column.header}
+                    style={column.style}
+                    sortable={column.sortable ?? false}
+                    body={(rowData) =>
+                        column.body ? column.body(rowData, column) : rowData[column.field]
+                    }
+                />
+            )),
+        [columns]
+    );
 
     const paginatorTemplate = useMemo(() => ({
         layout: 'CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',

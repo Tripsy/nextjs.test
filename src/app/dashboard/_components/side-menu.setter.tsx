@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect} from 'react';
-import {useSideMenu} from '@/providers/dashboard/side-menu.provider';
+import {useSideMenu} from '@/app/dashboard/_providers/side-menu.provider';
 
 export default function SideMenuSetter(): null {
     const {status} = useSideMenu();

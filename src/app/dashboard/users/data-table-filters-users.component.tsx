@@ -15,16 +15,16 @@ import {getValidDate, stringToDate} from '@/lib/utils/date';
 import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 import {FormPart} from '@/components/form/form-part.component';
 import {FormElement} from '@/components/form/form-element.component';
-import {UsersTableFiltersType} from '@/app/dashboard/users/users.definition';
+import {DataTableFiltersUsersType} from '@/app/dashboard/users/users.definition';
 
-type FiltersActionUsers = FiltersAction<UsersTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
+type FiltersActionUsers = FiltersAction<DataTableFiltersUsersType> | { type: 'SET_ROLE'; value: string | null };
 
-function filtersReducerUsers(state: UsersTableFiltersType, action: FiltersActionUsers): UsersTableFiltersType {
+function filtersReducerUsers(state: DataTableFiltersUsersType, action: FiltersActionUsers): DataTableFiltersUsersType {
     switch (action.type) {
         case 'SET_ROLE':
             return {...state, role: {value: action.value, matchMode: 'equals'}};
         default:
-            return filtersReducer<UsersTableFiltersType>(state, action);
+            return filtersReducer<DataTableFiltersUsersType>(state, action);
     }
 }
 
@@ -47,7 +47,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         handleIsDeletedChange,
         handleCreateDateStartChange,
         handleCreateDateEndChange
-    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<UsersTableFiltersType>>);
+    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<DataTableFiltersUsersType>>);
 
     const dispatchFiltersSpecific = dispatchFilters as React.Dispatch<FiltersActionUsers>;
 

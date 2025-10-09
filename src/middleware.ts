@@ -1,7 +1,7 @@
 import type {NextRequest} from 'next/server';
 import {NextResponse} from 'next/server';
 import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/api';
+import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
 import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
 import {lang} from '@/config/lang';
 import {getTrackedCookie, getTrackedCookieName, TrackedCookie} from '@/lib/utils/session';

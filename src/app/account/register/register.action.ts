@@ -71,13 +71,13 @@ export async function registerAction(state: RegisterStateType, formData: FormDat
             situation: fetchResponse?.success ? 'success' : 'error'
         };
     } catch (error: unknown) {
-        let message: string = lang('register.message.error');
+        let message: string = lang('error.form');
         const situation: RegisterSituationType = 'error';
 
         if (error instanceof ApiError) {
             switch (error.status) {
                 case 409:
-                    message = lang('register.message.email_already_used');
+                    message = lang('register.validation.email_already_used');
                     break;
             }
         }

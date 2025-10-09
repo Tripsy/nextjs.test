@@ -1,4 +1,4 @@
-import {ResponseFetch} from '@/lib/api';
+import {ResponseFetch} from '@/lib/utils/api';
 
 export class ApiError<T = unknown> extends Error {
     constructor(

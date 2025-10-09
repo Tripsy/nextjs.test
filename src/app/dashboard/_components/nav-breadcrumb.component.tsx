@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useBreadcrumb} from '@/providers/dashboard/breadcrumb.provider';
-import Routes from '@/config/routes';
+import {useBreadcrumb} from '@/app/dashboard/_providers/breadcrumb.provider';
 
 export const NavBreadcrumb = () => {
     const {items} = useBreadcrumb();
@@ -15,7 +14,7 @@ export const NavBreadcrumb = () => {
                         {
                             item.href ? (
                                 <Link
-                                    href={Routes.get(item.href)}
+                                    href={item.href}
                                     className="link link-hover"
                                 >
                                     {item.label}

@@ -1,11 +1,11 @@
 import {FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 import {useEffect, useReducer} from 'react';
 import {useDebouncedEffect} from '@/hooks/use-debounced-effect.hook';
-import {useDataTable} from '@/providers/dashboard/data-table-provider';
+import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
 import {DataSourceType} from '@/config/data-source';
 
 export function useDataTableFilters<K extends keyof DataSourceType>(
-    customReducer?: (state: DataSourceType[K]['filter'], action: FiltersAction<DataSourceType[K]['filter']>) => DataSourceType[K]['filter']
+    customReducer?: (state: DataSourceType[K]['dataTableFilter'], action: FiltersAction<DataSourceType[K]['dataTableFilter']>) => DataSourceType[K]['dataTableFilter']
 ) {
     const reducer = customReducer ? customReducer : filtersReducer;
 
