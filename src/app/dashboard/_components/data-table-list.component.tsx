@@ -6,11 +6,11 @@ import {Column} from 'primereact/column';
 import {
     DataSourceType,
     getDataSourceConfig,
-    DataTableStateType,
     DataTablePropsType
 } from '@/config/data-source';
 import {PaginatorCurrentPageReportOptions} from 'primereact/paginator';
 import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
+import {useStore} from 'zustand/react';
 
 type SelectionChangeEvent<T> = {
     originalEvent: React.SyntheticEvent;
@@ -22,39 +22,32 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         dataSource,
         dataStorageKey,
         selectionMode,
-        tableStateInit,
-        selectedEntries,
-        setSelectedEntries,
-        clearSelectedEntries,
-        filters
-    } = useDataTable<T>();
+        modelStore
+    } = useDataTable();
 
     const [error, setError] = useState<Error | null>(null);
 
-    // This will trigger error boundary
-    if (error) {
-        throw error;
-    }
-
-    const [loading, setLoading] = useState(false);
+    const tableState = useStore(modelStore, (state) => state.tableState);
+    const updateTableState = useStore(modelStore, (state) => state.updateTableState);
+    const selectedEntries = useStore(modelStore, (state) => state.selectedEntries);
+    const setSelectedEntries = useStore(modelStore, (state) => state.setSelectedEntries);
+    const clearSelectedEntries = useStore(modelStore, (state) => state.clearSelectedEntries);
+    const isLoading = useStore(modelStore, (state) => state.isLoading);
+    const setLoading = useStore(modelStore, (state) => state.setLoading);
 
     const [data, setData] = useState<DataSourceType[T]['model'][]>([]);
     const [totalRecords, setTotalRecords] = useState(0);
 
-    const [lazyState, setLazyState] = useState<DataTableStateType<DataSourceType[T]['dataTableFilter']>>(tableStateInit);
-
     useEffect(() => {
         clearSelectedEntries();
 
-        setLazyState((prev) => ({
-            ...prev,
-            first: 0,
-            filters: {...filters},
-        }));
-    }, [clearSelectedEntries, filters, dataStorageKey]);
+        updateTableState({
+            first: 0
+        });
+    }, [clearSelectedEntries, updateTableState, tableState.filters]);
 
     const findFunctionFilter = useMemo(() => {
-        const params = Object.entries(lazyState.filters).reduce((acc, [key, filterObj]) => {
+        const params = Object.entries(tableState.filters).reduce((acc, [key, filterObj]) => {
             if (filterObj?.value != null && filterObj.value !== '') {
                 acc[key === 'global' ? 'term' : String(key)] = filterObj.value;
             }
@@ -62,10 +55,10 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         }, {} as Record<string, string>);
 
         return JSON.stringify(params);
-    }, [lazyState.filters]);
+    }, [tableState.filters]);
 
     useEffect(() => {
-        console.log('lazyState changed');
+        console.log('tableState changed');
         const abortController = new AbortController();
 
         (async () => {
@@ -84,10 +77,10 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
                     }
 
                     const data = await findFunction({
-                        order_by: lazyState.sortField,
-                        direction: lazyState.sortOrder === 1 ? 'ASC' : 'DESC',
-                        limit: lazyState.rows,
-                        page: lazyState.rows > 0 ? Math.floor(lazyState.first / lazyState.rows) + 1 : 1,
+                        order_by: tableState.sortField,
+                        direction: tableState.sortOrder === 1 ? 'ASC' : 'DESC',
+                        limit: tableState.rows,
+                        page: tableState.rows > 0 ? Math.floor(tableState.first / tableState.rows) + 1 : 1,
                         filter: findFunctionFilter,
                     });
 
@@ -122,28 +115,26 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         return () => {
             abortController.abort();
         };
-    }, [dataSource, lazyState.sortField, lazyState.sortOrder, lazyState.rows, lazyState.first, findFunctionFilter]);
+    }, [dataSource, tableState.sortField, tableState.sortOrder, tableState.rows, tableState.first, findFunctionFilter, setLoading]);
 
     const onPage = useCallback((event: DataTablePageEvent) => {
         clearSelectedEntries();
 
-        setLazyState(prev => ({
-            ...prev,
+        updateTableState({
             first: event.first,
             rows: event.rows,
-        }));
-    }, [clearSelectedEntries]);
+        });
+    }, [clearSelectedEntries, updateTableState]);
 
     const onSort = useCallback((event: DataTableSortEvent) => {
         clearSelectedEntries();
 
-        setLazyState(prev => ({
-            ...prev,
+        updateTableState({
             first: 0,
             sortField: event.sortField,
             sortOrder: event.sortOrder,
-        }));
-    }, [clearSelectedEntries]);
+        });
+    }, [clearSelectedEntries, updateTableState]);
 
     const onSelectionChange = useCallback((event: SelectionChangeEvent<DataSourceType[T]['model']>) => {
         setSelectedEntries(event.value);
@@ -177,20 +168,25 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         )
     }), []);
 
+    // This will trigger error boundary
+    if (error) {
+        throw error;
+    }
+
     return (
         <DataTable
             value={data} lazy
             dataKey={props.dataKey} selectionMode={selectionMode} selection={selectedEntries}
             metaKeySelection={false}
             selectionPageOnly={true} onSelectionChange={onSelectionChange}
-            first={lazyState.first} rows={lazyState.rows} totalRecords={totalRecords}
-            onPage={onPage} onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
-            loading={loading}
+            first={tableState.first} rows={tableState.rows} totalRecords={totalRecords}
+            onPage={onPage} onSort={onSort} sortField={tableState.sortField} sortOrder={tableState.sortOrder}
+            loading={isLoading}
             stripedRows
             scrollable scrollHeight={props.scrollHeight || 'flex'}
             resizableColumns reorderableColumns
             stateStorage="local" stateKey={dataStorageKey}
-            filters={lazyState.filters}
+            filters={tableState.filters}
             paginator rowsPerPageOptions={[5, 10, 25, 50]}
             paginatorTemplate={paginatorTemplate}
             paginatorClassName="data-table-paginator"

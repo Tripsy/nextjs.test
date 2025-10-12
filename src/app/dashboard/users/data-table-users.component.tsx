@@ -8,10 +8,9 @@ import {DataTableProvider} from '@/app/dashboard/_providers/data-table-provider'
 import {Loading} from '@/components/loading.component';
 import {useMounted} from '@/hooks';
 import {FormManageUsers} from '@/app/dashboard/users/form-manage-users.component';
-import {createManageStore, ManageStoreType} from '@/app/dashboard/_stores/manage.store';
-import {UserModel} from '@/lib/models/user.model';
+import {createModelStore} from '@/app/dashboard/_stores/model.store';
 
-const manageStore: ManageStoreType<'users'> = createManageStore<UserModel>();
+const modelStore = createModelStore('users');
 
 export const DataTableUsers = (): JSX.Element => {
     const isMounted = useMounted();
@@ -21,7 +20,7 @@ export const DataTableUsers = (): JSX.Element => {
     }
 
     return (
-        <DataTableProvider dataSource="users" selectionMode="checkbox" manageStore={manageStore}>
+        <DataTableProvider dataSource="users" selectionMode="checkbox" modelStore={modelStore}>
             <div className="standard-box p-4 shadow-md">
                 <DataTableFiltersUsers/>
                 <DataTableActions/>
@@ -30,7 +29,7 @@ export const DataTableUsers = (): JSX.Element => {
                     scrollHeight="400px"
                 />
             </div>
-            <FormManageUsers/>
+            {/*<FormManageUsers/>*/}
         </DataTableProvider>
     );
 }

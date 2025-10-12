@@ -1,7 +1,6 @@
 'use client';
 
-import React, {useCallback} from 'react';
-import {useDataTableFilters} from '@/hooks';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
 import {Checkbox} from 'primereact/checkbox';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
@@ -12,21 +11,13 @@ import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {getValidDate, stringToDate} from '@/lib/utils/date';
-import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 import {FormPart} from '@/components/form/form-part.component';
 import {FormElement} from '@/components/form/form-element.component';
 import {DataTableFiltersUsersType} from '@/app/dashboard/users/users.definition';
-
-type FiltersActionUsers = FiltersAction<DataTableFiltersUsersType> | { type: 'SET_ROLE'; value: string | null };
-
-function filtersReducerUsers(state: DataTableFiltersUsersType, action: FiltersActionUsers): DataTableFiltersUsersType {
-    switch (action.type) {
-        case 'SET_ROLE':
-            return {...state, role: {value: action.value, matchMode: 'equals'}};
-        default:
-            return filtersReducer<DataTableFiltersUsersType>(state, action);
-    }
-}
+import {useStore} from 'zustand/react';
+import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
+import {createFilterHandlers} from '@/lib/utils/data-table';
+import {useDebouncedEffect} from '@/hooks';
 
 const statuses = Object.values(UserStatusEnum).map((status) => ({
     label: capitalizeFirstLetter(status),
@@ -39,22 +30,86 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
 }));
 
 export const DataTableFiltersUsers = (): React.JSX.Element => {
-    const {tempFilters, dispatchFilters} = useDataTableFilters<'users'>(filtersReducerUsers);
+    const {
+        stateDefault,
+        modelStore
+    } = useDataTable();
 
+    const filters = useStore(modelStore, (state) => state.tableState.filters);
+    const updateTableState = useStore(modelStore, (state) => state.updateTableState);
+
+    const updateFilters = useCallback((newFilters: Partial<DataTableFiltersUsersType>) => {
+        updateTableState({
+            filters: {...filters, ...newFilters}
+        });
+    }, [filters, updateTableState]);
+
+    const [valueSearchGlobal, setValueSearchGlobal] = useState(filters.global?.value ?? '');
+
+    const initialFilterValue = useRef(filters.global?.value ?? '');
+    const currentSearchGlobal = useRef(filters.global?.value ?? '');
+    const debouncedSearchGlobal = useRef('');
+    const triggerSearchGlobal = useRef(false);
+
+    useEffect(() => {
+        const handleFilterReset = () => {
+            updateTableState({
+                filters: stateDefault.filters
+            });
+
+            setValueSearchGlobal('');
+            initialFilterValue.current = '';
+            currentSearchGlobal.current = '';
+        };
+
+        window.addEventListener('filterReset', handleFilterReset as EventListener);
+
+        return () => {
+            window.removeEventListener('filterReset', handleFilterReset as EventListener);
+        };
+    }, [stateDefault.filters, updateTableState]);
+
+    const handlers = useMemo(() => createFilterHandlers<'users'>(updateFilters), [updateFilters]);
     const {
         handleTermChange,
         handleStatusChange,
         handleIsDeletedChange,
         handleCreateDateStartChange,
         handleCreateDateEndChange
-    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<DataTableFiltersUsersType>>);
+    } = handlers;
 
-    const dispatchFiltersSpecific = dispatchFilters as React.Dispatch<FiltersActionUsers>;
+    const handleSearchGlobalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+
+        setValueSearchGlobal(value);
+
+        if (currentSearchGlobal.current !== value) {
+            currentSearchGlobal.current = value;
+
+            // Determine if we should trigger the search
+            triggerSearchGlobal.current =
+                // Case 1: User types 3+ characters (new search)
+                (value.length > 2) ||
+                // Case 2: User clears a previous search (from 3+ to less)
+                (initialFilterValue.current.length > 2 && value.length < 3);
+
+            debouncedSearchGlobal.current = value.length < 3 ? '' : value;
+        }
+    }, []);
 
     const handleRoleChange = useCallback(
-        (e: DropdownChangeEvent) => dispatchFiltersSpecific({type: 'SET_ROLE', value: e.value}),
-        [dispatchFiltersSpecific]
+        (e: DropdownChangeEvent) => updateFilters({role: {value: e.value, matchMode: 'equals'}}),
+        [updateFilters]
     );
+
+    useDebouncedEffect(() => {
+        if (triggerSearchGlobal.current) {
+            handleTermChange(debouncedSearchGlobal.current);
+
+            initialFilterValue.current = currentSearchGlobal.current;
+            triggerSearchGlobal.current = false;
+        }
+    }, [], 1000);
 
     return (
         <div className="form-section flex-row flex-wrap gap-4 mb-4">
@@ -68,8 +123,8 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                             className="p-inputtext-sm"
                             id="search-global"
                             placeholder="Search"
-                            value={tempFilters.global.value ?? ''}
-                            onChange={handleTermChange}
+                            value={valueSearchGlobal}
+                            onChange={handleSearchGlobalChange}
                         />
                     </IconField>
                 </FormElement>
@@ -79,9 +134,9 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                 <FormElement labelText="Status" labelFor="search-status">
                     <Dropdown
                         className="p-inputtext-sm"
-                        panelStyle={{ fontSize: '0.875rem' }}
+                        panelStyle={{fontSize: '0.875rem'}}
                         id="search-status"
-                        value={tempFilters.status.value}
+                        value={filters.status.value}
                         options={statuses}
                         onChange={handleStatusChange}
                         placeholder="-any-"
@@ -94,9 +149,9 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                 <FormElement labelText="Role" labelFor="search-role">
                     <Dropdown
                         className="p-inputtext-sm"
-                        panelStyle={{ fontSize: '0.875rem' }}
+                        panelStyle={{fontSize: '0.875rem'}}
                         id="search-role"
-                        value={tempFilters.role.value}
+                        value={filters.role.value}
                         options={roles}
                         onChange={handleRoleChange}
                         placeholder="-any-"
@@ -111,20 +166,20 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                         <Calendar
                             className="p-inputtext-sm h-11 w-[160px]"
                             id="search-create-date-start"
-                            value={stringToDate(tempFilters.create_date_start?.value)}
+                            value={stringToDate(filters.create_date_start?.value)}
                             onChange={handleCreateDateStartChange}
                             placeholder="Start Date"
                             showIcon
-                            maxDate={getValidDate(tempFilters.create_date_end?.value)}
+                            maxDate={getValidDate(filters.create_date_end?.value)}
                         />
                         <Calendar
                             className="p-inputtext-sm h-11 w-[160px]"
                             id="search-date-create-end"
-                            value={stringToDate(tempFilters.create_date_end?.value)}
+                            value={stringToDate(filters.create_date_end?.value)}
                             onChange={handleCreateDateEndChange}
                             placeholder="End Date"
                             showIcon
-                            minDate={getValidDate(tempFilters.create_date_start?.value)}
+                            minDate={getValidDate(filters.create_date_start?.value)}
                         />
                     </div>
                 </FormElement>
@@ -136,7 +191,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                     <div className="flex items-center gap-2">
                         <Checkbox
                             inputId="is_deleted"
-                            checked={tempFilters.is_deleted?.value ?? false}
+                            checked={filters.is_deleted?.value ?? false}
                             onChange={handleIsDeletedChange}
                         />
                         <label htmlFor="is_deleted" className="text-sm whitespace-nowrap">

@@ -41,11 +41,11 @@ const ThemeProvider = ({children}: { children: ReactNode }) => {
 function useTheme() {
     const context = useContext(ThemeContext);
 
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useTheme must be used within a ThemeProvider');
     }
 
     return context;
 }
 
-export {ThemeContext, ThemeProvider, useTheme};
+export {ThemeProvider, useTheme};

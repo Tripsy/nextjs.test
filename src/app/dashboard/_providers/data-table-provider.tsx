@@ -1,23 +1,17 @@
 'use client';
 
-import React, {createContext, useState, ReactNode, useContext, useRef, useCallback, useMemo} from 'react';
+import React, {createContext,ReactNode, useContext, useRef, useMemo} from 'react';
 import {DataSourceType, DataTableSelectionModeType, getDataSourceConfig, DataTableStateType} from '@/config/data-source';
 import {useDebouncedEffect} from '@/hooks';
-import {readFromLocalStorage} from '@/lib/utils/storage';
-import {ManageStoreType} from '@/app/dashboard/_stores/manage.store';
+import {useStore} from 'zustand/react';
+import {ModelStoreType} from '@/app/dashboard/_stores/model.store';
 
 type DataTableContextType<K extends keyof DataSourceType> = {
     dataSource: K;
     dataStorageKey: string;
     selectionMode: DataTableSelectionModeType;
-    tableStateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
-    tableStateInit: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
-    filters: DataSourceType[K]['dataTableFilter'];
-    setFilters: React.Dispatch<React.SetStateAction<DataSourceType[K]['dataTableFilter']>>;
-    selectedEntries: DataSourceType[K]['model'][];
-    setSelectedEntries: React.Dispatch<React.SetStateAction<DataSourceType[K]['model'][]>>;
-    clearSelectedEntries: () => void;
-    manageStore: ManageStoreType<K>;
+    stateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+    modelStore: ModelStoreType<K>;
 };
 
 const DataTableContext = createContext<DataTableContextType<keyof DataSourceType> | undefined>(undefined);
@@ -25,32 +19,20 @@ const DataTableContext = createContext<DataTableContextType<keyof DataSourceType
 function DataTableProvider<K extends keyof DataSourceType>({
    dataSource,
    selectionMode,
-   manageStore,
+   modelStore,
    children
 }: {
     dataSource: K,
     selectionMode: DataTableSelectionModeType,
-    manageStore: ManageStoreType<K>,
+    modelStore: ModelStoreType,
     children: ReactNode
 }) {
     const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
-    const tableStateDefault = getDataSourceConfig(dataSource, 'dataTableState');
+    const stateDefault = getDataSourceConfig(dataSource, 'dataTableState');
 
-    const tableStateInit = useMemo((): DataTableStateType<DataSourceType[K]['dataTableFilter']> => {
-        return {
-            ...tableStateDefault,
-            ...(readFromLocalStorage<DataTableStateType<DataSourceType[K]['dataTableFilter']>>(dataStorageKey) || {})
-        };
-    }, [dataStorageKey, tableStateDefault]);
-
-    const [filters, setFilters] = useState<DataSourceType[K]['dataTableFilter']>(tableStateInit.filters);
-    const [selectedEntries, setSelectedEntries] = useState<DataSourceType[K]['model'][]>([]);
+    const selectedEntries = useStore(modelStore, (state) => state.selectedEntries);
 
     const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
-
-    const clearSelectedEntries = useCallback(() => {
-        setSelectedEntries([]);
-    }, []);
 
     useDebouncedEffect(() => {
         const onRowSelect = getDataSourceConfig(dataSource, 'onRowSelect');
@@ -69,33 +51,29 @@ function DataTableProvider<K extends keyof DataSourceType>({
         prevSelectedEntriesRef.current = selectedEntries;
     }, [selectedEntries], 1000);
 
+    console.log('DataTableProvider render');
+
     return (
         <DataTableContext.Provider value={{
             dataSource,
             dataStorageKey,
             selectionMode,
-            tableStateDefault,
-            tableStateInit,
-            filters,
-            setFilters,
-            selectedEntries,
-            setSelectedEntries,
-            clearSelectedEntries,
-            manageStore
+            stateDefault,
+            modelStore
         }}>
             {children}
         </DataTableContext.Provider>
     );
 }
 
-function useDataTable<K extends keyof DataSourceType>() {
+function useDataTable() {
     const context = useContext(DataTableContext);
 
     if (!context) {
         throw new Error('useDataTable must be used within a DataTableProvider');
     }
 
-    return context as unknown as DataTableContextType<K>;
+    return context;
 }
 
 export {DataTableProvider, useDataTable};

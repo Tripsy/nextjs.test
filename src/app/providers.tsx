@@ -4,6 +4,7 @@ import {AuthProvider} from '@/providers/auth.provider';
 import {ThemeProvider} from '@/providers/theme.provider';
 import {headers} from 'next/headers';
 import {AuthModel} from '@/lib/models/auth.model';
+import {ToastProvider} from '@/providers/toast.provider';
 
 export async function Providers({children}: { children: React.ReactNode }) {
     const headersList = await headers();
@@ -20,9 +21,11 @@ export async function Providers({children}: { children: React.ReactNode }) {
     return (
         <ThemeProvider>
             <PrimeProvider>
-                <AuthProvider initAuth={initAuth}>
-                    {children}
-                </AuthProvider>
+                <ToastProvider>
+                    <AuthProvider initAuth={initAuth}>
+                        {children}
+                    </AuthProvider>
+                </ToastProvider>
             </PrimeProvider>
         </ThemeProvider>
     );

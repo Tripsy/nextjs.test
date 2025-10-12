@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useActionState, useCallback, useState} from 'react';
+import React, {useActionState, useCallback, useEffect, useMemo, useState} from 'react';
 import {InputText} from 'primereact/inputtext';
 import {IconField} from 'primereact/iconfield';
 import {InputIcon} from 'primereact/inputicon';
@@ -18,6 +18,7 @@ import {FormStateUsers, FormFieldsUsersType, validateFormUsers} from '@/app/dash
 import {formAction} from '@/app/dashboard/_actions';
 import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
 import {useStore} from 'zustand/react';
+import {useToast} from '@/providers/toast.provider';
 
 const roles = Object.values(UserRoleEnum).map((role) => ({
     label: capitalizeFirstLetter(role),
@@ -33,10 +34,16 @@ export function FormManageUsers() {
     // const {selectedEntries, manageStore} = useDataTable();
     const {manageStore} = useDataTable();
 
-    const isCreateOpen = useStore(manageStore, (state) => state.isCreateOpen);
-    const isUpdateOpen = useStore(manageStore, (state) => state.isUpdateOpen);
-    const entries = useStore(manageStore, (state) => state.entries);
-    const close = useStore(manageStore, (state) => state.close);
+    const isOpen = false;
+
+    useEffect(() => {
+        console.log('FormManageUsers render');
+    });
+
+    // const isCreateOpen = useStore(manageStore, (state) => state.isCreateOpen);
+    // const isUpdateOpen = useStore(manageStore, (state) => state.isUpdateOpen);
+    // const entries = useStore(manageStore, (state) => state.entries);
+    // const close = useStore(manageStore, (state) => state.close);
 
     // const entry = useUserStore(state => state.entry);
     // const isLoading = useUserStore(state => state.isLoading);
@@ -44,13 +51,39 @@ export function FormManageUsers() {
     // const updateUser = useUserStore(state => state.updateItem);
     // const close = useUserStore(state => state.closeAllDialogs);
 
-    const isOpen = isCreateOpen || isUpdateOpen;
-    const isEdit = isUpdateOpen;
+    // const isOpen = isCreateOpen || isUpdateOpen;
+    // const isEdit = isUpdateOpen;
+    // // const isError = useMemo(() => isEdit && entries.length !== 1, [isEdit, entries]);
+    //
+    // // let formState = FormStateUsers;
+    // //
+    // // // console.log(isError);
+    // console.log(entries);
+    //
+    // if (isEdit && entries.length == 1) {
+    //     formState = {
+    //         ...formState,
+    //         values: entries[0],
+    //     }
+    // }
 
     const [state, action, pending] = useActionState(formAction<'users'>, FormStateUsers);
     const [showPassword, setShowPassword] = useState(false);
 
     const [formValues, setFormValues] = useFormValues<FormFieldsUsersType>(state.values);
+
+    // const {showToast} = useToast();
+
+    // useEffect(() => {
+    //     if (isError) {
+    //         showToast({
+    //             severity: 'error',
+    //             summary: 'Error',
+    //             detail: 'Please select only one entry to edit',
+    //         });
+    //         return;
+    //     }
+    // }, [isError, showToast]);
 
     const validate = useCallback(
         () => validateFormUsers(formValues, state.id),
@@ -98,16 +131,8 @@ export function FormManageUsers() {
         close();
     };
 
-    if (!isOpen) {
+    if (!isOpen || isError) {
         return null;
-    }
-
-    if (isEdit) {
-        // if (entries.length === 1) {
-        //
-        // }
-
-        return 
     }
 
     if (state?.situation === 'success') {

@@ -3,21 +3,23 @@
 import React from 'react';
 import {Icons} from '@/components/icon.component';
 import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
-import {useDataTableFilters} from '@/hooks';
-import {createFilterHandlers, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
 import {DataSourceType, DataTableSelectionModeType} from '@/config/data-source';
 import {useStore} from 'zustand/react';
 
 export function DataTableActions<K extends keyof DataSourceType>() {
-    const {selectionMode, tableStateDefault, selectedEntries, manageStore} = useDataTable();
-    const {dispatchFilters} = useDataTableFilters<K>(filtersReducer);
+    const {selectionMode, modelStore} = useDataTable();
 
-    const openCreate = useStore(manageStore, (state) => state.openCreate);
-    const openUpdate = useStore(manageStore, (state) => state.openUpdate);
+    const openCreate = useStore(modelStore, (state) => state.openCreate);
+    const openUpdate = useStore(modelStore, (state) => state.openUpdate);
+    const selectedEntries = useStore(modelStore, (state) => state.selectedEntries);
 
-    const {
-        handleReset
-    } = createFilterHandlers(dispatchFilters);
+    const handleReset = () => {
+        const event = new CustomEvent('filterReset', {
+            detail: { source: 'DataTableActions' }
+        });
+
+        window.dispatchEvent(event);
+    }
 
     const isMultipleSelectionMode = (selectionMode: DataTableSelectionModeType) =>
         selectionMode === 'multiple';
@@ -54,14 +56,14 @@ export function DataTableActions<K extends keyof DataSourceType>() {
                             Delete
                         </button>
                         {selectedEntries.length === 1 && (
-                        <button
-                            className="btn btn-hover hover:text-white hover:bg-success rounded"
-                            title="Update selected entry"
-                            onClick={handleUpdate}
-                        >
-                            <Icons.Action.Edit className="w-4 h-4"/>
-                            Update
-                        </button>
+                            <button
+                                className="btn btn-hover hover:text-white hover:bg-success rounded"
+                                title="Update selected entry"
+                                onClick={handleUpdate}
+                            >
+                                <Icons.Action.Edit className="w-4 h-4"/>
+                                Update
+                            </button>
                         )}
                     </div>
                 )}
@@ -69,7 +71,7 @@ export function DataTableActions<K extends keyof DataSourceType>() {
             <div className="flex gap-4">
                 <button
                     className="btn btn-warning rounded"
-                    onClick={() => handleReset(tableStateDefault.filters)}
+                    onClick={() => handleReset()}
                     title="Reset filters"
                 >
                     <Icons.Action.Reset className="w-4 h-4"/>
