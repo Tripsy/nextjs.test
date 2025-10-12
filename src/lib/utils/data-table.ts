@@ -1,6 +1,5 @@
 import {DropdownChangeEvent} from 'primereact/dropdown';
 import {CheckboxChangeEvent} from 'primereact/checkbox';
-import React from 'react';
 import {Nullable} from 'primereact/ts-helpers';
 import {formatDate} from '@/lib/utils/date';
 import {DataSourceType} from '@/config/data-source';

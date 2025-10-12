@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
 import {Checkbox} from 'primereact/checkbox';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
@@ -17,7 +17,7 @@ import {DataTableFiltersUsersType} from '@/app/dashboard/users/users.definition'
 import {useStore} from 'zustand/react';
 import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
 import {createFilterHandlers} from '@/lib/utils/data-table';
-import {useDebouncedEffect} from '@/hooks';
+import {useSearchFilter} from '@/hooks';
 
 const statuses = Object.values(UserStatusEnum).map((status) => ({
     label: capitalizeFirstLetter(status),
@@ -44,12 +44,14 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         });
     }, [filters, updateTableState]);
 
-    const [valueSearchGlobal, setValueSearchGlobal] = useState(filters.global?.value ?? '');
-
-    const initialFilterValue = useRef(filters.global?.value ?? '');
-    const currentSearchGlobal = useRef(filters.global?.value ?? '');
-    const debouncedSearchGlobal = useRef('');
-    const triggerSearchGlobal = useRef(false);
+    const searchGlobal = useSearchFilter({
+        initialValue: filters.global?.value ?? '',
+        debounceDelay: 1000,
+        minLength: 3,
+        onSearch: (value) => {
+            handleTermChange(value);
+        }
+    });
 
     useEffect(() => {
         const handleFilterReset = () => {
@@ -57,9 +59,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                 filters: stateDefault.filters
             });
 
-            setValueSearchGlobal('');
-            initialFilterValue.current = '';
-            currentSearchGlobal.current = '';
+            searchGlobal.onReset();
         };
 
         window.addEventListener('filterReset', handleFilterReset as EventListener);
@@ -67,7 +67,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         return () => {
             window.removeEventListener('filterReset', handleFilterReset as EventListener);
         };
-    }, [stateDefault.filters, updateTableState]);
+    }, [searchGlobal.onReset, stateDefault.filters, updateTableState]);
 
     const handlers = useMemo(() => createFilterHandlers<'users'>(updateFilters), [updateFilters]);
     const {
@@ -78,38 +78,10 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         handleCreateDateEndChange
     } = handlers;
 
-    const handleSearchGlobalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-
-        setValueSearchGlobal(value);
-
-        if (currentSearchGlobal.current !== value) {
-            currentSearchGlobal.current = value;
-
-            // Determine if we should trigger the search
-            triggerSearchGlobal.current =
-                // Case 1: User types 3+ characters (new search)
-                (value.length > 2) ||
-                // Case 2: User clears a previous search (from 3+ to less)
-                (initialFilterValue.current.length > 2 && value.length < 3);
-
-            debouncedSearchGlobal.current = value.length < 3 ? '' : value;
-        }
-    }, []);
-
     const handleRoleChange = useCallback(
         (e: DropdownChangeEvent) => updateFilters({role: {value: e.value, matchMode: 'equals'}}),
         [updateFilters]
     );
-
-    useDebouncedEffect(() => {
-        if (triggerSearchGlobal.current) {
-            handleTermChange(debouncedSearchGlobal.current);
-
-            initialFilterValue.current = currentSearchGlobal.current;
-            triggerSearchGlobal.current = false;
-        }
-    }, [], 1000);
 
     return (
         <div className="form-section flex-row flex-wrap gap-4 mb-4">
@@ -123,8 +95,8 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
                             className="p-inputtext-sm"
                             id="search-global"
                             placeholder="Search"
-                            value={valueSearchGlobal}
-                            onChange={handleSearchGlobalChange}
+                            value={searchGlobal.value}
+                            onChange={searchGlobal.handler}
                         />
                     </IconField>
                 </FormElement>
