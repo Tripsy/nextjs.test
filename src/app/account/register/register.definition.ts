@@ -38,23 +38,17 @@ export const RegisterState: RegisterStateType = {
 
 export const RegisterSchema = z.object({
     name: z
-        .string({
-            message: lang('register.validation.name_invalid')
-        })
+        .string({message: lang('register.validation.name_invalid')}).trim()
         .min(parseInt(cfg('user.nameMinLength')), {
             message: lang('register.validation.name_min', {min: cfg('user.nameMinLength')}),
-        })
-        .trim(),
+        }),
     email: z
-        .string({
-            message: lang('register.validation.email_invalid')
-        })
+        .string({message: lang('register.validation.email_invalid')}).trim()
         .email({
             message: lang('register.validation.email_invalid')
-        })
-        .trim(),
+        }),
     password: z
-        .string({message: lang('register.validation.password_invalid')})
+        .string({message: lang('register.validation.password_invalid')}).trim()
         .min(parseInt(cfg('user.passwordMinLength')), {
             message: lang('register.validation.password_min', {min: cfg('user.passwordMinLength')}),
         })
@@ -68,13 +62,10 @@ export const RegisterSchema = z.object({
             message: lang('register.validation.password_condition_special_character'),
         }),
     password_confirm: z
-        .string({
-            message: lang('register.validation.password_confirm_required')
-        })
+        .string({message: lang('register.validation.password_confirm_required')}).trim()
         .nonempty({
             message: lang('register.validation.password_confirm_required')
-        })
-        .trim(),
+        }),
     language: z
         .nativeEnum(LanguageEnum, {message: lang('register.validation.language_invalid')}),
     terms: z.literal(true, {

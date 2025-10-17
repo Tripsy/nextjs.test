@@ -7,8 +7,10 @@ import {DataTableActions} from '@/app/dashboard/_components/data-table-actions.c
 import {DataTableProvider} from '@/app/dashboard/_providers/data-table-provider';
 import {Loading} from '@/components/loading.component';
 import {useMounted} from '@/hooks';
-import {FormManageUsers} from '@/app/dashboard/users/form-manage-users.component';
 import {createModelStore} from '@/app/dashboard/_stores/model.store';
+import {DataTableManage} from '@/app/dashboard/_components/data-table-manage.component';
+import {ActionUsers} from '@/app/dashboard/users/action-users.component';
+import {FormManageContentUsers} from '@/app/dashboard/users/form-manage-content-users.component';
 
 const modelStore = createModelStore('users');
 
@@ -29,7 +31,10 @@ export const DataTableUsers = (): JSX.Element => {
                     scrollHeight="400px"
                 />
             </div>
-            {/*<FormManageUsers/>*/}
+            <DataTableManage actionComponent={ActionUsers}>
+                {/* @ts-expect-error FormManageContentUsers props are injected at runtime via FormManage */}
+                <FormManageContentUsers />
+            </DataTableManage>
         </DataTableProvider>
     );
 }

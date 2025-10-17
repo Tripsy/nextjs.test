@@ -310,7 +310,7 @@ function AuthTokenList({status, tokens}: {
                             Last used: {formatDate(token.used_at)}
                         </div>
                         <div
-                            className="mt-2 btn btn-neutral btn-delete w-full"
+                            className="mt-2 btn btn-neutral hover:text-white hover:bg-error border-none w-full"
                             onClick={() => setSelectedToken(token.ident)}
                         >
                             <Icons.Action.Destroy/> Destroy Session

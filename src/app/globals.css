@@ -71,23 +71,33 @@
 
     /* Buttons */
 
-    .btn-delete {
-        @apply hover:text-white hover:bg-error border-none;
+    .btn-action-delete {
+        @apply hover:text-white hover:bg-error rounded;
     }
 
-    .btn-delete {
-        @apply hover:text-white hover:bg-error border-none;
+    .btn-action-update {
+        @apply hover:text-white hover:bg-success rounded;
     }
 
-    .btn-cancel {
-        @apply hover:text-white hover:bg-warning border-none;
+    .btn-action-create {
+        @apply btn-info rounded;
     }
 
-    /*@media (prefers-color-scheme: dark) {*/
-    /*    .btn-neutral {*/
-    /*        background-color: oklch(50% 0.043 257.281);*/
-    /*    }*/
-    /*}*/
+    .btn-action-reset-filter {
+        @apply btn-warning rounded;
+    }
+
+    .btn-action-enable {
+        @apply hover:text-white hover:bg-success rounded;
+    }
+
+    .btn-action-disable {
+        @apply hover:text-white hover:bg-error rounded;
+    }
+
+    .btn-action-restore {
+        @apply hover:text-white hover:bg-info rounded;
+    }
 
     /* Badges */
 

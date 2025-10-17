@@ -37,16 +37,9 @@ export type AuthTokenListType = AuthTokenType[];
 
 export const LoginSchema = z.object({
     email: z
-        .string()
-        .email({
-            message: lang('login.validation.email')
-        }).trim(),
+        .string({message: lang('login.validation.email')}).trim()
+        .email({message: lang('login.validation.email')}),
     password: z
-        .string({
-            message: lang('login.validation.password')
-        })
-        .min(1, {
-            message: lang('login.validation.password')
-        })
-        .trim(),
+        .string({message: lang('login.validation.password')}).trim()
+        .nonempty({message: lang('login.validation.password')})
 });

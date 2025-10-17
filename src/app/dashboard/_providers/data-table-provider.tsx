@@ -35,8 +35,10 @@ function DataTableProvider<K extends keyof DataSourceType>({
     const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
 
     useDebouncedEffect(() => {
-        const onRowSelect = getDataSourceConfig(dataSource, 'onRowSelect');
-        const onRowUnselect = getDataSourceConfig(dataSource, 'onRowUnselect');
+        const functions = getDataSourceConfig(dataSource, 'functions');
+
+        const onRowSelect = functions.onRowSelect;
+        const onRowUnselect = functions.onRowUnselect;
 
         const prevSelected = prevSelectedEntriesRef.current;
 
@@ -50,8 +52,6 @@ function DataTableProvider<K extends keyof DataSourceType>({
 
         prevSelectedEntriesRef.current = selectedEntries;
     }, [selectedEntries], 1000);
-
-    console.log('DataTableProvider render');
 
     return (
         <DataTableContext.Provider value={{

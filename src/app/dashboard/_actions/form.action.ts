@@ -6,8 +6,8 @@ export function getFormValues<K extends keyof DataSourceType>(
     dataSource: keyof DataSourceType,
     formData: FormData
 ): DataSourceType[K]['formState']['values'] {
-
-    const getFormValuesFunction = getDataSourceConfig(dataSource, 'getFormValuesFunction');
+    const functions = getDataSourceConfig(dataSource, 'functions');
+    const getFormValuesFunction = functions?.getFormValues;
 
     if (!getFormValuesFunction) {
         throw new ValueError('`getFormValuesFunction` is not defined for `' + dataSource + '`');
@@ -21,11 +21,8 @@ export function handleValidate<K extends keyof DataSourceType>(
     values: DataSourceType[K]['formState']['values'],
     id?: number
 ) {
-    const validateFormFunction = getDataSourceConfig(dataSource, 'validateFormFunction');
-
-    if (!validateFormFunction) {
-        throw new ValueError('`validateFormFunction` is not defined for `' + dataSource + '`');
-    }
+    const functions = getDataSourceConfig(dataSource, 'functions');
+    const validateFormFunction = functions?.validateForm;
     
     return validateFormFunction(values, id);
 }
@@ -35,22 +32,24 @@ export async function formAction<K extends keyof DataSourceType>(
     formData: FormData
 ): Promise<DataSourceType[K]['formState']> {
     async function executeFetch(data: DataSourceType[K]['formState']['values'], id?: number) {
+        const actions = getDataSourceConfig(state.dataSource, 'actions');
+
         if (id) {
-            const updateFunction = getDataSourceConfig(state.dataSource, 'updateFunction');
+            const updateFunction = actions?.update?.function;
 
             // Not all the models have `update` function
             if (!updateFunction) {
-                throw new ValueError('`updateFunction` is not defined for `' + state.dataSource + '`');
+                throw new ValueError('`update` function is not defined for `' + state.dataSource + '`');
             }
 
             return updateFunction(data, id);
         }
 
-        const createFunction = getDataSourceConfig(state.dataSource, 'createFunction');
+        const createFunction = actions?.create?.function;
 
         // Not all the models have `create` function
         if (!createFunction) {
-            throw new ValueError('`createFunction` is not defined for `' + state.dataSource + '`');
+            throw new ValueError('`create` function is not defined for `' + state.dataSource + '`');
         }
 
         return createFunction(data);
@@ -69,6 +68,7 @@ export async function formAction<K extends keyof DataSourceType>(
             return {
                 ...result,
                 situation: 'error',
+                message: lang('error.validation'),
                 errors: validated.error.flatten().fieldErrors
             };
         }
@@ -79,7 +79,8 @@ export async function formAction<K extends keyof DataSourceType>(
             ...result,
             errors: {},
             message: fetchResponse?.message || null,
-            situation: fetchResponse?.success ? 'success' : 'error'
+            situation: fetchResponse?.success ? 'success' : 'error',
+            result: fetchResponse?.data
         };
     } catch (error: unknown) {
         console.error(error); // TODO

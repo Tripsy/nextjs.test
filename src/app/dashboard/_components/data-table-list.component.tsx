@@ -70,7 +70,8 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
                         return;
                     } // Don't proceed if already aborted
 
-                    const findFunction = getDataSourceConfig(dataSource, 'findFunction');
+                    const functions = getDataSourceConfig(dataSource, 'functions');
+                    const findFunction = functions?.find;
 
                     if (!findFunction) {
                         throw new Error(`No fetch function found for ${dataSource}`);
@@ -115,7 +116,16 @@ export default function DataTableList<T extends keyof DataSourceType>(props: Dat
         return () => {
             abortController.abort();
         };
-    }, [dataSource, tableState.sortField, tableState.sortOrder, tableState.rows, tableState.first, findFunctionFilter, setLoading]);
+    }, [
+        dataSource,
+        tableState.sortField,
+        tableState.sortOrder,
+        tableState.rows,
+        tableState.first,
+        findFunctionFilter,
+        setLoading,
+        tableState.reloadTrigger
+    ]);
 
     const onPage = useCallback((event: DataTablePageEvent) => {
         clearSelectedEntries();

@@ -11,8 +11,9 @@ import {
     faPlus, faSpinner,
     faSun, faThumbsUp,
     faTrashCan,
-    faTriangleExclamation, faUser, faUserCheck, faPlugCircleXmark
+    faTriangleExclamation, faUser, faUserCheck, faPlugCircleXmark, faRotateLeft
 } from '@fortawesome/free-solid-svg-icons';
+import {capitalizeFirstLetter} from '@/lib/utils/string';
 
 export function AwesomeIcon({ className = 'w-5 h-5', ...props }: FontAwesomeIconProps) {
     return <FontAwesomeIcon className={className} {...props} />;
@@ -88,10 +89,10 @@ export const Icons = {
         )
     },
     Action: {
-        Add: (props: Partial<FontAwesomeIconProps>)=> (
+        Create: (props: Partial<FontAwesomeIconProps>)=> (
             <AwesomeIcon icon={faPlus} {...props} />
         ),
-        Edit: (props: Partial<FontAwesomeIconProps>) => (
+        Update: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faPenToSquare} {...props} />
         ),
         Delete: (props: Partial<FontAwesomeIconProps>) => (
@@ -105,6 +106,25 @@ export const Icons = {
         ),
         Reset: (props: Partial<FontAwesomeIconProps>) => (
             <AwesomeIcon icon={faArrowsRotate} {...props} />
+        ),
+        Enable: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faCircleCheck} {...props} />
+        ),
+        Disable: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faLock} {...props} />
+        ),
+        Restore: (props: Partial<FontAwesomeIconProps>) => (
+            <AwesomeIcon icon={faRotateLeft} {...props} />
         )
     }
 };
+
+export function getActionIcon(action: string) {
+    action = capitalizeFirstLetter(action);
+
+    if (action in Icons.Action) {
+        return Icons.Action[action as keyof typeof Icons.Action];
+    }
+
+    throw new Error(`${action} is not defined in Icons.Action`);
+}

@@ -8,6 +8,7 @@ const en = {
     error: {
         csrf: "Error occurred while processing your request. Please reload page and try again.",
         form: "Something went wrong while processing your request.",
+        validation: "Form validation failed.",
     },
     auth: {
         message: {
@@ -81,9 +82,37 @@ const en = {
             role_invalid: "Invalid role selected",
             email_already_used: "Email already used by another account",
         },
-        message: {
-            create_success: "New user added with success.",
-            update_success: "User updated with success.",
+        action: {
+            create: {
+                title: "Add new user",
+                label: "Add",
+                success: "New user added."
+            },
+            update: {
+                title: "Edit user",
+                label: "Update",
+                success: "User updated ."
+            },
+            delete: {
+                title: "Delete user",
+                label: "Delete",
+                success: "User deleted."
+            },
+            enable: {
+                title: "Enable user",
+                label: "Enable",
+                success: "User status marked as `Active`."
+            },
+            disable: {
+                title: "Disable user",
+                label: "Disable",
+                success: "User status marked as `Inactive`."
+            },
+            restore: {
+                title: "Restore user",
+                label: "Restore",
+                success: "User restored."
+            },
         },
     }
 };

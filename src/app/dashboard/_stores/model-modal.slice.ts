@@ -4,14 +4,14 @@ import {Draft} from 'immer';
 import {ModelStore} from '@/app/dashboard/_stores/model.store';
 
 export interface ModelModalSlice<K extends keyof DataSourceType> {
-    isCreateOpen: boolean;
-    isUpdateOpen: boolean;
-    isOperationOpen: boolean;
-    updatedEntry: DataSourceType[K]['model'] | null;
+    isOpen: boolean;
+    actionName: string | null;
+    actionEntry: DataSourceType[K]['model'] | null;
+    setActionEntry: (entry: DataSourceType[K]['model']) => void;
     openCreate: () => void;
-    openUpdate: (entry: DataSourceType[K]['model']) => void;
-    openOperation: () => void;
-    close: () => void;
+    openUpdate: () => void;
+    openAction: (name: string) => void;
+    closeOut: () => void;
 }
 
 export const createModelModalSlice =
@@ -22,32 +22,37 @@ export const createModelModalSlice =
         ModelModalSlice<K>
     > =>
         (set) => ({
-            isCreateOpen: false,
-            isUpdateOpen: false,
-            isOperationOpen: false,
-            updatedEntry: null,
+            isOpen: false,
+            actionName: null,
+            actionEntry: null,
 
             openCreate: () =>
                 set((state: Draft<ModelModalSlice<K>>) => {
-                    state.isCreateOpen = true;
+                    state.isOpen = true;
+                    state.actionName = 'create';
                 }),
 
-            openUpdate: (entry) =>
+            openUpdate: () =>
                 set((state: Draft<ModelModalSlice<K>>) => {
-                    state.isUpdateOpen = true;
-                    state.updatedEntry = entry as Draft<DataSourceType[K]['model']>;
+                    state.isOpen = true;
+                    state.actionName = 'update';
                 }),
 
-            openOperation: () =>
+            openAction: (name: string) =>
                 set((state: Draft<ModelModalSlice<K>>) => {
-                    state.isOperationOpen = true;
+                    state.isOpen = true;
+                    state.actionName = name;
                 }),
 
-            close: () =>
+            setActionEntry: (entry) =>
                 set((state: Draft<ModelModalSlice<K>>) => {
-                    state.isCreateOpen = false;
-                    state.isUpdateOpen = false;
-                    state.isOperationOpen = false;
-                    state.updatedEntry = null;
+                    state.actionEntry = entry as Draft<DataSourceType[K]['model']>;
+                }),
+
+            closeOut: () =>
+                set((state: Draft<ModelModalSlice<K>>) => {
+                    state.isOpen = false;
+                    state.actionName = null;
+                    state.actionEntry = null;
                 }),
         });

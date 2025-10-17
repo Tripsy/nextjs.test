@@ -51,7 +51,7 @@ export function DataTableRowDate({date}: { date: Date | string }) {
     return <span>{date ? formatDate(date) : '-'}</span>;
 }
 
-export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: string }) => {
+export const StatusBodyTemplate = (entry: { status: StatusKey, deleted_at?: Date | string | undefined }) => {
     const status = entry.deleted_at ? 'deleted' : entry.status;
 
     return <DataTableRowStatus status={status}/>;

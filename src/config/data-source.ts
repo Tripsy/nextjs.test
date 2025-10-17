@@ -1,9 +1,10 @@
 import {
     DataSourceConfigUsers,
-    DataSourceUsersType,
+    DataSourceUsersType
 } from '@/app/dashboard/users/users.definition';
 import React from 'react';
 import {ResponseFetch} from '@/lib/utils/api';
+import {FormSituationType} from '@/lib/types';
 
 export type FindFunctionParamsType = {
     order_by: string;
@@ -13,8 +14,8 @@ export type FindFunctionParamsType = {
     filter: string;
 };
 
-export type FindFunctionResponseType<Model> = {
-    entries: Model[];
+export type FindFunctionResponseType<K extends keyof DataSourceType> = {
+    entries: DataSourceType[K]['model'][];
     pagination: {
         page: number;
         limit: number;
@@ -22,9 +23,9 @@ export type FindFunctionResponseType<Model> = {
     };
 };
 
-export type FindFunctionType<Model> = (
+export type FindFunctionType<K extends keyof DataSourceType> = (
     params: FindFunctionParamsType
-) => Promise<FindFunctionResponseType<Model> | undefined>;
+) => Promise<FindFunctionResponseType<K> | undefined>;
 
 export type CreateFunctionType<K extends keyof DataSourceType> = (
     data: DataSourceType[K]['formState']['values']
@@ -35,6 +36,10 @@ export type UpdateFunctionType<K extends keyof DataSourceType> = (
     id: number
 ) => Promise<ResponseFetch<Partial<DataSourceType[K]['model']>>>;
 
+export type DeleteFunctionType = (
+    ids: number[]
+) => Promise<ResponseFetch<null>>;
+
 export type ValidateFormFunctionType<K extends keyof DataSourceType> = (
     values: DataSourceType[K]['formState']['values'],
     id?: number
@@ -43,6 +48,7 @@ export type ValidateFormFunctionType<K extends keyof DataSourceType> = (
 export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
 
 export type DataTableStateType<Filter> = {
+    reloadTrigger: number; // Flag used to reload the data table entries
     first: number;
     rows: number;
     sortField: string;
@@ -58,20 +64,69 @@ export type DataTableColumnType<Model> = {
     style?: React.CSSProperties;
 };
 
+/**
+ * `permission` required to perform action (e.g. user.create)
+ * `allowedEntries`
+ *      free ~ not dependent on selected entries,
+ *      single ~ only one entry allowed,
+ *      multiple ~ multiple entries allowed
+ * `position` where to display action button (left or right)
+ * `function` function to perform action
+ * `button` action button configuration
+ */
+export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
+    permission: string;
+    allowedEntries: 'free' | 'single' | 'multiple';
+    entryCustomCheck?: (entry: DataSourceType[K]['model']) => boolean;
+    position: 'left' | 'right';
+    function: F;
+    button: {
+        className: string;
+    };
+};
+
+export type DataTableActionsType<K extends keyof DataSourceType> = {
+    [key: string]: DataTableActionConfigType<unknown, K>;
+} & {
+    create?: DataTableActionConfigType<CreateFunctionType<K>, K>;
+    update?: DataTableActionConfigType<UpdateFunctionType<K>, K>;
+    delete?: DataTableActionConfigType<DeleteFunctionType, K>;
+};
+export type FormManageContentType<K extends keyof DataSourceType> = {
+    actionName: 'create' | 'update';
+    formValues: DataSourceType[K]['formValues'];
+    errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
+    handleChange: (field: keyof DataSourceType[K]['formValues'], value: string | boolean) => void;
+    pending: boolean;
+}; // The props are required but marked as optional to avoid TS error when providing the children (ex: FormManageContentUsers) to DataTableManage
+
 export type DataSourceType = {
     users: DataSourceUsersType;
+};
+
+export type FormStateType<K extends keyof DataSourceType> = {
+    dataSource: keyof DataSourceType;
+    id?: number;
+    values: DataSourceType[K]['formValues'];
+    errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
+    message: string | null;
+    situation: FormSituationType;
+    result?: ResponseFetch<DataSourceType[K]['model']>
 };
 
 type DataSourceConfigType<K extends keyof DataSourceType> = {
     dataTableState: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
     dataTableColumns: DataTableColumnType<DataSourceType[K]['model']>[];
-    onRowSelect?: (entry: DataSourceType[K]['model']) => void;
-    onRowUnselect?: (entry: DataSourceType[K]['model']) => void;
-    findFunction: FindFunctionType<DataSourceType[K]['model']>;
-    createFunction?: CreateFunctionType<K>;
-    updateFunction?: UpdateFunctionType<K>;
-    getFormValuesFunction?: (formData: FormData) => DataSourceType[K]['formState']['values'];
-    validateFormFunction?: ValidateFormFunctionType<K>;
+    formState: FormStateType<K>;
+    functions: {
+        find: FindFunctionType<K>,
+        onRowSelect?: (entry: DataSourceType[K]['model']) => void;
+        onRowUnselect?: (entry: DataSourceType[K]['model']) => void;
+        validateForm: ValidateFormFunctionType<K>,
+        getFormValues: (formData: FormData) => DataSourceType[K]['formValues'];
+        syncFormState: (state: DataSourceType[K]['formState'], model: DataSourceType[K]['model']) => DataSourceType[K]['formState'];
+    };
+    actions?: DataTableActionsType<K>;
 };
 
 const DataSourceConfig: {

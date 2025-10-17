@@ -67,7 +67,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
         return () => {
             window.removeEventListener('filterReset', handleFilterReset as EventListener);
         };
-    }, [searchGlobal.onReset, stateDefault.filters, updateTableState]);
+    }, [searchGlobal, searchGlobal.onReset, stateDefault.filters, updateTableState]);
 
     const handlers = useMemo(() => createFilterHandlers<'users'>(updateFilters), [updateFilters]);
     const {
