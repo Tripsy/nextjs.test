@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server';
-import {ResponseFetch} from '@/lib/api';
+import {ResponseFetch} from '@/lib/utils/api';
 import {getTrackedCookie, getTrackedCookieName} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';
 import {randomString} from '@/lib/utils/string';

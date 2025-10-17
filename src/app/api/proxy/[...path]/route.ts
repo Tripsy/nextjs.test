@@ -1,7 +1,7 @@
 'use server';
 
 import {NextRequest, NextResponse} from 'next/server';
-import {getRemoteApiUrl} from '@/lib/api';
+import {getRemoteApiUrl} from '@/lib/utils/api';
 import {apiHeaders} from '@/lib/utils/system';
 import {getCookie} from '@/lib/utils/session';
 import {cfg} from '@/config/settings';

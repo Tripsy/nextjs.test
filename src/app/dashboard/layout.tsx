@@ -1,13 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import Routes, {RouteAuth} from '@/config/routes';
-import {DashboardProvider} from '@/providers/dashboard/dashboard.provider';
-import {SideMenuToggle} from '@/components/dashboard/side-menu-toggle.component';
-import {SideMenu} from '@/components/dashboard/side-menu.component';
+import {DashboardProvider} from '@/app/dashboard/_providers/dashboard.provider';
+import {SideMenuToggle} from '@/app/dashboard/_components/side-menu-toggle.component';
+import {SideMenu} from '@/app/dashboard/_components/side-menu.component';
 import {ToggleTheme} from '@/components/toggle-theme';
-import {NavBreadcrumb} from '@/components/dashboard/nav-breadcrumb.component';
-import SideMenuSetter from '@/components/dashboard/side-menu.setter';
-import {UserMenu} from '@/components/dashboard/user-menu.component';
+import {NavBreadcrumb} from '@/app/dashboard/_components/nav-breadcrumb.component';
+import SideMenuSetter from '@/app/dashboard/_components/side-menu.setter';
+import {UserMenu} from '@/app/dashboard/_components/user-menu.component';
 import ProtectedRoute from '@/components/protected-route.component';
 
 function Header() {
@@ -27,7 +27,7 @@ function Header() {
                     </Link>
                 </div>
                 <div className="w-full pl-16">
-                    <NavBreadcrumb position="desktop"/>
+                    <NavBreadcrumb/>
                 </div>
                 <div className="flex items-center">
                     <ToggleTheme/>
@@ -103,7 +103,7 @@ export default function Layout({children}: { children: React.ReactNode }) {
                 <main className="main-section">
                     <SideMenu/>
                     <div className="content-section">
-                        <NavBreadcrumb position="mobile"/>
+                        <NavBreadcrumb/>
                         <ProtectedRoute routeAuth={RouteAuth.PROTECTED}>
                             {children}
                         </ProtectedRoute>

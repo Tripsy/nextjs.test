@@ -1,9 +1,9 @@
-import {ApiRequest, ResponseFetch} from '@/lib/api';
-import {RegisterFormValues} from '@/app/account/register/register.definition';
-import {AuthTokenListType, LoginFormValues} from '@/app/account/login/login.definition';
+import {ApiRequest, ResponseFetch} from '@/lib/utils/api';
+import {RegisterFormFieldsType} from '@/app/account/register/register.definition';
+import {AuthTokenListType, LoginFormFieldsType} from '@/app/account/login/login.definition';
 import {UserModel} from '@/lib/models/user.model';
 
-export async function registerAccount(params: RegisterFormValues): Promise<ResponseFetch<UserModel>> {
+export async function registerAccount(params: RegisterFormFieldsType): Promise<ResponseFetch<UserModel>> {
     return await new ApiRequest()
         .doFetch('/account/register', {
             method: 'POST',
@@ -11,7 +11,7 @@ export async function registerAccount(params: RegisterFormValues): Promise<Respo
         });
 }
 
-export async function loginAccount(params: LoginFormValues): Promise<ResponseFetch<{token: string} | { authValidTokens: AuthTokenListType }>> {
+export async function loginAccount(params: LoginFormFieldsType): Promise<ResponseFetch<{token: string} | { authValidTokens: AuthTokenListType }>> {
     return await new ApiRequest()
         .doFetch('/account/login', {
             method: 'POST',

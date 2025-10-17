@@ -1,36 +1,18 @@
 'use client';
 
 import React, {JSX} from 'react';
-import {DataTableColumnsType} from '@/types/data-table.type';
-import DataTableList from '@/components/dashboard/data-table-list.component';
+import DataTableList from '@/app/dashboard/_components/data-table-list.component';
 import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
-import {UserModel} from '@/lib/models/user.model';
-import {
-    CapitalizeBodyTemplate,
-    DateBodyTemplate,
-    StatusBodyTemplate
-} from '@/components/dashboard/data-table-row.component';
-import {DataTableActions} from '@/components/dashboard/data-table-actions.component';
-import {UserTableDefaultState} from '@/lib/services/user.service';
-import {DataTableProvider} from '@/providers/dashboard/data-table-provider';
+import {DataTableActions} from '@/app/dashboard/_components/data-table-actions.component';
+import {DataTableProvider} from '@/app/dashboard/_providers/data-table-provider';
 import {Loading} from '@/components/loading.component';
 import {useMounted} from '@/hooks';
+import {createModelStore} from '@/app/dashboard/_stores/model.store';
+import {DataTableManage} from '@/app/dashboard/_components/data-table-manage.component';
+import {ActionUsers} from '@/app/dashboard/users/action-users.component';
+import {FormManageContentUsers} from '@/app/dashboard/users/form-manage-content-users.component';
 
-const TableColumns: DataTableColumnsType<UserModel> = [
-    {field: 'id', header: 'ID', sortable: true},
-    {field: 'name', header: 'Name', sortable: true},
-    {field: 'email', header: 'Email'},
-    {field: 'role', header: 'Role', body: CapitalizeBodyTemplate},
-    {field: 'status', header: 'Status', body: StatusBodyTemplate, style: {maxWidth: '6rem'}},
-    {field: 'created_at', header: 'Created At', sortable: true, body: DateBodyTemplate},
-];
-
-//TODO
-// const handleDeleteSelected = () => {
-//     // Your delete logic here
-//     console.log('Deleting selected users:', selectedEntries);
-//     setSelectedEntries([]); // Clear selection after delete
-// };
+const modelStore = createModelStore('users');
 
 export const DataTableUsers = (): JSX.Element => {
     const isMounted = useMounted();
@@ -40,16 +22,19 @@ export const DataTableUsers = (): JSX.Element => {
     }
 
     return (
-        <DataTableProvider dataSource="users" selectionMode="checkbox" defaultState={UserTableDefaultState}>
+        <DataTableProvider dataSource="users" selectionMode="checkbox" modelStore={modelStore}>
             <div className="standard-box p-4 shadow-md">
                 <DataTableFiltersUsers/>
                 <DataTableActions/>
                 <DataTableList
                     dataKey="id"
-                    columns={TableColumns}
                     scrollHeight="400px"
                 />
             </div>
+            <DataTableManage actionComponent={ActionUsers}>
+                {/* @ts-expect-error FormManageContentUsers props are injected at runtime via FormManage */}
+                <FormManageContentUsers />
+            </DataTableManage>
         </DataTableProvider>
     );
 }

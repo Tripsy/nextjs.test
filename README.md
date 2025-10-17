@@ -1,6 +1,6 @@
 # TODO
 
-1. table - add / edit / delete actions
+1. ActionUsers implementation
 2. Recap NextJs documentation
 3. recover password & other account pages
 4. terms page

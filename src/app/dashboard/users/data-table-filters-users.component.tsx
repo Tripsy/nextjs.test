@@ -1,8 +1,6 @@
 'use client';
 
-import {UserTableFiltersType} from '@/lib/services/user.service';
-import React, {useCallback} from 'react';
-import {useDataTableFilters} from '@/hooks';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {Dropdown, DropdownChangeEvent} from 'primereact/dropdown';
 import {Checkbox} from 'primereact/checkbox';
 import {capitalizeFirstLetter} from '@/lib/utils/string';
@@ -13,18 +11,13 @@ import {InputText} from 'primereact/inputtext';
 import {Calendar} from 'primereact/calendar';
 import {UserRoleEnum, UserStatusEnum} from '@/lib/models/user.model';
 import {getValidDate, stringToDate} from '@/lib/utils/date';
-import {createFilterHandlers, FiltersAction, filtersReducer} from '@/reducers/dashboard/data-table-filters.reducer';
-
-type FiltersActionUsers = FiltersAction<UserTableFiltersType> | { type: 'SET_ROLE'; value: string | null };
-
-function filtersReducerUsers(state: UserTableFiltersType, action: FiltersActionUsers): UserTableFiltersType {
-    switch (action.type) {
-        case 'SET_ROLE':
-            return {...state, role: {value: action.value, matchMode: 'equals'}};
-        default:
-            return filtersReducer<UserTableFiltersType>(state, action);
-    }
-}
+import {FormPart} from '@/components/form/form-part.component';
+import {FormElement} from '@/components/form/form-element.component';
+import {DataTableFiltersUsersType} from '@/app/dashboard/users/users.definition';
+import {useStore} from 'zustand/react';
+import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
+import {createFilterHandlers} from '@/lib/utils/data-table';
+import {useSearchFilter} from '@/hooks';
 
 const statuses = Object.values(UserStatusEnum).map((status) => ({
     label: capitalizeFirstLetter(status),
@@ -37,120 +30,148 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
 }));
 
 export const DataTableFiltersUsers = (): React.JSX.Element => {
-    const {tempFilters, dispatchFilters} = useDataTableFilters<'users'>(filtersReducerUsers);
+    const {
+        stateDefault,
+        modelStore
+    } = useDataTable();
 
+    const filters = useStore(modelStore, (state) => state.tableState.filters);
+    const updateTableState = useStore(modelStore, (state) => state.updateTableState);
+
+    const updateFilters = useCallback((newFilters: Partial<DataTableFiltersUsersType>) => {
+        updateTableState({
+            filters: {...filters, ...newFilters}
+        });
+    }, [filters, updateTableState]);
+
+    const searchGlobal = useSearchFilter({
+        initialValue: filters.global?.value ?? '',
+        debounceDelay: 1000,
+        minLength: 3,
+        onSearch: (value) => {
+            handleTermChange(value);
+        }
+    });
+
+    useEffect(() => {
+        const handleFilterReset = () => {
+            updateTableState({
+                filters: stateDefault.filters
+            });
+
+            searchGlobal.onReset();
+        };
+
+        window.addEventListener('filterReset', handleFilterReset as EventListener);
+
+        return () => {
+            window.removeEventListener('filterReset', handleFilterReset as EventListener);
+        };
+    }, [searchGlobal, searchGlobal.onReset, stateDefault.filters, updateTableState]);
+
+    const handlers = useMemo(() => createFilterHandlers<'users'>(updateFilters), [updateFilters]);
     const {
         handleTermChange,
         handleStatusChange,
         handleIsDeletedChange,
         handleCreateDateStartChange,
         handleCreateDateEndChange
-    } = createFilterHandlers(dispatchFilters as unknown as React.Dispatch<FiltersAction<UserTableFiltersType>>);
-
-    const dispatchFiltersSpecific = dispatchFilters as React.Dispatch<FiltersActionUsers>;
+    } = handlers;
 
     const handleRoleChange = useCallback(
-        (e: DropdownChangeEvent) => dispatchFiltersSpecific({type: 'SET_ROLE', value: e.value}),
-        [dispatchFiltersSpecific]
+        (e: DropdownChangeEvent) => updateFilters({role: {value: e.value, matchMode: 'equals'}}),
+        [updateFilters]
     );
 
     return (
-        <div className="flex flex-wrap gap-4 mb-4">
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-global" className="text-sm font-medium">
-                    ID / Email / Name
-                </label>
-                <div>
+        <div className="form-section flex-row flex-wrap gap-4 mb-4">
+            <FormPart>
+                <FormElement labelText="ID / Email / Name" labelFor="search-global">
                     <IconField iconPosition="left">
-                        <InputIcon>
-                            <div className="flex items-center">
-                                <Icons.Search className="w-4 h-4"/>
-                            </div>
+                        <InputIcon className="flex items-center">
+                            <Icons.Search className="w-4 h-4"/>
                         </InputIcon>
                         <InputText
-                            id="search-global"
                             className="p-inputtext-sm"
+                            id="search-global"
                             placeholder="Search"
-                            value={tempFilters.global.value ?? ''}
-                            onChange={handleTermChange}
+                            value={searchGlobal.value}
+                            onChange={searchGlobal.handler}
                         />
                     </IconField>
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-status" className="text-sm font-medium">
-                    Status
-                </label>
-                <div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Status" labelFor="search-status">
                     <Dropdown
-                        id="search-status"
                         className="p-inputtext-sm"
-                        value={tempFilters.status.value}
+                        panelStyle={{fontSize: '0.875rem'}}
+                        id="search-status"
+                        value={filters.status.value}
                         options={statuses}
                         onChange={handleStatusChange}
                         placeholder="-any-"
                         showClear
                     />
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-role" className="text-sm font-medium">
-                    Role
-                </label>
-                <div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Role" labelFor="search-role">
                     <Dropdown
-                        id="search-role"
                         className="p-inputtext-sm"
-                        value={tempFilters.role.value}
+                        panelStyle={{fontSize: '0.875rem'}}
+                        id="search-role"
+                        value={filters.role.value}
                         options={roles}
                         onChange={handleRoleChange}
                         placeholder="-any-"
                         showClear
                     />
-                </div>
-            </div>
-            <div className="flex flex-col gap-1">
-                <label htmlFor="search-create-date-start" className="text-sm font-medium">
-                    Created Date
-                </label>
-                <div className="flex gap-2">
-                    <div className="max-w-[180px] w-full">
+                </FormElement>
+            </FormPart>
+
+            <FormPart>
+                <FormElement labelText="Created Date" labelFor="search-create-date-start">
+                    <div className="flex gap-2">
                         <Calendar
+                            className="p-inputtext-sm h-11 w-[160px]"
                             id="search-create-date-start"
-                            className="text-sm h-11"
-                            value={stringToDate(tempFilters.create_date_start?.value)}
+                            value={stringToDate(filters.create_date_start?.value)}
                             onChange={handleCreateDateStartChange}
                             placeholder="Start Date"
                             showIcon
-                            maxDate={getValidDate(tempFilters.create_date_end?.value)}
+                            maxDate={getValidDate(filters.create_date_end?.value)}
                         />
-                    </div>
-                    <div className="max-w-[180px] w-full">
                         <Calendar
+                            className="p-inputtext-sm h-11 w-[160px]"
                             id="search-date-create-end"
-                            className="text-sm h-11"
-                            value={stringToDate(tempFilters.create_date_end?.value)}
+                            value={stringToDate(filters.create_date_end?.value)}
                             onChange={handleCreateDateEndChange}
                             placeholder="End Date"
                             showIcon
-                            minDate={getValidDate(tempFilters.create_date_start?.value)}
+                            minDate={getValidDate(filters.create_date_start?.value)}
                         />
                     </div>
-                </div>
-            </div>
-            <div className="flex flex-col justify-center">
-                <div>&nbsp;</div>
-                <div className="flex items-center gap-2">
-                    <Checkbox
-                        inputId="is_deleted"
-                        checked={tempFilters.is_deleted?.value ?? false}
-                        onChange={handleIsDeletedChange}
-                    />
-                    <label htmlFor="is_deleted" className="text-sm whitespace-nowrap">
-                        Show Deleted
-                    </label>
-                </div>
-            </div>
+                </FormElement>
+            </FormPart>
+
+            <FormPart className="flex flex-col justify-center">
+                <>
+                    <div>&nbsp;</div>
+                    <div className="flex items-center gap-2">
+                        <Checkbox
+                            inputId="is_deleted"
+                            checked={filters.is_deleted?.value ?? false}
+                            onChange={handleIsDeletedChange}
+                        />
+                        <label htmlFor="is_deleted" className="text-sm whitespace-nowrap">
+                            Show Deleted
+                        </label>
+                    </div>
+                </>
+            </FormPart>
         </div>
     );
 };
