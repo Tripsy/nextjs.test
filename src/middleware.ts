@@ -1,46 +1,58 @@
-import type {NextRequest} from 'next/server';
-import {NextResponse} from 'next/server';
-import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
-import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
-import {lang} from '@/config/lang';
-import {getTrackedCookie, getTrackedCookieName, TrackedCookie} from '@/lib/utils/session';
-import {cfg} from '@/config/settings';
-import {apiHeaders} from '@/lib/utils/system';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { lang } from '@/config/lang';
+import Routes, { RouteAuth, type RouteMatch } from '@/config/routes';
+import { cfg } from '@/config/settings';
+import {
+	type AuthModel,
+	hasPermission,
+	prepareAuthModel,
+} from '@/lib/models/auth.model';
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/utils/api';
+import {
+	getTrackedCookie,
+	getTrackedCookieName,
+	type TrackedCookie,
+} from '@/lib/utils/session';
+import { apiHeaders } from '@/lib/utils/system';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
 function blockedOrigin(req: NextRequest) {
-    const ALLOWED_ORIGIN = ['http://localhost:3000', 'http://nextjs.test'];
+	const ALLOWED_ORIGIN = ['http://localhost:3000', 'http://nextjs.test'];
 
-    const origin = req.headers.get('origin');
-    const referer = req.headers.get('referer');
+	const origin = req.headers.get('origin');
+	const referer = req.headers.get('referer');
 
-    // Probably a same-origin browser request — allow it
-    if (!origin && !referer) {
-        return false;
-    }
+	// Probably a same-origin browser request — allow it
+	if (!origin && !referer) {
+		return false;
+	}
 
-    // Check origin header
-    if (origin && ALLOWED_ORIGIN.includes(origin)) {
-        return false; // Not blocked
-    }
+	// Check origin header
+	if (origin && ALLOWED_ORIGIN.includes(origin)) {
+		return false; // Not blocked
+	}
 
-    // Check referer header
-    if (referer) {
-        try {
-            const refererUrl = new URL(referer);
-            const refererOrigin = `${refererUrl.protocol}//${refererUrl.host}`;
+	// Check referer header
+	if (referer) {
+		try {
+			const refererUrl = new URL(referer);
+			const refererOrigin = `${refererUrl.protocol}//${refererUrl.host}`;
 
-            if (ALLOWED_ORIGIN.includes(refererOrigin)) {
-                return false; // Not blocked
-            }
-        } catch {
-            console.warn('Invalid referer URL:', referer);
-        }
-    }
+			if (ALLOWED_ORIGIN.includes(refererOrigin)) {
+				return false; // Not blocked
+			}
+		} catch {
+			console.warn('Invalid referer URL:', referer);
+		}
+	}
 
-    return true; // Blocked
+	return true; // Blocked
 }
 
 /**
@@ -49,16 +61,16 @@ function blockedOrigin(req: NextRequest) {
  * @param request
  */
 function redirectToLogin(request: NextRequest) {
-    const loginUrl = new URL(Routes.get('login'), request.url);
+	const loginUrl = new URL(Routes.get('login'), request.url);
 
-    // Create the full destination URL with all query params
-    const currentUrl = new URL(request.url);
-    const destinationPath = currentUrl.pathname + currentUrl.search;
+	// Create the full destination URL with all query params
+	const currentUrl = new URL(request.url);
+	const destinationPath = currentUrl.pathname + currentUrl.search;
 
-    // URL-encode the full destination including query params
-    loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
+	// URL-encode the full destination including query params
+	loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
 
-    return NextResponse.redirect(loginUrl);
+	return NextResponse.redirect(loginUrl);
 }
 
 /**
@@ -69,21 +81,24 @@ function redirectToLogin(request: NextRequest) {
  * @param error
  */
 function redirectToError(request: NextRequest, error: Error | string) {
-    const redirectUrl = new URL(Routes.get('status', {type: 'error'}), request.url);
+	const redirectUrl = new URL(
+		Routes.get('status', { type: 'error' }),
+		request.url,
+	);
 
-    if (error) {
-        let logMessage: string;
+	if (error) {
+		let logMessage: string;
 
-        if (error instanceof Error) {
-            logMessage = error.message;
-        } else {
-            logMessage = error;
-        }
+		if (error instanceof Error) {
+			logMessage = error.message;
+		} else {
+			logMessage = error;
+		}
 
-        redirectUrl.searchParams.set('msg', logMessage);
-    }
+		redirectUrl.searchParams.set('msg', logMessage);
+	}
 
-    return NextResponse.redirect(redirectUrl);
+	return NextResponse.redirect(redirectUrl);
 }
 
 /**
@@ -92,21 +107,21 @@ function redirectToError(request: NextRequest, error: Error | string) {
  * @returns
  */
 async function responseSuccess() {
-    const response = NextResponse.next();
+	const response = NextResponse.next();
 
-    response.headers.set('X-Content-Type-Options', 'nosniff');
+	response.headers.set('X-Content-Type-Options', 'nosniff');
 
-    // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
-    // `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
-    // is good for security but some resources need to be whitelisted (ex: FontAwesome)
-    // if (cfg('environment') === 'production') {
-    //     response.headers.set(
-    //         'Content-Security-Policy',
-    //         "default-src 'self'; script-src 'self' 'unsafe-inline'"
-    //     );
-    // }
+	// `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
+	// `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
+	// is good for security but some resources need to be whitelisted (ex: FontAwesome)
+	// if (cfg('environment') === 'production') {
+	//     response.headers.set(
+	//         'Content-Security-Policy',
+	//         "default-src 'self'; script-src 'self' 'unsafe-inline'"
+	//     );
+	// }
 
-    return response;
+	return response;
 }
 
 /**
@@ -116,36 +131,43 @@ async function responseSuccess() {
  * @param sessionToken
  * @param authModel
  */
-async function responseAuthorized(sessionToken: TrackedCookie, authModel: AuthModel) {
-    const response = await responseSuccess();
+async function responseAuthorized(
+	sessionToken: TrackedCookie,
+	authModel: AuthModel,
+) {
+	const response = await responseSuccess();
 
-    // Set auth data as a header
-    response.headers.set('x-auth-data', JSON.stringify(authModel));
+	// Set auth data as a header
+	response.headers.set('x-auth-data', JSON.stringify(authModel));
 
-    if (sessionToken.action === 'set' && sessionToken.value) {
-        const cookieName = cfg('user.sessionToken');
-        const cookieMaxAge = Number(cfg('user.sessionMaxAge'));
+	if (sessionToken.action === 'set' && sessionToken.value) {
+		const cookieName = cfg('user.sessionToken');
+		const cookieMaxAge = Number(cfg('user.sessionMaxAge'));
 
-        response.cookies.set(cookieName, sessionToken.value, {
-            httpOnly: true,
-            secure: cfg('environment') === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: cookieMaxAge,
-        });
+		response.cookies.set(cookieName, sessionToken.value, {
+			httpOnly: true,
+			secure: cfg('environment') === 'production',
+			path: '/',
+			sameSite: 'lax',
+			maxAge: cookieMaxAge,
+		});
 
-        const cookieExpireValue = Date.now() + (cookieMaxAge * 1000);
+		const cookieExpireValue = Date.now() + cookieMaxAge * 1000;
 
-        response.cookies.set(getTrackedCookieName(cookieName), String(cookieExpireValue), {
-            httpOnly: true,
-            secure: cfg('environment') === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: cookieMaxAge,
-        });
-    }
+		response.cookies.set(
+			getTrackedCookieName(cookieName),
+			String(cookieExpireValue),
+			{
+				httpOnly: true,
+				secure: cfg('environment') === 'production',
+				path: '/',
+				sameSite: 'lax',
+				maxAge: cookieMaxAge,
+			},
+		);
+	}
 
-    return response;
+	return response;
 }
 
 // /**
@@ -189,142 +211,147 @@ async function responseAuthorized(sessionToken: TrackedCookie, authModel: AuthMo
  * @param token
  */
 async function fetchAuthModel(token: string): Promise<AuthModel> {
-    try {
-        const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
-            .setRequestMode('remote-api')
-            .doFetch('/account/details', {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    ...await apiHeaders()
-                }
-            });
+	try {
+		const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
+			.setRequestMode('remote-api')
+			.doFetch('/account/details', {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					...(await apiHeaders()),
+				},
+			});
 
-        if (fetchResponse?.success) {
-            const responseData = getResponseData(fetchResponse);
+		if (fetchResponse?.success) {
+			const responseData = getResponseData(fetchResponse);
 
-            if (responseData) {
-                return prepareAuthModel(responseData);
-            }
-        }
+			if (responseData) {
+				return prepareAuthModel(responseData);
+			}
+		}
 
-        return null;
-    } catch {
-        return null;
-    }
+		return null;
+	} catch {
+		return null;
+	}
 }
 
-async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | undefined): Promise<NextResponse> {
-    const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
+async function handleAuthRequirement(
+	req: NextRequest,
+	routeMatch: RouteMatch | undefined,
+): Promise<NextResponse> {
+	const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
 
-    const {auth: routeAuth, permission: routePermission} = routeMatch?.props || {
-        routeAuth: RouteAuth.PUBLIC, routePermission: undefined
-    };
+	const { auth: routeAuth, permission: routePermission } =
+		routeMatch?.props || {
+			routeAuth: RouteAuth.PUBLIC,
+			routePermission: undefined,
+		};
 
-    if (!sessionToken.value) {
-        switch (routeAuth) {
-            case RouteAuth.UNAUTHENTICATED:
-            case RouteAuth.PUBLIC:
-                return await responseSuccess();
-            case RouteAuth.AUTHENTICATED:
-            case RouteAuth.PROTECTED:
-                return redirectToLogin(req);
-            default:
-                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-        }
-    }
+	if (!sessionToken.value) {
+		switch (routeAuth) {
+			case RouteAuth.UNAUTHENTICATED:
+			case RouteAuth.PUBLIC:
+				return await responseSuccess();
+			case RouteAuth.AUTHENTICATED:
+			case RouteAuth.PROTECTED:
+				return redirectToLogin(req);
+			default:
+				return redirectToError(req, `Unknown route auth: ${routeAuth}`);
+		}
+	}
 
-    const authModel = await fetchAuthModel(sessionToken.value);
+	const authModel = await fetchAuthModel(sessionToken.value);
 
-    if (!authModel) {
-        switch (routeAuth) {
-            case RouteAuth.UNAUTHENTICATED:
-            case RouteAuth.PUBLIC: {
-                const response = await responseSuccess();
+	if (!authModel) {
+		switch (routeAuth) {
+			case RouteAuth.UNAUTHENTICATED:
+			case RouteAuth.PUBLIC: {
+				const response = await responseSuccess();
 
-                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+				response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
 
-                return response;
-            }
-            case RouteAuth.AUTHENTICATED:
-            case RouteAuth.PROTECTED: {
-                const msg = lang('auth.message.unauthorized');
-                const response = redirectToError(req, msg);
+				return response;
+			}
+			case RouteAuth.AUTHENTICATED:
+			case RouteAuth.PROTECTED: {
+				const msg = lang('auth.message.unauthorized');
+				const response = redirectToError(req, msg);
 
-                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
+				response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
 
-                return response;
-            }
-            default: {
-                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-            }
-        }
-    }
+				return response;
+			}
+			default: {
+				return redirectToError(req, `Unknown route auth: ${routeAuth}`);
+			}
+		}
+	}
 
-    if (routeAuth === RouteAuth.UNAUTHENTICATED) {
-        return redirectToError(req, lang('auth.message.already_logged_in'));
-    }
+	if (routeAuth === RouteAuth.UNAUTHENTICATED) {
+		return redirectToError(req, lang('auth.message.already_logged_in'));
+	}
 
-    if (routeAuth === RouteAuth.PROTECTED) {
-        if (!hasPermission(authModel, routePermission)) {
-            return redirectToError(req, lang('auth.message.unauthorized'));
-        }
-    }
+	if (routeAuth === RouteAuth.PROTECTED) {
+		if (!hasPermission(authModel, routePermission)) {
+			return redirectToError(req, lang('auth.message.unauthorized'));
+		}
+	}
 
-    return responseAuthorized(sessionToken, authModel);
+	return responseAuthorized(sessionToken, authModel);
 }
 
 export async function middleware(req: NextRequest) {
-    // Skip middleware for Server Actions
-    if (req.headers.get('next-action')) {
-        return NextResponse.next();
-    }
+	// Skip middleware for Server Actions
+	if (req.headers.get('next-action')) {
+		return NextResponse.next();
+	}
 
-    // Allow preflight and HEAD requests unconditionally
-    if (['HEAD', 'OPTIONS'].includes(req.method)) {
-        return NextResponse.next();
-    }
+	// Allow preflight and HEAD requests unconditionally
+	if (['HEAD', 'OPTIONS'].includes(req.method)) {
+		return NextResponse.next();
+	}
 
-    // Block suspicious origins
-    if (blockedOrigin(req)) {
-        return new NextResponse('Forbidden', {status: 403});
-    }
+	// Block suspicious origins
+	if (blockedOrigin(req)) {
+		return new NextResponse('Forbidden', { status: 403 });
+	}
 
-    // Match route
-    const pathname = req.nextUrl.pathname;
+	// Match route
+	const pathname = req.nextUrl.pathname;
 
-    const routeMatch = Routes.match(pathname);
+	const routeMatch = Routes.match(pathname);
 
-    if (!routeMatch) {
-        return responseSuccess();
-    }
+	if (!routeMatch) {
+		return responseSuccess();
+	}
 
-    // // Rate limit
-    // const {isAllowed, retryAfter} = await rateLimit(req);
-    //
-    // if (!isAllowed) {
-    //     return new NextResponse(
-    //         JSON.stringify({error: 'Too many requests. Please try again later.'}),
-    //         {
-    //             status: 429,
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Retry-After': String(retryAfter),
-    //             },
-    //         }
-    //     );
-    // }
+	// // Rate limit
+	// const {isAllowed, retryAfter} = await rateLimit(req);
+	//
+	// if (!isAllowed) {
+	//     return new NextResponse(
+	//         JSON.stringify({error: 'Too many requests. Please try again later.'}),
+	//         {
+	//             status: 429,
+	//             headers: {
+	//                 'Content-Type': 'application/json',
+	//                 'Retry-After': String(retryAfter),
+	//             },
+	//         }
+	//     );
+	// }
 
-    // Skip auth check for proxy routes - they will fail at remote API if is the case
-    if (!['proxy'].includes(routeMatch.name)) {
-        return await handleAuthRequirement(req, routeMatch);
-    }
+	// Skip auth check for proxy routes - they will fail at remote API if is the case
+	if (!['proxy'].includes(routeMatch.name)) {
+		return await handleAuthRequirement(req, routeMatch);
+	}
 
-    return responseSuccess();
+	return responseSuccess();
 }
 
 export const config = {
-    matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)).*)',
-    ],
+	matcher: [
+		'/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)).*)',
+	],
 };

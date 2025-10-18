@@ -1,77 +1,113 @@
 'use client';
 
-import {useAuth} from '@/providers/auth.provider';
-import React, {useEffect, useMemo} from 'react';
-import Routes, {RouteAuth} from '@/config/routes';
-import {Notice} from '@/components/notice.component';
-import {hasPermission} from '@/lib/models/auth.model';
-import {usePathname, useRouter} from 'next/navigation';
-import {lang} from '@/config/lang';
-import {Loading} from '@/components/loading.component';
+import { usePathname, useRouter } from 'next/navigation';
+import type React from 'react';
+import { useEffect, useMemo } from 'react';
+import { Loading } from '@/components/loading.component';
+import { Notice } from '@/components/notice.component';
+import { lang } from '@/config/lang';
+import Routes, { RouteAuth } from '@/config/routes';
+import { hasPermission } from '@/lib/models/auth.model';
+import { useAuth } from '@/providers/auth.provider';
 
 type ProtectedRouteProps = {
-    children: React.ReactNode;
-    routeAuth: RouteAuth;
-    routePermission?: string;
-    className?: string;
-    fallback?: React.ReactNode;
-}
-
-const ProtectedRouteWrapper = ({children, className}: { children: React.ReactNode, className?: string }) => {
-    return <div className={className}>{children}</div>;
+	children: React.ReactNode;
+	routeAuth: RouteAuth;
+	routePermission?: string;
+	className?: string;
+	fallback?: React.ReactNode;
 };
 
-export default function ProtectedRoute({children, routeAuth, routePermission, className, fallback}: ProtectedRouteProps) {
-    const {authStatus, auth} = useAuth();
+const ProtectedRouteWrapper = ({
+	children,
+	className,
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) => {
+	return <div className={className}>{children}</div>;
+};
 
-    const router = useRouter();
-    const pathname = usePathname();
+export default function ProtectedRoute({
+	children,
+	routeAuth,
+	routePermission,
+	className,
+	fallback,
+}: ProtectedRouteProps) {
+	const { authStatus, auth } = useAuth();
 
-    // Redirect to login page if not authenticated and route is protected or authenticated
-    useEffect(() => {
-        if ([RouteAuth.AUTHENTICATED, RouteAuth.PROTECTED].includes(routeAuth) && authStatus === 'unauthenticated') {
-            router.push(`${Routes.get('login')}?from=${encodeURIComponent(pathname)}`);
-        }
-    }, [authStatus, pathname, routeAuth, router]);
+	const router = useRouter();
+	const pathname = usePathname();
 
-    const permission = useMemo(() => {
-        if (routePermission) {
-            return routePermission;
-        }
+	// Redirect to login page if not authenticated and route is protected or authenticated
+	useEffect(() => {
+		if (
+			[RouteAuth.AUTHENTICATED, RouteAuth.PROTECTED].includes(
+				routeAuth,
+			) &&
+			authStatus === 'unauthenticated'
+		) {
+			router.push(
+				`${Routes.get('login')}?from=${encodeURIComponent(pathname)}`,
+			);
+		}
+	}, [authStatus, pathname, routeAuth, router]);
 
-        if (routeAuth === RouteAuth.PROTECTED && authStatus === 'authenticated') {
-            return Routes.match(pathname)?.props?.permission;
-        }
+	const permission = useMemo(() => {
+		if (routePermission) {
+			return routePermission;
+		}
 
-        return undefined;
-    }, [routePermission, routeAuth, authStatus, pathname]);
+		if (
+			routeAuth === RouteAuth.PROTECTED &&
+			authStatus === 'authenticated'
+		) {
+			return Routes.match(pathname)?.props?.permission;
+		}
 
-    // Is a public route so return content
-    if (routeAuth === RouteAuth.PUBLIC) {
-        return <>{children}</>;
-    }
+		return undefined;
+	}, [routePermission, routeAuth, authStatus, pathname]);
 
-    // Loading
-    if (authStatus === 'loading') {
-        return <Loading/>;
-    }
+	// Is a public route so return content
+	if (routeAuth === RouteAuth.PUBLIC) {
+		return <>{children}</>;
+	}
 
-    if (routeAuth === RouteAuth.UNAUTHENTICATED && authStatus === 'authenticated') {
-        return (
-            <ProtectedRouteWrapper className={className}>
-                <Notice type="warning" message={lang('auth.message.already_logged_in')}>{fallback}</Notice>
-            </ProtectedRouteWrapper>
-        );
-    }
+	// Loading
+	if (authStatus === 'loading') {
+		return <Loading />;
+	}
 
-    // If this is a protected route and the user doesn't have the required permission
-    if (routeAuth === RouteAuth.PROTECTED && !hasPermission(auth, permission)) {
-        return (
-            <ProtectedRouteWrapper className={className}>
-                <Notice type="warning" message={lang('auth.message.unauthorized')}>{fallback}</Notice>
-            </ProtectedRouteWrapper>
-        );
-    }
+	if (
+		routeAuth === RouteAuth.UNAUTHENTICATED &&
+		authStatus === 'authenticated'
+	) {
+		return (
+			<ProtectedRouteWrapper className={className}>
+				<Notice
+					type="warning"
+					message={lang('auth.message.already_logged_in')}
+				>
+					{fallback}
+				</Notice>
+			</ProtectedRouteWrapper>
+		);
+	}
 
-    return <>{children}</>;
+	// If this is a protected route and the user doesn't have the required permission
+	if (routeAuth === RouteAuth.PROTECTED && !hasPermission(auth, permission)) {
+		return (
+			<ProtectedRouteWrapper className={className}>
+				<Notice
+					type="warning"
+					message={lang('auth.message.unauthorized')}
+				>
+					{fallback}
+				</Notice>
+			</ProtectedRouteWrapper>
+		);
+	}
+
+	return <>{children}</>;
 }

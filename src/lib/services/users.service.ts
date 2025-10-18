@@ -1,47 +1,58 @@
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
-import {
-    FindFunctionType,
-    FindFunctionParamsType,
-    FindFunctionResponseType, CreateFunctionType, UpdateFunctionType, DeleteFunctionType,
+import type { FormValuesUsersType } from '@/app/dashboard/users/users.definition';
+import type {
+	CreateFunctionType,
+	DeleteFunctionType,
+	FindFunctionParamsType,
+	FindFunctionResponseType,
+	FindFunctionType,
+	UpdateFunctionType,
 } from '@/config/data-source';
-import {FormValuesUsersType} from '@/app/dashboard/users/users.definition';
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/utils/api';
 
-export const findUsers: FindFunctionType<'users'> = async (params: FindFunctionParamsType) => {
-    const query = new URLSearchParams({
-        order_by: params.order_by,
-        direction: params.direction,
-        limit: String(params.limit),
-        page: String(params.page),
-        filter: params.filter
-    });
+export const findUsers: FindFunctionType<'users'> = async (
+	params: FindFunctionParamsType,
+) => {
+	const query = new URLSearchParams({
+		order_by: params.order_by,
+		direction: params.direction,
+		limit: String(params.limit),
+		page: String(params.page),
+		filter: params.filter,
+	});
 
-    const response: ResponseFetch<FindFunctionResponseType<'users'>> = await new ApiRequest()
-        .doFetch(`/users?${query}`);
+	const response: ResponseFetch<FindFunctionResponseType<'users'>> =
+		await new ApiRequest().doFetch(`/users?${query}`);
 
-    return getResponseData<FindFunctionResponseType<'users'>>(response);
-}
+	return getResponseData<FindFunctionResponseType<'users'>>(response);
+};
 
-export const createUsers: CreateFunctionType<'users'> = async (params: FormValuesUsersType) => {
-    return await new ApiRequest()
-        .doFetch('/users', {
-            method: 'POST',
-            body: JSON.stringify(params),
-        });
-}
+export const createUsers: CreateFunctionType<'users'> = async (
+	params: FormValuesUsersType,
+) => {
+	return await new ApiRequest().doFetch('/users', {
+		method: 'POST',
+		body: JSON.stringify(params),
+	});
+};
 
-export const updateUsers: UpdateFunctionType<'users'> = async (params: FormValuesUsersType, id: number) => {
-    return await new ApiRequest()
-        .doFetch(`/users/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(params),
-        });
-}
+export const updateUsers: UpdateFunctionType<'users'> = async (
+	params: FormValuesUsersType,
+	id: number,
+) => {
+	return await new ApiRequest().doFetch(`/users/${id}`, {
+		method: 'PUT',
+		body: JSON.stringify(params),
+	});
+};
 
 export const deleteUsers: DeleteFunctionType = async (ids: number[]) => {
-    const id = ids[0];
+	const id = ids[0];
 
-    return await new ApiRequest()
-        .doFetch(`/users/${id}`, {
-            method: 'DELETE',
-        });
-}
+	return await new ApiRequest().doFetch(`/users/${id}`, {
+		method: 'DELETE',
+	});
+};

@@ -1,22 +1,19 @@
-import type {Metadata} from 'next';
-import {BreadcrumbType} from '@/app/dashboard/_providers/breadcrumb.provider';
+import type { Metadata } from 'next';
 import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
-import React from 'react';
-import {lang} from '@/config/lang';
+import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
+import { lang } from '@/config/lang';
 
 export const metadata: Metadata = {
-    title: `Dashboard | ${lang('app.name')}`,
+	title: `Dashboard | ${lang('app.name')}`,
 };
 
 export default function Page() {
-    const items: BreadcrumbType[] = [
-        {label: 'Dashboard'}
-    ];
+	const items: BreadcrumbType[] = [{ label: 'Dashboard' }];
 
-    return (
-        <>
-            <NavBreadcrumbSetter items={items}/>
-            Dashboard
-        </>
-    );
+	return (
+		<>
+			<NavBreadcrumbSetter items={items} />
+			Dashboard
+		</>
+	);
 }

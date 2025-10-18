@@ -1,14 +1,14 @@
 'use server';
 
-import {getCookie} from '@/lib/utils/session';
-import {cfg} from '@/config/settings';
+import { cfg } from '@/config/settings';
+import { getCookie } from '@/lib/utils/session';
 
 export async function isValidCsrfToken(inputValue: string) {
-    if (!inputValue) {
-        return false;
-    }
+	if (!inputValue) {
+		return false;
+	}
 
-    const cookieValue = await getCookie(cfg('csrf.cookieName'));
+	const cookieValue = await getCookie(cfg('csrf.cookieName'));
 
-    return cookieValue === inputValue;
+	return cookieValue === inputValue;
 }

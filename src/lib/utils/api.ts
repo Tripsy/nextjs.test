@@ -1,154 +1,170 @@
-import {ApiError} from '@/lib/exceptions/api.error';
 import Routes from '@/config/routes';
-import {cfg} from '@/config/settings';
+import { cfg } from '@/config/settings';
+import { ApiError } from '@/lib/exceptions/api.error';
 
 export function getRemoteApiUrl(path: string): string {
-    path = path.replace(/^\//, ''); // Remove first `/` if exist
+	path = path.replace(/^\//, ''); // Remove first `/` if exist
 
-    return cfg('remoteApi.url') + '/' + path;
+	return `${cfg('remoteApi.url')}/${path}`;
 }
 
-export type ResponseFetch<T> = {
-    data?: T;
-    message: string;
-    success: boolean;
-} | undefined;
+export type ResponseFetch<T> =
+	| {
+			data?: T;
+			message: string;
+			success: boolean;
+	  }
+	| undefined;
 
 export function getResponseData<T>(response: ResponseFetch<T>): T | undefined {
-    return response?.data as T;
+	return response?.data as T;
 }
 
 export type RequestMode = 'same-site' | 'use-proxy' | 'remote-api' | 'custom';
 
 export class ApiRequest {
-    static readonly ABORT_TIMEOUT: number = 10000; // 10s
+	static readonly ABORT_TIMEOUT: number = 10000; // 10s
 
-    private requestInit: RequestInit = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
+	private requestInit: RequestInit = {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	};
 
-    private requestMode: RequestMode = 'use-proxy';
+	private requestMode: RequestMode = 'use-proxy';
 
-    public setRequestMode(mode: RequestMode): this {
-        this.requestMode = mode;
+	public setRequestMode(mode: RequestMode): this {
+		this.requestMode = mode;
 
-        return this;
-    }
+		return this;
+	}
 
-    public setRequestInit(options: RequestInit): this {
-        const mergedHeaders = new Headers(this.requestInit.headers || {});
+	public setRequestInit(options: RequestInit): this {
+		const mergedHeaders = new Headers(this.requestInit.headers || {});
 
-        if (options.headers) {
-            const incomingHeaders = new Headers(options.headers);
+		if (options.headers) {
+			const incomingHeaders = new Headers(options.headers);
 
-            incomingHeaders.forEach((value, key) => {
-                mergedHeaders.set(key, value);
-            });
-        }
+			incomingHeaders.forEach((value, key) => {
+				mergedHeaders.set(key, value);
+			});
+		}
 
-        this.requestInit = {
-            ...this.requestInit,
-            ...options,
-            headers: mergedHeaders,
-        };
+		this.requestInit = {
+			...this.requestInit,
+			...options,
+			headers: mergedHeaders,
+		};
 
-        return this;
-    }
+		return this;
+	}
 
-    private async handleJsonResponse(res: Response) {
-        try {
-            return await res.json();
-        } catch {
-            if (res.ok) {
-                throw new Error('Invalid JSON response');
-            }
+	private async handleJsonResponse(res: Response) {
+		try {
+			return await res.json();
+		} catch {
+			if (res.ok) {
+				throw new Error('Invalid JSON response');
+			}
 
-            return null; // Explicitly return null for non-JSON error responses
-        }
-    }
+			return null; // Explicitly return null for non-JSON error responses
+		}
+	}
 
-    private handleError(error: unknown) {
-        if (error instanceof ApiError) {
-            throw error;
-        }
+	private handleError(error: unknown) {
+		if (error instanceof ApiError) {
+			throw error;
+		}
 
-        // Handle network errors or aborted requests
-        if (error instanceof Error && error.name === 'AbortError') {
-            throw new ApiError('Request timeout', 408);
-        }
+		// Handle network errors or aborted requests
+		if (error instanceof Error && error.name === 'AbortError') {
+			throw new ApiError('Request timeout', 408);
+		}
 
-        throw new ApiError(error instanceof Error ? error.message : 'Network request failed', 0);
-    }
+		throw new ApiError(
+			error instanceof Error ? error.message : 'Network request failed',
+			0,
+		);
+	}
 
-    private buildProxyRoute(path: string) {
-        const [rawPath, rawQuery] = path.split('?');
+	private buildProxyRoute(path: string) {
+		const [rawPath, rawQuery] = path.split('?');
 
-        const routeSegments = rawPath.split('/').filter(Boolean); // eg: filter(Boolean) removes empty segments
+		const routeSegments = rawPath.split('/').filter(Boolean); // eg: filter(Boolean) removes empty segments
 
-        let proxyRoute = Routes.get('proxy', { path: routeSegments });
+		let proxyRoute = Routes.get('proxy', { path: routeSegments });
 
-        if (rawQuery) {
-            proxyRoute += `?${rawQuery}`;
-        }
+		if (rawQuery) {
+			proxyRoute += `?${rawQuery}`;
+		}
 
-        return cfg('url') + proxyRoute;
-    }
+		return cfg('url') + proxyRoute;
+	}
 
-    private buildRequestUrl(path: string) {
-        switch (this.requestMode) {
-            case 'use-proxy':
-                return this.buildProxyRoute(path);
-            case 'same-site':
-                return cfg('url') + Routes.get(path);
-            case 'remote-api':
-                return getRemoteApiUrl(path);
-            default:
-                return path;
-        }
-    }
+	private buildRequestUrl(path: string) {
+		switch (this.requestMode) {
+			case 'use-proxy':
+				return this.buildProxyRoute(path);
+			case 'same-site':
+				return cfg('url') + Routes.get(path);
+			case 'remote-api':
+				return getRemoteApiUrl(path);
+			default:
+				return path;
+		}
+	}
 
-    public async doFetch<T>(path: string, requestInit: RequestInit = {}): Promise<ResponseFetch<T>> {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), ApiRequest.ABORT_TIMEOUT);
+	public async doFetch<T>(
+		path: string,
+		requestInit: RequestInit = {},
+	): Promise<ResponseFetch<T>> {
+		const controller = new AbortController();
+		const timeout = setTimeout(
+			() => controller.abort(),
+			ApiRequest.ABORT_TIMEOUT,
+		);
 
-        const requestUrl = this.buildRequestUrl(path);
+		const requestUrl = this.buildRequestUrl(path);
 
-        if (requestInit) {
-            this.setRequestInit(requestInit);
-        }
+		if (requestInit) {
+			this.setRequestInit(requestInit);
+		}
 
-        try {
-            const res = await fetch(requestUrl, {
-                ...this.requestInit,
-                signal: controller.signal,
-            });
+		try {
+			const res = await fetch(requestUrl, {
+				...this.requestInit,
+				signal: controller.signal,
+			});
 
-            clearTimeout(timeout);
+			clearTimeout(timeout);
 
-            // Handle non-JSON responses (like 204 No Content)
-            if (res.status === 204) {
-                return undefined;
-            }
+			// Handle non-JSON responses (like 204 No Content)
+			if (res.status === 204) {
+				return undefined;
+			}
 
-            const jsonResponse: ResponseFetch<T> = await this.handleJsonResponse(res);
+			const jsonResponse: ResponseFetch<T> =
+				await this.handleJsonResponse(res);
 
-            if (!res.ok) {
-                const error = new ApiError(`HTTP ${res.status} Error`, res.status, jsonResponse);
-                this.handleError(error);
+			if (!res.ok) {
+				const error = new ApiError(
+					`HTTP ${res.status} Error`,
+					res.status,
+					jsonResponse,
+				);
+				this.handleError(error);
 
-                return undefined;
-            }
+				return undefined;
+			}
 
-            return jsonResponse;
-        } catch (error) {
-            clearTimeout(timeout);
+			return jsonResponse;
+		} catch (error) {
+			clearTimeout(timeout);
 
-            this.handleError(error);
+			this.handleError(error);
 
-            return undefined;
-        }
-    }
+			return undefined;
+		}
+	}
 }

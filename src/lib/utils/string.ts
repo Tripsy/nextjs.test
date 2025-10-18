@@ -1,17 +1,27 @@
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 export function capitalizeFirstLetter(str: string): string {
-    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+	return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
-export function formatCurrency(value: number, currency: string = 'USD'): string {
-    return value.toLocaleString('en-US', {
-        style: 'currency',
-        currency: currency
-    });
+export function formatCurrency(
+	value: number,
+	currency: string = 'USD',
+): string {
+	return value.toLocaleString('en-US', {
+		style: 'currency',
+		currency: currency,
+	});
 }
 
-export type ObjectValue = string | number | boolean | null | undefined | ObjectValue[] | { [key: string]: ObjectValue };
+export type ObjectValue =
+	| string
+	| number
+	| boolean
+	| null
+	| undefined
+	| ObjectValue[]
+	| { [key: string]: ObjectValue };
 
 /**
  * Get the value of a key in an object
@@ -22,15 +32,20 @@ export type ObjectValue = string | number | boolean | null | undefined | ObjectV
  * @returns {any} - The value of the key
  */
 export function getObjectValue(
-    obj: { [key: string]: ObjectValue },
-    key: string
+	obj: { [key: string]: ObjectValue },
+	key: string,
 ): ObjectValue | undefined {
-    return key.split('.').reduce<ObjectValue | undefined>((acc, part) => {
-        if (acc && typeof acc === "object" && !Array.isArray(acc) && part in acc) {
-            return (acc as { [key: string]: ObjectValue })[part];
-        }
-        return undefined;
-    }, obj);
+	return key.split('.').reduce<ObjectValue | undefined>((acc, part) => {
+		if (
+			acc &&
+			typeof acc === 'object' &&
+			!Array.isArray(acc) &&
+			part in acc
+		) {
+			return (acc as { [key: string]: ObjectValue })[part];
+		}
+		return undefined;
+	}, obj);
 }
 
 /**
@@ -41,8 +56,13 @@ export function getObjectValue(
  * @param {Record<string, string>} vars - The template variables to replace
  * @returns {string} - The string with template variables replaced
  */
-export function replaceVars(content: string, vars: Record<string, string> = {}): string {
-    return content.replace(/{{(\w+)}}/g, (_, key) => (key in vars ? vars[key] : `{{${key}}}`));
+export function replaceVars(
+	content: string,
+	vars: Record<string, string> = {},
+): string {
+	return content.replace(/{{(\w+)}}/g, (_, key) =>
+		key in vars ? vars[key] : `{{${key}}}`,
+	);
 }
 
 /**
@@ -52,21 +72,21 @@ export function replaceVars(content: string, vars: Record<string, string> = {}):
  * @returns {string} - The initials of the name
  */
 export function getNameInitials(name: string | undefined): string {
-    if (!name) {
-        return '';
-    }
+	if (!name) {
+		return '';
+	}
 
-    const parts = name.trim().split(/\s+/); // Split by any whitespace
+	const parts = name.trim().split(/\s+/); // Split by any whitespace
 
-    if (parts.length === 1) {
-        // Single name, return first 2 letters
-        return parts[0].slice(0, 2).toUpperCase();
-    }
+	if (parts.length === 1) {
+		// Single name, return first 2 letters
+		return parts[0].slice(0, 2).toUpperCase();
+	}
 
-    // Multi-part name, take first letter of first two words
-    return (parts[0][0] + '.'+ parts[1][0]).toUpperCase();
+	// Multi-part name, take first letter of first two words
+	return `${parts[0][0]}.${parts[1][0]}`.toUpperCase();
 }
 
 export function randomString(): string {
-    return uuid();
+	return uuid();
 }

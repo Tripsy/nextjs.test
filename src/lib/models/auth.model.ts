@@ -1,42 +1,44 @@
-import {UserModel, UserRoleEnum} from '@/lib/models/user.model';
-import {normalizeDates} from '@/lib/utils/model';
+import { type UserModel, UserRoleEnum } from '@/lib/models/user.model';
+import { normalizeDates } from '@/lib/utils/model';
 
-export type AuthModel = UserModel<Date>  & {
-    permissions: string[];
-} | null;
+export type AuthModel =
+	| (UserModel<Date> & {
+			permissions: string[];
+	  })
+	| null;
 
 export function isAdmin(data: AuthModel): boolean {
-    return data?.role === UserRoleEnum.ADMIN;
+	return data?.role === UserRoleEnum.ADMIN;
 }
 
 export function isOperator(data: AuthModel): boolean {
-    return data?.role === UserRoleEnum.OPERATOR;
+	return data?.role === UserRoleEnum.OPERATOR;
 }
 
 export function isAuthenticated(auth: AuthModel): boolean {
-    return auth !== null;
+	return auth !== null;
 }
 
 export function hasPermission(auth: AuthModel, permission?: string): boolean {
-    if (!isAuthenticated(auth)) {
-        return false;
-    }
+	if (!isAuthenticated(auth)) {
+		return false;
+	}
 
-    if (isAdmin(auth)) {
-        return true;
-    }
+	if (isAdmin(auth)) {
+		return true;
+	}
 
-    if (isOperator(auth)) {
-        if (permission) {
-            return auth?.permissions.includes(permission) || false;
-        } else {
-            return true;
-        }
-    }
+	if (isOperator(auth)) {
+		if (permission) {
+			return auth?.permissions.includes(permission) || false;
+		} else {
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 export function prepareAuthModel(data: AuthModel): AuthModel {
-    return normalizeDates(data) as AuthModel;
+	return normalizeDates(data) as AuthModel;
 }
