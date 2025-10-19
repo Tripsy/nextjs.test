@@ -16,8 +16,8 @@ import {
 } from '@/lib/models/user.model';
 import {
 	createUsers,
-	deleteUsers,
-	findUsers,
+	deleteUsers, disableUsers, enableUsers,
+	findUsers, restoreUsers,
 	updateUsers,
 } from '@/lib/services/users.service';
 
@@ -161,7 +161,7 @@ type ValidationResultUsersType =
 			z.infer<typeof ValidateSchemaUpdateUsers>
 	  >;
 
-export function validateFormUsers(
+function validateFormUsers(
 	values: FormValuesUsersType,
 	id?: number,
 ): ValidationResultUsersType {
@@ -196,10 +196,10 @@ function getFormValuesUsers(formData: FormData): FormValuesUsersType {
 	};
 }
 
-export const syncFormStateUsers = (
+function syncFormStateUsers (
 	state: FormStateType<'users'>,
 	model: UserModel,
-): FormStateType<'users'> => {
+): FormStateType<'users'> {
 	return {
 		...state,
 		id: model.id,
@@ -211,7 +211,11 @@ export const syncFormStateUsers = (
 			role: model.role,
 		},
 	};
-};
+}
+
+function getActionContentEntriesUsers(entries: UserModel[]) {
+	return entries.map(entry => ({id: entry.id, label: entry.name}));
+}
 
 export type DataSourceUsersType = {
 	dataTableFilter: DataTableFiltersUsersType;
@@ -281,6 +285,7 @@ export const DataSourceConfigUsers = {
 		getFormValues: getFormValuesUsers,
 		validateForm: validateFormUsers,
 		syncFormState: syncFormStateUsers,
+		getActionContentEntries: getActionContentEntriesUsers,
 	},
 	actions: {
 		create: {
@@ -309,7 +314,6 @@ export const DataSourceConfigUsers = {
 			function: deleteUsers,
 			button: {
 				className: 'btn btn-action-delete',
-				multipleEntries: false,
 			},
 		},
 		enable: {
@@ -321,10 +325,9 @@ export const DataSourceConfigUsers = {
 					entry.status,
 				),
 			position: 'left' as const,
-			function: updateUsers, // TODO: statusUpdateUsers,
+			function: enableUsers,
 			button: {
 				className: 'btn btn-action-enable',
-				multipleEntries: false,
 			},
 		},
 		disable: {
@@ -336,10 +339,9 @@ export const DataSourceConfigUsers = {
 					entry.status,
 				),
 			position: 'left' as const,
-			function: updateUsers, // TODO: statusUpdateUsers,
+			function: disableUsers,
 			button: {
 				className: 'btn btn-action-disable',
-				multipleEntries: false,
 			},
 		},
 		restore: {
@@ -347,10 +349,9 @@ export const DataSourceConfigUsers = {
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if entry is deleted
 			position: 'left' as const,
-			function: updateUsers, // TODO: restoreUsers,
+			function: restoreUsers,
 			button: {
 				className: 'btn btn-action-restore',
-				multipleEntries: false,
 			},
 		},
 	},

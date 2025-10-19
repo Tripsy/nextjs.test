@@ -85,10 +85,6 @@
 		@apply btn-info rounded;
 	}
 
-	.btn-action-reset-filter {
-		@apply btn-warning rounded;
-	}
-
 	.btn-action-enable {
 		@apply hover:text-white hover:bg-success rounded;
 	}
@@ -99,6 +95,10 @@
 
 	.btn-action-restore {
 		@apply hover:text-white hover:bg-info rounded;
+	}
+
+	.btn-action-cancel {
+		@apply hover:text-white hover:bg-warning rounded;
 	}
 
 	/* Badges */

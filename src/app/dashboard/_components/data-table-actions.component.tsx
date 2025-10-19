@@ -150,20 +150,20 @@ export function DataTableActions() {
 	};
 
 	return (
-		<div className="my-6 pt-4 border-t border-line flex justify-between">
+		<div className="my-6 pt-4 border-t border-line flex flex-wrap gap-4 justify-between">
 			<div className="flex items-center gap-4">
 				{isMultipleSelectionMode(selectionMode) && (
 					<div>{selectedEntries.length} selected</div>
 				)}
 
 				{selectedEntries.length > 0 && (
-					<div className="flex gap-4">{renderActions('left')}</div>
+					<div className="flex flex-wrap gap-4 ">{renderActions('left')}</div>
 				)}
 			</div>
 			<div className="flex gap-4">
 				<button
 					type="reset"
-					className="btn btn-action-reset-filter"
+					className="btn btn-warning rounded"
 					onClick={() => handleReset('DataTableActions')}
 					title="Reset filters"
 				>

@@ -56,3 +56,27 @@ export const deleteUsers: DeleteFunctionType = async (ids: number[]) => {
 		method: 'DELETE',
 	});
 };
+
+export const enableUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+	const id = ids[0];
+
+	return await new ApiRequest().doFetch(`/users/${id}/status/active`, {
+		method: 'PATCH',
+	});
+};
+
+export const disableUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+	const id = ids[0];
+
+	return await new ApiRequest().doFetch(`/users/${id}/status/inactive`, {
+		method: 'PATCH',
+	});
+};
+
+export const restoreUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+	const id = ids[0];
+
+	return await new ApiRequest().doFetch(`/users/${id}/restore`, {
+		method: 'PATCH',
+	});
+};

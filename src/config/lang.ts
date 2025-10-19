@@ -106,21 +106,25 @@ const en = {
 				title: 'Delete user',
 				label: 'Delete',
 				success: 'User deleted.',
+				confirmText: 'Are you sure you want to delete selected user?'
 			},
 			enable: {
 				title: 'Enable user',
 				label: 'Enable',
 				success: 'User status marked as `Active`.',
+				confirmText: 'Are you sure you want to activate selected user?'
 			},
 			disable: {
 				title: 'Disable user',
 				label: 'Disable',
 				success: 'User status marked as `Inactive`.',
+				confirmText: 'Are you sure you want to mark selected user as inactive?'
 			},
 			restore: {
 				title: 'Restore user',
 				label: 'Restore',
 				success: 'User restored.',
+				confirmText: 'Are you sure you want to restore selected user?'
 			},
 		},
 	},

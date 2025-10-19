@@ -15,7 +15,8 @@ import {
 	type ModelTableSlice,
 } from './model-table.slice';
 
-export type ModelStore<K extends keyof DataSourceType> = ModelModalSlice<K> &
+export type ModelStore<K extends keyof DataSourceType> =
+	ModelModalSlice<K> &
 	ModelTableSlice<K> &
 	ModelSelectionSlice<K> & {
 		isLoading: boolean;

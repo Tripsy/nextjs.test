@@ -8,12 +8,11 @@ import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
+import {ActionManage} from "@/app/dashboard/_components/action-manage.component";
 
 export function DataTableManage({
-	actionComponent: ActionComponent,
 	children,
 }: {
-	actionComponent: React.ComponentType;
 	children: React.ReactNode;
 }) {
 	const { dataSource, modelStore } = useDataTable();
@@ -83,7 +82,7 @@ export function DataTableManage({
 						</FormManage>
 					)}
 					{actionComponentKey && (
-						<ActionComponent key={actionComponentKey} />
+						<ActionManage key={actionComponentKey} />
 					)}
 				</div>
 			</div>
