@@ -33,7 +33,10 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 		| 'update';
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 	const closeOut = useStore(modelStore, (state) => state.closeOut);
-	const refreshTableState = useStore(modelStore, (state) => state.refreshTableState);
+	const refreshTableState = useStore(
+		modelStore,
+		(state) => state.refreshTableState,
+	);
 
 	const functions = getDataSourceConfig(dataSource, 'functions');
 	const syncFormStateFunction = functions?.syncFormState;

@@ -1,23 +1,21 @@
 'use client';
 
-import {useDataTable} from "@/app/dashboard/_providers/data-table-provider";
-import {useToast} from "@/providers/toast.provider";
-import {useStore} from "zustand/react";
-import {DataSourceType, getDataSourceConfig} from "@/config/data-source";
-import ValueError from "@/lib/exceptions/value.error";
-import {lang} from "@/config/lang";
-import {DataTableActionButton} from "@/app/dashboard/_components/data-table-action-button.component";
+import { useStore } from 'zustand/react';
+import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
+import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
+import { lang } from '@/config/lang';
+import ValueError from '@/lib/exceptions/value.error';
+import { useToast } from '@/providers/toast.provider';
 
 function getActionContentEntries<K extends keyof DataSourceType>(
 	dataSource: keyof DataSourceType,
-	entries: DataSourceType[K]['model'][]
+	entries: DataSourceType[K]['model'][],
 ) {
 	const functions = getDataSourceConfig(dataSource, 'functions');
 
 	if (!functions) {
-		throw new ValueError(
-			`'functions' are not defined for ${dataSource}`,
-		);
+		throw new ValueError(`'functions' are not defined for ${dataSource}`);
 	}
 
 	const getActionContentEntries = functions.getActionContentEntries;
@@ -36,12 +34,18 @@ export function ActionManage() {
 	const { showToast } = useToast();
 
 	const isOpen = useStore(modelStore, (state) => state.isOpen);
-	const actionName = useStore(modelStore, (state) => state.actionName) as string;
+	const actionName = useStore(
+		modelStore,
+		(state) => state.actionName,
+	) as string;
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 	const closeOut = useStore(modelStore, (state) => state.closeOut);
 	const isLoading = useStore(modelStore, (state) => state.isLoading);
 	const setLoading = useStore(modelStore, (state) => state.setLoading);
-	const refreshTableState = useStore(modelStore, (state) => state.refreshTableState);
+	const refreshTableState = useStore(
+		modelStore,
+		(state) => state.refreshTableState,
+	);
 	const selectedEntries = useStore(
 		modelStore,
 		(state) => state.selectedEntries,
@@ -54,34 +58,24 @@ export function ActionManage() {
 	const actions = getDataSourceConfig(dataSource, 'actions');
 
 	if (!actions) {
-		throw new ValueError(
-			`'actions are not defined for ${dataSource}`,
-		);
+		throw new ValueError(`'actions are not defined for ${dataSource}`);
 	}
 
 	const actionProps = actions[actionName];
 
 	if (!actionProps) {
-		throw new ValueError(
-			`'actionProps' action props are not defined `,
-		);
+		throw new ValueError(`'actionProps' action props are not defined `);
 	}
 
 	if (actionProps.allowedEntries === 'single' && !actionEntry) {
-		throw new ValueError(
-			`'actionEntry' was not provided`,
-		);
+		throw new ValueError(`'actionEntry' was not provided`);
 	}
 
-	async function executeFetch(
-		ids: number[]
-	) {
+	async function executeFetch(ids: number[]) {
 		const actionFunction = actionProps.function;
 
 		if (!actionFunction || typeof actionFunction !== 'function') {
-			throw new ValueError(
-				`Function is not defined for ${actionName}`,
-			);
+			throw new ValueError(`Function is not defined for ${actionName}`);
 		}
 
 		return actionFunction(ids);
@@ -96,7 +90,11 @@ export function ActionManage() {
 
 		try {
 			// When allowedEntries is 'single', actionEntry is used, otherwise selectedEntries is used to map through entries
-			const ids = (actionProps.allowedEntries === 'single' ? [actionEntry as DataSourceType[typeof dataSource]['model']] : selectedEntries).map(entry => entry.id);
+			const ids = (
+				actionProps.allowedEntries === 'single'
+					? [actionEntry as DataSourceType[typeof dataSource]['model'],]
+					: selectedEntries
+			).map((entry) => entry.id);
 			const fetchResponse = await executeFetch(ids);
 
 			refreshTableState();
@@ -112,7 +110,10 @@ export function ActionManage() {
 			showToast({
 				severity: 'error',
 				summary: 'Error',
-				detail: error instanceof ValueError ? error.message : lang('error.form'),
+				detail:
+					error instanceof ValueError
+						? error.message
+						: lang('error.form'),
 			});
 		}
 
@@ -122,7 +123,9 @@ export function ActionManage() {
 
 	const actionContentEntries = getActionContentEntries(
 		dataSource,
-		actionProps.allowedEntries === 'single' ? [actionEntry as DataSourceType[typeof dataSource]['model']] : selectedEntries
+		actionProps.allowedEntries === 'single'
+			? [actionEntry as DataSourceType[typeof dataSource]['model']]
+			: selectedEntries,
 	);
 
 	return (
@@ -133,12 +136,14 @@ export function ActionManage() {
 			<ul className="pb-4 italic list-disc ml-4">
 				{actionContentEntries.map((entry) => (
 					<li key={`action-entry-${entry.id}`}>
-						{entry.label} <span className="text-md">({`#${entry.id}`})</span>
+						{entry.label}{' '}
+						<span className="text-md">({`#${entry.id}`})</span>
 					</li>
 				))}
 			</ul>
 			<p className="pb-4 font-semibold">
-				{lang(`${dataSource}.action.${actionName}.confirmText`) || `Are you sure you want to ${actionName.toLowerCase()} these entries?`}
+				{lang(`${dataSource}.action.${actionName}.confirmText`) ||
+					`Are you sure you want to ${actionName.toLowerCase()} these entries?`}
 			</p>
 
 			<div className="flex justify-end gap-3">

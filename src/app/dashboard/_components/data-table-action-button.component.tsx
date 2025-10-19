@@ -1,7 +1,7 @@
-import {getActionIcon, Icons} from '@/components/icon.component';
+import React from 'react';
+import { getActionIcon, Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
 import { lang } from '@/config/lang';
-import React from "react";
 
 export function DataTableActionButton({
 	dataSource,
@@ -30,12 +30,12 @@ export function DataTableActionButton({
 		>
 			{disabled ? (
 				<>
-					<Icons.Loading className="w-4 h-4 animate-spin"/>
+					<Icons.Loading className="w-4 h-4 animate-spin" />
 					Please wait...
 				</>
 			) : (
 				<>
-					<ActionIcon/>
+					<ActionIcon />
 					{actionLabel}
 				</>
 			)}

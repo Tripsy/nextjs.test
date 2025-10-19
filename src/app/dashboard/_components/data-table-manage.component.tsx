@@ -3,18 +3,14 @@
 import type React from 'react';
 import { useEffect } from 'react';
 import { useStore } from 'zustand/react';
+import { ActionManage } from '@/app/dashboard/_components/action-manage.component';
 import { FormManage } from '@/app/dashboard/_components/form-manage.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
-import {ActionManage} from "@/app/dashboard/_components/action-manage.component";
 
-export function DataTableManage({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function DataTableManage({ children }: { children: React.ReactNode }) {
 	const { dataSource, modelStore } = useDataTable();
 	const { showToast } = useToast();
 

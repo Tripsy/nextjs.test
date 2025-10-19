@@ -57,7 +57,9 @@ export const deleteUsers: DeleteFunctionType = async (ids: number[]) => {
 	});
 };
 
-export const enableUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+export const enableUsers = async (
+	ids: number[],
+): Promise<ResponseFetch<null>> => {
 	const id = ids[0];
 
 	return await new ApiRequest().doFetch(`/users/${id}/status/active`, {
@@ -65,7 +67,9 @@ export const enableUsers = async (ids: number[]): Promise<ResponseFetch<null>> =
 	});
 };
 
-export const disableUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+export const disableUsers = async (
+	ids: number[],
+): Promise<ResponseFetch<null>> => {
 	const id = ids[0];
 
 	return await new ApiRequest().doFetch(`/users/${id}/status/inactive`, {
@@ -73,7 +77,9 @@ export const disableUsers = async (ids: number[]): Promise<ResponseFetch<null>> 
 	});
 };
 
-export const restoreUsers = async (ids: number[]): Promise<ResponseFetch<null>> => {
+export const restoreUsers = async (
+	ids: number[],
+): Promise<ResponseFetch<null>> => {
 	const id = ids[0];
 
 	return await new ApiRequest().doFetch(`/users/${id}/restore`, {

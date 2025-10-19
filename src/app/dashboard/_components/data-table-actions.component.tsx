@@ -157,7 +157,9 @@ export function DataTableActions() {
 				)}
 
 				{selectedEntries.length > 0 && (
-					<div className="flex flex-wrap gap-4 ">{renderActions('left')}</div>
+					<div className="flex flex-wrap gap-4 ">
+						{renderActions('left')}
+					</div>
 				)}
 			</div>
 			<div className="flex gap-4">

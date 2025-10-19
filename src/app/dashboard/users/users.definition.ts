@@ -16,8 +16,11 @@ import {
 } from '@/lib/models/user.model';
 import {
 	createUsers,
-	deleteUsers, disableUsers, enableUsers,
-	findUsers, restoreUsers,
+	deleteUsers,
+	disableUsers,
+	enableUsers,
+	findUsers,
+	restoreUsers,
 	updateUsers,
 } from '@/lib/services/users.service';
 
@@ -196,7 +199,7 @@ function getFormValuesUsers(formData: FormData): FormValuesUsersType {
 	};
 }
 
-function syncFormStateUsers (
+function syncFormStateUsers(
 	state: FormStateType<'users'>,
 	model: UserModel,
 ): FormStateType<'users'> {
@@ -214,7 +217,7 @@ function syncFormStateUsers (
 }
 
 function getActionContentEntriesUsers(entries: UserModel[]) {
-	return entries.map(entry => ({id: entry.id, label: entry.name}));
+	return entries.map((entry) => ({ id: entry.id, label: entry.name }));
 }
 
 export type DataSourceUsersType = {

@@ -136,7 +136,7 @@ type DataSourceConfigType<K extends keyof DataSourceType> = {
 		) => DataSourceType[K]['formState'];
 		getActionContentEntries?: (
 			entries: DataSourceType[K]['model'][],
-		) => {id: number, label: string}[];
+		) => { id: number; label: string }[];
 	};
 	actions?: DataTableActionsType<K>;
 };
