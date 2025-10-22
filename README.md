@@ -1,13 +1,9 @@
 # TODO
 
-1. install biome > https://www.youtube.com/watch?v=x5kwmIaPty8
-    - drop eslint
-    - drop prettier
-1. ActionUsers implementation
-2. Recap NextJs documentation
-3. recover password & other account pages
-4. terms page
-5. Replace all console.error with logging
+1. Recap NextJs documentation
+2. recover password & other account pages
+3. terms page
+4. Replace all console.error with logging
 
 # IDEAS
 

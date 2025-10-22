@@ -7,9 +7,10 @@ import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
+import {ApiError} from "@/lib/exceptions/api.error";
 
 function getActionContentEntries<K extends keyof DataSourceType>(
-	dataSource: keyof DataSourceType,
+	dataSource: K,
 	entries: DataSourceType[K]['model'][],
 ) {
 	const functions = getDataSourceConfig(dataSource, 'functions');
@@ -105,13 +106,13 @@ export function ActionManage() {
 				detail: fetchResponse?.message || lang('error.form'),
 			});
 		} catch (error: unknown) {
-			console.error(error); // TODO
+			// console.error(error); // TODO
 
 			showToast({
 				severity: 'error',
 				summary: 'Error',
 				detail:
-					error instanceof ValueError
+					(error instanceof ValueError || error instanceof ApiError)
 						? error.message
 						: lang('error.form'),
 			});

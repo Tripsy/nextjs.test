@@ -1,6 +1,6 @@
-import type { FormValuesUsersType } from '@/app/dashboard/users/users.definition';
 import type {
 	CreateFunctionType,
+	DataSourceType,
 	DeleteFunctionType,
 	FindFunctionParamsType,
 	FindFunctionResponseType,
@@ -31,7 +31,7 @@ export const findUsers: FindFunctionType<'users'> = async (
 };
 
 export const createUsers: CreateFunctionType<'users'> = async (
-	params: FormValuesUsersType,
+	params: DataSourceType['users']['formValues'],
 ) => {
 	return await new ApiRequest().doFetch('/users', {
 		method: 'POST',
@@ -40,7 +40,7 @@ export const createUsers: CreateFunctionType<'users'> = async (
 };
 
 export const updateUsers: UpdateFunctionType<'users'> = async (
-	params: FormValuesUsersType,
+	params: DataSourceType['users']['formValues'],
 	id: number,
 ) => {
 	return await new ApiRequest().doFetch(`/users/${id}`, {

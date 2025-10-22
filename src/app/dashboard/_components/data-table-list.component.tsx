@@ -22,11 +22,11 @@ type SelectionChangeEvent<T> = {
 	value: T[];
 };
 
-export default function DataTableList<T extends keyof DataSourceType>(
+export default function DataTableList<K extends keyof DataSourceType>(
 	props: DataTablePropsType,
 ) {
 	const { dataSource, dataStorageKey, selectionMode, modelStore } =
-		useDataTable();
+		useDataTable<K>();
 
 	const [error, setError] = useState<Error | null>(null);
 
@@ -50,7 +50,7 @@ export default function DataTableList<T extends keyof DataSourceType>(
 	const isLoading = useStore(modelStore, (state) => state.isLoading);
 	const setLoading = useStore(modelStore, (state) => state.setLoading);
 
-	const [data, setData] = useState<DataSourceType[T]['model'][]>([]);
+	const [data, setData] = useState<DataSourceType[K]['model'][]>([]);
 	const [totalRecords, setTotalRecords] = useState(0);
 
 	useEffect(() => {
@@ -188,7 +188,7 @@ export default function DataTableList<T extends keyof DataSourceType>(
 	);
 
 	const onSelectionChange = useCallback(
-		(event: SelectionChangeEvent<DataSourceType[T]['model']>) => {
+		(event: SelectionChangeEvent<DataSourceType[K]['model']>) => {
 			setSelectedEntries(event.value);
 		},
 		[setSelectedEntries],

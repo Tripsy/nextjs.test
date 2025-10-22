@@ -2,10 +2,10 @@ import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
 import {
 	CapitalizeBodyTemplate,
-	DateBodyTemplate,
+	DateBodyTemplate, IdBodyTemplate,
 	StatusBodyTemplate,
 } from '@/app/dashboard/_components/data-table-row.component';
-import type { DataTableColumnType, FormStateType } from '@/config/data-source';
+import type {DataSourceType, DataTableColumnType, FormStateType} from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';
@@ -31,15 +31,6 @@ export type DataTableFiltersUsersType = {
 	create_date_start: DataTableFilterMetaData;
 	create_date_end: DataTableFilterMetaData;
 	is_deleted: DataTableFilterMetaData;
-};
-
-export type FormValuesUsersType = {
-	name: string;
-	email: string;
-	password?: string;
-	password_confirm?: string;
-	language: LanguageEnum;
-	role: UserRoleEnum;
 };
 
 const ValidateSchemaBaseUsers = z.object({
@@ -156,29 +147,26 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 
 type ValidationResultUsersType =
 	| z.SafeParseReturnType<
-			FormValuesUsersType,
+			DataSourceType['users']['formValues'],
 			z.infer<typeof ValidateSchemaCreateUsers>
 	  >
 	| z.SafeParseReturnType<
-			FormValuesUsersType,
+			DataSourceType['users']['formValues'],
 			z.infer<typeof ValidateSchemaUpdateUsers>
 	  >;
 
 function validateFormUsers(
-	values: FormValuesUsersType,
+	values: DataSourceType['users']['formValues'],
 	id?: number,
 ): ValidationResultUsersType {
 	if (id) {
-		console.log('ValidateSchemaUpdateUsers');
 		return ValidateSchemaUpdateUsers.safeParse(values);
 	}
-
-	console.log('ValidateSchemaCreateUsers');
 
 	return ValidateSchemaCreateUsers.safeParse(values);
 }
 
-function getFormValuesUsers(formData: FormData): FormValuesUsersType {
+function getFormValuesUsers(formData: FormData): DataSourceType['users']['formValues'] {
 	const language = formData.get('language');
 	const validLanguages = Object.values(LanguageEnum);
 
@@ -224,12 +212,19 @@ export type DataSourceUsersType = {
 	dataTableFilter: DataTableFiltersUsersType;
 	model: UserModel;
 	formState: FormStateType<'users'>;
-	formValues: FormValuesUsersType;
+	formValues: {
+		name: string;
+		email: string;
+		password?: string;
+		password_confirm?: string;
+		language: LanguageEnum;
+		role: UserRoleEnum;
+	};
 	validationResult: ValidationResultUsersType;
 };
 
 const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
-	{ field: 'id', header: 'ID', sortable: true },
+	{ field: 'id', header: 'ID', sortable: true, body: IdBodyTemplate },
 	{ field: 'name', header: 'Name', sortable: true },
 	{ field: 'email', header: 'Email' },
 	{ field: 'role', header: 'Role', body: CapitalizeBodyTemplate },

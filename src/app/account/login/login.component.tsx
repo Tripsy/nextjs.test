@@ -95,10 +95,8 @@ export default function Login() {
 
 	return (
 		<form
-			action={async (formData) => {
-				setSubmitted(true);
-				action(formData);
-			}}
+			action={action}
+			onSubmit={() => setSubmitted(true)}
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName')} />

@@ -17,15 +17,15 @@ import { FormPart } from '@/components/form/form-part.component';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import {
 	type DataSourceType,
-	type FormManageContentType,
+	type FormManageContentType, FormStateType,
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useFormValidation, useFormValues } from '@/hooks';
 import { useToast } from '@/providers/toast.provider';
 
-export function FormManage({ children }: { children: React.ReactNode }) {
-	const { dataSource, modelStore } = useDataTable();
+export function FormManage<K extends keyof DataSourceType>({ children }: { children: React.ReactNode }) {
+	const { dataSource, modelStore } = useDataTable<K>();
 	const { showToast } = useToast();
 
 	const actionName = useStore(modelStore, (state) => state.actionName) as
@@ -47,13 +47,16 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 			? syncFormStateFunction(formState, actionEntry)
 			: formState;
 
-	const [state, action, pending] = useActionState(
-		formAction<typeof dataSource>,
+	const [state, action, pending] = useActionState<
+		FormStateType<K>,
+		FormData
+	>(
+		async (state: FormStateType<K>, formData: FormData) => formAction<K>(state, formData),
 		initState,
 	);
 
 	const [formValues, setFormValues] = useFormValues<
-		DataSourceType[typeof dataSource]['formValues']
+		DataSourceType[K]['formValues']
 	>(state.values);
 
 	const validateFormFunction = functions?.validateForm;
@@ -64,14 +67,14 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 	);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
-		useFormValidation<DataSourceType[typeof dataSource]['formValues']>({
+		useFormValidation<DataSourceType[K]['formValues']>({
 			formValues: formValues,
 			validate: validate,
 			debounceDelay: 800,
 		});
 
 	const handleChange = (
-		name: keyof DataSourceType[typeof dataSource]['formValues'],
+		name: keyof DataSourceType[K]['formValues'],
 		value: string | boolean,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -81,7 +84,7 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 	// Handle success state
 	useEffect(() => {
 		if (state?.situation === 'success') {
-			if (state?.result) {
+			if (state?.resultData) {
 				if (actionName === 'create') {
 					handleReset('FormManage'); // We trigger reset instead of updating data table state
 				} else {
@@ -102,7 +105,7 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 		showToast,
 		closeOut,
 		actionName,
-		state?.result,
+		state?.resultData,
 		refreshTableState,
 		dataSource,
 	]);
@@ -117,17 +120,16 @@ export function FormManage({ children }: { children: React.ReactNode }) {
 				errors,
 				handleChange,
 				pending,
-			} as FormManageContentType<typeof dataSource>)
+			} as FormManageContentType<K>)
 		: children;
 
 	return (
 		<form
-			action={async (formData) => {
-				setSubmitted(true);
-				action(formData);
-			}}
+			action={action}
+			onSubmit={() => setSubmitted(true)}
 			className="form-section"
 		>
+
 			{injectedChild}
 
 			<FormPart>

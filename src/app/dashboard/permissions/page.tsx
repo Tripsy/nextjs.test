@@ -3,6 +3,7 @@ import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.sett
 import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
 import { lang } from '@/config/lang';
 import Routes from '@/config/routes';
+import {DataTablePermissions} from "@/app/dashboard/permissions/data-table-permissions.component";
 
 export const metadata: Metadata = {
 	title: `Permissions - Dashboard | ${lang('app.name')}`,
@@ -17,7 +18,7 @@ export default function Page() {
 	return (
 		<>
 			<NavBreadcrumbSetter items={items} />
-			Permissions
+			<DataTablePermissions />
 		</>
 	);
 }

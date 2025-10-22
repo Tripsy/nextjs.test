@@ -5,6 +5,7 @@ import type { DataTableColumnType } from '@/config/data-source';
 import ValueError from '@/lib/exceptions/value.error';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
+import clsx from "clsx";
 
 const statusList = {
 	active: {
@@ -50,6 +51,25 @@ export function DataTableRowDate({ date }: { date: Date | string }) {
 	return <span>{date ? formatDate(date) : '-'}</span>;
 }
 
+export function DataTableRowId({ id, deleted_at }: { id: number, deleted_at: Date | string | undefined }) {
+	return (
+		<span
+			className={clsx(
+				deleted_at && "line-through"
+			)}
+		>
+			{id}
+		</span>
+	);
+}
+
+export const IdBodyTemplate = (entry: {
+	id: number;
+	deleted_at?: Date | string | undefined;
+}) => {
+	return <DataTableRowId id={entry.id}  deleted_at={entry.deleted_at}/>;
+};
+
 export const StatusBodyTemplate = (entry: {
 	status: StatusKey;
 	deleted_at?: Date | string | undefined;
@@ -77,5 +97,6 @@ export const CapitalizeBodyTemplate = <T extends Record<string, unknown>>(
 	column: DataTableColumnType<T>,
 ) => {
 	const value = entry[column.field];
+
 	return capitalizeFirstLetter(String(value));
 };

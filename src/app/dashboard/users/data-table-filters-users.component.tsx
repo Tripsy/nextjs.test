@@ -2,7 +2,7 @@
 
 import { Calendar } from 'primereact/calendar';
 import { Checkbox } from 'primereact/checkbox';
-import { Dropdown, type DropdownChangeEvent } from 'primereact/dropdown';
+import { Dropdown} from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
@@ -31,7 +31,7 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
 }));
 
 export const DataTableFiltersUsers = (): React.JSX.Element => {
-	const { stateDefault, modelStore } = useDataTable();
+	const { stateDefault, modelStore } = useDataTable<'users'>();
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -48,12 +48,24 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 		[filters, updateTableState],
 	);
 
+	const handlers = useMemo(
+		() => createFilterHandlers<'users'>(updateFilters),
+		[updateFilters],
+	);
+
+	const {
+		handleInputChange,
+		handleSelectChange,
+		handleCheckboxChange,
+		handleDateChange
+	} = handlers;
+
 	const searchGlobal = useSearchFilter({
 		initialValue: filters.global?.value ?? '',
 		debounceDelay: 1000,
 		minLength: 3,
 		onSearch: (value) => {
-			handleTermChange(value);
+			handleInputChange('global', value);
 		},
 	});
 
@@ -83,24 +95,6 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 		stateDefault.filters,
 		updateTableState,
 	]);
-
-	const handlers = useMemo(
-		() => createFilterHandlers<'users'>(updateFilters),
-		[updateFilters],
-	);
-	const {
-		handleTermChange,
-		handleStatusChange,
-		handleIsDeletedChange,
-		handleCreateDateStartChange,
-		handleCreateDateEndChange,
-	} = handlers;
-
-	const handleRoleChange = useCallback(
-		(e: DropdownChangeEvent) =>
-			updateFilters({ role: { value: e.value, matchMode: 'equals' } }),
-		[updateFilters],
-	);
 
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 mb-4">
@@ -132,7 +126,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 						id="search-status"
 						value={filters.status.value}
 						options={statuses}
-						onChange={handleStatusChange}
+						onChange={(e) => handleSelectChange('status', e.value)}
 						placeholder="-any-"
 						showClear
 					/>
@@ -147,7 +141,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 						id="search-role"
 						value={filters.role.value}
 						options={roles}
-						onChange={handleRoleChange}
+						onChange={(e) => handleSelectChange('role', e.value)}
 						placeholder="-any-"
 						showClear
 					/>
@@ -166,7 +160,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 							value={stringToDate(
 								filters.create_date_start?.value,
 							)}
-							onChange={handleCreateDateStartChange}
+							onChange={(e) => handleDateChange('create_date_start', e.value, 'dateAfter')}
 							placeholder="Start Date"
 							showIcon
 							maxDate={getValidDate(
@@ -175,9 +169,9 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 						/>
 						<Calendar
 							className="p-inputtext-sm h-11 w-[160px]"
-							id="search-date-create-end"
+							id="search-create_date_end"
 							value={stringToDate(filters.create_date_end?.value)}
-							onChange={handleCreateDateEndChange}
+							onChange={(e) => handleDateChange('create_date_end', e.value, 'dateBefore')}
 							placeholder="End Date"
 							showIcon
 							minDate={getValidDate(
@@ -195,7 +189,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 						<Checkbox
 							inputId="is_deleted"
 							checked={filters.is_deleted?.value ?? false}
-							onChange={handleIsDeletedChange}
+							onChange={(e) => handleCheckboxChange('is_deleted', e.checked ?? false)}
 						/>
 						<label
 							htmlFor="is_deleted"

@@ -9,8 +9,9 @@ import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
+import {DataSourceType} from "@/config/data-source";
 
-export function DataTableManage({ children }: { children: React.ReactNode }) {
+export function DataTableManage<K extends keyof DataSourceType>({ children }: { children: React.ReactNode }) {
 	const { dataSource, modelStore } = useDataTable();
 	const { showToast } = useToast();
 
@@ -73,7 +74,7 @@ export function DataTableManage({ children }: { children: React.ReactNode }) {
 				</div>
 				<div className="bg-base-200 flex-1 overflow-y-auto p-6">
 					{formComponentKey && (
-						<FormManage key={formComponentKey}>
+						<FormManage<K> key={formComponentKey}>
 							{children}
 						</FormManage>
 					)}

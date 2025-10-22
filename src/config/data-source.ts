@@ -1,10 +1,11 @@
 import type React from 'react';
-import {
-	DataSourceConfigUsers,
-	type DataSourceUsersType,
-} from '@/app/dashboard/users/users.definition';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
+import {DataSourceConfigUsers, DataSourceUsersType} from "@/app/dashboard/users/users.definition";
+import {
+	DataSourceConfigPermissions,
+	DataSourcePermissionsType
+} from "@/app/dashboard/permissions/permissions.definition";
 
 export type FindFunctionParamsType = {
 	order_by: string;
@@ -28,11 +29,11 @@ export type FindFunctionType<K extends keyof DataSourceType> = (
 ) => Promise<FindFunctionResponseType<K> | undefined>;
 
 export type CreateFunctionType<K extends keyof DataSourceType> = (
-	data: DataSourceType[K]['formState']['values'],
+	data: DataSourceType[K]['formValues'],
 ) => Promise<ResponseFetch<Partial<DataSourceType[K]['model']>>>;
 
 export type UpdateFunctionType<K extends keyof DataSourceType> = (
-	data: DataSourceType[K]['formState']['values'],
+	data: DataSourceType[K]['formValues'],
 	id: number,
 ) => Promise<ResponseFetch<Partial<DataSourceType[K]['model']>>>;
 
@@ -41,7 +42,7 @@ export type DeleteFunctionType = (
 ) => Promise<ResponseFetch<null>>;
 
 export type ValidateFormFunctionType<K extends keyof DataSourceType> = (
-	values: DataSourceType[K]['formState']['values'],
+	values: DataSourceType[K]['formValues'],
 	id?: number,
 ) => DataSourceType[K]['validationResult'];
 
@@ -108,16 +109,17 @@ export type FormManageContentType<K extends keyof DataSourceType> = {
 
 export type DataSourceType = {
 	users: DataSourceUsersType;
+	permissions: DataSourcePermissionsType;
 };
 
 export type FormStateType<K extends keyof DataSourceType> = {
-	dataSource: keyof DataSourceType;
+	dataSource: K;
 	id?: number;
 	values: DataSourceType[K]['formValues'];
 	errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
 	message: string | null;
 	situation: FormSituationType;
-	result?: ResponseFetch<DataSourceType[K]['model']>;
+	resultData?: Partial<DataSourceType[K]['model']>;
 };
 
 type DataSourceConfigType<K extends keyof DataSourceType> = {
@@ -131,9 +133,9 @@ type DataSourceConfigType<K extends keyof DataSourceType> = {
 		validateForm: ValidateFormFunctionType<K>;
 		getFormValues: (formData: FormData) => DataSourceType[K]['formValues'];
 		syncFormState: (
-			state: DataSourceType[K]['formState'],
+			state: FormStateType<K>,
 			model: DataSourceType[K]['model'],
-		) => DataSourceType[K]['formState'];
+		) => FormStateType<K>;
 		getActionContentEntries?: (
 			entries: DataSourceType[K]['model'][],
 		) => { id: number; label: string }[];
@@ -141,10 +143,11 @@ type DataSourceConfigType<K extends keyof DataSourceType> = {
 	actions?: DataTableActionsType<K>;
 };
 
-const DataSourceConfig: {
+export const DataSourceConfig: {
 	[K in keyof DataSourceType]: DataSourceConfigType<K>;
 } = {
 	users: DataSourceConfigUsers,
+	permissions: DataSourceConfigPermissions,
 };
 
 export type DataTablePropsType = {

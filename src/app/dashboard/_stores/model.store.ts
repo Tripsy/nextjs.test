@@ -51,6 +51,4 @@ export const createModelStore = <K extends keyof DataSourceType>(
 		),
 	);
 
-export type ModelStoreType<
-	K extends keyof DataSourceType = keyof DataSourceType,
-> = ReturnType<typeof createModelStore<K>>;
+export type ModelStoreType<K extends keyof DataSourceType> = ReturnType<typeof createModelStore<K>>;

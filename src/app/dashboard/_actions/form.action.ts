@@ -1,11 +1,18 @@
-import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
+import {
+	CreateFunctionType,
+	type DataSourceType,
+	FormStateType,
+	getDataSourceConfig,
+	UpdateFunctionType
+} from '@/config/data-source';
 import { lang } from '@/config/lang';
 import ValueError from '@/lib/exceptions/value.error';
+import {ApiError} from "@/lib/exceptions/api.error";
 
 export function getFormValues<K extends keyof DataSourceType>(
-	dataSource: keyof DataSourceType,
+	dataSource: K,
 	formData: FormData,
-): DataSourceType[K]['formState']['values'] {
+): DataSourceType[K]['formValues'] {
 	const functions = getDataSourceConfig(dataSource, 'functions');
 	const getFormValuesFunction = functions?.getFormValues;
 
@@ -19,8 +26,8 @@ export function getFormValues<K extends keyof DataSourceType>(
 }
 
 export function handleValidate<K extends keyof DataSourceType>(
-	dataSource: keyof DataSourceType,
-	values: DataSourceType[K]['formState']['values'],
+	dataSource: K,
+	values: DataSourceType[K]['formValues'],
 	id?: number,
 ) {
 	const functions = getDataSourceConfig(dataSource, 'functions');
@@ -30,17 +37,17 @@ export function handleValidate<K extends keyof DataSourceType>(
 }
 
 export async function formAction<K extends keyof DataSourceType>(
-	state: DataSourceType[K]['formState'],
+	state: FormStateType<K>,
 	formData: FormData,
-): Promise<DataSourceType[K]['formState']> {
+): Promise<FormStateType<K>> {
 	async function executeFetch(
-		data: DataSourceType[K]['formState']['values'],
+		data: FormStateType<K>['values'],
 		id?: number,
 	) {
 		const actions = getDataSourceConfig(state.dataSource, 'actions');
 
 		if (id) {
-			const updateFunction = actions?.update?.function;
+			const updateFunction= actions?.update?.function as UpdateFunctionType<K> | undefined;
 
 			// Not all the models have `update` function
 			if (!updateFunction) {
@@ -52,7 +59,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			return updateFunction(data, id);
 		}
 
-		const createFunction = actions?.create?.function;
+		const createFunction = actions?.create?.function as CreateFunctionType<K> | undefined;
 
 		// Not all the models have `create` function
 		if (!createFunction) {
@@ -65,7 +72,7 @@ export async function formAction<K extends keyof DataSourceType>(
 	}
 
 	try {
-		const values = getFormValues<K>(state.dataSource, formData);
+		const values = getFormValues(state.dataSource, formData);
 		const validated = handleValidate(state.dataSource, values, state.id);
 
 		const result = {
@@ -78,7 +85,7 @@ export async function formAction<K extends keyof DataSourceType>(
 				...result,
 				situation: 'error',
 				message: lang('error.validation'),
-				errors: validated.error.flatten().fieldErrors,
+				errors: validated.error.flatten().fieldErrors as Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>,
 			};
 		}
 
@@ -89,13 +96,13 @@ export async function formAction<K extends keyof DataSourceType>(
 			errors: {},
 			message: fetchResponse?.message || null,
 			situation: fetchResponse?.success ? 'success' : 'error',
-			result: fetchResponse?.data,
+			resultData: fetchResponse?.data,
 		};
 	} catch (error: unknown) {
-		console.error(error); // TODO
+		// console.error(error); // TODO
 
 		const message =
-			error instanceof ValueError ? error.message : lang('error.form');
+			error instanceof ValueError || error instanceof ApiError ? error.message : lang('error.form');
 
 		return {
 			...state,

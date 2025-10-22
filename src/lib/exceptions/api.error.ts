@@ -6,7 +6,7 @@ export class ApiError<T = unknown> extends Error {
 		public status: number,
 		public body?: ResponseFetch<T>,
 	) {
-		super(message);
+		super(body?.message || message);
 		this.name = 'ApiError';
 		this.status = status;
 		this.body = body;

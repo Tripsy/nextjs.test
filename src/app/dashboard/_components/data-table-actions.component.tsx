@@ -5,10 +5,7 @@ import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { Icons } from '@/components/icon.component';
-import {
-	type DataTableSelectionModeType,
-	getDataSourceConfig,
-} from '@/config/data-source';
+import { getDataSourceConfig } from '@/config/data-source';
 import { hasPermission } from '@/lib/models/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 import { useToast } from '@/providers/toast.provider';
@@ -46,9 +43,6 @@ export function DataTableActions() {
 		() => getDataSourceConfig(dataSource, 'actions'),
 		[dataSource],
 	);
-	const isMultipleSelectionMode = (
-		selectionMode: DataTableSelectionModeType,
-	) => selectionMode === 'multiple';
 
 	const allowAction = (
 		permission: string,
@@ -152,7 +146,7 @@ export function DataTableActions() {
 	return (
 		<div className="my-6 pt-4 border-t border-line flex flex-wrap gap-4 justify-between">
 			<div className="flex items-center gap-4">
-				{isMultipleSelectionMode(selectionMode) && (
+				{selectionMode === 'multiple' && (
 					<div>{selectedEntries.length} selected</div>
 				)}
 

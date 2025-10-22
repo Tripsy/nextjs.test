@@ -129,6 +129,36 @@ const en = {
 			},
 		},
 	},
+	permissions: {
+		validation: {
+			entity_invalid: 'Select entity',
+			operation_invalid: 'Select operation',
+		},
+		action: {
+			create: {
+				title: 'Add new permission',
+				label: 'Add',
+				success: 'New permission added.',
+			},
+			update: {
+				title: 'Edit permission',
+				label: 'Update',
+				success: 'Permission updated .',
+			},
+			delete: {
+				title: 'Delete permission',
+				label: 'Delete',
+				success: 'Permission deleted.',
+				confirmText: 'Are you sure you want to delete selected permission?',
+			},
+			restore: {
+				title: 'Restore permission',
+				label: 'Restore',
+				success: 'Permission restored.',
+				confirmText: 'Are you sure you want to restore selected permission?',
+			},
+		},
+	},
 };
 
 export function lang(key: string, data?: Record<string, string>): string {

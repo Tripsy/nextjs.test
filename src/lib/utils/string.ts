@@ -66,7 +66,7 @@ export function replaceVars(
 }
 
 /**
- *  Utility function that extracts the first two initials from a name, handling both single and multi-part words
+ *  Utility function that extracts the first two initials from a name, handling both single and multipart words
  *
  * @param {string} name - The name to get the initials of
  * @returns {string} - The initials of the name
@@ -83,7 +83,7 @@ export function getNameInitials(name: string | undefined): string {
 		return parts[0].slice(0, 2).toUpperCase();
 	}
 
-	// Multi-part name, take first letter of first two words
+	// Multipart name, take first letter of first two words
 	return `${parts[0][0]}.${parts[1][0]}`.toUpperCase();
 }
 

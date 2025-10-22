@@ -172,14 +172,16 @@ export function FormManageContentUsers({
 			<FormPart>
 				<FormElement labelText="Language" labelFor="language">
 					<div>
+						<input type="hidden" name="language" value={formValues.language} />
 						<Dropdown
+							inputId="languageDropdown"
 							className="p-inputtext-sm"
 							panelStyle={{ fontSize: '0.875rem' }}
-							id="language"
-							value={formValues.language ?? LanguageEnum.EN}
+							disabled={pending}
+							value={formValues.language}
 							options={languages}
 							onChange={(e) =>
-								handleChange('role', e.target.value)
+								handleChange('language', e.target.value)
 							}
 						/>
 						<FormElementError messages={errors.language} />
