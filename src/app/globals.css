@@ -265,7 +265,8 @@
 		@apply w-full relative flex flex-col gap-2;
 	}
 
-	.form-section .form-part .form-element label {
+	.form-section .form-part .form-element label,
+	.form-section .form-part .form-element .label-placeholder {
 		@apply text-sm font-semibold;
 	}
 

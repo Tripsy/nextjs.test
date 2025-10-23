@@ -1,4 +1,3 @@
-import React from 'react';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
 import { lang } from '@/config/lang';

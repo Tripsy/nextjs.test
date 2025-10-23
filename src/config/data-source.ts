@@ -1,11 +1,14 @@
 import type React from 'react';
-import type { FormSituationType } from '@/lib/types';
-import type { ResponseFetch } from '@/lib/utils/api';
-import {DataSourceConfigUsers, DataSourceUsersType} from "@/app/dashboard/users/users.definition";
 import {
 	DataSourceConfigPermissions,
-	DataSourcePermissionsType
-} from "@/app/dashboard/permissions/permissions.definition";
+	type DataSourcePermissionsType,
+} from '@/app/dashboard/permissions/permissions.definition';
+import {
+	DataSourceConfigUsers,
+	type DataSourceUsersType,
+} from '@/app/dashboard/users/users.definition';
+import type { FormSituationType } from '@/lib/types';
+import type { ResponseFetch } from '@/lib/utils/api';
 
 export type FindFunctionParamsType = {
 	order_by: string;

@@ -1,13 +1,13 @@
 import {
-	CreateFunctionType,
+	type CreateFunctionType,
 	type DataSourceType,
-	FormStateType,
+	type FormStateType,
 	getDataSourceConfig,
-	UpdateFunctionType
+	type UpdateFunctionType,
 } from '@/config/data-source';
 import { lang } from '@/config/lang';
+import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
-import {ApiError} from "@/lib/exceptions/api.error";
 
 export function getFormValues<K extends keyof DataSourceType>(
 	dataSource: K,
@@ -40,14 +40,13 @@ export async function formAction<K extends keyof DataSourceType>(
 	state: FormStateType<K>,
 	formData: FormData,
 ): Promise<FormStateType<K>> {
-	async function executeFetch(
-		data: FormStateType<K>['values'],
-		id?: number,
-	) {
+	async function executeFetch(data: FormStateType<K>['values'], id?: number) {
 		const actions = getDataSourceConfig(state.dataSource, 'actions');
 
 		if (id) {
-			const updateFunction= actions?.update?.function as UpdateFunctionType<K> | undefined;
+			const updateFunction = actions?.update?.function as
+				| UpdateFunctionType<K>
+				| undefined;
 
 			// Not all the models have `update` function
 			if (!updateFunction) {
@@ -59,7 +58,9 @@ export async function formAction<K extends keyof DataSourceType>(
 			return updateFunction(data, id);
 		}
 
-		const createFunction = actions?.create?.function as CreateFunctionType<K> | undefined;
+		const createFunction = actions?.create?.function as
+			| CreateFunctionType<K>
+			| undefined;
 
 		// Not all the models have `create` function
 		if (!createFunction) {
@@ -85,7 +86,9 @@ export async function formAction<K extends keyof DataSourceType>(
 				...result,
 				situation: 'error',
 				message: lang('error.validation'),
-				errors: validated.error.flatten().fieldErrors as Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>,
+				errors: validated.error.flatten().fieldErrors as Partial<
+					Record<keyof DataSourceType[K]['formValues'], string[]>
+				>,
 			};
 		}
 
@@ -102,7 +105,9 @@ export async function formAction<K extends keyof DataSourceType>(
 		// console.error(error); // TODO
 
 		const message =
-			error instanceof ValueError || error instanceof ApiError ? error.message : lang('error.form');
+			error instanceof ValueError || error instanceof ApiError
+				? error.message
+				: lang('error.form');
 
 		return {
 			...state,

@@ -3,8 +3,11 @@ import { FormElement } from '@/components/form/form-element.component';
 import { FormElementError } from '@/components/form/form-element-error.component';
 import { FormPart } from '@/components/form/form-part.component';
 import type { FormManageContentType } from '@/config/data-source';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
-import {PermissionEntitiesEnum, PermissionOperationEnum} from "@/lib/models/permission.model";
+import {
+	PermissionEntitiesEnum,
+	PermissionOperationEnum,
+} from '@/lib/models/permission.model';
+import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
 
 const entities = Object.values(PermissionEntitiesEnum).map((entity) => ({
 	label: capitalizeFirstLetter(entity),
@@ -25,11 +28,18 @@ export function FormManageContentPermissions({
 	return (
 		<>
 			<FormPart>
-				<FormElement labelText="Entity" labelFor="entityDropdown">
+				<FormElement
+					labelText="Entity"
+					labelFor={generateElementId('entity')}
+				>
 					<div>
-						<input type="hidden" name="entity" value={formValues.entity} />
+						<input
+							type="hidden"
+							name="entity"
+							value={formValues.entity}
+						/>
 						<Dropdown
-							inputId="entityDropdown"
+							inputId={generateElementId('entity')}
 							className="p-inputtext-sm"
 							panelStyle={{ fontSize: '0.875rem' }}
 							disabled={pending}
@@ -44,11 +54,18 @@ export function FormManageContentPermissions({
 				</FormElement>
 			</FormPart>
 			<FormPart>
-				<FormElement labelText="Operation" labelFor="operationDropdown">
+				<FormElement
+					labelText="Operation"
+					labelFor={generateElementId('operation')}
+				>
 					<div>
-						<input type="hidden" name="operation" value={formValues.operation} />
+						<input
+							type="hidden"
+							name="operation"
+							value={formValues.operation}
+						/>
 						<Dropdown
-							inputId="operationDropdown"
+							inputId={generateElementId('operation')}
 							className="p-inputtext-sm"
 							panelStyle={{ fontSize: '0.875rem' }}
 							disabled={pending}

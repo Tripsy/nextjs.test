@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
 import Routes from '@/config/routes';
 import { useAuth } from '@/providers/auth.provider';
 

@@ -17,7 +17,11 @@ export default function Error({
 	return (
 		<Notice type="error" message={error.message}>
 			<div className="mt-4">
-				<button className="btn btn-error" onClick={() => reset()}>
+				<button
+					type="reset"
+					className="btn btn-error"
+					onClick={() => reset()}
+				>
 					Try Again
 				</button>
 			</div>

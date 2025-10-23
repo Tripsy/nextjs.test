@@ -24,6 +24,7 @@ import { cfg } from '@/config/settings';
 import { useFormValidation, useFormValues } from '@/hooks';
 import { removeTokenAccount } from '@/lib/services/account.service';
 import { formatDate } from '@/lib/utils/date';
+import { generateElementId } from '@/lib/utils/string';
 import { useAuth } from '@/providers/auth.provider';
 
 const FormElementError = React.memo(RawFormElementError);
@@ -108,7 +109,10 @@ export default function Login() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Email Address" labelFor="email">
+				<FormElement
+					labelText="Email Address"
+					labelFor={generateElementId('email')}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -116,7 +120,7 @@ export default function Login() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id="email"
+								id={generateElementId('email')}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -134,7 +138,10 @@ export default function Login() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Password" labelFor="password">
+				<FormElement
+					labelText="Password"
+					labelFor={generateElementId('password')}
+				>
 					<div>
 						<div className="relative">
 							<IconField iconPosition="left">
@@ -143,7 +150,7 @@ export default function Login() {
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id="password"
+									id={generateElementId('password')}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"

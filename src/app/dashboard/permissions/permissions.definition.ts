@@ -1,7 +1,17 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
-import {DataSourceType, DataTableColumnType, FormStateType} from '@/config/data-source';
+import { IdBodyTemplate } from '@/app/dashboard/_components/data-table-row.component';
+import type {
+	DataSourceType,
+	DataTableColumnType,
+	FormStateType,
+} from '@/config/data-source';
 import { lang } from '@/config/lang';
+import {
+	PermissionEntitiesEnum,
+	type PermissionModel,
+	PermissionOperationEnum,
+} from '@/lib/models/permission.model';
 import {
 	createPermissions,
 	deletePermissions,
@@ -9,8 +19,6 @@ import {
 	restorePermissions,
 	updatePermissions,
 } from '@/lib/services/permissions.service';
-import {PermissionEntitiesEnum, PermissionModel, PermissionOperationEnum} from "@/lib/models/permission.model";
-import {IdBodyTemplate, StatusBodyTemplate} from "@/app/dashboard/_components/data-table-row.component";
 
 export type DataTableFiltersPermissionsType = {
 	global: DataTableFilterMetaData;
@@ -26,19 +34,20 @@ const ValidateSchemaBasePermissions = z.object({
 	}),
 });
 
-type ValidationResultPermissionsType =
-	| z.SafeParseReturnType<
-			DataSourceType['permissions']['formValues'],
-			z.infer<typeof ValidateSchemaBasePermissions>
-	  >;
+type ValidationResultPermissionsType = z.SafeParseReturnType<
+	DataSourceType['permissions']['formValues'],
+	z.infer<typeof ValidateSchemaBasePermissions>
+>;
 
 function validateFormPermissions(
-	values: DataSourceType['permissions']['formValues']
+	values: DataSourceType['permissions']['formValues'],
 ): ValidationResultPermissionsType {
 	return ValidateSchemaBasePermissions.safeParse(values);
 }
 
-function getFormValuesPermissions(formData: FormData): DataSourceType['permissions']['formValues'] {
+function getFormValuesPermissions(
+	formData: FormData,
+): DataSourceType['permissions']['formValues'] {
 	const entity = formData.get('entity');
 	const validEntities = Object.values(PermissionEntitiesEnum);
 
@@ -49,7 +58,9 @@ function getFormValuesPermissions(formData: FormData): DataSourceType['permissio
 		entity: validEntities.includes(entity as PermissionEntitiesEnum)
 			? (entity as PermissionEntitiesEnum)
 			: PermissionEntitiesEnum.USERS,
-		operation: validOperations.includes(operation as PermissionOperationEnum)
+		operation: validOperations.includes(
+			operation as PermissionOperationEnum,
+		)
 			? (operation as PermissionOperationEnum)
 			: PermissionOperationEnum.CREATE,
 	};
@@ -71,7 +82,10 @@ function syncFormStatePermissions(
 }
 
 function getActionContentEntriesPermissions(entries: PermissionModel[]) {
-	return entries.map((entry) => ({ id: entry.id, label: `${entry.entity}.${entry.operation}` }));
+	return entries.map((entry) => ({
+		id: entry.id,
+		label: `${entry.entity}.${entry.operation}`,
+	}));
 }
 
 export type DataSourcePermissionsType = {

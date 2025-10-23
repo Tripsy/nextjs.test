@@ -5,9 +5,9 @@ import { DataTableActionButton } from '@/app/dashboard/_components/data-table-ac
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
 import { lang } from '@/config/lang';
+import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
-import {ApiError} from "@/lib/exceptions/api.error";
 
 function getActionContentEntries<K extends keyof DataSourceType>(
 	dataSource: K,
@@ -93,7 +93,9 @@ export function ActionManage() {
 			// When allowedEntries is 'single', actionEntry is used, otherwise selectedEntries is used to map through entries
 			const ids = (
 				actionProps.allowedEntries === 'single'
-					? [actionEntry as DataSourceType[typeof dataSource]['model'],]
+					? [
+							actionEntry as DataSourceType[typeof dataSource]['model'],
+						]
 					: selectedEntries
 			).map((entry) => entry.id);
 			const fetchResponse = await executeFetch(ids);
@@ -112,7 +114,7 @@ export function ActionManage() {
 				severity: 'error',
 				summary: 'Error',
 				detail:
-					(error instanceof ValueError || error instanceof ApiError)
+					error instanceof ValueError || error instanceof ApiError
 						? error.message
 						: lang('error.form'),
 			});

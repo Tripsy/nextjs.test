@@ -17,5 +17,3 @@ export type PermissionModel<D = Date | string> = {
 	operation: PermissionOperationEnum;
 	deleted_at: D | undefined;
 };
-
-

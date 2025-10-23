@@ -27,11 +27,11 @@ const settingsConfig: { [key: string]: ObjectValue } = {
 	},
 	redis: {
 		host: process.env.REDIS_HOST || 'localhost',
-		port: parseInt(process.env.REDIS_PORT || '6379', 10),
+		port: process.env.REDIS_PORT || '6379',
 		password: process.env.REDIS_PASSWORD || undefined,
 	},
 	cache: {
-		ttl: Number(process.env.CACHE_TTL) || 60,
+		ttl: process.env.CACHE_TTL || 60,
 	},
 };
 

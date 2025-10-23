@@ -7,11 +7,15 @@ import { ActionManage } from '@/app/dashboard/_components/action-manage.componen
 import { FormManage } from '@/app/dashboard/_components/form-manage.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
+import type { DataSourceType } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
-import {DataSourceType} from "@/config/data-source";
 
-export function DataTableManage<K extends keyof DataSourceType>({ children }: { children: React.ReactNode }) {
+export function DataTableManage<K extends keyof DataSourceType>({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	const { dataSource, modelStore } = useDataTable();
 	const { showToast } = useToast();
 

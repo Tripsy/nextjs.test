@@ -17,14 +17,19 @@ import { FormPart } from '@/components/form/form-part.component';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import {
 	type DataSourceType,
-	type FormManageContentType, FormStateType,
+	type FormManageContentType,
+	type FormStateType,
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useFormValidation, useFormValues } from '@/hooks';
 import { useToast } from '@/providers/toast.provider';
 
-export function FormManage<K extends keyof DataSourceType>({ children }: { children: React.ReactNode }) {
+export function FormManage<K extends keyof DataSourceType>({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	const { dataSource, modelStore } = useDataTable<K>();
 	const { showToast } = useToast();
 
@@ -47,11 +52,9 @@ export function FormManage<K extends keyof DataSourceType>({ children }: { child
 			? syncFormStateFunction(formState, actionEntry)
 			: formState;
 
-	const [state, action, pending] = useActionState<
-		FormStateType<K>,
-		FormData
-	>(
-		async (state: FormStateType<K>, formData: FormData) => formAction<K>(state, formData),
+	const [state, action, pending] = useActionState<FormStateType<K>, FormData>(
+		async (state: FormStateType<K>, formData: FormData) =>
+			formAction<K>(state, formData),
 		initState,
 	);
 
@@ -129,7 +132,6 @@ export function FormManage<K extends keyof DataSourceType>({ children }: { child
 			onSubmit={() => setSubmitted(true)}
 			className="form-section"
 		>
-
 			{injectedChild}
 
 			<FormPart>

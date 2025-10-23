@@ -2,10 +2,15 @@ import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
 import {
 	CapitalizeBodyTemplate,
-	DateBodyTemplate, IdBodyTemplate,
+	DateBodyTemplate,
+	IdBodyTemplate,
 	StatusBodyTemplate,
 } from '@/app/dashboard/_components/data-table-row.component';
-import type {DataSourceType, DataTableColumnType, FormStateType} from '@/config/data-source';
+import type {
+	DataSourceType,
+	DataTableColumnType,
+	FormStateType,
+} from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';
@@ -37,7 +42,7 @@ const ValidateSchemaBaseUsers = z.object({
 	name: z
 		.string({ message: lang('users.validation.name_invalid') })
 		.trim()
-		.min(parseInt(cfg('user.nameMinLength')), {
+		.min(Number(cfg('user.nameMinLength')), {
 			message: lang('users.validation.name_min', {
 				min: cfg('user.nameMinLength'),
 			}),
@@ -60,7 +65,7 @@ const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	password: z
 		.string({ message: lang('users.validation.password_invalid') })
 		.trim()
-		.min(parseInt(cfg('user.passwordMinLength')), {
+		.min(Number(cfg('user.passwordMinLength')), {
 			message: lang('users.validation.password_min', {
 				min: cfg('user.passwordMinLength'),
 			}),
@@ -98,7 +103,7 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 		z
 			.string({ message: lang('users.validation.password_invalid') })
 			.trim()
-			.min(parseInt(cfg('user.passwordMinLength')), {
+			.min(Number(cfg('user.passwordMinLength')), {
 				message: lang('users.validation.password_min', {
 					min: cfg('user.passwordMinLength').toString(),
 				}),
@@ -166,7 +171,9 @@ function validateFormUsers(
 	return ValidateSchemaCreateUsers.safeParse(values);
 }
 
-function getFormValuesUsers(formData: FormData): DataSourceType['users']['formValues'] {
+function getFormValuesUsers(
+	formData: FormData,
+): DataSourceType['users']['formValues'] {
 	const language = formData.get('language');
 	const validLanguages = Object.values(LanguageEnum);
 

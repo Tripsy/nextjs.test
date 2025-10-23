@@ -1,19 +1,20 @@
 'use client';
 
 import { Checkbox } from 'primereact/checkbox';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
+import { InputText } from 'primereact/inputtext';
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import {DataTableFiltersPermissionsType} from '@/app/dashboard/permissions/permissions.definition';
+import type { DataTableFiltersPermissionsType } from '@/app/dashboard/permissions/permissions.definition';
 import { FormElement } from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
+import { Icons } from '@/components/icon.component';
+import { useSearchFilter } from '@/hooks';
 import { createFilterHandlers } from '@/lib/utils/data-table';
-import {IconField} from "primereact/iconfield";
-import {InputIcon} from "primereact/inputicon";
-import {Icons} from "@/components/icon.component";
-import {InputText} from "primereact/inputtext";
-import {useSearchFilter} from "@/hooks";
+import { generateElementId } from '@/lib/utils/string';
 
 export const DataTableFiltersPermissions = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'permissions'>();
@@ -37,10 +38,7 @@ export const DataTableFiltersPermissions = (): React.JSX.Element => {
 		() => createFilterHandlers<'permissions'>(updateFilters),
 		[updateFilters],
 	);
-	const {
-		handleInputChange,
-		handleCheckboxChange
-	} = handlers;
+	const { handleInputChange, handleCheckboxChange } = handlers;
 
 	const searchGlobal = useSearchFilter({
 		initialValue: filters.global?.value ?? '',
@@ -69,17 +67,14 @@ export const DataTableFiltersPermissions = (): React.JSX.Element => {
 				handleFilterReset as EventListener,
 			);
 		};
-	}, [
-		stateDefault.filters,
-		updateTableState,
-	]);
+	}, [stateDefault.filters, updateTableState]);
 
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 mb-4">
 			<FormPart>
 				<FormElement
 					labelText="ID / Entity / Operation"
-					labelFor="search-global"
+					labelFor={generateElementId('searchGlobal')}
 				>
 					<IconField iconPosition="left">
 						<InputIcon className="flex items-center">
@@ -87,7 +82,7 @@ export const DataTableFiltersPermissions = (): React.JSX.Element => {
 						</InputIcon>
 						<InputText
 							className="p-inputtext-sm"
-							id="search-global"
+							id={generateElementId('searchGlobal')}
 							placeholder="Search"
 							value={searchGlobal.value}
 							onChange={searchGlobal.handler}
@@ -101,12 +96,17 @@ export const DataTableFiltersPermissions = (): React.JSX.Element => {
 					<div>&nbsp;</div>
 					<div className="flex items-center gap-2">
 						<Checkbox
-							inputId="is_deleted"
+							inputId={generateElementId('searchIsDeleted')}
 							checked={filters.is_deleted?.value ?? false}
-							onChange={(e) => handleCheckboxChange('is_deleted', e.checked ?? false)}
+							onChange={(e) =>
+								handleCheckboxChange(
+									'is_deleted',
+									e.checked ?? false,
+								)
+							}
 						/>
 						<label
-							htmlFor="is_deleted"
+							htmlFor={generateElementId('searchIsDeleted')}
 							className="text-sm whitespace-nowrap"
 						>
 							Show Deleted

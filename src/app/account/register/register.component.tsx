@@ -24,7 +24,7 @@ import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { useFormValidation, useFormValues } from '@/hooks';
 import { LanguageEnum } from '@/lib/enums';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
 
 const FormElementError = React.memo(RawFormElementError);
 
@@ -106,7 +106,10 @@ export default function Register() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Name" labelFor="name">
+				<FormElement
+					labelText="Name"
+					labelFor={generateElementId('name')}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -114,7 +117,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id="name"
+								id={generateElementId('name')}
 								name="name"
 								placeholder="eg: John Doe"
 								autoComplete={'name'}
@@ -132,7 +135,10 @@ export default function Register() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Email Address" labelFor="email">
+				<FormElement
+					labelText="Email Address"
+					labelFor={generateElementId('email')}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -140,7 +146,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id="email"
+								id={generateElementId('email')}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -158,7 +164,10 @@ export default function Register() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Password" labelFor="password">
+				<FormElement
+					labelText="Password"
+					labelFor={generateElementId('password')}
+				>
 					<div>
 						<div className="relative">
 							<IconField iconPosition="left">
@@ -167,7 +176,7 @@ export default function Register() {
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id="password"
+									id={generateElementId('password')}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"
@@ -205,7 +214,7 @@ export default function Register() {
 			<FormPart>
 				<FormElement
 					labelText="Confirm Password"
-					labelFor="password_confirm"
+					labelFor={generateElementId('passwordConfirm')}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -214,7 +223,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full !pr-10"
-								id="password_confirm"
+								id={generateElementId('passwordConfirm')}
 								name="password_confirm"
 								type={showPassword ? 'text' : 'password'}
 								placeholder="Password confirmation"
@@ -246,7 +255,9 @@ export default function Register() {
 								>
 									<input
 										type="radio"
-										id={`language-${value}`}
+										id={generateElementId(
+											`language-${value}`,
+										)}
 										name="language"
 										value={value}
 										className={clsx('radio', {
@@ -263,7 +274,9 @@ export default function Register() {
 										}
 									/>
 									<label
-										htmlFor={`language-${value}`}
+										htmlFor={generateElementId(
+											`language-${value}`,
+										)}
 										className="text-sm font-normal cursor-pointer"
 									>
 										{label}
@@ -280,7 +293,7 @@ export default function Register() {
 				<FormElement className="flex-row">
 					<div>
 						<input
-							id="terms"
+							id={generateElementId('terms')}
 							name="terms"
 							type="checkbox"
 							className={clsx('checkbox', {
@@ -296,7 +309,7 @@ export default function Register() {
 						/>
 						<label
 							className="flex items-center font-normal"
-							htmlFor="terms"
+							htmlFor={generateElementId('terms')}
 						>
 							<span className="text-sm text-gray-500 dark:text-base-content">
 								I agree with&nbsp;

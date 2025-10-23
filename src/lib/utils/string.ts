@@ -90,3 +90,22 @@ export function getNameInitials(name: string | undefined): string {
 export function randomString(): string {
 	return uuid();
 }
+
+/**
+ * Generate a stable ID for an element
+ *
+ * @param {string} name - The name of the element
+ * @returns {string} - The generated ID
+ */
+const idsCache = new Map();
+
+export const generateElementId = (name: string) => {
+	if (!idsCache.has(name)) {
+		idsCache.set(
+			name,
+			`id-${name}-${Math.random().toString(36).slice(2, 9)}`,
+		);
+	}
+
+	return idsCache.get(name);
+};

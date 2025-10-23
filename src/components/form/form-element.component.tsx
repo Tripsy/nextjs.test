@@ -13,7 +13,12 @@ export const FormElement = ({
 	labelFor?: string;
 }): JSX.Element | null => (
 	<div className={clsx('form-element', className)}>
-		{labelText && <label htmlFor={labelFor}>{labelText}</label>}
+		{labelText &&
+			(labelFor ? (
+				<label htmlFor={labelFor}>{labelText}</label>
+			) : (
+				<div className="label-placeholder">{labelText}</div>
+			))}
 		{children}
 	</div>
 );

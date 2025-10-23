@@ -149,13 +149,15 @@ const en = {
 				title: 'Delete permission',
 				label: 'Delete',
 				success: 'Permission deleted.',
-				confirmText: 'Are you sure you want to delete selected permission?',
+				confirmText:
+					'Are you sure you want to delete selected permission?',
 			},
 			restore: {
 				title: 'Restore permission',
 				label: 'Restore',
 				success: 'Permission restored.',
-				confirmText: 'Are you sure you want to restore selected permission?',
+				confirmText:
+					'Are you sure you want to restore selected permission?',
 			},
 		},
 	},

@@ -11,7 +11,7 @@ import { Icons } from '@/components/icon.component';
 import type { FormManageContentType } from '@/config/data-source';
 import { LanguageEnum } from '@/lib/enums';
 import { UserRoleEnum } from '@/lib/models/user.model';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((role) => ({
 	label: capitalizeFirstLetter(role),
@@ -35,7 +35,10 @@ export function FormManageContentUsers({
 	return (
 		<>
 			<FormPart>
-				<FormElement labelText="Name" labelFor="name">
+				<FormElement
+					labelText="Name"
+					labelFor={generateElementId('name')}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -43,7 +46,7 @@ export function FormManageContentUsers({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id="name"
+								id={generateElementId('name')}
 								name="name"
 								placeholder="eg: John Doe"
 								autoComplete={'name'}
@@ -61,7 +64,10 @@ export function FormManageContentUsers({
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Email Address" labelFor="email">
+				<FormElement
+					labelText="Email Address"
+					labelFor={generateElementId('email')}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -69,7 +75,7 @@ export function FormManageContentUsers({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id="email"
+								id={generateElementId('email')}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -91,7 +97,7 @@ export function FormManageContentUsers({
 					labelText={
 						actionName === 'create' ? 'New Password' : 'Password'
 					}
-					labelFor="password"
+					labelFor={generateElementId('password')}
 				>
 					<div>
 						<div className="relative">
@@ -101,7 +107,7 @@ export function FormManageContentUsers({
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id="password"
+									id={generateElementId('password')}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"
@@ -139,7 +145,7 @@ export function FormManageContentUsers({
 			<FormPart>
 				<FormElement
 					labelText="Confirm Password"
-					labelFor="password_confirm"
+					labelFor={generateElementId('passwordConfirm')}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -148,7 +154,7 @@ export function FormManageContentUsers({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full !pr-10"
-								id="password_confirm"
+								id={generateElementId('passwordConfirm')}
 								name="password_confirm"
 								type={showPassword ? 'text' : 'password'}
 								placeholder="Password confirmation"
@@ -170,11 +176,18 @@ export function FormManageContentUsers({
 			</FormPart>
 
 			<FormPart>
-				<FormElement labelText="Language" labelFor="language">
+				<FormElement
+					labelText="Language"
+					labelFor={generateElementId('language')}
+				>
 					<div>
-						<input type="hidden" name="language" value={formValues.language} />
+						<input
+							type="hidden"
+							name="language"
+							value={formValues.language}
+						/>
 						<Dropdown
-							inputId="languageDropdown"
+							inputId={generateElementId('language')}
 							className="p-inputtext-sm"
 							panelStyle={{ fontSize: '0.875rem' }}
 							disabled={pending}
@@ -200,7 +213,7 @@ export function FormManageContentUsers({
 								>
 									<input
 										type="radio"
-										id={`role-${value}`}
+										id={generateElementId(`role-${value}`)}
 										name="role"
 										value={value}
 										className={clsx('radio', {
@@ -214,7 +227,9 @@ export function FormManageContentUsers({
 										}
 									/>
 									<label
-										htmlFor={`role-${value}`}
+										htmlFor={generateElementId(
+											`role-${value}`,
+										)}
 										className="text-sm font-normal cursor-pointer"
 									>
 										{label}

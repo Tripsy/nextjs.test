@@ -10,37 +10,45 @@ export function createFilterHandlers<K extends keyof DataSourceType>(
 	) => void,
 ) {
 	return {
-		handleInputChange: <F extends keyof DataSourceType[K]['dataTableFilter']>(
+		handleInputChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
 			field: F,
-			value: string
+			value: string,
 		) =>
 			update({
 				[field]: { value, matchMode: 'contains' as MatchModeType },
 			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-		handleSelectChange: <F extends keyof DataSourceType[K]['dataTableFilter']>(
+		handleSelectChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
 			field: F,
-			value: string
+			value: string,
 		) =>
 			update({
 				[field]: { value, matchMode: 'equals' as MatchModeType },
 			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-		handleCheckboxChange: <F extends keyof DataSourceType[K]['dataTableFilter']>(
+		handleCheckboxChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
 			field: F,
-			value: boolean
+			value: boolean,
 		) =>
 			update({
 				[field]: { value, matchMode: 'equals' },
 			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-		handleDateChange: <F extends keyof DataSourceType[K]['dataTableFilter']>(
+		handleDateChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
 			field: F,
 			value: Nullable<Date>,
-			matchMode: MatchModeType
+			matchMode: MatchModeType,
 		) =>
 			update({
-				[field]: { value:formatDate(value), matchMode: matchMode },
+				[field]: { value: formatDate(value), matchMode: matchMode },
 			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 	};
 }

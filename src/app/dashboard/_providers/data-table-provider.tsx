@@ -25,7 +25,9 @@ type DataTableContextType<K extends keyof DataSourceType> = {
 	modelStore: ModelStoreType<K>;
 };
 
-const DataTableContext = createContext<DataTableContextType<keyof DataSourceType> | undefined>(undefined);
+const DataTableContext = createContext<
+	DataTableContextType<keyof DataSourceType> | undefined
+>(undefined);
 
 function DataTableProvider<K extends keyof DataSourceType>({
 	dataSource,
@@ -94,7 +96,9 @@ function DataTableProvider<K extends keyof DataSourceType>({
 }
 
 function useDataTable<K extends keyof DataSourceType>() {
-	const context = useContext(DataTableContext) as DataTableContextType<K> | undefined;
+	const context = useContext(DataTableContext) as
+		| DataTableContextType<K>
+		| undefined;
 
 	if (!context) {
 		throw new Error('useDataTable must be used within a DataTableProvider');

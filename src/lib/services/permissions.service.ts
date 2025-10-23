@@ -1,5 +1,6 @@
 import type {
-	CreateFunctionType, DataSourceType,
+	CreateFunctionType,
+	DataSourceType,
 	DeleteFunctionType,
 	FindFunctionParamsType,
 	FindFunctionResponseType,

@@ -41,7 +41,7 @@ export const RegisterSchema = z
 		name: z
 			.string({ message: lang('register.validation.name_invalid') })
 			.trim()
-			.min(parseInt(cfg('user.nameMinLength')), {
+			.min(Number(cfg('user.nameMinLength')), {
 				message: lang('register.validation.name_min', {
 					min: cfg('user.nameMinLength'),
 				}),
@@ -55,7 +55,7 @@ export const RegisterSchema = z
 		password: z
 			.string({ message: lang('register.validation.password_invalid') })
 			.trim()
-			.min(parseInt(cfg('user.passwordMinLength')), {
+			.min(Number(cfg('user.passwordMinLength')), {
 				message: lang('register.validation.password_min', {
 					min: cfg('user.passwordMinLength'),
 				}),
