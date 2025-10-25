@@ -10,7 +10,7 @@ import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableFiltersUsersType } from '@/app/dashboard/users/users.definition';
+import type { DataTableUsersFiltersType } from '@/app/dashboard/users/users.definition';
 import { FormElement } from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
@@ -30,7 +30,7 @@ const roles = Object.values(UserRoleEnum).map((role) => ({
 	value: role,
 }));
 
-export const DataTableFiltersUsers = (): React.JSX.Element => {
+export const DataTableUsersFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'users'>();
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
@@ -40,7 +40,7 @@ export const DataTableFiltersUsers = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableFiltersUsersType>) => {
+		(newFilters: Partial<DataTableUsersFiltersType>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});

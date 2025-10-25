@@ -8,7 +8,7 @@ import { FormElement } from '@/components/form/form-element.component';
 import { FormElementError } from '@/components/form/form-element-error.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
-import type { FormManageContentType } from '@/config/data-source';
+import type { FormManageType } from '@/config/data-source';
 import { LanguageEnum } from '@/lib/enums';
 import { UserRoleEnum } from '@/lib/models/user.model';
 import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
@@ -23,13 +23,13 @@ const languages = Object.values(LanguageEnum).map((language) => ({
 	value: language,
 }));
 
-export function FormManageContentUsers({
+export function FormUserManage({
 	actionName,
 	formValues,
 	errors,
 	handleChange,
 	pending,
-}: FormManageContentType<'users'>) {
+}: FormManageType<'users'>) {
 	const [showPassword, setShowPassword] = useState(false);
 
 	return (

@@ -6,8 +6,9 @@ import DataTableList from '@/app/dashboard/_components/data-table-list.component
 import { DataTableManage } from '@/app/dashboard/_components/data-table-manage.component';
 import { DataTableProvider } from '@/app/dashboard/_providers/data-table-provider';
 import { createModelStore } from '@/app/dashboard/_stores/model.store';
-import { DataTableFiltersUsers } from '@/app/dashboard/users/data-table-filters-users.component';
-import { FormManageContentUsers } from '@/app/dashboard/users/form-manage-content-users.component';
+import { DataTableUsersFilters } from '@/app/dashboard/users/data-table-users-filters.component';
+import { FormUserManage } from '@/app/dashboard/users/form-user-manage.component';
+import { FormUserPermissions } from '@/app/dashboard/users/form-user-permissions.component';
 import { Loading } from '@/components/loading.component';
 import { useMounted } from '@/hooks';
 
@@ -27,14 +28,23 @@ export const DataTableUsers = (): JSX.Element => {
 			modelStore={modelStore}
 		>
 			<div className="standard-box p-4 shadow-md">
-				<DataTableFiltersUsers />
+				<DataTableUsersFilters />
 				<DataTableActions />
 				<DataTableList dataKey="id" scrollHeight="400px" />
 			</div>
-			<DataTableManage<'users'>>
-				{/* @ts-expect-error FormManageContentUsers props are injected at runtime via FormManage */}
-				<FormManageContentUsers />
-			</DataTableManage>
+
+			<DataTableManage<'users'>
+				forms={{
+					// @ts-expect-error FormUserManage props are injected at runtime via FormManage
+					create: <FormUserManage />,
+					// @ts-expect-error FormUserManage props are injected at runtime via FormManage
+					update: <FormUserManage />,
+					permissions: <FormUserPermissions />,
+				}}
+				wrapperClass={{
+					permissions: 'max-w-xl',
+				}}
+			/>
 		</DataTableProvider>
 	);
 };

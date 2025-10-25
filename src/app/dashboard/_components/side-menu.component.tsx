@@ -130,7 +130,7 @@ export function SideMenu() {
 			},
 			{
 				key: 'logs',
-				title: 'Logs',
+				title: 'System Logs',
 				items: [
 					{
 						href: '',

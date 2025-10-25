@@ -20,16 +20,16 @@ import {
 	UserStatusEnum,
 } from '@/lib/models/user.model';
 import {
-	createUsers,
-	deleteUsers,
-	disableUsers,
-	enableUsers,
+	createUser,
+	deleteUser,
+	disableUser,
+	enableUser,
 	findUsers,
-	restoreUsers,
-	updateUsers,
+	restoreUser,
+	updateUser,
 } from '@/lib/services/users.service';
 
-export type DataTableFiltersUsersType = {
+export type DataTableUsersFiltersType = {
 	global: DataTableFilterMetaData;
 	role: DataTableFilterMetaData;
 	status: DataTableFilterMetaData;
@@ -216,7 +216,7 @@ function getActionContentEntriesUsers(entries: UserModel[]) {
 }
 
 export type DataSourceUsersType = {
-	dataTableFilter: DataTableFiltersUsersType;
+	dataTableFilter: DataTableUsersFiltersType;
 	model: UserModel;
 	formState: FormStateType<'users'>;
 	formValues: {
@@ -249,7 +249,7 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	},
 ];
 
-const DataTableFiltersUsers: DataTableFiltersUsersType = {
+const DataTableUsersFilters: DataTableUsersFiltersType = {
 	global: { value: null, matchMode: 'contains' },
 	role: { value: null, matchMode: 'equals' },
 	status: { value: null, matchMode: 'equals' },
@@ -265,7 +265,7 @@ export const DataSourceConfigUsers = {
 		rows: 10,
 		sortField: 'id',
 		sortOrder: -1 as const,
-		filters: DataTableFiltersUsers,
+		filters: DataTableUsersFilters,
 	},
 	dataTableColumns: DataTableColumnsUsers,
 	formState: {
@@ -294,34 +294,38 @@ export const DataSourceConfigUsers = {
 	},
 	actions: {
 		create: {
+			mode: 'form' as const,
 			permission: 'user.create',
 			allowedEntries: 'free' as const,
 			position: 'right' as const,
-			function: createUsers,
+			function: createUser,
 			button: {
 				className: 'btn btn-action-create',
 			},
 		},
 		update: {
+			mode: 'form' as const,
 			permission: 'user.update',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
-			function: updateUsers,
+			function: updateUser,
 			button: {
 				className: 'btn btn-action-update',
 			},
 		},
 		delete: {
+			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) => !entry.deleted_at, // Return true if entry is not deleted
 			position: 'left' as const,
-			function: deleteUsers,
+			function: deleteUser,
 			button: {
 				className: 'btn btn-action-delete',
 			},
 		},
 		enable: {
+			mode: 'action' as const,
 			permission: 'user.update',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) =>
@@ -330,12 +334,13 @@ export const DataSourceConfigUsers = {
 					entry.status,
 				),
 			position: 'left' as const,
-			function: enableUsers,
+			function: enableUser,
 			button: {
 				className: 'btn btn-action-enable',
 			},
 		},
 		disable: {
+			mode: 'action' as const,
 			permission: 'user.update',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) =>
@@ -344,19 +349,31 @@ export const DataSourceConfigUsers = {
 					entry.status,
 				),
 			position: 'left' as const,
-			function: disableUsers,
+			function: disableUser,
 			button: {
 				className: 'btn btn-action-disable',
 			},
 		},
 		restore: {
+			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if entry is deleted
 			position: 'left' as const,
-			function: restoreUsers,
+			function: restoreUser,
 			button: {
 				className: 'btn btn-action-restore',
+			},
+		},
+		permissions: {
+			mode: 'form' as const,
+			permission: 'permission.update',
+			allowedEntries: 'single' as const,
+			entryCustomCheck: (entry: UserModel) =>
+				entry.role === UserRoleEnum.OPERATOR,
+			position: 'left' as const,
+			button: {
+				className: 'btn btn-action-update',
 			},
 		},
 	},

@@ -77,7 +77,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	}, [tableState.filters]);
 
 	useEffect(() => {
-		console.log('tableState changed');
 		const abortController = new AbortController();
 
 		(async () => {

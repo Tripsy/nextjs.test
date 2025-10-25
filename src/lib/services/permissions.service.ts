@@ -12,17 +12,12 @@ import {
 	getResponseData,
 	type ResponseFetch,
 } from '@/lib/utils/api';
+import { buildQueryString } from '@/lib/utils/string';
 
 export const findPermissions: FindFunctionType<'permissions'> = async (
 	params: FindFunctionParamsType,
 ) => {
-	const query = new URLSearchParams({
-		order_by: params.order_by,
-		direction: params.direction,
-		limit: String(params.limit),
-		page: String(params.page),
-		filter: params.filter,
-	});
+	const query = buildQueryString(params);
 
 	const response: ResponseFetch<FindFunctionResponseType<'permissions'>> =
 		await new ApiRequest().doFetch(`/permissions?${query}`);

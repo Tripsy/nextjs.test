@@ -8,7 +8,7 @@ import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableFiltersPermissionsType } from '@/app/dashboard/permissions/permissions.definition';
+import type { DataTablePermissionsFiltersType } from '@/app/dashboard/permissions/permissions.definition';
 import { FormElement } from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
@@ -16,7 +16,7 @@ import { useSearchFilter } from '@/hooks';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { generateElementId } from '@/lib/utils/string';
 
-export const DataTableFiltersPermissions = (): React.JSX.Element => {
+export const DataTablePermissionsFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'permissions'>();
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
@@ -26,7 +26,7 @@ export const DataTableFiltersPermissions = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableFiltersPermissionsType>) => {
+		(newFilters: Partial<DataTablePermissionsFiltersType>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});

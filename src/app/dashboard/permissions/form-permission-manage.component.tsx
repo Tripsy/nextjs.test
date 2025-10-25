@@ -2,7 +2,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { FormElement } from '@/components/form/form-element.component';
 import { FormElementError } from '@/components/form/form-element-error.component';
 import { FormPart } from '@/components/form/form-part.component';
-import type { FormManageContentType } from '@/config/data-source';
+import type { FormManageType } from '@/config/data-source';
 import {
 	PermissionEntitiesEnum,
 	PermissionOperationEnum,
@@ -19,12 +19,12 @@ const operations = Object.values(PermissionOperationEnum).map((operation) => ({
 	value: operation,
 }));
 
-export function FormManageContentPermissions({
+export function FormPermissionManage({
 	formValues,
 	errors,
 	handleChange,
 	pending,
-}: FormManageContentType<'permissions'>) {
+}: FormManageType<'permissions'>) {
 	return (
 		<>
 			<FormPart>

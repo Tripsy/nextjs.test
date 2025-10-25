@@ -169,7 +169,9 @@ Routes.group('account')
 Routes.group('dashboard')
 	.auth(RouteAuth.PROTECTED)
 	.add('dashboard', '/dashboard')
-	.add('user-find', '/dashboard/users', { permission: 'user.find' })
+	.add('user-find', '/dashboard/users', {
+		permission: 'user.find',
+	})
 	.add('permission-find', '/dashboard/permissions', {
 		permission: 'permission.find',
 	});

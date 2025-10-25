@@ -109,3 +109,23 @@ export const generateElementId = (name: string) => {
 
 	return idsCache.get(name);
 };
+
+/**
+ * Build a query string from an object
+ *
+ * @param {Record<string, string | number | boolean | undefined | null>} params - The object to build the query string from
+ * @returns {string} - The query string
+ */
+export const buildQueryString = (
+	params: Record<string, string | number | boolean | undefined | null>,
+): string => {
+	const query = new URLSearchParams();
+
+	Object.entries(params).forEach(([key, value]) => {
+		if (value !== undefined && value !== null) {
+			query.append(key, String(value));
+		}
+	});
+
+	return query.toString();
+};

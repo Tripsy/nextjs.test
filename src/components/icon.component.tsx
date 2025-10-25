@@ -19,6 +19,7 @@ import {
 	faPlugCircleXmark,
 	faPlus,
 	faRotateLeft,
+	faScrewdriverWrench,
 	faSpinner,
 	faSun,
 	faThumbsUp,
@@ -136,6 +137,9 @@ export const Icons = {
 		),
 		Restore: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faRotateLeft} {...props} />
+		),
+		Permissions: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faScrewdriverWrench} {...props} />
 		),
 	},
 };

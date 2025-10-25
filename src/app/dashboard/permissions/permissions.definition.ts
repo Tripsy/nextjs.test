@@ -20,7 +20,7 @@ import {
 	updatePermissions,
 } from '@/lib/services/permissions.service';
 
-export type DataTableFiltersPermissionsType = {
+export type DataTablePermissionsFiltersType = {
 	global: DataTableFilterMetaData;
 	is_deleted: DataTableFilterMetaData;
 };
@@ -89,7 +89,7 @@ function getActionContentEntriesPermissions(entries: PermissionModel[]) {
 }
 
 export type DataSourcePermissionsType = {
-	dataTableFilter: DataTableFiltersPermissionsType;
+	dataTableFilter: DataTablePermissionsFiltersType;
 	model: PermissionModel;
 	formState: FormStateType<'permissions'>;
 	formValues: {
@@ -105,7 +105,7 @@ const DataTableColumnsPermissions: DataTableColumnType<PermissionModel>[] = [
 	{ field: 'operation', header: 'Operation', sortable: true },
 ];
 
-const DataTableFiltersPermissions: DataTableFiltersPermissionsType = {
+const DataTablePermissionsFilters: DataTablePermissionsFiltersType = {
 	global: { value: null, matchMode: 'contains' },
 	is_deleted: { value: null, matchMode: 'equals' },
 };
@@ -117,7 +117,7 @@ export const DataSourceConfigPermissions = {
 		rows: 10,
 		sortField: 'id',
 		sortOrder: -1 as const,
-		filters: DataTableFiltersPermissions,
+		filters: DataTablePermissionsFilters,
 	},
 	dataTableColumns: DataTableColumnsPermissions,
 	formState: {
@@ -140,6 +140,7 @@ export const DataSourceConfigPermissions = {
 	},
 	actions: {
 		create: {
+			mode: 'form' as const,
 			permission: 'permission.create',
 			allowedEntries: 'free' as const,
 			position: 'right' as const,
@@ -149,6 +150,7 @@ export const DataSourceConfigPermissions = {
 			},
 		},
 		update: {
+			mode: 'form' as const,
 			permission: 'permission.update',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
@@ -158,6 +160,7 @@ export const DataSourceConfigPermissions = {
 			},
 		},
 		delete: {
+			mode: 'action' as const,
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
@@ -168,6 +171,7 @@ export const DataSourceConfigPermissions = {
 			},
 		},
 		restore: {
+			mode: 'action' as const,
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted

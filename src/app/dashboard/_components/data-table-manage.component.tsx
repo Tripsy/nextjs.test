@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from 'clsx';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useStore } from 'zustand/react';
@@ -7,14 +8,26 @@ import { ActionManage } from '@/app/dashboard/_components/action-manage.componen
 import { FormManage } from '@/app/dashboard/_components/form-manage.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
-import type { DataSourceType } from '@/config/data-source';
+import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
 
+type ActionFormMap = {
+	[key: string]: React.ReactNode;
+};
+
+type ActionStyleMap = {
+	[key: string]: string; // tailwind class overrides (ex: "max-w-4xl bg-base-100/90")
+};
+
 export function DataTableManage<K extends keyof DataSourceType>({
-	children,
+	forms,
+	wrapperClass,
+	defaultWrapperClass = 'bg-base-100 rounded-lg w-full max-w-lg relative max-h-[80vh] flex flex-col mx-4',
 }: {
-	children: React.ReactNode;
+	forms?: ActionFormMap;
+	wrapperClass?: ActionStyleMap;
+	defaultWrapperClass?: string;
 }) {
 	const { dataSource, modelStore } = useDataTable();
 	const { showToast } = useToast();
@@ -24,12 +37,19 @@ export function DataTableManage<K extends keyof DataSourceType>({
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 	const closeOut = useStore(modelStore, (state) => state.closeOut);
 
-	const isForm = actionName && ['create', 'update'].includes(actionName);
+	const actions = getDataSourceConfig(dataSource, 'actions');
+
+	if (!actions) {
+		throw new Error(`Actions must be defined for ${dataSource}`);
+	}
+
+	const actionMode = actionName ? actions[actionName]?.mode : null;
+	const isForm = actionMode === 'form';
 
 	const formComponentKey = isForm
 		? actionEntry?.id
-			? `update-${actionEntry.id}`
-			: 'create'
+			? `${actionName}-${actionEntry.id}`
+			: actionName
 		: null;
 	const actionComponentKey =
 		actionName && !isForm ? `action-${actionName}` : null;
@@ -54,13 +74,21 @@ export function DataTableManage<K extends keyof DataSourceType>({
 		return null;
 	}
 
-	const actionTitle = lang(`${dataSource}.action.${actionName}.title`);
+	// Dynamically compute wrapper class
+	const wrapperClassComputed = clsx(
+		defaultWrapperClass,
+		wrapperClass?.[actionName], // Per-action override
+	);
+
 	const ActionButtonIcon = getActionIcon(actionName);
+	const actionTitle = lang(`${dataSource}.action.${actionName}.title`);
+
+	const FormComponent = forms?.[actionName] ?? null;
 
 	return (
 		<div className="fixed inset-0 bg-base-300/90 flex items-center justify-center h-full z-50">
-			<div className="bg-base-100 rounded-lg w-full max-w-lg relative max-h-[80vh] flex flex-col mx-4">
-				<div className="flex justify-between px-6 py-3 rounded-t-lg shadow-lg">
+			<div className={wrapperClassComputed}>
+				<div className="flex justify-between px-4 py-3 rounded-t-lg shadow-lg">
 					<h1 className="text-lg font-semibold">
 						<ActionButtonIcon /> {actionTitle}
 					</h1>
@@ -76,12 +104,15 @@ export function DataTableManage<K extends keyof DataSourceType>({
 						</button>
 					</div>
 				</div>
-				<div className="bg-base-200 flex-1 overflow-y-auto p-6">
-					{formComponentKey && (
-						<FormManage<K> key={formComponentKey}>
-							{children}
-						</FormManage>
-					)}
+				<div className="bg-base-200 flex-1 overflow-y-auto p-4">
+					{formComponentKey &&
+						(['create', 'update'].includes(actionName) ? (
+							<FormManage<K> key={actionName}>
+								{FormComponent}
+							</FormManage>
+						) : (
+							FormComponent
+						))}
 					{actionComponentKey && (
 						<ActionManage key={actionComponentKey} />
 					)}

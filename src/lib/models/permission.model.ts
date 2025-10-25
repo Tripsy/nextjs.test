@@ -1,4 +1,4 @@
-export enum PermissionOperationEnum {
+export enum PermissionOperationEnum { // TODO should I replace this? make them suggestions and update the manage part
 	CREATE = 'create',
 	UPDATE = 'update',
 	READ = 'read',
@@ -6,7 +6,7 @@ export enum PermissionOperationEnum {
 	DELETE = 'delete',
 }
 
-export enum PermissionEntitiesEnum {
+export enum PermissionEntitiesEnum { // TODO should I replace this?
 	USERS = 'user',
 	PERMISSIONS = 'permission',
 }

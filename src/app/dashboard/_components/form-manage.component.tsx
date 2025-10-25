@@ -17,7 +17,7 @@ import { FormPart } from '@/components/form/form-part.component';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import {
 	type DataSourceType,
-	type FormManageContentType,
+	type FormManageType,
 	type FormStateType,
 	getDataSourceConfig,
 } from '@/config/data-source';
@@ -33,15 +33,17 @@ export function FormManage<K extends keyof DataSourceType>({
 	const { dataSource, modelStore } = useDataTable<K>();
 	const { showToast } = useToast();
 
-	const actionName = useStore(modelStore, (state) => state.actionName) as
-		| 'create'
-		| 'update';
+	const actionName = useStore(modelStore, (state) => state.actionName);
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 	const closeOut = useStore(modelStore, (state) => state.closeOut);
 	const refreshTableState = useStore(
 		modelStore,
 		(state) => state.refreshTableState,
 	);
+
+	if (!actionName) {
+		throw new Error('actionName appears to be null');
+	}
 
 	const functions = getDataSourceConfig(dataSource, 'functions');
 	const syncFormStateFunction = functions?.syncFormState;
@@ -123,7 +125,7 @@ export function FormManage<K extends keyof DataSourceType>({
 				errors,
 				handleChange,
 				pending,
-			} as FormManageContentType<K>)
+			} as FormManageType<K>)
 		: children;
 
 	return (

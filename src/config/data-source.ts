@@ -11,11 +11,11 @@ import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
 
 export type FindFunctionParamsType = {
-	order_by: string;
-	direction: 'ASC' | 'DESC';
-	limit: number;
-	page: number;
-	filter: string;
+	order_by?: string;
+	direction?: 'ASC' | 'DESC';
+	limit?: number;
+	page?: number;
+	filter?: string;
 };
 
 export type FindFunctionResponseType<K extends keyof DataSourceType> = {
@@ -81,12 +81,15 @@ export type DataTableColumnType<Model> = {
  * `function` function to perform action
  * `button` action button configuration
  */
+export type DataTableActionModeType = 'form' | 'action';
+
 export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
+	mode: DataTableActionModeType;
 	permission: string;
 	allowedEntries: 'free' | 'single' | 'multiple';
 	entryCustomCheck?: (entry: DataSourceType[K]['model']) => boolean;
 	position: 'left' | 'right';
-	function: F;
+	function?: F;
 	button: {
 		className: string;
 	};
@@ -99,7 +102,7 @@ export type DataTableActionsType<K extends keyof DataSourceType> = {
 	update?: DataTableActionConfigType<UpdateFunctionType<K>, K>;
 	delete?: DataTableActionConfigType<DeleteFunctionType, K>;
 };
-export type FormManageContentType<K extends keyof DataSourceType> = {
+export type FormManageType<K extends keyof DataSourceType> = {
 	actionName: 'create' | 'update';
 	formValues: DataSourceType[K]['formValues'];
 	errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
@@ -108,7 +111,7 @@ export type FormManageContentType<K extends keyof DataSourceType> = {
 		value: string | boolean,
 	) => void;
 	pending: boolean;
-}; // The props are required but marked as optional to avoid TS error when providing the children (ex: FormManageContentUsers) to DataTableManage
+};
 
 export type DataSourceType = {
 	users: DataSourceUsersType;

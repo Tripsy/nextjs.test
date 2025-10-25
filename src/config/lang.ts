@@ -100,7 +100,12 @@ const en = {
 			update: {
 				title: 'Edit user',
 				label: 'Update',
-				success: 'User updated .',
+				success: 'User updated.',
+			},
+			permissions: {
+				title: 'Setup permissions',
+				label: 'Permissions',
+				success: 'Permissions updated.',
 			},
 			delete: {
 				title: 'Delete user',
@@ -143,7 +148,7 @@ const en = {
 			update: {
 				title: 'Edit permission',
 				label: 'Update',
-				success: 'Permission updated .',
+				success: 'Permission updated.',
 			},
 			delete: {
 				title: 'Delete permission',
