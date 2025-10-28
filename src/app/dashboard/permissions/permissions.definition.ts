@@ -81,7 +81,7 @@ function syncFormStatePermissions(
 	};
 }
 
-function getActionContentEntriesPermissions(entries: PermissionModel[]) {
+function displayActionEntriesPermissions(entries: PermissionModel[]) {
 	return entries.map((entry) => ({
 		id: entry.id,
 		label: `${entry.entity}.${entry.operation}`,
@@ -136,7 +136,7 @@ export const DataSourceConfigPermissions = {
 		getFormValues: getFormValuesPermissions,
 		validateForm: validateFormPermissions,
 		syncFormState: syncFormStatePermissions,
-		getActionContentEntries: getActionContentEntriesPermissions,
+		displayActionEntries: displayActionEntriesPermissions,
 	},
 	actions: {
 		create: {
@@ -163,8 +163,8 @@ export const DataSourceConfigPermissions = {
 			mode: 'action' as const,
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
 			position: 'left' as const,
+			entryCustomCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
 			function: deletePermissions,
 			button: {
 				className: 'btn btn-action-delete',
@@ -174,8 +174,8 @@ export const DataSourceConfigPermissions = {
 			mode: 'action' as const,
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted
 			position: 'left' as const,
+			entryCustomCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted
 			function: restorePermissions,
 			button: {
 				className: 'btn btn-action-restore',

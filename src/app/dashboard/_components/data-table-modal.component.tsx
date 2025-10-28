@@ -12,22 +12,22 @@ import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useToast } from '@/providers/toast.provider';
 
-type ActionFormMap = {
+type ModalsMap = {
 	[key: string]: React.ReactNode;
 };
 
-type ActionStyleMap = {
-	[key: string]: string; // tailwind class overrides (ex: "max-w-4xl bg-base-100/90")
+type ModalClassMap = {
+	[key: string]: string; // ex: "max-w-4xl bg-base-100/90"
 };
 
-export function DataTableManage<K extends keyof DataSourceType>({
-	forms,
-	wrapperClass,
-	defaultWrapperClass = 'bg-base-100 rounded-lg w-full max-w-lg relative max-h-[80vh] flex flex-col mx-4',
+export function DataTableModal<K extends keyof DataSourceType>({
+	modals,
+	modalClass,
+	defaultModalClass = 'bg-base-100 rounded-lg w-full max-w-lg relative max-h-[80vh] flex flex-col mx-4',
 }: {
-	forms?: ActionFormMap;
-	wrapperClass?: ActionStyleMap;
-	defaultWrapperClass?: string;
+	modals?: ModalsMap;
+	modalClass?: ModalClassMap;
+	defaultModalClass?: string;
 }) {
 	const { dataSource, modelStore } = useDataTable();
 	const { showToast } = useToast();
@@ -44,22 +44,13 @@ export function DataTableManage<K extends keyof DataSourceType>({
 	}
 
 	const actionMode = actionName ? actions[actionName]?.mode : null;
-	const isForm = actionMode === 'form';
-
-	const formComponentKey = isForm
-		? actionEntry?.id
-			? `${actionName}-${actionEntry.id}`
-			: actionName
-		: null;
-	const actionComponentKey =
-		actionName && !isForm ? `action-${actionName}` : null;
 
 	useEffect(() => {
-		if (isOpen && actionName === 'update' && !actionEntry) {
+		if (isOpen && actionName && ['update', 'view'].includes(actionName) && !actionEntry) {
 			showToast({
 				severity: 'error',
 				summary: 'Error',
-				detail: 'Please select only one entry to edit',
+				detail: 'Please select at least one entry',
 			});
 
 			return;
@@ -74,20 +65,20 @@ export function DataTableManage<K extends keyof DataSourceType>({
 		return null;
 	}
 
-	// Dynamically compute wrapper class
-	const wrapperClassComputed = clsx(
-		defaultWrapperClass,
-		wrapperClass?.[actionName], // Per-action override
+	// Dynamically compute modal class
+	const modalClassComputed = clsx(
+		defaultModalClass,
+		modalClass?.[actionName], // Per-action override
 	);
 
 	const ActionButtonIcon = getActionIcon(actionName);
 	const actionTitle = lang(`${dataSource}.action.${actionName}.title`);
 
-	const FormComponent = forms?.[actionName] ?? null;
+	const ModalComponent = modals?.[actionName] ?? null;
 
 	return (
 		<div className="fixed inset-0 bg-base-300/90 flex items-center justify-center h-full z-50">
-			<div className={wrapperClassComputed}>
+			<div className={modalClassComputed}>
 				<div className="flex justify-between px-4 py-3 rounded-t-lg shadow-lg">
 					<h1 className="text-lg font-semibold">
 						<ActionButtonIcon /> {actionTitle}
@@ -105,16 +96,21 @@ export function DataTableManage<K extends keyof DataSourceType>({
 					</div>
 				</div>
 				<div className="bg-base-200 flex-1 overflow-y-auto p-4">
-					{formComponentKey &&
-						(['create', 'update'].includes(actionName) ? (
-							<FormManage<K> key={actionName}>
-								{FormComponent}
-							</FormManage>
-						) : (
-							FormComponent
-						))}
-					{actionComponentKey && (
-						<ActionManage key={actionComponentKey} />
+					{actionMode === 'other' && ModalComponent}
+					{actionMode === 'form' && (
+						<FormManage<K>
+							key={
+								'form-' +
+								(actionEntry?.id
+									? `${actionName}-${actionEntry.id}`
+									: actionName)
+							}
+						>
+							{ModalComponent}
+						</FormManage>
+					)}
+					{actionMode === 'action' && (
+						<ActionManage key={`action-${actionName}`} />
 					)}
 				</div>
 			</div>

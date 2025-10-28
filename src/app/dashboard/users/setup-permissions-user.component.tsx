@@ -1,7 +1,7 @@
 'use client';
 
 import { Checkbox } from 'primereact/checkbox';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { Loading } from '@/components/loading.component';
@@ -14,7 +14,7 @@ import {
 } from '@/lib/services/users.service';
 import { useToast } from '@/providers/toast.provider';
 
-export function FormUserPermissions() {
+export function SetupPermissionsUser() {
 	const { modelStore } = useDataTable<'users'>();
 	const { showToast } = useToast();
 
@@ -263,6 +263,7 @@ export function FormUserPermissions() {
 									<label
 										key={perm.id}
 										className="flex items-center gap-2 cursor-pointer p-2 hover:rounded-md hover:bg-base-300/30"
+										htmlFor={`permission-${perm.id}`}
 									>
 										<Checkbox
 											inputId={`permission-${perm.id}`}

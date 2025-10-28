@@ -129,3 +129,19 @@ export const buildQueryString = (
 
 	return query.toString();
 };
+
+export function parseJson(val: unknown) {
+	if (typeof val === 'string') {
+		if (val.trim() === '') {
+			return {};
+		}
+
+		try {
+			return JSON.parse(val);
+		} catch {
+			return {};
+		}
+	}
+
+	return val;
+}

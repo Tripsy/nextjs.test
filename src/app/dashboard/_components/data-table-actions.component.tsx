@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { Icons } from '@/components/icon.component';
 import { getDataSourceConfig } from '@/config/data-source';
 import { hasPermission } from '@/lib/models/auth.model';
 import { useAuth } from '@/providers/auth.provider';
@@ -43,6 +42,30 @@ export function DataTableActions() {
 		() => getDataSourceConfig(dataSource, 'actions'),
 		[dataSource],
 	);
+
+	// useEffect(() => {
+	// 	const handleUseAction = (event: CustomEvent<{ source: string }>) => {
+	// 		console.log('Received useAction event:', event.detail);
+	//
+	// 		// you can trigger your custom action here:
+	// 		// openAction(event.detail.source);
+	//
+	// 		handleClick(
+	// 			actionName,
+	// 			actionProps.permission,
+	// 			actionProps.allowedEntries,
+	// 			customCheck,
+	// 		)
+	// 	};
+	//
+	// 	// Attach listener
+	// 	window.addEventListener('useAction', handleUseAction as EventListener);
+	//
+	// 	// Cleanup on unmount
+	// 	return () => {
+	// 		window.removeEventListener('useAction', handleUseAction as EventListener);
+	// 	};
+	// }, [openAction]);
 
 	const allowAction = (
 		permission: string,
@@ -106,6 +129,13 @@ export function DataTableActions() {
 		}
 
 		return Object.entries(actions).map(([actionName, actionProps]) => {
+			if (
+				selectedEntries.length === 0 &&
+				actionProps.allowedEntries !== 'free'
+			) {
+				return null;
+			}
+
 			if (actionProps.position !== position) {
 				return null;
 			}
@@ -144,30 +174,14 @@ export function DataTableActions() {
 	};
 
 	return (
-		<div className="my-6 pt-4 border-t border-line flex flex-wrap gap-4 justify-between">
-			<div className="flex items-center gap-4">
+		<div className="flex flex-wrap gap-4 justify-between min-h-18 py-4">
+			<div className="flex flex-wrap gap-4 items-center">
 				{selectionMode === 'multiple' && (
 					<div>{selectedEntries.length} selected</div>
 				)}
-
-				{selectedEntries.length > 0 && (
-					<div className="flex flex-wrap gap-4 ">
-						{renderActions('left')}
-					</div>
-				)}
+				{renderActions('left')}
 			</div>
-			<div className="flex gap-4">
-				<button
-					type="reset"
-					className="btn btn-warning rounded"
-					onClick={() => handleReset('DataTableActions')}
-					title="Reset filters"
-				>
-					<Icons.Action.Reset className="w-4 h-4" />
-					Reset
-				</button>
-				{renderActions('right')}
-			</div>
+			<div className="flex flex-wrap gap-4">{renderActions('right')}</div>
 		</div>
 	);
 }

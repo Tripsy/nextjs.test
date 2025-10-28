@@ -89,7 +89,7 @@ export default function Login() {
 	if (state?.situation === 'csrf_error') {
 		return (
 			<div className="text-error">
-				<Icons.Error className="w-5 h-5" /> {state.message}
+				<Icons.Error /> {state.message}
 			</div>
 		);
 	}

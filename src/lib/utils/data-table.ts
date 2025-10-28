@@ -2,7 +2,7 @@ import type { Nullable } from 'primereact/ts-helpers';
 import type { DataSourceType } from '@/config/data-source';
 import { formatDate } from '@/lib/utils/date';
 
-type MatchModeType = 'contains' | 'equals' | 'dateAfter' | 'dateBefore';
+export type MatchModeType = 'contains' | 'equals' | 'dateAfter' | 'dateBefore';
 
 export function createFilterHandlers<K extends keyof DataSourceType>(
 	update: <T extends keyof DataSourceType[K]['dataTableFilter']>(
@@ -24,7 +24,7 @@ export function createFilterHandlers<K extends keyof DataSourceType>(
 			F extends keyof DataSourceType[K]['dataTableFilter'],
 		>(
 			field: F,
-			value: string,
+			value: string | number,
 		) =>
 			update({
 				[field]: { value, matchMode: 'equals' as MatchModeType },

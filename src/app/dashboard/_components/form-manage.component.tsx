@@ -8,6 +8,7 @@ import {
 	useCallback,
 	useEffect,
 } from 'react';
+import type { ZodError } from 'zod';
 import { useStore } from 'zustand/react';
 import { formAction } from '@/app/dashboard/_actions';
 import { handleReset } from '@/app/dashboard/_components/data-table-actions.component';
@@ -19,10 +20,12 @@ import {
 	type DataSourceType,
 	type FormManageType,
 	type FormStateType,
+	type FormValuesType,
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { useFormValidation, useFormValues } from '@/hooks';
+import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
 
 export function FormManage<K extends keyof DataSourceType>({
@@ -46,41 +49,87 @@ export function FormManage<K extends keyof DataSourceType>({
 	}
 
 	const functions = getDataSourceConfig(dataSource, 'functions');
-	const syncFormStateFunction = functions?.syncFormState;
 
+	// Determine syncFormState function
+	if (!('syncFormState' in functions)) {
+		throw new ValueError(
+			`'syncFormState' function is not defined for ${dataSource}`,
+		);
+	}
+
+	const syncFormStateFunction = functions.syncFormState;
+
+	// Fighting with Typescript & Eslint
+	if (!syncFormStateFunction) {
+		throw new ValueError(
+			`'syncFormState' function is not defined for ${dataSource}`,
+		);
+	}
+
+	// Determine initial form state
 	const formState = getDataSourceConfig(dataSource, 'formState');
+
+	// Fighting with Typescript & Eslint
+	if (!formState) {
+		throw new ValueError(`'formState' is not defined for ${dataSource}`);
+	}
+
 	const initState =
-		actionName === 'update' && actionEntry
+		actionName === 'update' && actionEntry && syncFormStateFunction
 			? syncFormStateFunction(formState, actionEntry)
 			: formState;
 
 	const [state, action, pending] = useActionState<FormStateType<K>, FormData>(
 		async (state: FormStateType<K>, formData: FormData) =>
 			formAction<K>(state, formData),
-		initState,
+		initState as Awaited<FormStateType<K>>,
 	);
 
-	const [formValues, setFormValues] = useFormValues<
-		DataSourceType[K]['formValues']
-	>(state.values);
+	const [formValues, setFormValues] = useFormValues<FormValuesType<K>>(
+		state.values as FormValuesType<K>,
+	);
 
-	const validateFormFunction = functions?.validateForm;
+	// Determine validateForm function
+	if (!('validateForm' in functions)) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
+
+	const validateFormFunction = functions.validateForm;
+
+	// Fighting with Typescript & Eslint
+	if (!validateFormFunction) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
 
 	const validate = useCallback(
-		() => validateFormFunction(formValues, state.id),
-		[formValues, state.id, validateFormFunction],
+		(
+			values: FormValuesType<K>,
+		): {
+			success: boolean;
+			error?: ZodError<FormValuesType<K>>;
+		} => {
+			return validateFormFunction(values, state.id) as {
+				success: boolean;
+				error?: ZodError<FormValuesType<K>>;
+			};
+		},
+		[state.id, validateFormFunction],
 	);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
-		useFormValidation<DataSourceType[K]['formValues']>({
-			formValues: formValues,
-			validate: validate,
+		useFormValidation<FormValuesType<K>>({
+			formValues,
+			validate,
 			debounceDelay: 800,
 		});
 
 	const handleChange = (
-		name: keyof DataSourceType[K]['formValues'],
-		value: string | boolean,
+		name: keyof FormValuesType<K>,
+		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
 		markFieldAsTouched(name);
@@ -125,11 +174,12 @@ export function FormManage<K extends keyof DataSourceType>({
 				errors,
 				handleChange,
 				pending,
-			} as FormManageType<K>)
+			} as unknown as FormManageType<K>)
 		: children;
 
 	return (
 		<form
+			key={`form-${actionName}`}
 			action={action}
 			onSubmit={() => setSubmitted(true)}
 			className="form-section"

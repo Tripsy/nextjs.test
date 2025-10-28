@@ -9,17 +9,17 @@ import {
 } from '@/lib/models/permission.model';
 import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
 
-const entities = Object.values(PermissionEntitiesEnum).map((entity) => ({
-	label: capitalizeFirstLetter(entity),
-	value: entity,
+const entities = Object.values(PermissionEntitiesEnum).map((v) => ({
+	label: capitalizeFirstLetter(v),
+	value: v,
 }));
 
-const operations = Object.values(PermissionOperationEnum).map((operation) => ({
-	label: operation,
-	value: operation,
+const operations = Object.values(PermissionOperationEnum).map((v) => ({
+	label: v,
+	value: v,
 }));
 
-export function FormPermissionManage({
+export function FormManagePermission({
 	formValues,
 	errors,
 	handleChange,

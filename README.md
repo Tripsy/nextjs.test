@@ -1,10 +1,11 @@
 # TODO
 
-1. templates
-2. Recap NextJs documentation
-3. recover password & other account pages
-4. terms page
-5. Replace all console.error with logging
+1. redo language -> split to different files
+2. templates
+3. Recap NextJs documentation
+4. recover password & other account pages
+5. terms page
+6. Replace all console.error with logging
 
 # IDEAS
 

@@ -62,7 +62,7 @@ function NoticeSuccess({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-success rounded-none">
 				<div>
 					<span>
-						<Icons.Success className="w-5 h-5" /> {message}
+						<Icons.Success /> {message}
 					</span>
 					{children}
 				</div>
@@ -80,8 +80,7 @@ function NoticeError({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-error rounded-none">
 				<div>
 					<span>
-						<Icons.Error className="w-5 h-5" />{' '}
-						{message ?? 'Something went wrong!'}
+						<Icons.Error /> {message ?? 'Something went wrong!'}
 					</span>
 					{children}
 				</div>
@@ -99,7 +98,7 @@ function NoticeWarning({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-warning rounded-none">
 				<div>
 					<span>
-						<Icons.Warning className="w-5 h-5" /> {message}
+						<Icons.Warning /> {message}
 					</span>
 					{children}
 				</div>
@@ -117,7 +116,7 @@ function NoticeInfo({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-info rounded-none">
 				<div>
 					<span>
-						<Icons.Info className="w-5 h-5" /> {message}
+						<Icons.Info /> {message}
 					</span>
 					{children}
 				</div>
@@ -135,7 +134,7 @@ function NoticeLoading({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-info rounded-none">
 				<div>
 					<span>
-						<Icons.Loading className="w-5 h-5 animate-spin" />{' '}
+						<Icons.Loading className="animate-spin" />{' '}
 						{message ?? 'Loading...'}
 					</span>
 					{children}

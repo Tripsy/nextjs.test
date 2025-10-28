@@ -21,12 +21,12 @@ export function SideMenuToggle() {
 
 			<div className="swap-off w-8 h-8 flex items-center justify-center rounded-full bg-base-200">
 				{/* When menu is open (unchecked) */}
-				<Icons.SideMenuOpen className="w-4 h-4" />
+				<Icons.Design.SideMenuOpen className="w-4 h-4" />
 			</div>
 
 			<div className="swap-on w-8 h-8 flex items-center justify-center rounded-full bg-base-200">
 				{/* When menu is closed (checked) */}
-				<Icons.SideMenuClosed className="w-4 h-4 opacity-50" />
+				<Icons.Design.SideMenuClosed className="w-4 h-4 opacity-50" />
 			</div>
 		</label>
 	);

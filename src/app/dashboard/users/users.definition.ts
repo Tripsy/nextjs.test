@@ -211,7 +211,7 @@ function syncFormStateUsers(
 	};
 }
 
-function getActionContentEntriesUsers(entries: UserModel[]) {
+function displayActionEntriesUsers(entries: UserModel[]) {
 	return entries.map((entry) => ({ id: entry.id, label: entry.name }));
 }
 
@@ -290,7 +290,7 @@ export const DataSourceConfigUsers = {
 		getFormValues: getFormValuesUsers,
 		validateForm: validateFormUsers,
 		syncFormState: syncFormStateUsers,
-		getActionContentEntries: getActionContentEntriesUsers,
+		displayActionEntries: displayActionEntriesUsers,
 	},
 	actions: {
 		create: {
@@ -366,7 +366,7 @@ export const DataSourceConfigUsers = {
 			},
 		},
 		permissions: {
-			mode: 'form' as const,
+			mode: 'other' as const,
 			permission: 'permission.update',
 			allowedEntries: 'single' as const,
 			entryCustomCheck: (entry: UserModel) =>

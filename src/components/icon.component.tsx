@@ -1,3 +1,4 @@
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import {
 	faArrowRightToBracket,
 	faArrowsRotate,
@@ -42,18 +43,26 @@ export function AwesomeIcon({
 }
 
 export const Icons = {
-	SideMenuOpen: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faBars} {...props} />
-	),
-	SideMenuClosed: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faBars} {...props} />
-	),
-	ThemeLight: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faSun} {...props} />
-	),
-	ThemeDark: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faMoon} {...props} />
-	),
+	Design: {
+		SideMenuOpen: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faBars} {...props} />
+		),
+		SideMenuClosed: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faBars} {...props} />
+		),
+		ThemeLight: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faSun} {...props} />
+		),
+		ThemeDark: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faMoon} {...props} />
+		),
+		Github: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faGithub} {...props} />
+		),
+		Linkedin: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faLinkedin} {...props} />
+		),
+	},
 	Loading: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faSpinner} {...props} />
 	),
@@ -140,6 +149,9 @@ export const Icons = {
 		),
 		Permissions: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faScrewdriverWrench} {...props} />
+		),
+		View: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faEye} {...props} />
 		),
 	},
 };

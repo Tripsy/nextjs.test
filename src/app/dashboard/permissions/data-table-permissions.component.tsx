@@ -3,11 +3,11 @@
 import type { JSX } from 'react';
 import { DataTableActions } from '@/app/dashboard/_components/data-table-actions.component';
 import DataTableList from '@/app/dashboard/_components/data-table-list.component';
-import { DataTableManage } from '@/app/dashboard/_components/data-table-manage.component';
+import { DataTableModal } from '@/app/dashboard/_components/data-table-modal.component';
 import { DataTableProvider } from '@/app/dashboard/_providers/data-table-provider';
 import { createModelStore } from '@/app/dashboard/_stores/model.store';
 import { DataTablePermissionsFilters } from '@/app/dashboard/permissions/data-table-permissions-filters.component';
-import { FormPermissionManage } from '@/app/dashboard/permissions/form-permission-manage.component';
+import { FormManagePermission } from '@/app/dashboard/permissions/form-manage-permission.component';
 import { Loading } from '@/components/loading.component';
 import { useMounted } from '@/hooks';
 
@@ -32,12 +32,12 @@ export const DataTablePermissions = (): JSX.Element => {
 				<DataTableList dataKey="id" scrollHeight="400px" />
 			</div>
 
-			<DataTableManage<'permissions'>
-				forms={{
-					// @ts-expect-error FormPermissionManage props are injected at runtime via FormManage
-					create: <FormPermissionManage />,
-					// @ts-expect-error FormPermissionManage props are injected at runtime via FormManage
-					update: <FormPermissionManage />,
+			<DataTableModal<'permissions'>
+				modals={{
+					// @ts-expect-error FormManagePermission props are injected at runtime via FormManage
+					create: <FormManagePermission />,
+					// @ts-expect-error FormManagePermission props are injected at runtime via FormManage
+					update: <FormManagePermission />,
 				}}
 			/>
 		</DataTableProvider>

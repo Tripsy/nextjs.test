@@ -88,10 +88,7 @@ function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
 	return (
 		<li>
 			<Link href={href}>
-				<AwesomeIcon
-					icon={icon}
-					className="inline-block w-5 h-5 mr-0.75"
-				/>
+				<AwesomeIcon icon={icon} className="w-4 h-4 inline-block mr-0.75" />
 				{label}
 			</Link>
 		</li>
@@ -121,10 +118,10 @@ export function SideMenu() {
 				title: 'Settings',
 				items: [
 					{
-						href: '',
+						href: Routes.get('template-find'),
 						label: 'Templates',
 						icon: faFileLines,
-						permission: true,
+						permission: hasPermission(auth, 'template.find'),
 					},
 				],
 			},
@@ -133,22 +130,22 @@ export function SideMenu() {
 				title: 'System Logs',
 				items: [
 					{
-						href: '',
+						href: Routes.get('log-data-find'),
 						label: 'Log Data',
 						icon: faDatabase,
-						permission: true,
+						permission: hasPermission(auth, 'log_data.find'),
 					},
 					{
-						href: '',
+						href: Routes.get('cron-history-find'),
 						label: 'Cron History',
 						icon: faFileWaveform,
-						permission: true,
+						permission: hasPermission(auth, 'cron_history.find'),
 					},
 					{
-						href: '',
+						href: Routes.get('mail-queue-find'),
 						label: 'Mail Queue',
 						icon: faEnvelopesBulk,
-						permission: true,
+						permission: hasPermission(auth, 'mail_queue.find'),
 					},
 				],
 			},

@@ -24,13 +24,13 @@ export function ToggleTheme() {
 						theme === 'dark' ? 'rotate-0' : 'rotate-180'
 					}`}
 				>
-					<Icons.ThemeLight
-						className={`absolute inset-0 m-auto w-5 h-5 transition-opacity duration-300 ${
+					<Icons.Design.ThemeLight
+						className={`absolute inset-0 m-auto transition-opacity duration-300 ${
 							theme === 'light' ? 'opacity-100' : 'opacity-0'
 						}`}
 					/>
-					<Icons.ThemeDark
-						className={`absolute inset-0 m-auto w-5 h-5 transition-opacity duration-300 ${
+					<Icons.Design.ThemeDark
+						className={`absolute inset-0 m-auto transition-opacity duration-300 ${
 							theme === 'dark' ? 'opacity-100' : 'opacity-0'
 						}`}
 					/>

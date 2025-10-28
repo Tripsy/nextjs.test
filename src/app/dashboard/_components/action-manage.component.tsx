@@ -9,7 +9,7 @@ import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
 
-function getActionContentEntries<K extends keyof DataSourceType>(
+function displayActionEntries<K extends keyof DataSourceType>(
 	dataSource: K,
 	entries: DataSourceType[K]['model'][],
 ) {
@@ -19,15 +19,15 @@ function getActionContentEntries<K extends keyof DataSourceType>(
 		throw new ValueError(`'functions' are not defined for ${dataSource}`);
 	}
 
-	const getActionContentEntries = functions.getActionContentEntries;
+	const displayActionEntries = functions.displayActionEntries;
 
-	if (!getActionContentEntries) {
+	if (!displayActionEntries) {
 		throw new ValueError(
-			`'getActionContentEntries' function is not defined for ${dataSource}`,
+			`'displayActionEntries' function is not defined for ${dataSource}`,
 		);
 	}
 
-	return getActionContentEntries(entries);
+	return displayActionEntries(entries);
 }
 
 export function ActionManage() {
@@ -124,7 +124,7 @@ export function ActionManage() {
 		closeOut();
 	};
 
-	const actionContentEntries = getActionContentEntries(
+	const actionContentEntries = displayActionEntries(
 		dataSource,
 		actionProps.allowedEntries === 'single'
 			? [actionEntry as DataSourceType[typeof dataSource]['model']]

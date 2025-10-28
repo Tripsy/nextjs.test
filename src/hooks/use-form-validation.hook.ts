@@ -3,9 +3,9 @@ import { useCallback, useRef, useState } from 'react';
 import type { ZodError } from 'zod';
 import { useDebouncedEffect } from '@/hooks/use-debounced-effect.hook';
 
-interface UseFormValidationProps<T> {
-	formValues: T;
-	validate: (values: T) => { success: boolean; error?: ZodError<T> };
+interface UseFormValidationProps<K> {
+	formValues: K;
+	validate: (values: K) => { success: boolean; error?: ZodError<K> };
 	debounceDelay?: number;
 }
 

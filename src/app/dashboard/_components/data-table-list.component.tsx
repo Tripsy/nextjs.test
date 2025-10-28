@@ -59,7 +59,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		updateTableState({
 			first: 0,
 		});
-	}, [clearSelectedEntries, updateTableState, tableState.filters]);
+	}, [clearSelectedEntries, updateTableState, tableState.filters]); 
 
 	const findFunctionFilter = useMemo(() => {
 		const params = Object.entries(tableState.filters).reduce(

@@ -2,8 +2,10 @@ import {
 	type CreateFunctionType,
 	type DataSourceType,
 	type FormStateType,
+	type FormValuesType,
 	getDataSourceConfig,
 	type UpdateFunctionType,
+	type ValidationReturnType,
 } from '@/config/data-source';
 import { lang } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
@@ -12,28 +14,50 @@ import ValueError from '@/lib/exceptions/value.error';
 export function getFormValues<K extends keyof DataSourceType>(
 	dataSource: K,
 	formData: FormData,
-): DataSourceType[K]['formValues'] {
+): FormValuesType<K> {
 	const functions = getDataSourceConfig(dataSource, 'functions');
-	const getFormValuesFunction = functions?.getFormValues;
 
+	if (!('getFormValues' in functions)) {
+		throw new ValueError(
+			`'getFormValues' function is not defined for ${dataSource}`,
+		);
+	}
+
+	const getFormValuesFunction = functions.getFormValues;
+
+	// Fighting with Typescript & Eslint
 	if (!getFormValuesFunction) {
 		throw new ValueError(
 			`'getFormValues' function is not defined for ${dataSource}`,
 		);
 	}
 
-	return getFormValuesFunction(formData);
+	return getFormValuesFunction(formData) as FormValuesType<K>;
 }
 
 export function handleValidate<K extends keyof DataSourceType>(
 	dataSource: K,
-	values: DataSourceType[K]['formValues'],
+	values: FormValuesType<K>,
 	id?: number,
-) {
+): ValidationReturnType<K> {
 	const functions = getDataSourceConfig(dataSource, 'functions');
-	const validateFormFunction = functions?.validateForm;
 
-	return validateFormFunction(values, id);
+	if (!('validateForm' in functions)) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
+
+	const validateFormFunction = functions.validateForm;
+
+	// Fighting with Typescript & Eslint
+	if (!validateFormFunction) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
+
+	return validateFormFunction(values, id) as ValidationReturnType<K>;
 }
 
 export async function formAction<K extends keyof DataSourceType>(
@@ -76,6 +100,14 @@ export async function formAction<K extends keyof DataSourceType>(
 		const values = getFormValues(state.dataSource, formData);
 		const validated = handleValidate(state.dataSource, values, state.id);
 
+		if (!validated) {
+			return {
+				...state,
+				situation: 'error',
+				message: lang('error.validation'),
+			};
+		}
+
 		const result = {
 			...state, // Spread existing state
 			values, // Override with new values
@@ -87,7 +119,7 @@ export async function formAction<K extends keyof DataSourceType>(
 				situation: 'error',
 				message: lang('error.validation'),
 				errors: validated.error.flatten().fieldErrors as Partial<
-					Record<keyof DataSourceType[K]['formValues'], string[]>
+					Record<keyof FormValuesType<K>, string[]>
 				>,
 			};
 		}

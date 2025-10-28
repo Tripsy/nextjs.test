@@ -13,17 +13,17 @@ import { LanguageEnum } from '@/lib/enums';
 import { UserRoleEnum } from '@/lib/models/user.model';
 import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
 
-const roles = Object.values(UserRoleEnum).map((role) => ({
-	label: capitalizeFirstLetter(role),
-	value: role,
+const roles = Object.values(UserRoleEnum).map((v) => ({
+	label: capitalizeFirstLetter(v),
+	value: v,
 }));
 
-const languages = Object.values(LanguageEnum).map((language) => ({
-	label: capitalizeFirstLetter(language),
-	value: language,
+const languages = Object.values(LanguageEnum).map((v) => ({
+	label: capitalizeFirstLetter(v),
+	value: v,
 }));
 
-export function FormUserManage({
+export function FormManageUser({
 	actionName,
 	formValues,
 	errors,

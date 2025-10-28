@@ -166,6 +166,21 @@ const en = {
 			},
 		},
 	},
+	log_data: {
+		action: {
+			delete: {
+				title: 'Delete log(s)',
+				label: 'Delete',
+				success: 'Log(s) deleted.',
+				confirmText:
+					'Are you sure you want to delete selected log(s)?',
+			},
+			view: {
+				title: 'Log details',
+				label: 'View',
+			},
+		},
+	},
 };
 
 export function lang(key: string, data?: Record<string, string>): string {

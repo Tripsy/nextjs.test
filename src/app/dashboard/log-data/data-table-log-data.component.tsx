@@ -6,15 +6,14 @@ import DataTableList from '@/app/dashboard/_components/data-table-list.component
 import { DataTableModal } from '@/app/dashboard/_components/data-table-modal.component';
 import { DataTableProvider } from '@/app/dashboard/_providers/data-table-provider';
 import { createModelStore } from '@/app/dashboard/_stores/model.store';
-import { DataTableUsersFilters } from '@/app/dashboard/users/data-table-users-filters.component';
-import { FormManageUser } from '@/app/dashboard/users/form-manage-user.component';
-import { SetupPermissionsUser } from '@/app/dashboard/users/setup-permissions-user.component';
+import { DataTableLogDataFilters } from '@/app/dashboard/log-data/data-table-log-data-filters.component';
+import { ViewLogData } from '@/app/dashboard/log-data/view-log-data.component';
 import { Loading } from '@/components/loading.component';
 import { useMounted } from '@/hooks';
 
-const modelStore = createModelStore('users');
+const modelStore = createModelStore('log_data');
 
-export const DataTableUsers = (): JSX.Element => {
+export const DataTableLogData = (): JSX.Element => {
 	const isMounted = useMounted();
 
 	if (!isMounted) {
@@ -23,26 +22,22 @@ export const DataTableUsers = (): JSX.Element => {
 
 	return (
 		<DataTableProvider
-			dataSource="users"
-			selectionMode="checkbox"
+			dataSource="log_data"
+			selectionMode="multiple"
 			modelStore={modelStore}
 		>
 			<div className="standard-box p-4 shadow-md">
-				<DataTableUsersFilters />
+				<DataTableLogDataFilters />
 				<DataTableActions />
 				<DataTableList dataKey="id" scrollHeight="400px" />
 			</div>
 
-			<DataTableModal<'users'>
+			<DataTableModal<'log_data'>
 				modals={{
-					// @ts-expect-error FormManageUser props are injected at runtime via FormManage
-					create: <FormManageUser />,
-					// @ts-expect-error FormManageUser props are injected at runtime via FormManage
-					update: <FormManageUser />,
-					permissions: <SetupPermissionsUser />,
+					view: <ViewLogData />,
 				}}
 				modalClass={{
-					permissions: 'max-w-xl',
+					view: 'max-w-3xl!',
 				}}
 			/>
 		</DataTableProvider>

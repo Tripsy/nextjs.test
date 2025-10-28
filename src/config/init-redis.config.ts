@@ -1,43 +1,38 @@
 import Redis from 'ioredis';
 import { cfg } from '@/config/settings';
 
-class RedisClient {
-	private static instance: Redis;
+let redisInstance: Redis | null = null;
 
-	public static getInstance(): Redis {
-		if (!RedisClient.instance) {
-			RedisClient.instance = new Redis({
-				host: cfg('redis.host'),
-				port: Number(cfg('redis.port')),
-				password: cfg('redis.password'),
-			});
+export const getRedisClient = (): Redis => {
+	if (!redisInstance) {
+		redisInstance = new Redis({
+			host: cfg('redis.host'),
+			port: Number(cfg('redis.port')),
+			password: cfg('redis.password'),
+		});
 
-			RedisClient.instance.on('error', (error) => {
-				console.error('Redis connection error', error);
-			});
+		redisInstance.on('error', (error) => {
+			console.error('Redis connection error', error);
+		});
 
-			RedisClient.instance.on('connect', () => {
-				console.debug('Connected to Redis');
-			});
-		}
-
-		return RedisClient.instance;
+		redisInstance.on('connect', () => {
+			console.debug('Connected to Redis');
+		});
 	}
 
-	public static async close(): Promise<void> {
-		if (RedisClient.instance) {
-			try {
-				await RedisClient.instance.quit();
+	return redisInstance;
+};
 
-				console.debug('Redis connection closed gracefully');
-			} catch (error) {
-				console.error('Error closing Redis connection', error);
-
-				throw error;
-			}
+export const redisClose = async (): Promise<void> => {
+	if (redisInstance) {
+		try {
+			await redisInstance.quit();
+			console.debug('Redis connection closed gracefully');
+		} catch (error) {
+			console.error('Error closing Redis connection', error);
+			throw error;
+		} finally {
+			redisInstance = null;
 		}
 	}
-}
-
-export const getRedisClient = (): Redis => RedisClient.getInstance();
-export const redisClose = RedisClient.close;
+};

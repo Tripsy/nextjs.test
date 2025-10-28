@@ -169,14 +169,24 @@ Routes.group('account')
 Routes.group('dashboard')
 	.auth(RouteAuth.PROTECTED)
 	.add('dashboard', '/dashboard')
+	.add('template-find', '/dashboard/templates', {
+		permission: 'template.find',
+	})
+	.add('log-data-find', '/dashboard/log-data', {
+		permission: 'log_data.find',
+	})
+	.add('cron-history-find', '/dashboard/cron-history', {
+		permission: 'cron_history.find',
+	})
+	.add('mail-queue-find', '/dashboard/mail-queue', {
+		permission: 'mail_queue.find',
+	})
 	.add('user-find', '/dashboard/users', {
 		permission: 'user.find',
 	})
 	.add('permission-find', '/dashboard/permissions', {
 		permission: 'permission.find',
 	});
-
-// .add('user-view', '/dashboard/users/:key');
 
 /**
  * Check if the given path is an excluded route (usually auth related routes)

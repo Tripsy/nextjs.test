@@ -51,6 +51,19 @@ export function DataTableRowDate({ date }: { date: Date | string }) {
 	return <span>{date ? formatDate(date) : '-'}</span>;
 }
 
+export function DataTableRowView<T>({ entry, value }: { entry: T, value: string }) {
+	return (
+		<button
+			type="button"
+			onClick={() => { console.log(entry)}}
+			title="View details"
+			className="cursor-pointer hover:underline"
+		>
+			{value}
+		</button>
+	);
+}
+
 export function DataTableRowId({
 	id,
 	deleted_at,
@@ -97,4 +110,13 @@ export const CapitalizeBodyTemplate = <T extends Record<string, unknown>>(
 	const value = entry[column.field];
 
 	return capitalizeFirstLetter(String(value));
+};
+
+export const ViewBodyTemplate = <T extends Record<string, unknown>>(
+	entry: T,
+	column: DataTableColumnType<T>,
+) => {
+	const value = entry[column.field];
+
+	return <DataTableRowView value={String(value)} entry={entry} />;
 };
