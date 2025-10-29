@@ -3,17 +3,18 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import {
+	FormFiltersDateRange,
+	FormFiltersReset,
+	FormFiltersSearch,
+	FormFiltersSelect,
+} from '@/app/dashboard/_components/form-filters.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import type { DataTableUsersFiltersType } from '@/app/dashboard/users/users.definition';
 import { useSearchFilter } from '@/hooks';
-import {LogCategoryEnum, LogLevelEnum} from '@/lib/models/log-data.model';
+import { LogCategoryEnum, LogLevelEnum } from '@/lib/models/log-data.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter} from '@/lib/utils/string';
-import {
-	FormFiltersDateRange, FormFiltersReset,
-	FormFiltersSearch,
-	FormFiltersSelect
-} from "@/app/dashboard/_components/form-filters.component";
+import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const logLevels = Object.values(LogLevelEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

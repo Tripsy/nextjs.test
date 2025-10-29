@@ -88,7 +88,10 @@ function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
 	return (
 		<li>
 			<Link href={href}>
-				<AwesomeIcon icon={icon} className="w-4 h-4 inline-block mr-0.75" />
+				<AwesomeIcon
+					icon={icon}
+					className="w-4 h-4 inline-block mr-0.75"
+				/>
 				{label}
 			</Link>
 		</li>

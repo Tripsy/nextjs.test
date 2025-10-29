@@ -1,20 +1,19 @@
 import { Calendar } from 'primereact/calendar';
 import { Checkbox } from 'primereact/checkbox';
+import { Dropdown } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
+import type { Nullable } from 'primereact/ts-helpers';
 import { handleReset } from '@/app/dashboard/_components/data-table-actions.component';
 import { FormElement } from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
 import type { useSearchFilter } from '@/hooks';
-import {MatchModeType} from '@/lib/utils/data-table';
+import type { MatchModeType } from '@/lib/utils/data-table';
 import { getValidDate, stringToDate } from '@/lib/utils/date';
 import { generateElementId } from '@/lib/utils/string';
-import {Dropdown} from "primereact/dropdown";
-import type React from "react";
-import type {Nullable} from "primereact/ts-helpers";
 
 export type SelectOptionsType<V> = {
 	label: string;
@@ -33,7 +32,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 	fieldName,
 	fieldValue,
 	selectOptions,
-	handleSelectChange
+	handleSelectChange,
 }: {
 	labelText: string;
 	fieldName: string;
@@ -53,10 +52,12 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 					inputId={generateElementId('searchStatus')}
 					value={fieldValue}
 					options={selectOptions}
-					onChange={(e) => handleSelectChange(
-						fieldName as keyof DataSourceType[K]['dataTableFilter'],
-						e.value
-					)}
+					onChange={(e) =>
+						handleSelectChange(
+							fieldName as keyof DataSourceType[K]['dataTableFilter'],
+							e.value,
+						)
+					}
 					placeholder="-any-"
 					showClear
 				/>

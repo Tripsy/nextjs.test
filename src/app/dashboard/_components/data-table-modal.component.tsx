@@ -46,7 +46,12 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	const actionMode = actionName ? actions[actionName]?.mode : null;
 
 	useEffect(() => {
-		if (isOpen && actionName && ['update', 'view'].includes(actionName) && !actionEntry) {
+		if (
+			isOpen &&
+			actionName &&
+			['update', 'view'].includes(actionName) &&
+			!actionEntry
+		) {
 			showToast({
 				severity: 'error',
 				summary: 'Error',

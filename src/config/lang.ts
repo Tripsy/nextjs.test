@@ -132,6 +132,10 @@ const en = {
 				success: 'User restored.',
 				confirmText: 'Are you sure you want to restore selected user?',
 			},
+			view: {
+				title: 'User details',
+				label: 'View',
+			},
 		},
 	},
 	permissions: {
@@ -172,8 +176,7 @@ const en = {
 				title: 'Delete log(s)',
 				label: 'Delete',
 				success: 'Log(s) deleted.',
-				confirmText:
-					'Are you sure you want to delete selected log(s)?',
+				confirmText: 'Are you sure you want to delete selected log(s)?',
 			},
 			view: {
 				title: 'Log details',

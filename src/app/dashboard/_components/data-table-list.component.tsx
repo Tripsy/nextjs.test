@@ -16,6 +16,7 @@ import {
 	type DataTablePropsType,
 	getDataSourceConfig,
 } from '@/config/data-source';
+import { getMomentInstanceFromDate } from '@/lib/utils/date';
 
 type SelectionChangeEvent<T> = {
 	originalEvent: React.SyntheticEvent;
@@ -27,8 +28,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 ) {
 	const { dataSource, dataStorageKey, selectionMode, modelStore } =
 		useDataTable<K>();
-
-	const [error, setError] = useState<Error | null>(null);
 
 	const tableState = useStore(modelStore, (state) => state.tableState);
 	const updateTableState = useStore(
@@ -59,19 +58,47 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		updateTableState({
 			first: 0,
 		});
-	}, [clearSelectedEntries, updateTableState, tableState.filters]); 
+	}, [clearSelectedEntries, updateTableState, tableState.filters]);
 
 	const findFunctionFilter = useMemo(() => {
 		const params = Object.entries(tableState.filters).reduce(
 			(acc, [key, filterObj]) => {
-				if (filterObj?.value != null && filterObj.value !== '') {
-					acc[key === 'global' ? 'term' : String(key)] =
-						filterObj.value;
+				const value = filterObj?.value;
+
+				// Skip empty or null values
+				if (value == null || value === '') {
+					return acc;
 				}
+
+				// Handle date filters
+				if (/_date_start$/.test(key)) {
+					const date = getMomentInstanceFromDate(value);
+
+					if (!date) {
+						throw new Error(`Invalid start date: ${value}`);
+					}
+
+					acc[key] = date.startOf('day').toISOString();
+				} else if (/_date_end$/.test(key)) {
+					const date = getMomentInstanceFromDate(value);
+
+					if (!date) {
+						throw new Error(`Invalid start date: ${value}`);
+					}
+
+					acc[key] = date.endOf('day').toISOString();
+				} else {
+					// Normal filters
+					acc[key === 'global' ? 'term' : String(key)] =
+						String(value);
+				}
+
 				return acc;
 			},
 			{} as Record<string, string>,
 		);
+
+		console.log(params);
 
 		return JSON.stringify(params);
 	}, [tableState.filters]);
@@ -134,11 +161,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 				}
 			} catch (error) {
 				if (!abortController.signal.aborted) {
-					setError(
-						error instanceof Error
-							? error
-							: new Error(String(error)),
-					);
+					throw error;
 				}
 			} finally {
 				if (!abortController.signal.aborted) {
@@ -226,11 +249,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		}),
 		[],
 	);
-
-	// This will trigger error boundary
-	if (error) {
-		throw error;
-	}
 
 	return (
 		<DataTable

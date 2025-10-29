@@ -6,7 +6,8 @@ import { useStore } from 'zustand/react';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
-	FormFiltersSearch, FormFiltersSelect,
+	FormFiltersSearch,
+	FormFiltersSelect,
 	FormFiltersShowDeleted,
 } from '@/app/dashboard/_components/form-filters.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
@@ -14,7 +15,7 @@ import type { DataTableUsersFiltersType } from '@/app/dashboard/users/users.defi
 import { useSearchFilter } from '@/hooks';
 import { UserRoleEnum, UserStatusEnum } from '@/lib/models/user.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter} from '@/lib/utils/string';
+import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const statuses = Object.values(UserStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

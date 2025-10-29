@@ -78,7 +78,7 @@ export type DataTableColumnType<Model> = {
  *      free ~ not dependent on selected entries,
  *      single ~ only one entry allowed,
  *      multiple ~ multiple entries allowed
- * `position` where to display action button (left or right)
+ * `position` where to display action button (left, right, hidden)
  * `function` function to perform action
  * `button` action button configuration
  */
@@ -89,7 +89,7 @@ export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
 	permission: string;
 	allowedEntries: 'free' | 'single' | 'multiple';
 	entryCustomCheck?: (entry: DataSourceType[K]['model']) => boolean;
-	position: 'left' | 'right';
+	position: 'left' | 'right' | 'hidden';
 	function?: F;
 	button: {
 		className: string;

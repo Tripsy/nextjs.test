@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { getDataSourceConfig } from '@/config/data-source';
+import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
 import { hasPermission } from '@/lib/models/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 import { useToast } from '@/providers/toast.provider';
@@ -22,6 +22,8 @@ export const handleReset = (source: string) => {
 type ActionKey = 'create' | 'update' | 'delete' | string;
 
 export function DataTableActions() {
+	const [error, setError] = useState<string | null>(null);
+
 	const { dataSource, selectionMode, modelStore } = useDataTable();
 	const { auth } = useAuth();
 	const { showToast } = useToast();
@@ -43,85 +45,72 @@ export function DataTableActions() {
 		[dataSource],
 	);
 
-	// useEffect(() => {
-	// 	const handleUseAction = (event: CustomEvent<{ source: string }>) => {
-	// 		console.log('Received useAction event:', event.detail);
-	//
-	// 		// you can trigger your custom action here:
-	// 		// openAction(event.detail.source);
-	//
-	// 		handleClick(
-	// 			actionName,
-	// 			actionProps.permission,
-	// 			actionProps.allowedEntries,
-	// 			customCheck,
-	// 		)
-	// 	};
-	//
-	// 	// Attach listener
-	// 	window.addEventListener('useAction', handleUseAction as EventListener);
-	//
-	// 	// Cleanup on unmount
-	// 	return () => {
-	// 		window.removeEventListener('useAction', handleUseAction as EventListener);
-	// 	};
-	// }, [openAction]);
-
-	const allowAction = (
-		permission: string,
-		allowedEntries: 'free' | 'single' | 'multiple',
-		entryCustomCheck?: (entry: unknown) => boolean,
-	) => {
-		if (allowedEntries === 'single') {
-			if (selectedEntries.length !== 1) {
-				return false;
-			}
-
-			if (entryCustomCheck && !entryCustomCheck(selectedEntries[0])) {
-				return false;
-			}
-		}
-
-		if (allowedEntries === 'multiple' && selectedEntries.length === 0) {
-			return false;
-		}
-
-		return hasPermission(auth, permission);
-	};
-
-	const handleClick = (
-		actionName: ActionKey,
-		permission: string,
-		allowedEntries: 'free' | 'single' | 'multiple',
-		entryCustomCheck?: (entry: unknown) => boolean,
-	) => {
-		if (!allowAction(permission, allowedEntries, entryCustomCheck)) {
-			showToast({
-				severity: 'error',
-				summary: 'Error',
-				detail: 'Operation not allowed',
-			});
-
-			return;
-		}
-
-		switch (actionName) {
-			case 'create':
-				openCreate();
-				break;
-			case 'update':
-				setActionEntry(selectedEntries[0]);
-				openUpdate();
-				break;
-			default:
-				if (allowedEntries === 'single') {
-					setActionEntry(selectedEntries[0]);
+	const allowAction = useCallback(
+		<K extends keyof DataSourceType>(
+			entries: DataSourceType[K]['model'][],
+			permission: string,
+			allowedEntries: 'free' | 'single' | 'multiple',
+			entryCustomCheck?: (entry: unknown) => boolean,
+		) => {
+			if (allowedEntries === 'single') {
+				if (entries.length !== 1) {
+					return false;
 				}
 
-				openAction(actionName);
-				break;
-		}
-	};
+				if (entryCustomCheck && !entryCustomCheck(entries[0])) {
+					return false;
+				}
+			}
+
+			if (allowedEntries === 'multiple' && entries.length === 0) {
+				return false;
+			}
+
+			return hasPermission(auth, permission);
+		},
+		[auth],
+	);
+
+	const handleClick = useCallback(
+		<K extends keyof DataSourceType>(
+			entries: DataSourceType[K]['model'][],
+			actionName: ActionKey,
+			permission: string,
+			allowedEntries: 'free' | 'single' | 'multiple',
+			entryCustomCheck?: (entry: unknown) => boolean,
+		) => {
+			if (
+				!allowAction(
+					entries,
+					permission,
+					allowedEntries,
+					entryCustomCheck,
+				)
+			) {
+				setError('Operation not allowed');
+
+				return;
+			}
+
+			switch (actionName) {
+				case 'create':
+					openCreate();
+					break;
+				case 'update':
+					setActionEntry(entries[0]);
+					openUpdate();
+					break;
+				default:
+					if (allowedEntries === 'single') {
+						setActionEntry(entries[0]);
+					}
+
+					openAction(actionName);
+					break;
+			}
+		},
+		[allowAction, openAction, openCreate, openUpdate, setActionEntry],
+	);
 
 	const renderActions = (position: 'left' | 'right') => {
 		if (!actions) {
@@ -146,6 +135,7 @@ export function DataTableActions() {
 
 			if (
 				!allowAction(
+					selectedEntries,
 					actionProps.permission,
 					actionProps.allowedEntries,
 					customCheck,
@@ -162,6 +152,7 @@ export function DataTableActions() {
 					className={actionProps.button?.className}
 					handleClick={() =>
 						handleClick(
+							selectedEntries,
 							actionName,
 							actionProps.permission,
 							actionProps.allowedEntries,
@@ -172,6 +163,66 @@ export function DataTableActions() {
 			);
 		});
 	};
+
+	useEffect(() => {
+		const handleUseDataTableAction = <K extends keyof DataSourceType>(
+			event: CustomEvent<{
+				source: string;
+				actionName: string;
+				entry: unknown;
+			}>,
+		) => {
+			console.log('Received useAction event:', event.detail);
+
+			const actionName = event.detail.actionName;
+			const actionProps = actions?.[actionName];
+			const eventEntry = event.detail.entry as DataSourceType[K]['model'];
+
+			if (!actionProps) {
+				setError(
+					`'actionProps' action props are not defined for ${actionName}`,
+				);
+
+				return;
+			}
+
+			const customCheck = actionProps.entryCustomCheck as
+				| ((entry: unknown) => boolean)
+				| undefined;
+
+			handleClick(
+				[eventEntry],
+				actionName,
+				actionProps.permission,
+				actionProps.allowedEntries,
+				customCheck,
+			);
+		};
+
+		// Attach listener
+		window.addEventListener(
+			'useDataTableAction',
+			handleUseDataTableAction as EventListener,
+		);
+
+		// Cleanup on unmount
+		return () => {
+			window.removeEventListener(
+				'useDataTableAction',
+				handleUseDataTableAction as EventListener,
+			);
+		};
+	}, [actions, handleClick]);
+
+	if (error) {
+		showToast({
+			severity: 'error',
+			summary: 'Error',
+			detail: error,
+		});
+
+		return;
+	}
 
 	return (
 		<div className="flex flex-wrap gap-4 justify-between min-h-18 py-4">

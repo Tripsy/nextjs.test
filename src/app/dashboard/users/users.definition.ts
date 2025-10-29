@@ -1,11 +1,6 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
-import {
-	CapitalizeBodyTemplate,
-	DateBodyTemplate,
-	IdBodyTemplate,
-	StatusBodyTemplate,
-} from '@/app/dashboard/_components/data-table-row.component';
+import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
 import type {
 	DataSourceType,
 	DataTableColumnType,
@@ -231,21 +226,50 @@ export type DataSourceUsersType = {
 };
 
 const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
-	{ field: 'id', header: 'ID', sortable: true, body: IdBodyTemplate },
+	{
+		field: 'id',
+		header: 'ID',
+		sortable: true,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				markDeleted: true,
+				action: {
+					name: 'view',
+					source: 'users',
+				},
+			}),
+	},
 	{ field: 'name', header: 'Name', sortable: true },
 	{ field: 'email', header: 'Email' },
-	{ field: 'role', header: 'Role', body: CapitalizeBodyTemplate },
+	{
+		field: 'role',
+		header: 'Role',
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				capitalize: true,
+			}),
+	},
 	{
 		field: 'status',
 		header: 'Status',
-		body: StatusBodyTemplate,
-		style: { maxWidth: '6rem' },
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				isStatus: true,
+				markDeleted: true,
+			}),
+		style: {
+			minWidth: '8rem',
+			maxWidth: '8rem',
+		},
 	},
 	{
 		field: 'created_at',
 		header: 'Created At',
 		sortable: true,
-		body: DateBodyTemplate,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				displayDate: true,
+			}),
 	},
 ];
 
@@ -374,6 +398,15 @@ export const DataSourceConfigUsers = {
 			position: 'left' as const,
 			button: {
 				className: 'btn btn-action-update',
+			},
+		},
+		view: {
+			mode: 'other' as const,
+			permission: 'user.read',
+			allowedEntries: 'single' as const,
+			position: 'hidden' as const,
+			button: {
+				className: 'btn btn-action-view',
 			},
 		},
 	},

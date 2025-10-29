@@ -1,8 +1,5 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
-import {
-	CapitalizeBodyTemplate,
-	DateBodyTemplate, ViewBodyTemplate,
-} from '@/app/dashboard/_components/data-table-row.component';
+import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import type { LogDataModel } from '@/lib/models/log-data.model';
 import { deleteLogData, findLogData } from '@/lib/services/log-data.service';
@@ -25,15 +22,46 @@ export type DataSourceLogDataType = {
 };
 
 const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
-	{ field: 'id', header: 'ID', sortable: true, body: ViewBodyTemplate },
-	{ field: 'category', header: 'Category', body: CapitalizeBodyTemplate },
-	{ field: 'level', header: 'Level', body: CapitalizeBodyTemplate },
+	{
+		field: 'id',
+		header: 'ID',
+		sortable: true,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				markDeleted: true,
+				action: {
+					name: 'view',
+					source: 'log_data',
+				},
+			}),
+	},
+	{
+		field: 'category',
+		header: 'Category',
+		sortable: true,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				capitalize: true,
+			}),
+	},
+	{
+		field: 'level',
+		header: 'Level',
+		sortable: true,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				capitalize: true,
+			}),
+	},
 	{ field: 'message', header: 'Message' },
 	{
 		field: 'created_at',
 		header: 'Created At',
 		sortable: true,
-		body: DateBodyTemplate,
+		body: (entry, column) =>
+			DataTableValue(entry, column, {
+				displayDate: true,
+			}),
 	},
 ];
 
@@ -74,7 +102,7 @@ export const DataSourceConfigLogData = {
 			mode: 'other' as const,
 			permission: 'log_data.read',
 			allowedEntries: 'single' as const,
-			position: 'left' as const,
+			position: 'hidden' as const,
 			button: {
 				className: 'btn btn-action-view',
 			},

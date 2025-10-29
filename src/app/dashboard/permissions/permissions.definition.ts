@@ -1,6 +1,5 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
-import { IdBodyTemplate } from '@/app/dashboard/_components/data-table-row.component';
 import type {
 	DataSourceType,
 	DataTableColumnType,
@@ -100,7 +99,7 @@ export type DataSourcePermissionsType = {
 };
 
 const DataTableColumnsPermissions: DataTableColumnType<PermissionModel>[] = [
-	{ field: 'id', header: 'ID', sortable: true, body: IdBodyTemplate },
+	{ field: 'id', header: 'ID', sortable: true },
 	{ field: 'entity', header: 'Entity', sortable: true },
 	{ field: 'operation', header: 'Operation', sortable: true },
 ];
