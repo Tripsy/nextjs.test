@@ -25,9 +25,9 @@ export function ViewLogData() {
 	const parsedDebugStack = parseJson(debugStack);
 
 	return (
-		<>
+		<div className="space-y-6">
 			<div>
-				<h3 className="font-bold border-b border-line pb-2 mb-2">
+				<h3 className="font-bold border-b border-line pb-2 mb-3">
 					Details
 				</h3>
 				<div className="ml-4 space-y-1">
@@ -56,8 +56,8 @@ export function ViewLogData() {
 			</div>
 
 			{parsedContext?.request && (
-				<div className="mt-6">
-					<h3 className="font-bold border-b border-line pb-2 mb-2">
+				<div>
+					<h3 className="font-bold border-b border-line pb-2 mb-3">
 						Request Context
 					</h3>
 					<div className="ml-4 space-y-1">
@@ -86,8 +86,8 @@ export function ViewLogData() {
 			)}
 
 			{parsedDebugStack && (
-				<div className="mt-6">
-					<h3 className="font-bold border-b border-line pb-2 mb-2">
+				<div>
+					<h3 className="font-bold border-b border-line pb-2 mb-3">
 						Debug Stack
 					</h3>
 					<div className="ml-4 space-y-1">
@@ -114,6 +114,6 @@ export function ViewLogData() {
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	);
 }

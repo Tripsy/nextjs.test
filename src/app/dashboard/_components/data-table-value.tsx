@@ -3,7 +3,8 @@
 import clsx from 'clsx';
 import type { JSX } from 'react';
 import { Icons } from '@/components/icon.component';
-import type { DataTableColumnType } from '@/config/data-source';
+import type { DataSourceType, DataTableColumnType } from '@/config/data-source';
+import { lang } from '@/config/lang';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
@@ -49,7 +50,7 @@ export const DisplayStatus = ({
 
 	return (
 		<div
-			className={`${statusProps.class} w-full text-white dark:text-black`}
+			className={`${statusProps.class} w-full text-white dark:text-black opacity-70 hover:opacity-100`}
 		>
 			{statusProps.icon}
 			{statusProps.label}
@@ -57,24 +58,27 @@ export const DisplayStatus = ({
 	);
 };
 
-export const DisplayAction = ({
+export const DisplayAction = <K extends keyof DataSourceType>({
 	value,
 	action,
 	entry,
 }: {
 	value: string | JSX.Element;
-	action: DataTableValueOptionsType['action'];
-	entry: Record<string, unknown>;
+	action: NonNullable<DataTableValueOptionsType<K>['action']>;
+	entry: DataSourceType[K]['model'];
 }) => {
-	const triggerAction = () => {
-		if (!action) {
-			return;
-		}
+	const actionName =
+		typeof action.name === 'function' ? action.name(entry) : action.name;
 
+	if (!actionName) {
+		return value;
+	}
+
+	const triggerAction = () => {
 		const event = new CustomEvent('useDataTableAction', {
 			detail: {
 				source: action.source,
-				actionName: action.name,
+				actionName: actionName,
 				entry,
 			},
 		});
@@ -86,7 +90,7 @@ export const DisplayAction = ({
 		<button
 			type="button"
 			onClick={triggerAction}
-			title="View details" // TODO
+			title={lang(`${action.source}.action.${actionName}.title`)}
 			className="cursor-pointer hover:underline"
 		>
 			{value}
@@ -94,24 +98,27 @@ export const DisplayAction = ({
 	);
 };
 
-export type DataTableValueOptionsType = {
+export type DataTableValueOptionsType<K extends keyof DataSourceType> = {
 	capitalize?: boolean;
 	markDeleted?: boolean;
 	isStatus?: boolean;
 	displayDate?: boolean;
 	source?: string;
 	action?: {
-		name: string;
+		name:
+			| null
+			| string
+			| ((entry: DataSourceType[K]['model']) => string | null);
 		source: string;
 	};
 };
 
-export const DataTableValue = <T extends Record<string, unknown>>(
-	entry: T,
-	column: DataTableColumnType<T>,
-	options: DataTableValueOptionsType,
+export const DataTableValue = <K extends keyof DataSourceType>(
+	entry: DataSourceType[K]['model'],
+	column: DataTableColumnType<DataSourceType[K]['model']>,
+	options: DataTableValueOptionsType<K>,
 ) => {
-	let value: string | JSX.Element = entry[column.field] as string;
+	let value: string | JSX.Element = entry[column.field] as string; // Assumption: The field value is a string
 
 	if (options.capitalize) {
 		value = capitalizeFirstLetter(value);
@@ -121,19 +128,17 @@ export const DataTableValue = <T extends Record<string, unknown>>(
 		value = formatDate(value, 'date-time') || '-';
 	}
 
-	if (options.isStatus && column.field === 'status') {
+	if (options.isStatus && column.field === 'status' && 'status' in entry) {
 		const status =
-			options.markDeleted && entry?.deleted_at
+			options.markDeleted && 'deleted_at' in entry && entry?.deleted_at
 				? 'deleted'
 				: (entry.status as keyof typeof statusList);
 
 		value = <DisplayStatus status={status} />;
-	} else {
-		if (options.markDeleted) {
-			value = (
-				<DisplayDeleted value={value} isDeleted={!!entry?.deleted_at} />
-			);
-		}
+	} else if (options.markDeleted && 'deleted_at' in entry) {
+		value = (
+			<DisplayDeleted value={value} isDeleted={!!entry?.deleted_at} />
+		);
 	}
 
 	if (options.action) {

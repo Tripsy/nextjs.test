@@ -27,7 +27,7 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 		header: 'ID',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'log_data'>(entry, column, {
 				markDeleted: true,
 				action: {
 					name: 'view',
@@ -40,7 +40,7 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 		header: 'Category',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'log_data'>(entry, column, {
 				capitalize: true,
 			}),
 	},
@@ -49,7 +49,7 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 		header: 'Level',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'log_data'>(entry, column, {
 				capitalize: true,
 			}),
 	},
@@ -59,7 +59,7 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 		header: 'Created At',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'log_data'>(entry, column, {
 				displayDate: true,
 			}),
 	},

@@ -1,13 +1,12 @@
 # TODO
 
-1. implement action on status buttons for user
-2. do user view
-3. redo language -> split to different files
-4. templates
-5. Recap NextJs documentation
-6. recover password & other account pages
-7. terms page
-8. Replace all console.error with logging
+1. https://developer.mozilla.org/en-US/docs/Web/API/CookieStore  > js.ts
+2. redo language -> split to different files
+3. templates
+4. Recap NextJs documentation
+5. recover password & other account pages
+6. terms page
+7. Replace all console.error with logging
 
 # IDEAS
 
@@ -60,37 +59,3 @@ io.emit("new-message", msg); // Broadcast to all clients
 socket.on("new-message", (msg) => {
 addMessageToUI(msg); // Update chat UI
 });
-
--------------------------
-
-<Notice type="error" message="Testing error layout" />
-
-<Notice type="warning" message="Testing error layout" />
-
-<Notice type="loading" />
-
-<Notice type="info" message="Testing info layout" />
-
-<Notice type="success" message="Testing info layout" />
-
-
--------------------------
-
-// When user updates their profile
-const updateProfile = async (data) => {
-const updatedUser = await api.updateProfile(auth.id, data);
-setAuth({ ...auth, ...updatedUser }); // Merge updates
-};
-
-// In your auth provider - Cross-Tab Sync
-useEffect(() => {
-const handleStorage = (e: StorageEvent) => {
-if (e.key === 'auth-event') {
-const newAuth = JSON.parse(e.newValue || 'null');
-setAuth(newAuth); // Sync across browser tabs
-}
-};
-
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-}, []);

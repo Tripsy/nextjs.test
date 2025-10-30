@@ -231,7 +231,7 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 		header: 'ID',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'users'>(entry, column, {
 				markDeleted: true,
 				action: {
 					name: 'view',
@@ -245,17 +245,35 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 		field: 'role',
 		header: 'Role',
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'users'>(entry, column, {
 				capitalize: true,
+				action: {
+					name: (entry: UserModel) => {
+						return entry.role === UserRoleEnum.OPERATOR
+							? 'permissions'
+							: null;
+					},
+					source: 'users',
+				},
 			}),
 	},
 	{
 		field: 'status',
 		header: 'Status',
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'users'>(entry, column, {
 				isStatus: true,
 				markDeleted: true,
+				action: {
+					name: (entry: UserModel) => {
+						return entry.deleted_at
+							? 'restore'
+							: entry.status === UserStatusEnum.ACTIVE
+								? 'disable'
+								: 'enable';
+					},
+					source: 'users',
+				},
 			}),
 		style: {
 			minWidth: '8rem',
@@ -267,7 +285,7 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 		header: 'Created At',
 		sortable: true,
 		body: (entry, column) =>
-			DataTableValue(entry, column, {
+			DataTableValue<'users'>(entry, column, {
 				displayDate: true,
 			}),
 	},

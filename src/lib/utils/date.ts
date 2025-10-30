@@ -9,7 +9,7 @@ import moment, { type Moment } from 'moment';
 export function isValidDate(date: string): boolean {
 	const parsedDate = new Date(date);
 
-	return !isNaN(parsedDate.getTime());
+	return !Number.isNaN(parsedDate.getTime());
 }
 
 /**
@@ -20,7 +20,7 @@ export function isValidDate(date: string): boolean {
 export function isValidDateInstance(date: unknown): date is Date {
 	return (
 		date instanceof Date &&
-		!isNaN(date.getTime()) &&
+		!Number.isNaN(date.getTime()) &&
 		date.toString() !== 'Invalid Date'
 	);
 }

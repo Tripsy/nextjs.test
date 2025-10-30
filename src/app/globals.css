@@ -1,3 +1,5 @@
+/* biome-ignore-all lint: Daisy usage & Tailwind generate errors - TODO: Fix later */
+
 @import "tailwindcss";
 
 @plugin "daisyui" {

@@ -1,11 +1,3 @@
-// export const getQueryParams = function () {
-//     return (new URL(window.location.href)).searchParams
-// }
-//
-// export const getQueryParam = function (name) {
-//     return getQueryParams().get(name)
-// }
-
 function getCookieDomainPart(domain?: string) {
 	if (domain) {
 		return `;domain=${domain}`;

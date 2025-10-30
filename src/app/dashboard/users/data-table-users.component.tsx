@@ -9,6 +9,7 @@ import { createModelStore } from '@/app/dashboard/_stores/model.store';
 import { DataTableUsersFilters } from '@/app/dashboard/users/data-table-users-filters.component';
 import { FormManageUser } from '@/app/dashboard/users/form-manage-user.component';
 import { SetupPermissionsUser } from '@/app/dashboard/users/setup-permissions-user.component';
+import { ViewUser } from '@/app/dashboard/users/view-user.component';
 import { Loading } from '@/components/loading.component';
 import { useMounted } from '@/hooks';
 
@@ -40,9 +41,11 @@ export const DataTableUsers = (): JSX.Element => {
 					// @ts-expect-error FormManageUser props are injected at runtime via FormManage
 					update: <FormManageUser />,
 					permissions: <SetupPermissionsUser />,
+					view: <ViewUser />,
 				}}
 				modalClass={{
 					permissions: 'max-w-xl',
+					view: 'max-w-2xl!',
 				}}
 			/>
 		</DataTableProvider>

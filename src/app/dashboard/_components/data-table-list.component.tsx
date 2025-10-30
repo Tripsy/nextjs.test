@@ -23,6 +23,13 @@ type SelectionChangeEvent<T> = {
 	value: T[];
 };
 
+const CurrentPageReport = (options: PaginatorCurrentPageReportOptions) => (
+	<div className="data-table-paginator-showing">
+		Showing {options.first} to {options.last} of {options.totalRecords}{' '}
+		entries
+	</div>
+);
+
 export default function DataTableList<K extends keyof DataSourceType>(
 	props: DataTablePropsType,
 ) {
@@ -58,7 +65,11 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		updateTableState({
 			first: 0,
 		});
-	}, [clearSelectedEntries, updateTableState, tableState.filters]);
+	}, [
+		clearSelectedEntries,
+		updateTableState,
+		tableState.filters,
+	]);
 
 	const findFunctionFilter = useMemo(() => {
 		const params = Object.entries(tableState.filters).reduce(
@@ -97,8 +108,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 			},
 			{} as Record<string, string>,
 		);
-
-		console.log(params);
 
 		return JSON.stringify(params);
 	}, [tableState.filters]);
@@ -240,12 +249,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	const paginatorTemplate = useMemo(
 		() => ({
 			layout: 'CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
-			CurrentPageReport: (options: PaginatorCurrentPageReportOptions) => (
-				<div className="data-table-paginator-showing">
-					Showing {options.first} to {options.last} of{' '}
-					{options.totalRecords} entries
-				</div>
-			),
+			CurrentPageReport,
 		}),
 		[],
 	);
