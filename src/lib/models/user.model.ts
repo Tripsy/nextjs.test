@@ -21,5 +21,5 @@ export type UserModel<D = Date | string> = {
 	role: UserRoleEnum;
 	created_at: D;
 	updated_at: D;
-	deleted_at: D | undefined;
+	deleted_at: D;
 };

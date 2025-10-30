@@ -1,50 +1,44 @@
-function getCookieDomainPart(domain?: string) {
+function getCookieDomain(domain?: string): string {
 	if (domain) {
-		return `;domain=${domain}`;
+		return domain;
 	}
 
-	return `;domain=.${document.location.host}`;
+	const host = document.location.hostname;
+	const parts = host.split('.');
+	if (parts.length > 2) {
+		return `.${parts.slice(-2).join('.')}`;
+	}
+
+	return `.${host}`;
 }
 
-export const setCookie = (
+export async function setCookie(
 	name: string,
 	value: string,
-	expireSeconds: number = 86400,
+	expireSeconds = 86400,
 	domain?: string,
-) => {
-	let expires = '';
+): Promise<void> {
+	const expires = Date.now() + expireSeconds * 1000;
 
-	if (expireSeconds) {
-		const date = new Date();
+	await cookieStore.set({
+		name,
+		value: encodeURIComponent(value || ''),
+		expires,
+		domain: getCookieDomain(domain),
+		path: '/',
+	});
+}
 
-		date.setTime(date.getTime() + expireSeconds * 1000);
+export async function readCookie(name: string): Promise<string | null> {
+	const cookie = await cookieStore.get(name);
 
-		expires = `; expires=${date.toUTCString()}`;
+	if (!cookie?.value) {
+		return null;
 	}
 
-	document.cookie =
-		`${name}=${encodeURIComponent(value || '')}` +
-		`${expires}` +
-		`${getCookieDomainPart(domain)};path=/`;
+	return decodeURIComponent(cookie.value);
+}
 
-	return;
-};
-
-export const readCookie = (name: string): string | null => {
-	const cookieValue = document.cookie
-		.split('; ')
-		.find((row) => row.startsWith(`${name}=`))
-		?.split('=')[1];
-
-	if (cookieValue) {
-		return decodeURIComponent(cookieValue);
-	}
-
-	return null;
-};
-
-export const removeCookie = (name: string, domain?: string) => {
-	document.cookie =
-		name +
-		`=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${getCookieDomainPart(domain)}`;
-};
+export async function removeCookie(name: string): Promise<void> {
+	await cookieStore.delete(name);
+}

@@ -1,6 +1,6 @@
 # TODO
 
-1. https://developer.mozilla.org/en-US/docs/Web/API/CookieStore  > js.ts
+1. fix latest biome errors - deepseek
 2. redo language -> split to different files
 3. templates
 4. Recap NextJs documentation
