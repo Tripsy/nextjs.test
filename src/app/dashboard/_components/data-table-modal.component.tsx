@@ -2,14 +2,14 @@
 
 import clsx from 'clsx';
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { ActionManage } from '@/app/dashboard/_components/action-manage.component';
 import { FormManage } from '@/app/dashboard/_components/form-manage.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { useTranslation } from '@/hooks/use-translation.hook';
 import { useToast } from '@/providers/toast.provider';
 
 type ModalsMap = {
@@ -66,6 +66,12 @@ export function DataTableModal<K extends keyof DataSourceType>({
 		closeOut();
 	};
 
+	const actionTitleKey = `${dataSource}.action.${actionName}.title`;
+
+	const translationsKeys = useMemo(() => [actionTitleKey], [actionTitleKey]);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	if (!isOpen || !actionName) {
 		return null;
 	}
@@ -77,7 +83,6 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	);
 
 	const ActionButtonIcon = getActionIcon(actionName);
-	const actionTitle = lang(`${dataSource}.action.${actionName}.title`);
 
 	const ModalComponent = modals?.[actionName] ?? null;
 
@@ -86,7 +91,7 @@ export function DataTableModal<K extends keyof DataSourceType>({
 			<div className={modalClassComputed}>
 				<div className="flex justify-between px-4 py-3 rounded-t-lg shadow-lg">
 					<h1 className="text-lg font-semibold">
-						<ActionButtonIcon /> {actionTitle}
+						<ActionButtonIcon /> {translations[actionTitleKey]}
 					</h1>
 					<div>
 						<button

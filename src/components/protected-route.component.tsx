@@ -5,8 +5,8 @@ import type React from 'react';
 import { useEffect, useMemo } from 'react';
 import { Loading } from '@/components/loading.component';
 import { Notice } from '@/components/notice.component';
-import { lang } from '@/config/lang';
 import Routes, { RouteAuth } from '@/config/routes';
+import { useTranslation } from '@/hooks/use-translation.hook';
 import { hasPermission } from '@/lib/models/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 
@@ -54,6 +54,14 @@ export default function ProtectedRoute({
 		}
 	}, [authStatus, pathname, routeAuth, router]);
 
+	const translationsKeys = useMemo(
+		() => ['auth.message.already_logged_in', 'auth.message.unauthorized'],
+		[],
+	);
+
+	const { translations, isTranslationLoading } =
+		useTranslation(translationsKeys);
+
 	const permission = useMemo(() => {
 		if (routePermission) {
 			return routePermission;
@@ -68,6 +76,11 @@ export default function ProtectedRoute({
 
 		return undefined;
 	}, [routePermission, routeAuth, authStatus, pathname]);
+
+	// Loading
+	if (isTranslationLoading) {
+		return <Loading />;
+	}
 
 	// Is a public route so return content
 	if (routeAuth === RouteAuth.PUBLIC) {
@@ -87,7 +100,7 @@ export default function ProtectedRoute({
 			<ProtectedRouteWrapper className={className}>
 				<Notice
 					type="warning"
-					message={lang('auth.message.already_logged_in')}
+					message={translations['auth.message.already_logged_in']}
 				>
 					{fallback}
 				</Notice>
@@ -101,7 +114,7 @@ export default function ProtectedRoute({
 			<ProtectedRouteWrapper className={className}>
 				<Notice
 					type="warning"
-					message={lang('auth.message.unauthorized')}
+					message={translations['auth.message.unauthorized']}
 				>
 					{fallback}
 				</Notice>

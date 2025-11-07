@@ -6,9 +6,9 @@ let redisInstance: Redis | null = null;
 export const getRedisClient = (): Redis => {
 	if (!redisInstance) {
 		redisInstance = new Redis({
-			host: cfg('redis.host'),
-			port: Number(cfg('redis.port')),
-			password: cfg('redis.password'),
+			host: cfg('redis.host') as string,
+			port: cfg('redis.port') as number,
+			password: cfg('redis.password') as string,
 		});
 
 		redisInstance.on('error', (error) => {

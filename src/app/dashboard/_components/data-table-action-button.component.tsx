@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { useTranslation } from '@/hooks/use-translation.hook';
 
 export function DataTableActionButton({
 	dataSource,
@@ -15,15 +16,23 @@ export function DataTableActionButton({
 	handleClick: () => void;
 	disabled?: boolean;
 }) {
+	const actionTitleKey = `${dataSource}.action.${actionName}.title`;
+	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
+
+	const translationsKeys = useMemo(
+		() => [actionTitleKey, actionLabelKey],
+		[actionLabelKey, actionTitleKey],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	const ActionIcon = getActionIcon(actionName);
-	const actionTitle = lang(`${dataSource}.action.${actionName}.title`);
-	const actionLabel = lang(`${dataSource}.action.${actionName}.label`);
 
 	return (
 		<button
 			type="button"
 			className={className || 'btn'}
-			title={actionTitle}
+			title={translations[actionTitleKey]}
 			onClick={handleClick}
 			disabled={disabled}
 		>
@@ -35,7 +44,7 @@ export function DataTableActionButton({
 			) : (
 				<>
 					<ActionIcon />
-					{actionLabel}
+					{translations[actionLabelKey]}
 				</>
 			)}
 		</button>

@@ -5,7 +5,7 @@ import type {
 	DataTableColumnType,
 	FormStateType,
 } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { translateBatch } from '@/config/lang';
 import {
 	PermissionEntitiesEnum,
 	type PermissionModel,
@@ -24,12 +24,17 @@ export type DataTablePermissionsFiltersType = {
 	is_deleted: DataTableFilterMetaData;
 };
 
+const translations = await translateBatch([
+	'permissions.validation.entity_invalid',
+	'permissions.validation.operation_invalid',
+]);
+
 const ValidateSchemaBasePermissions = z.object({
 	entity: z.nativeEnum(PermissionEntitiesEnum, {
-		message: lang('permissions.validation.entity_invalid'),
+		message: translations['permissions.validation.entity_invalid'],
 	}),
 	operation: z.nativeEnum(PermissionOperationEnum, {
-		message: lang('permissions.validation.operation_invalid'),
+		message: translations['permissions.validation.operation_invalid'],
 	}),
 });
 

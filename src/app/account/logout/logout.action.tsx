@@ -3,7 +3,7 @@ import type {
 	LogoutSituation,
 	LogoutState,
 } from '@/app/account/logout/logout.definition';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { logoutAccount } from '@/lib/services/account.service';
 import type { ResponseFetch } from '@/lib/utils/api';
@@ -23,30 +23,33 @@ export async function logoutAction(): Promise<LogoutState> {
 			} else {
 				return {
 					message:
-						authResponse?.message || lang('logout.message.error'),
+						authResponse?.message ||
+						(await translate('logout.message.error')),
 					situation: 'error',
 				};
 			}
 		} else {
 			return {
-				message: fetchResponse?.message || lang('logout.message.error'),
+				message:
+					fetchResponse?.message ||
+					(await translate('logout.message.error')),
 				situation: 'error',
 			};
 		}
 	} catch (error: unknown) {
-		let message: string = lang('logout.message.error');
+		let message: string = '';
 		const situation: LogoutSituation = 'error';
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
 				case 401:
-					message = lang('logout.message.not_logged_in');
+					message = await translate('logout.message.not_logged_in');
 					break;
 			}
 		}
 
 		return {
-			message: message,
+			message: message || (await translate('logout.message.error')),
 			situation: situation,
 		};
 	}

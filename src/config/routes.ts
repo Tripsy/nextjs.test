@@ -155,7 +155,10 @@ Routes.add('status', '/status/:type');
 Routes.add('terms-and-conditions', '/terms-and-conditions');
 
 // API
-Routes.group('api').add('proxy', '/api/proxy/:path*').add('csrf', '/api/csrf');
+Routes.group('api')
+	.add('proxy', '/api/proxy/:path*')
+	.add('csrf', '/api/csrf')
+	.add('language', '/api/language');
 
 // Account
 Routes.group('account')

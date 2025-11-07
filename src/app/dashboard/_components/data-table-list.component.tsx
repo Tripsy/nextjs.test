@@ -59,6 +59,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	const [data, setData] = useState<DataSourceType[K]['model'][]>([]);
 	const [totalRecords, setTotalRecords] = useState(0);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset to first page when filters change
 	useEffect(() => {
 		clearSelectedEntries();
 
@@ -108,6 +109,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		return JSON.stringify(params);
 	}, [tableState.filters]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: `tableState.reloadTrigger` is actually required as part of functionality
 	useEffect(() => {
 		const abortController = new AbortController();
 

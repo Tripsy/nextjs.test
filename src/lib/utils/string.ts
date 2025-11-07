@@ -49,6 +49,45 @@ export function getObjectValue(
 }
 
 /**
+ * Set the value of a key in an object
+ * ex: key = "user.create", value = "new value"
+ *
+ * @param {Record<string, any>} obj - The object to set the value in
+ * @param {string} key - The key to set the value for
+ * @param {ObjectValue} value - The value to set
+ * @returns {boolean} - Whether the value was successfully set
+ */
+export function setObjectValue(
+	obj: { [key: string]: ObjectValue },
+	key: string,
+	value: ObjectValue,
+): boolean {
+	const parts = key.split('.');
+	const lastPart = parts.pop();
+
+	if (!lastPart) {
+		return false;
+	}
+
+	const parent = parts.reduce<ObjectValue | undefined>((acc, part) => {
+		if (acc && typeof acc === 'object' && !Array.isArray(acc)) {
+			if (!(part in acc)) {
+				(acc as { [key: string]: ObjectValue })[part] = {};
+			}
+			return (acc as { [key: string]: ObjectValue })[part];
+		}
+		return undefined;
+	}, obj);
+
+	if (parent && typeof parent === 'object' && !Array.isArray(parent)) {
+		(parent as { [key: string]: ObjectValue })[lastPart] = value;
+		return true;
+	}
+
+	return false;
+}
+
+/**
  * Replace variables in a string
  * Ex variables: {{key}}, {{Key}}, {{sub_key}}, {{key1}}
  *
@@ -60,7 +99,7 @@ export function replaceVars(
 	content: string,
 	vars: Record<string, string> = {},
 ): string {
-	return content.replace(/{{(\w+)}}/g, (_, key) =>
+	return content.replace(/{{\s*(\w+)\s*}}/g, (_, key) =>
 		key in vars ? vars[key] : `{{${key}}}`,
 	);
 }
@@ -90,25 +129,6 @@ export function getNameInitials(name: string | undefined): string {
 export function randomString(): string {
 	return uuid();
 }
-
-/**
- * Generate a stable ID for an element
- *
- * @param {string} name - The name of the element
- * @returns {string} - The generated ID
- */
-const idsCache = new Map();
-
-export const generateElementId = (name: string) => {
-	if (!idsCache.has(name)) {
-		idsCache.set(
-			name,
-			`id-${name}-${Math.random().toString(36).slice(2, 9)}`,
-		);
-	}
-
-	return idsCache.get(name);
-};
 
 /**
  * Build a query string from an object

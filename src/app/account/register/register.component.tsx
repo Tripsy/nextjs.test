@@ -23,8 +23,9 @@ import { Icons } from '@/components/icon.component';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { useFormValidation, useFormValues } from '@/hooks';
+import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { LanguageEnum } from '@/lib/enums';
-import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
+import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const FormElementError = React.memo(RawFormElementError);
 
@@ -58,6 +59,15 @@ export default function Register() {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
 		markFieldAsTouched(name);
 	};
+
+	const elementIds = useElementIds([
+		'name',
+		'email',
+		'password',
+		'passwordConfirm',
+		'language',
+		'terms',
+	]);
 
 	if (state?.situation === 'csrf_error') {
 		return (
@@ -94,7 +104,7 @@ export default function Register() {
 			onSubmit={() => setSubmitted(true)}
 			className="form-section"
 		>
-			<FormCsrf inputName={cfg('csrf.inputName')} />
+			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
 			<h1>Create Account</h1>
 
@@ -106,10 +116,7 @@ export default function Register() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement
-					labelText="Name"
-					labelFor={generateElementId('name')}
-				>
+				<FormElement labelText="Name" labelFor={elementIds.name}>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -117,7 +124,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id={generateElementId('name')}
+								id={elementIds.name}
 								name="name"
 								placeholder="eg: John Doe"
 								autoComplete={'name'}
@@ -137,7 +144,7 @@ export default function Register() {
 			<FormPart>
 				<FormElement
 					labelText="Email Address"
-					labelFor={generateElementId('email')}
+					labelFor={elementIds.email}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -146,7 +153,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id={generateElementId('email')}
+								id={elementIds.email}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -166,7 +173,7 @@ export default function Register() {
 			<FormPart>
 				<FormElement
 					labelText="Password"
-					labelFor={generateElementId('password')}
+					labelFor={elementIds.password}
 				>
 					<div>
 						<div className="relative">
@@ -176,7 +183,7 @@ export default function Register() {
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id={generateElementId('password')}
+									id={elementIds.password}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"
@@ -214,7 +221,7 @@ export default function Register() {
 			<FormPart>
 				<FormElement
 					labelText="Confirm Password"
-					labelFor={generateElementId('passwordConfirm')}
+					labelFor={elementIds.passwordConfirm}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -223,7 +230,7 @@ export default function Register() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full !pr-10"
-								id={generateElementId('passwordConfirm')}
+								id={elementIds.passwordConfirm}
 								name="password_confirm"
 								type={showPassword ? 'text' : 'password'}
 								placeholder="Password confirmation"
@@ -251,13 +258,11 @@ export default function Register() {
 							{languages.map(({ label, value }) => (
 								<div
 									key={value}
-									className="flex items-center gap-1"
+									className="flex items-center gap-2"
 								>
 									<input
 										type="radio"
-										id={generateElementId(
-											`language-${value}`,
-										)}
+										id={`${elementIds.language}-${value}`}
 										name="language"
 										value={value}
 										className={clsx('radio', {
@@ -274,9 +279,7 @@ export default function Register() {
 										}
 									/>
 									<label
-										htmlFor={generateElementId(
-											`language-${value}`,
-										)}
+										htmlFor={`${elementIds.language}-${value}`}
 										className="text-sm font-normal cursor-pointer"
 									>
 										{label}
@@ -290,10 +293,10 @@ export default function Register() {
 			</FormPart>
 
 			<FormPart>
-				<FormElement className="flex-row">
-					<div>
+				<FormElement>
+					<div className="flex gap-2">
 						<input
-							id={generateElementId('terms')}
+							id={elementIds.terms}
 							name="terms"
 							type="checkbox"
 							className={clsx('checkbox', {
@@ -309,7 +312,7 @@ export default function Register() {
 						/>
 						<label
 							className="flex items-center font-normal"
-							htmlFor={generateElementId('terms')}
+							htmlFor={elementIds.terms}
 						>
 							<span className="text-sm text-gray-500 dark:text-base-content">
 								I agree with&nbsp;

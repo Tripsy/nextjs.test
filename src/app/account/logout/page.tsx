@@ -1,10 +1,15 @@
 import type { Metadata } from 'next';
 import Logout from '@/app/account/logout/logout.component';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
+import { cfg } from '@/config/settings';
 
-export const metadata: Metadata = {
-	title: lang('logout.meta.title'),
-};
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('logout.meta.title', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
 export default function Page() {
 	return (

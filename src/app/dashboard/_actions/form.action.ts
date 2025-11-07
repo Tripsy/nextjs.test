@@ -7,7 +7,7 @@ import {
 	type UpdateFunctionType,
 	type ValidationReturnType,
 } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
 
@@ -104,7 +104,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			return {
 				...state,
 				situation: 'error',
-				message: lang('error.validation'),
+				message: await translate('error.validation'),
 			};
 		}
 
@@ -117,7 +117,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			return {
 				...result,
 				situation: 'error',
-				message: lang('error.validation'),
+				message: await translate('error.validation'),
 				errors: validated.error.flatten().fieldErrors as Partial<
 					Record<keyof FormValuesType<K>, string[]>
 				>,
@@ -134,12 +134,12 @@ export async function formAction<K extends keyof DataSourceType>(
 			resultData: fetchResponse?.data,
 		};
 	} catch (error: unknown) {
-		// console.error(error); // TODO
+		console.error(error);
 
 		const message =
 			error instanceof ValueError || error instanceof ApiError
 				? error.message
-				: lang('error.form');
+				: await translate('error.form');
 
 		return {
 			...state,

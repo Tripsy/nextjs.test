@@ -1,6 +1,6 @@
 'use server';
 
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { type AuthModel, prepareAuthModel } from '@/lib/models/auth.model';
@@ -29,24 +29,26 @@ export async function createAuth(
 	await setupTrackedCookie(
 		{
 			action: 'set',
-			name: cfg('user.sessionToken'),
+			name: cfg('user.sessionToken') as string,
 			value: sessionToken,
 		},
 		{
 			httpOnly: true,
-			maxAge: Number(cfg('user.sessionMaxAge')),
+			maxAge: cfg('user.sessionMaxAge') as number,
 		},
 	);
 
 	return {
-		message: lang('login.message.auth_success'),
+		message: await translate('login.message.auth_success'),
 		success: true,
 	};
 }
 
 export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 	try {
-		const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
+		const sessionToken = await getTrackedCookie(
+			cfg('user.sessionToken') as string,
+		);
 
 		if (!sessionToken.value) {
 			return {
@@ -75,7 +77,7 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 
 				await setupTrackedCookie(sessionToken, {
 					httpOnly: true,
-					maxAge: Number(cfg('user.sessionMaxAge')),
+					maxAge: cfg('user.sessionMaxAge') as number,
 				});
 
 				return {
@@ -85,7 +87,7 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 				};
 			}
 		} else {
-			await deleteCookie(cfg('user.sessionToken'));
+			await deleteCookie(cfg('user.sessionToken') as string);
 
 			return {
 				data: null,
@@ -97,7 +99,7 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 		}
 	} catch (error: unknown) {
 		if (error instanceof ApiError && error.status === 401) {
-			await deleteCookie(cfg('user.sessionToken'));
+			await deleteCookie(cfg('user.sessionToken') as string);
 		}
 
 		return {
@@ -112,10 +114,10 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 }
 
 export async function clearAuth(): Promise<ResponseFetch<null>> {
-	await deleteCookie(cfg('user.sessionToken'));
+	await deleteCookie(cfg('user.sessionToken') as string);
 
 	return {
-		message: lang('logout.message.success'),
+		message: await translate('logout.message.success'),
 		success: true,
 	};
 }

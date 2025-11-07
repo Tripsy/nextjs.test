@@ -8,7 +8,7 @@ export async function isValidCsrfToken(inputValue: string) {
 		return false;
 	}
 
-	const cookieValue = await getCookie(cfg('csrf.cookieName'));
+	const cookieValue = await getCookie(cfg('csrf.cookieName') as string);
 
 	return cookieValue === inputValue;
 }

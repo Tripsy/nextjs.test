@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { lang } from '@/config/lang';
+import { translateBatch } from '@/config/lang';
 import type { FormSituationType } from '@/lib/types';
 
 export type LoginFormFieldsType = {
@@ -38,13 +38,18 @@ export type AuthTokenType = {
 
 export type AuthTokenListType = AuthTokenType[];
 
+const translations = await translateBatch([
+	'login.validation.email',
+	'login.validation.password',
+]);
+
 export const LoginSchema = z.object({
 	email: z
-		.string({ message: lang('login.validation.email') })
+		.string()
 		.trim()
-		.email({ message: lang('login.validation.email') }),
+		.email({ message: translations['login.validation.email'] }),
 	password: z
-		.string({ message: lang('login.validation.password') })
+		.string({ message: translations['login.validation.password'] })
 		.trim()
-		.nonempty({ message: lang('login.validation.password') }),
+		.nonempty({ message: translations['login.validation.password'] }),
 });

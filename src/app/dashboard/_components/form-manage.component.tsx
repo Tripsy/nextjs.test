@@ -7,6 +7,7 @@ import {
 	useActionState,
 	useCallback,
 	useEffect,
+	useMemo,
 } from 'react';
 import type { ZodError } from 'zod';
 import { useStore } from 'zustand/react';
@@ -23,8 +24,8 @@ import {
 	type FormValuesType,
 	getDataSourceConfig,
 } from '@/config/data-source';
-import { lang } from '@/config/lang';
 import { useFormValidation, useFormValues } from '@/hooks';
+import { useTranslation } from '@/hooks/use-translation.hook';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
 
@@ -135,6 +136,16 @@ export function FormManage<K extends keyof DataSourceType>({
 		markFieldAsTouched(name);
 	};
 
+	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
+	const successMessageKey = `${dataSource}.action.${actionName}.success`;
+
+	const translationsKeys = useMemo(
+		() => [successMessageKey, actionLabelKey],
+		[actionLabelKey, successMessageKey],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	// Handle success state
 	useEffect(() => {
 		if (state?.situation === 'success') {
@@ -149,7 +160,7 @@ export function FormManage<K extends keyof DataSourceType>({
 			showToast({
 				severity: 'success',
 				summary: 'Success',
-				detail: lang(`${dataSource}.action.${actionName}.success`),
+				detail: translations[successMessageKey],
 			});
 
 			closeOut();
@@ -161,10 +172,10 @@ export function FormManage<K extends keyof DataSourceType>({
 		actionName,
 		state?.resultData,
 		refreshTableState,
-		dataSource,
+		translations,
+		successMessageKey,
 	]);
 
-	const actionLabel = lang(`${dataSource}.action.${actionName}.label`);
 	const ActionButtonIcon = getActionIcon(actionName);
 
 	const injectedChild = isValidElement(children)
@@ -205,12 +216,12 @@ export function FormManage<K extends keyof DataSourceType>({
 						) : submitted && Object.keys(errors).length > 0 ? (
 							<span className="flex items-center gap-2">
 								<Icons.Error className="w-4 h-4 animate-pulse" />
-								{actionLabel}
+								{translations[actionLabelKey]}
 							</span>
 						) : (
 							<span className="flex items-center gap-2">
 								<ActionButtonIcon />
-								{actionLabel}
+								{translations[actionLabelKey]}
 							</span>
 						)}
 					</button>

@@ -4,14 +4,14 @@ import type { ResponseFetch } from '@/lib/utils/api';
 import { getTrackedCookie, getTrackedCookieName } from '@/lib/utils/session';
 import { randomString } from '@/lib/utils/string';
 
-type NextResponseCsrfToken = NextResponse<
+type NextResponseCsrf = NextResponse<
 	ResponseFetch<{
 		csrfToken: string;
 	}>
 >;
 
-export async function GET(): Promise<NextResponseCsrfToken> {
-	const cookieName = cfg('csrf.cookieName');
+export async function GET(): Promise<NextResponseCsrf> {
+	const cookieName = cfg('csrf.cookieName') as string;
 
 	const csrfToken = await getTrackedCookie(cookieName);
 
@@ -19,7 +19,7 @@ export async function GET(): Promise<NextResponseCsrfToken> {
 		csrfToken.value = randomString();
 	}
 
-	const response: NextResponseCsrfToken = NextResponse.json(
+	const response: NextResponseCsrf = NextResponse.json(
 		{
 			data: {
 				csrfToken: csrfToken.value,
@@ -43,11 +43,11 @@ export async function GET(): Promise<NextResponseCsrfToken> {
 	);
 
 	if (csrfToken.action === 'set') {
-		const cookieMaxAge = Number(cfg('csrf.cookieMaxAge'));
+		const cookieMaxAge = cfg('csrf.cookieMaxAge') as number;
 
 		response.cookies.set(cookieName, csrfToken.value, {
 			httpOnly: true,
-			secure: cfg('environment') === 'production',
+			secure: cfg('app.environment') === 'production',
 			path: '/',
 			sameSite: 'lax',
 			maxAge: cookieMaxAge,
@@ -60,7 +60,7 @@ export async function GET(): Promise<NextResponseCsrfToken> {
 			String(cookieExpireValue),
 			{
 				httpOnly: true,
-				secure: cfg('environment') === 'production',
+				secure: cfg('app.environment') === 'production',
 				path: '/',
 				sameSite: 'lax',
 				maxAge: cookieMaxAge,

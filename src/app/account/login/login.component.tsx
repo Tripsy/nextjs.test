@@ -22,9 +22,9 @@ import { Icons } from '@/components/icon.component';
 import Routes, { isExcludedRoute } from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { useFormValidation, useFormValues } from '@/hooks';
+import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { removeTokenAccount } from '@/lib/services/account.service';
 import { formatDate } from '@/lib/utils/date';
-import { generateElementId } from '@/lib/utils/string';
 import { useAuth } from '@/providers/auth.provider';
 
 const FormElementError = React.memo(RawFormElementError);
@@ -86,6 +86,8 @@ export default function Login() {
 		}
 	}, [state?.situation, router, refreshAuth]);
 
+	const elementIds = useElementIds(['email', 'password']);
+
 	if (state?.situation === 'csrf_error') {
 		return (
 			<div className="text-error">
@@ -100,7 +102,7 @@ export default function Login() {
 			onSubmit={() => setSubmitted(true)}
 			className="form-section"
 		>
-			<FormCsrf inputName={cfg('csrf.inputName')} />
+			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
 			<h1>Sign In</h1>
 
@@ -111,7 +113,7 @@ export default function Login() {
 			<FormPart>
 				<FormElement
 					labelText="Email Address"
-					labelFor={generateElementId('email')}
+					labelFor={elementIds.email}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -120,7 +122,7 @@ export default function Login() {
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id={generateElementId('email')}
+								id={elementIds.email}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -140,7 +142,7 @@ export default function Login() {
 			<FormPart>
 				<FormElement
 					labelText="Password"
-					labelFor={generateElementId('password')}
+					labelFor={elementIds.password}
 				>
 					<div>
 						<div className="relative">
@@ -150,7 +152,7 @@ export default function Login() {
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id={generateElementId('password')}
+									id={elementIds.password}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"

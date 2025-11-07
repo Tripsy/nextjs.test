@@ -9,9 +9,10 @@ import { FormElementError } from '@/components/form/form-element-error.component
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
 import type { FormManageType } from '@/config/data-source';
+import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { LanguageEnum } from '@/lib/enums';
 import { UserRoleEnum } from '@/lib/models/user.model';
-import { capitalizeFirstLetter, generateElementId } from '@/lib/utils/string';
+import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
@@ -32,13 +33,19 @@ export function FormManageUser({
 }: FormManageType<'users'>) {
 	const [showPassword, setShowPassword] = useState(false);
 
+	const elementIds = useElementIds([
+		'name',
+		'email',
+		'password',
+		'passwordConfirm',
+		'language',
+		'role',
+	]);
+
 	return (
 		<>
 			<FormPart>
-				<FormElement
-					labelText="Name"
-					labelFor={generateElementId('name')}
-				>
+				<FormElement labelText="Name" labelFor={elementIds.name}>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -46,7 +53,7 @@ export function FormManageUser({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id={generateElementId('name')}
+								id={elementIds.name}
 								name="name"
 								placeholder="eg: John Doe"
 								autoComplete={'name'}
@@ -66,7 +73,7 @@ export function FormManageUser({
 			<FormPart>
 				<FormElement
 					labelText="Email Address"
-					labelFor={generateElementId('email')}
+					labelFor={elementIds.email}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -75,7 +82,7 @@ export function FormManageUser({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full"
-								id={generateElementId('email')}
+								id={elementIds.email}
 								name="email"
 								placeholder="eg: example@domain.com"
 								autoComplete={'email'}
@@ -97,7 +104,7 @@ export function FormManageUser({
 					labelText={
 						actionName === 'create' ? 'New Password' : 'Password'
 					}
-					labelFor={generateElementId('password')}
+					labelFor={elementIds.password}
 				>
 					<div>
 						<div className="relative">
@@ -107,7 +114,7 @@ export function FormManageUser({
 								</InputIcon>
 								<InputText
 									className="p-inputtext-sm w-full !pr-10"
-									id={generateElementId('password')}
+									id={elementIds.password}
 									name="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Password"
@@ -145,7 +152,7 @@ export function FormManageUser({
 			<FormPart>
 				<FormElement
 					labelText="Confirm Password"
-					labelFor={generateElementId('passwordConfirm')}
+					labelFor={elementIds.passwordConfirm}
 				>
 					<div>
 						<IconField iconPosition="left">
@@ -154,7 +161,7 @@ export function FormManageUser({
 							</InputIcon>
 							<InputText
 								className="p-inputtext-sm w-full !pr-10"
-								id={generateElementId('passwordConfirm')}
+								id={elementIds.passwordConfirm}
 								name="password_confirm"
 								type={showPassword ? 'text' : 'password'}
 								placeholder="Password confirmation"
@@ -178,7 +185,7 @@ export function FormManageUser({
 			<FormPart>
 				<FormElement
 					labelText="Language"
-					labelFor={generateElementId('language')}
+					labelFor={elementIds.language}
 				>
 					<div>
 						<input
@@ -187,7 +194,7 @@ export function FormManageUser({
 							value={formValues.language}
 						/>
 						<Dropdown
-							inputId={generateElementId('language')}
+							inputId={elementIds.language}
 							className="p-inputtext-sm"
 							panelStyle={{ fontSize: '0.875rem' }}
 							disabled={pending}
@@ -209,11 +216,11 @@ export function FormManageUser({
 							{roles.map(({ label, value }) => (
 								<div
 									key={value}
-									className="flex items-center gap-1"
+									className="flex items-center gap-1.5"
 								>
 									<input
 										type="radio"
-										id={generateElementId(`role-${value}`)}
+										id={`${elementIds.role}-${value}`}
 										name="role"
 										value={value}
 										className={clsx('radio', {
@@ -227,9 +234,7 @@ export function FormManageUser({
 										}
 									/>
 									<label
-										htmlFor={generateElementId(
-											`role-${value}`,
-										)}
+										htmlFor={`${elementIds.role}-${value}`}
 										className="text-sm font-normal cursor-pointer"
 									>
 										{label}

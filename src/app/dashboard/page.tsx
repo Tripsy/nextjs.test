@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
 import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
 import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
+import { cfg } from '@/config/settings';
 
-export const metadata: Metadata = {
-	title: `Dashboard | ${lang('app.name')}`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('dashboard.meta.title', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
 export default function Page() {
 	const items: BreadcrumbType[] = [{ label: 'Dashboard' }];

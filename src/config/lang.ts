@@ -1,201 +1,141 @@
-import { cfg } from '@/config/settings';
+import { cfg, isSupportedLanguage } from '@/config/settings';
+import { ApiRequest } from '@/lib/utils/api';
 import { getObjectValue, replaceVars } from '@/lib/utils/string';
 
-const en = {
-	app: {
-		name: cfg('name'),
-	},
-	error: {
-		csrf: 'Error occurred while processing your request. Please reload page and try again.',
-		form: 'Something went wrong while processing your request.',
-		validation: 'Form validation failed.',
-	},
-	auth: {
-		message: {
-			already_logged_in: 'Already logged in',
-			unauthorized: 'Access denied',
-		},
-	},
-	login: {
-		meta: {
-			title: `Login | ${cfg('name')}`,
-		},
-		validation: {
-			email: 'Enter a valid email',
-			password: 'Enter your password',
-		},
-		message: {
-			could_not_login:
-				"We couldn't log you in. Verify your details and try again.",
-			auth_success: 'Authenticated successfully',
-			auth_error: 'Login failed due to an authentication error.',
-			not_active: "We couldn't log you in. Your account is not active.",
-			max_active_sessions: 'Too many active sessions',
-			too_many_login_attempts:
-				'Too many failed login attempts. Please try again later.',
-		},
-	},
-	logout: {
-		meta: {
-			title: `Logout | ${cfg('name')}`,
-		},
-		message: {
-			success: 'Logout successfully',
-			error: 'Logout failed',
-			not_logged_in: 'You are not logged in',
-		},
-	},
-	register: {
-		meta: {
-			title: `Create account | ${cfg('name')}`,
-		},
-		validation: {
-			name_invalid: 'Set your name',
-			name_min: 'Name must be at least {{min}} characters long',
-			email_invalid: 'Enter a valid email',
-			password_invalid: 'Enter your password',
-			password_min: 'Password must be at least {{min}} characters long',
-			password_condition_capital_letter:
-				'Password must contain at least one capital letter',
-			password_condition_number:
-				'Password must contain at least one number',
-			password_condition_special_character:
-				'Password must contain at least one special character',
-			password_confirm_required: 'Password confirmation is required',
-			password_confirm_mismatch: 'Passwords does not match',
-			language_invalid: 'Invalid language selected',
-			terms_required: 'You must accept the terms and conditions',
-			email_already_used: 'Email already used by another account',
-		},
-		message: {
-			success:
-				'Thank you for registering. Please check your email to confirm your account.',
-		},
-	},
-	users: {
-		validation: {
-			name_invalid: 'Enter name',
-			name_min: 'Name must be at least {{min}} characters long',
-			email_invalid: 'Set valid email',
-			password_invalid: 'Set password',
-			password_min: 'Password must be at least {{min}} characters long',
-			password_condition_capital_letter:
-				'Password must contain at least one capital letter',
-			password_condition_number:
-				'Password must contain at least one number',
-			password_condition_special_character:
-				'Password must contain at least one special character',
-			password_confirm_required: 'Password confirmation is required',
-			password_confirm_mismatch: 'Passwords does not match',
-			language_invalid: 'Invalid language selected',
-			role_invalid: 'Invalid role selected',
-			email_already_used: 'Email already used by another account',
-		},
-		action: {
-			create: {
-				title: 'Add new user',
-				label: 'Add',
-				success: 'New user added.',
-			},
-			update: {
-				title: 'Edit user',
-				label: 'Update',
-				success: 'User updated.',
-			},
-			permissions: {
-				title: 'Setup permissions',
-				label: 'Permissions',
-				success: 'Permissions updated.',
-			},
-			delete: {
-				title: 'Delete user',
-				label: 'Delete',
-				success: 'User deleted.',
-				confirmText: 'Are you sure you want to delete selected user?',
-			},
-			enable: {
-				title: 'Enable user',
-				label: 'Enable',
-				success: 'User status marked as `Active`.',
-				confirmText: 'Are you sure you want to activate selected user?',
-			},
-			disable: {
-				title: 'Disable user',
-				label: 'Disable',
-				success: 'User status marked as `Inactive`.',
-				confirmText:
-					'Are you sure you want to mark selected user as inactive?',
-			},
-			restore: {
-				title: 'Restore user',
-				label: 'Restore',
-				success: 'User restored.',
-				confirmText: 'Are you sure you want to restore selected user?',
-			},
-			view: {
-				title: 'User details',
-				label: 'View',
-			},
-		},
-	},
-	permissions: {
-		validation: {
-			entity_invalid: 'Select entity',
-			operation_invalid: 'Select operation',
-		},
-		action: {
-			create: {
-				title: 'Add new permission',
-				label: 'Add',
-				success: 'New permission added.',
-			},
-			update: {
-				title: 'Edit permission',
-				label: 'Update',
-				success: 'Permission updated.',
-			},
-			delete: {
-				title: 'Delete permission',
-				label: 'Delete',
-				success: 'Permission deleted.',
-				confirmText:
-					'Are you sure you want to delete selected permission?',
-			},
-			restore: {
-				title: 'Restore permission',
-				label: 'Restore',
-				success: 'Permission restored.',
-				confirmText:
-					'Are you sure you want to restore selected permission?',
-			},
-		},
-	},
-	log_data: {
-		action: {
-			delete: {
-				title: 'Delete log(s)',
-				label: 'Delete',
-				success: 'Log(s) deleted.',
-				confirmText: 'Are you sure you want to delete selected log(s)?',
-			},
-			view: {
-				title: 'Log details',
-				label: 'View',
-			},
-		},
-	},
-};
+type TranslationValue = string | { [key: string]: TranslationValue };
+type TranslationResource = Record<string, TranslationValue>;
 
-export function lang(key: string, data?: Record<string, string>): string {
-	let value = getObjectValue(en, key);
+let languageSelected: string | null = null;
+const languageResources: Record<string, TranslationResource> = {};
 
-	if (typeof value !== 'string') {
-		throw new Error(`Invalid key or non-string value at '${key}'`);
+async function fetchLanguage() {
+	try {
+		const result = await new ApiRequest()
+			.setRequestMode('same-site')
+			.setRequestInit({
+				credentials: 'same-origin',
+			})
+			.doFetch<{ language: string }>('language', {
+				method: 'GET',
+			});
+
+		return result?.data?.language || (cfg('app.language') as string);
+	} catch (error) {
+		console.error('Failed to fetch language:', error);
+
+		return cfg('app.language') as string;
+	}
+}
+
+export async function getLanguage(): Promise<string> {
+	if (languageSelected) {
+		return languageSelected;
 	}
 
-	if (data) {
-		value = replaceVars(value, data);
+	if (typeof document === 'undefined') {
+		languageSelected = await fetchLanguage();
+	} else {
+		languageSelected =
+			document.documentElement.lang || navigator.language?.split('-')[0];
+		languageSelected = languageSelected.toLowerCase();
+	}
+
+	if (languageSelected && isSupportedLanguage(languageSelected)) {
+		return languageSelected;
+	}
+
+	return cfg('app.language') as string;
+}
+
+export function setLanguage(lang: string) {
+	if (isSupportedLanguage(lang)) {
+		languageSelected = lang;
+	}
+}
+
+async function loadLanguageResource(
+	language: string,
+): Promise<TranslationResource> {
+	if (languageResources[language]) {
+		return languageResources[language];
+	}
+
+	languageResources[language] = (
+		await import(`@/locales/${language}`)
+	).default;
+
+	return languageResources[language];
+}
+
+/**
+ * Utility function used to get the translated string from the resource.
+ * Always returns `string` (Note: if returned object value is not string, it returns the key)
+ */
+export const getTranslatedString = (
+	resource: TranslationResource,
+	key: string,
+) => {
+	const objectValue = getObjectValue(resource, key);
+
+	return typeof objectValue === 'string' ? objectValue : key;
+};
+
+/**
+ * Translate a key with optional replacements.
+ * The key should be in the format `namespace.key`.
+ */
+export const translate = async (
+	key: string,
+	replacements: Record<string, string> = {},
+): Promise<string> => {
+	const languageSelected = await getLanguage();
+	const languageResource = await loadLanguageResource(languageSelected);
+
+	const value = getTranslatedString(languageResource, key);
+
+	if (value !== key && replacements) {
+		return replaceVars(value, replacements);
 	}
 
 	return value;
-}
+};
+
+/**
+ * Translate multiple keys with optional replacements.
+ *
+ * @example translateBatch([
+ *     { key: "user.create" },
+ *     { key: "user.edit", vars: { "user.id": 1 } },
+ *     { key: "user.delete" }
+ * ])
+ */
+export const translateBatch = async (
+	requests: (
+		| string
+		| {
+				key: string;
+				vars?: Record<string, string>;
+		  }
+	)[],
+): Promise<Record<string, string>> => {
+	const language = await getLanguage();
+	const resource = await loadLanguageResource(language);
+
+	const result: Record<string, string> = {};
+
+	for (const request of requests) {
+		if (typeof request === 'string') {
+			result[request] = getTranslatedString(resource, request);
+		} else {
+			const value = getTranslatedString(resource, request.key);
+
+			if (request.vars) {
+				result[request.key] = replaceVars(value, request.vars);
+			} else {
+				result[request.key] = value;
+			}
+		}
+	}
+
+	return result;
+};

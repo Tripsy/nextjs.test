@@ -1,0 +1,53 @@
+import { cookies, headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { cfg, isSupportedLanguage } from '@/config/settings';
+import type { ResponseFetch } from '@/lib/utils/api';
+
+type NextResponseLanguage = NextResponse<
+	ResponseFetch<{
+		language: string;
+	}>
+>;
+
+export async function GET(): Promise<NextResponseLanguage> {
+	const headerList = await headers();
+	const cookieStore = await cookies();
+
+	const fromHeader =
+		headerList.get('x-language') ||
+		headerList.get('accept-language')?.split(',')[0]?.split('-')[0];
+	const fromCookie = cookieStore.get('preferred-language')?.value;
+	const fallback = cfg('app.language') as string;
+
+	console.log(fromHeader, fromCookie, fallback);
+	const language = fromHeader || fromCookie || fallback;
+
+	const languageSelected = isSupportedLanguage(language)
+		? language
+		: (cfg('app.language') as string);
+
+	return NextResponse.json(
+		{
+			data: {
+				language: languageSelected,
+			},
+			success: true,
+			message: '',
+		},
+		{
+			status: 200,
+			headers: {
+				'X-Content-Type-Options': 'nosniff',
+				'X-Frame-Options': 'DENY',
+				'Referrer-Policy': 'strict-origin-when-cross-origin',
+				'Cache-Control': 'no-store, max-age=0',
+				'Content-Type': 'application/json',
+				'Cross-Origin-Resource-Policy': 'same-origin',
+				'Cross-Origin-Opener-Policy': 'same-origin',
+				'Cross-Origin-Embedder-Policy': 'require-corp',
+			},
+		},
+	);
+}
+
+export const dynamic = 'force-dynamic'; // Ensure this route is never statically optimize

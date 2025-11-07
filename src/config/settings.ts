@@ -1,9 +1,25 @@
-import { getObjectValue, type ObjectValue } from '@/lib/utils/string';
+import {
+	getObjectValue,
+	type ObjectValue,
+	setObjectValue,
+} from '@/lib/utils/string';
 
 const settingsConfig: { [key: string]: ObjectValue } = {
-	environment: process.env.NODE_ENV || 'development',
-	url: process.env.FRONTEND_URL || 'http://nextjs.test',
-	name: process.env.FRONTEND_APP_NAME || 'sample-nextjs-client',
+	app: {
+		language: process.env.NEXT_PUBLIC_APP_LANGUAGE || 'en',
+		supportedLanguages:
+			process.env.NEXT_PUBLIC_APP_SUPPORTED_LANGUAGES || 'en',
+		environment: process.env.NODE_ENV || 'development',
+		url: process.env.FRONTEND_URL || 'http://nextjs.test',
+		name: process.env.NEXT_PUBLIC_FRONTEND_APP_NAME,
+		rootPath: process.env.ROOT_PATH || '/var/www/html',
+		srcPath: process.env.SRC_PATH || '/var/www/html/src',
+	},
+	security: {
+		allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',').map((v) =>
+			v.trim(),
+		) || ['http://localhost:3000', 'http://nextjs.test'],
+	},
 	csrf: {
 		cookieName: 'x-csrf-secret',
 		cookieMaxAge: 60 * 60, // 1 hour
@@ -35,6 +51,54 @@ const settingsConfig: { [key: string]: ObjectValue } = {
 	},
 };
 
-export function cfg(key: string): string {
-	return getObjectValue(settingsConfig, key) as string;
+// export function cfg(key: string): string {
+// 	return getObjectValue(settingsConfig, key) as string;
+// }
+
+/**
+ * Enhanced configuration function
+ * - Get value: cfg('app.language')
+ * - Set value: cfg('app.language', 'en')
+ * - Check existence: cfg('app.language', undefined, true) returns boolean
+ *
+ * @param {string} key - The configuration key
+ * @returns {string | boolean | void} - The value, existence boolean, or undefined when setting
+ */
+export function cfg(key: string): ObjectValue;
+export function cfg(key: string, value: ObjectValue): void;
+export function cfg(key: string, checkOnly: boolean): boolean;
+export function cfg(
+	key: string,
+	value?: ObjectValue,
+	checkOnly?: boolean,
+): ObjectValue | boolean | undefined {
+	if (checkOnly) {
+		return getObjectValue(settingsConfig, key) !== undefined;
+	}
+
+	// Set mode
+	if (value !== undefined) {
+		const success = setObjectValue(settingsConfig, key, value);
+
+		if (!success) {
+			console.warn(`Failed to set configuration key: ${key}`);
+		}
+
+		return;
+	}
+
+	// Get mode
+	const result = getObjectValue(settingsConfig, key);
+
+	if (result === undefined) {
+		console.warn(`Configuration key not found: ${key}`);
+	}
+
+	return result;
 }
+
+export const isSupportedLanguage = (language: string): boolean => {
+	return (cfg('app.supportedLanguages') as string)
+		.split(',')
+		.includes(language);
+};

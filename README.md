@@ -1,12 +1,12 @@
 # TODO
 
 1. fix latest biome errors - deepseek
-2. redo language -> split to different files
-3. templates
-4. Recap NextJs documentation
-5. recover password & other account pages
-6. terms page
-7. Replace all console.error with logging
+2. templates
+3. Recap NextJs documentation
+4. recover password & other account pages
+5. terms page
+6. Replace all console.error with logging
+7. More language vars 
 
 # IDEAS
 

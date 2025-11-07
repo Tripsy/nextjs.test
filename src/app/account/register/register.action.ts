@@ -5,7 +5,7 @@ import {
 	type RegisterSituationType,
 	type RegisterStateType,
 } from '@/app/account/register/register.definition';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';
 import { ApiError } from '@/lib/exceptions/api.error';
@@ -46,12 +46,12 @@ export async function registerAction(
 	};
 
 	// Check CSRF token
-	const csrfToken = formData.get(cfg('csrf.inputName')) as string;
+	const csrfToken = formData.get(cfg('csrf.inputName') as string) as string;
 
 	if (!(await isValidCsrfToken(csrfToken))) {
 		return {
 			...result,
-			message: lang('error.csrf'),
+			message: await translate('error.csrf'),
 			situation: 'csrf_error',
 		};
 	}
@@ -74,13 +74,15 @@ export async function registerAction(
 			situation: fetchResponse?.success ? 'success' : 'error',
 		};
 	} catch (error: unknown) {
-		let message: string = lang('error.form');
+		let message: string = '';
 		const situation: RegisterSituationType = 'error';
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
 				case 409:
-					message = lang('register.validation.email_already_used');
+					message = await translate(
+						'register.validation.email_already_used',
+					);
 					break;
 			}
 		}
@@ -88,7 +90,7 @@ export async function registerAction(
 		return {
 			...result,
 			errors: {},
-			message: message,
+			message: message || (await translate('error.form')),
 			situation: situation,
 		};
 	}

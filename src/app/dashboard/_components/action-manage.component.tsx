@@ -1,10 +1,12 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { Loading } from '@/components/loading.component';
 import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { useTranslation } from '@/hooks/use-translation.hook';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
@@ -52,8 +54,22 @@ export function ActionManage() {
 		(state) => state.selectedEntries,
 	);
 
+	const confirmTextKey = `${dataSource}.action.${actionName}.confirmText`;
+
+	const translationsKeys = useMemo(
+		() => [confirmTextKey, 'error.form'],
+		[confirmTextKey],
+	);
+
+	const { translations, isTranslationLoading } =
+		useTranslation(translationsKeys);
+
 	if (!isOpen || !actionName) {
 		return null;
+	}
+
+	if (isTranslationLoading) {
+		return <Loading />;
 	}
 
 	const actions = getDataSourceConfig(dataSource, 'actions');
@@ -105,10 +121,10 @@ export function ActionManage() {
 			showToast({
 				severity: fetchResponse?.success ? 'success' : 'error',
 				summary: fetchResponse?.success ? 'Success' : 'Error',
-				detail: fetchResponse?.message || lang('error.form'),
+				detail: fetchResponse?.message || translations['error.form'],
 			});
 		} catch (error: unknown) {
-			// console.error(error); // TODO
+			console.error(error);
 
 			showToast({
 				severity: 'error',
@@ -116,7 +132,7 @@ export function ActionManage() {
 				detail:
 					error instanceof ValueError || error instanceof ApiError
 						? error.message
-						: lang('error.form'),
+						: translations['error.form'],
 			});
 		}
 
@@ -145,7 +161,7 @@ export function ActionManage() {
 				))}
 			</ul>
 			<p className="pb-4 font-semibold">
-				{lang(`${dataSource}.action.${actionName}.confirmText`) ||
+				{translations[confirmTextKey] ||
 					`Are you sure you want to ${actionName.toLowerCase()} these entries?`}
 			</p>
 

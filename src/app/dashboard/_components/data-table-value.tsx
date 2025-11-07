@@ -1,10 +1,10 @@
 'use client';
 
 import clsx from 'clsx';
-import type { JSX } from 'react';
+import { type JSX, useMemo } from 'react';
 import { Icons } from '@/components/icon.component';
 import type { DataSourceType, DataTableColumnType } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { useTranslation } from '@/hooks/use-translation.hook';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
@@ -70,6 +70,12 @@ export const DisplayAction = <K extends keyof DataSourceType>({
 	const actionName =
 		typeof action.name === 'function' ? action.name(entry) : action.name;
 
+	const actionTitleKey = `${action.source}.action.${actionName}.title`;
+
+	const translationsKeys = useMemo(() => [actionTitleKey], [actionTitleKey]);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	if (!actionName) {
 		return value;
 	}
@@ -90,7 +96,7 @@ export const DisplayAction = <K extends keyof DataSourceType>({
 		<button
 			type="button"
 			onClick={triggerAction}
-			title={lang(`${action.source}.action.${actionName}.title`)}
+			title={translations[actionTitleKey]}
 			className="cursor-pointer hover:underline"
 		>
 			{value}

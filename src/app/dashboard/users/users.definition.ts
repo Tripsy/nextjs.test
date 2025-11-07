@@ -6,7 +6,7 @@ import type {
 	DataTableColumnType,
 	FormStateType,
 } from '@/config/data-source';
-import { lang } from '@/config/lang';
+import { translateBatch } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';
 import {
@@ -33,61 +33,90 @@ export type DataTableUsersFiltersType = {
 	is_deleted: DataTableFilterMetaData;
 };
 
+const translations = await translateBatch([
+	'users.validation.name_invalid',
+	{
+		key: 'users.validation.name_min',
+		vars: {
+			min: cfg('user.nameMinLength') as string,
+		},
+	},
+	'users.validation.email_invalid',
+	'users.validation.language_invalid',
+	'users.validation.role_invalid',
+	{
+		key: 'users.validation.password_invalid',
+		vars: {
+			min: cfg('user.passwordMinLength') as string,
+		},
+	},
+	{
+		key: 'users.validation.password_min',
+		vars: {
+			min: cfg('user.passwordMinLength') as string,
+		},
+	},
+	'users.validation.password_condition_capital_letter',
+	'users.validation.password_condition_number',
+	'users.validation.password_condition_special_character',
+	'users.validation.password_confirm_required',
+	'users.validation.password_confirm_mismatch',
+]);
+
 const ValidateSchemaBaseUsers = z.object({
 	name: z
-		.string({ message: lang('users.validation.name_invalid') })
+		.string({ message: translations['users.validation.name_invalid'] })
 		.trim()
-		.min(Number(cfg('user.nameMinLength')), {
-			message: lang('users.validation.name_min', {
-				min: cfg('user.nameMinLength'),
-			}),
+		.min(cfg('user.nameMinLength') as number, {
+			message: translations['users.validation.name_min'],
 		}),
-	email: z
-		.string({ message: lang('users.validation.email_invalid') })
-		.trim()
-		.email({
-			message: lang('users.validation.email_invalid'),
-		}),
+	email: z.string().trim().email({
+		message: translations['users.validation.email_invalid'],
+	}),
 	language: z.nativeEnum(LanguageEnum, {
-		message: lang('users.validation.language_invalid'),
+		message: translations['users.validation.language_invalid'],
 	}),
 	role: z.nativeEnum(UserRoleEnum, {
-		message: lang('users.validation.role_invalid'),
+		message: translations['users.validation.role_invalid'],
 	}),
 });
 
 const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	password: z
-		.string({ message: lang('users.validation.password_invalid') })
+		.string({ message: translations['users.validation.password_invalid'] })
 		.trim()
-		.min(Number(cfg('user.passwordMinLength')), {
-			message: lang('users.validation.password_min', {
-				min: cfg('user.passwordMinLength'),
-			}),
+		.min(cfg('user.passwordMinLength') as number, {
+			message: translations['users.validation.password_min'],
 		})
 		.refine((value) => /[A-Z]/.test(value), {
-			message: lang('users.validation.password_condition_capital_letter'),
+			message:
+				translations[
+					'users.validation.password_condition_capital_letter'
+				],
 		})
 		.refine((value) => /[0-9]/.test(value), {
-			message: lang('users.validation.password_condition_number'),
+			message: translations['users.validation.password_condition_number'],
 		})
 		.refine((value) => /[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]/.test(value), {
-			message: lang(
-				'users.validation.password_condition_special_character',
-			),
+			message:
+				translations[
+					'users.validation.password_condition_special_character'
+				],
 		}),
 	password_confirm: z
-		.string({ message: lang('users.validation.password_confirm_required') })
+		.string({
+			message: translations['users.validation.password_confirm_required'],
+		})
 		.trim()
 		.nonempty({
-			message: lang('users.validation.password_confirm_required'),
+			message: translations['users.validation.password_confirm_required'],
 		}),
 }).superRefine(({ password, password_confirm }, ctx) => {
 	if (password !== password_confirm) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			path: ['password_confirm'],
-			message: 'Passwords do not match',
+			message: translations['users.validation.password_confirm_mismatch'],
 		});
 	}
 });
@@ -96,25 +125,28 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 	password: z.preprocess(
 		(val) => (val === '' ? undefined : val),
 		z
-			.string({ message: lang('users.validation.password_invalid') })
+			.string({
+				message: translations['users.validation.password_invalid'],
+			})
 			.trim()
-			.min(Number(cfg('user.passwordMinLength')), {
-				message: lang('users.validation.password_min', {
-					min: cfg('user.passwordMinLength').toString(),
-				}),
+			.min(cfg('user.passwordMinLength') as number, {
+				message: translations['users.validation.password_min'],
 			})
 			.refine((value) => /[A-Z]/.test(value), {
-				message: lang(
-					'users.validation.password_condition_capital_letter',
-				),
+				message:
+					translations[
+						'users.validation.password_condition_capital_letter'
+					],
 			})
 			.refine((value) => /[0-9]/.test(value), {
-				message: lang('users.validation.password_condition_number'),
+				message:
+					translations['users.validation.password_condition_number'],
 			})
 			.refine((value) => /[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]/.test(value), {
-				message: lang(
-					'users.validation.password_condition_special_character',
-				),
+				message:
+					translations[
+						'users.validation.password_condition_special_character'
+					],
 			})
 			.optional(),
 	),
@@ -122,7 +154,8 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 		(val) => (val === '' ? undefined : val),
 		z
 			.string({
-				message: lang('users.validation.password_confirm_required'),
+				message:
+					translations['users.validation.password_confirm_required'],
 			})
 			.trim()
 			.optional(),
@@ -133,13 +166,15 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				path: ['password_confirm'],
-				message: lang('users.validation.password_confirm_required'),
+				message:
+					translations['users.validation.password_confirm_required'],
 			});
 		} else if (password !== password_confirm) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				path: ['password_confirm'],
-				message: lang('users.validation.password_confirm_mismatch'),
+				message:
+					translations['users.validation.password_confirm_mismatch'],
 			});
 		}
 	}

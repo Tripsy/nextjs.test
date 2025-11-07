@@ -99,7 +99,7 @@ export class ApiRequest {
 			proxyRoute += `?${rawQuery}`;
 		}
 
-		return cfg('url') + proxyRoute;
+		return cfg('app.url') + proxyRoute;
 	}
 
 	private buildRequestUrl(path: string) {
@@ -107,7 +107,7 @@ export class ApiRequest {
 			case 'use-proxy':
 				return this.buildProxyRoute(path);
 			case 'same-site':
-				return cfg('url') + Routes.get(path);
+				return cfg('app.url') + Routes.get(path);
 			case 'remote-api':
 				return getRemoteApiUrl(path);
 			default:

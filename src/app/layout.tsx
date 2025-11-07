@@ -2,21 +2,30 @@ import type { Metadata } from 'next';
 import './globals.css';
 import type { ReactNode } from 'react';
 import { Providers } from '@/app/providers';
-import { lang } from '@/config/lang';
+import { getLanguage, translate } from '@/config/lang';
+import { cfg } from '@/config/settings';
 
-export const metadata: Metadata = {
-	title: `${lang('app.name')}`,
-	// description: 'Dashboard Next.js',
-};
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('app.name', {
+			app_name: cfg('app.name') as string,
+		}),
+		description: await translate('app.description', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: ReactNode;
 }>) {
+	const language = await getLanguage();
+
 	return (
 		<Providers>
-			<html lang="en">
+			<html lang={language}>
 				<body>{children}</body>
 			</html>
 		</Providers>

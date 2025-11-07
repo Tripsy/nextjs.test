@@ -11,9 +11,9 @@ import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
 import type { useSearchFilter } from '@/hooks';
+import { useElementIds } from '@/hooks/use-element-ids.hook';
 import type { MatchModeType } from '@/lib/utils/data-table';
 import { getValidDate, stringToDate } from '@/lib/utils/date';
-import { generateElementId } from '@/lib/utils/string';
 
 export type SelectOptionsType<V> = {
 	label: string;
@@ -40,16 +40,19 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 	selectOptions: SelectOptionsType<V>;
 	handleSelectChange: HandleSelectChangeType<K>;
 }) {
+	const elementKey = `search-${fieldName}`;
+	const elementIds = useElementIds([elementKey]);
+
 	return (
 		<FormPart>
 			<FormElement
 				labelText={labelText}
-				labelFor={generateElementId(`search-${fieldName}`)}
+				labelFor={elementIds[elementKey]}
 			>
 				<Dropdown
 					className="p-inputtext-sm"
 					panelStyle={{ fontSize: '0.875rem' }}
-					inputId={generateElementId('searchStatus')}
+					inputId={elementIds[elementKey]}
 					value={fieldValue}
 					options={selectOptions}
 					onChange={(e) =>
@@ -65,6 +68,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 		</FormPart>
 	);
 }
+
 export function FormFiltersSearch({
 	labelText,
 	fieldName,
@@ -76,11 +80,14 @@ export function FormFiltersSearch({
 	search: ReturnType<typeof useSearchFilter>;
 	placeholderText?: string;
 }) {
+	const elementKey = `search-${fieldName}`;
+	const elementIds = useElementIds([elementKey]);
+
 	return (
 		<FormPart>
 			<FormElement
 				labelText={labelText}
-				labelFor={generateElementId(`search-${fieldName}`)}
+				labelFor={elementIds[elementKey]}
 			>
 				<IconField iconPosition="left">
 					<InputIcon className="flex items-center">
@@ -88,7 +95,7 @@ export function FormFiltersSearch({
 					</InputIcon>
 					<InputText
 						className="p-inputtext-sm"
-						id={generateElementId(`search-${fieldName}`)}
+						id={elementIds[elementKey]}
 						placeholder={placeholderText}
 						value={search.value}
 						onChange={search.handler}
@@ -124,16 +131,20 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 		handleDateChange,
 	} = props;
 
+	const elementStartKey = `search-${startDateField}`;
+	const elementEndKey = `search-${endDateField}`;
+	const elementIds = useElementIds([elementStartKey, elementEndKey]);
+
 	return (
 		<FormPart>
 			<FormElement
 				labelText={labelText}
-				labelFor={generateElementId(`search-${startDateField}`)}
+				labelFor={elementIds[elementStartKey]}
 			>
 				<div className="flex gap-2">
 					<Calendar
 						className="p-inputtext-sm h-11 w-[160px]"
-						id={generateElementId(`search-${startDateField}`)}
+						id={elementIds[elementStartKey]}
 						value={stringToDate(startDateValue)}
 						onChange={(e) =>
 							handleDateChange(
@@ -148,7 +159,7 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 					/>
 					<Calendar
 						className="p-inputtext-sm h-11 w-[160px]"
-						id={generateElementId(`search-${endDateField}`)}
+						id={elementIds[elementEndKey]}
 						value={stringToDate(endDateValue)}
 						onChange={(e) =>
 							handleDateChange(
@@ -177,13 +188,15 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 		value: boolean,
 	) => void;
 }) {
+	const elementIds = useElementIds(['searchIsDeleted']);
+
 	return (
 		<FormPart>
 			<div className="flex flex-col justify-center h-full">
 				<div>&nbsp;</div>
 				<div className="flex items-center gap-2">
 					<Checkbox
-						inputId={generateElementId('searchIsDeleted')}
+						inputId={elementIds.searchIsDeleted}
 						checked={is_deleted}
 						onChange={(e) =>
 							handleCheckboxChange(
@@ -193,7 +206,7 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 						}
 					/>
 					<label
-						htmlFor={generateElementId('searchIsDeleted')}
+						htmlFor={elementIds.searchIsDeleted}
 						className="text-sm whitespace-nowrap"
 					>
 						Show Deleted

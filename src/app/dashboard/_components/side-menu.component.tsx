@@ -66,6 +66,7 @@ function SideMenuGroup({
 
 	return (
 		<details open={open} className="side-menu-group">
+			{/*biome-ignore lint/a11y/useSemanticElements: Skip button suggestion*/}
 			<summary
 				className="side-menu-group-title"
 				onClick={handleToggle}

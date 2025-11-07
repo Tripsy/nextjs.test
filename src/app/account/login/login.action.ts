@@ -7,7 +7,7 @@ import {
 	type LoginSituationType,
 	type LoginStateType,
 } from '@/app/account/login/login.definition';
-import { lang } from '@/config/lang';
+import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { loginAccount } from '@/lib/services/account.service';
@@ -38,12 +38,12 @@ export async function loginAction(
 	};
 
 	// Check CSRF token
-	const csrfToken = formData.get(cfg('csrf.inputName')) as string;
+	const csrfToken = formData.get(cfg('csrf.inputName') as string) as string;
 
 	if (!(await isValidCsrfToken(csrfToken))) {
 		return {
 			...result,
-			message: lang('error.csrf'),
+			message: await translate('error.csrf'),
 			situation: 'csrf_error',
 		};
 	}
@@ -87,17 +87,21 @@ export async function loginAction(
 			};
 		}
 	} catch (error: unknown) {
-		let message: string = lang('login.message.could_not_login');
+		let message: string = '';
 		let situation: LoginSituationType = 'error';
 		let responseBody: { authValidTokens: AuthTokenListType } | undefined;
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
 				case 429:
-					message = lang('login.message.too_many_login_attempts');
+					message = await translate(
+						'login.message.too_many_login_attempts',
+					);
 					break;
 				case 403:
-					message = lang('login.message.max_active_sessions');
+					message = await translate(
+						'login.message.max_active_sessions',
+					);
 					situation = 'max_active_sessions';
 					responseBody = error.body?.data as {
 						authValidTokens: AuthTokenListType;
@@ -107,14 +111,15 @@ export async function loginAction(
 					situation = 'success'; // Already logged in
 					break;
 				case 400:
-					message = lang('login.message.not_active');
+					message = await translate('login.message.not_active');
 					break;
 			}
 		}
 
 		return {
 			...result,
-			message: message,
+			message:
+				message || (await translate('login.message.could_not_login')),
 			situation: situation,
 			body: responseBody,
 		};
