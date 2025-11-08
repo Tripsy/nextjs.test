@@ -1,13 +1,15 @@
 import clsx from 'clsx';
 import { Dropdown } from 'primereact/dropdown';
-import { IconField } from 'primereact/iconfield';
-import { InputIcon } from 'primereact/inputicon';
-import { InputText } from 'primereact/inputtext';
 import { useState } from 'react';
-import { FormElement } from '@/components/form/form-element.component';
+import {
+	FormElement,
+	FormElementEmail,
+	FormElementName,
+	FormElementPassword,
+	FormElementPasswordConfirm,
+} from '@/components/form/form-element.component';
 import { FormElementError } from '@/components/form/form-element-error.component';
 import { FormPart } from '@/components/form/form-part.component';
-import { Icons } from '@/components/icon.component';
 import type { FormManageType } from '@/config/data-source';
 import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { LanguageEnum } from '@/lib/enums';
@@ -44,143 +46,43 @@ export function FormManageUser({
 
 	return (
 		<>
-			<FormPart>
-				<FormElement labelText="Name" labelFor={elementIds.name}>
-					<div>
-						<IconField iconPosition="left">
-							<InputIcon className="flex items-center">
-								<Icons.User className="opacity-60" />
-							</InputIcon>
-							<InputText
-								className="p-inputtext-sm w-full"
-								id={elementIds.name}
-								name="name"
-								placeholder="eg: John Doe"
-								autoComplete={'name'}
-								disabled={pending}
-								invalid={!!errors.name}
-								value={formValues.name ?? ''}
-								onChange={(e) =>
-									handleChange('name', e.target.value)
-								}
-							/>
-						</IconField>
-						<FormElementError messages={errors.name} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementName
+				id={elementIds.name}
+				value={formValues.name ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.name}
+			/>
 
-			<FormPart>
-				<FormElement
-					labelText="Email Address"
-					labelFor={elementIds.email}
-				>
-					<div>
-						<IconField iconPosition="left">
-							<InputIcon className="flex items-center">
-								<Icons.Email className="opacity-60" />
-							</InputIcon>
-							<InputText
-								className="p-inputtext-sm w-full"
-								id={elementIds.email}
-								name="email"
-								placeholder="eg: example@domain.com"
-								autoComplete={'email'}
-								disabled={pending}
-								invalid={!!errors.email}
-								value={formValues.email ?? ''}
-								onChange={(e) =>
-									handleChange('email', e.target.value)
-								}
-							/>
-						</IconField>
-						<FormElementError messages={errors.email} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementEmail
+				id={elementIds.email}
+				value={formValues.email ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.email}
+			/>
 
-			<FormPart>
-				<FormElement
-					labelText={
-						actionName === 'create' ? 'New Password' : 'Password'
-					}
-					labelFor={elementIds.password}
-				>
-					<div>
-						<div className="relative">
-							<IconField iconPosition="left">
-								<InputIcon className="flex items-center">
-									<Icons.Password className="opacity-60" />
-								</InputIcon>
-								<InputText
-									className="p-inputtext-sm w-full !pr-10"
-									id={elementIds.password}
-									name="password"
-									type={showPassword ? 'text' : 'password'}
-									placeholder="Password"
-									autoComplete={'current-password'}
-									disabled={pending}
-									invalid={!!errors.password}
-									value={formValues.password ?? ''}
-									onChange={(e) =>
-										handleChange('password', e.target.value)
-									}
-								/>
-							</IconField>
-							<button
-								type="button"
-								className="absolute right-3 top-3 focus:outline-none hover:opacity-100 transition-opacity"
-								onClick={() => setShowPassword(!showPassword)}
-								aria-label={
-									showPassword
-										? 'Hide password'
-										: 'Show password'
-								}
-							>
-								{showPassword ? (
-									<Icons.Obscured className="opacity-60 hover:opacity-100 w-4 h-4" />
-								) : (
-									<Icons.Visible className="opacity-60 hover:opacity-100 w-4 h-4" />
-								)}
-							</button>
-						</div>
-						<FormElementError messages={errors.password} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementPassword
+				labelText={
+					actionName === 'create' ? 'New Password' : 'Password'
+				}
+				id={elementIds.password}
+				value={formValues.password ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.password}
+				showPassword={showPassword}
+				setShowPassword={setShowPassword}
+			/>
 
-			<FormPart>
-				<FormElement
-					labelText="Confirm Password"
-					labelFor={elementIds.passwordConfirm}
-				>
-					<div>
-						<IconField iconPosition="left">
-							<InputIcon className="flex items-center">
-								<Icons.Password className="opacity-60" />
-							</InputIcon>
-							<InputText
-								className="p-inputtext-sm w-full !pr-10"
-								id={elementIds.passwordConfirm}
-								name="password_confirm"
-								type={showPassword ? 'text' : 'password'}
-								placeholder="Password confirmation"
-								autoComplete={'new-password'}
-								disabled={pending}
-								invalid={!!errors.password_confirm}
-								value={formValues.password_confirm ?? ''}
-								onChange={(e) =>
-									handleChange(
-										'password_confirm',
-										e.target.value,
-									)
-								}
-							/>
-						</IconField>
-						<FormElementError messages={errors.password_confirm} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementPasswordConfirm
+				id={elementIds.passwordConfirm}
+				value={formValues.password_confirm ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.password_confirm}
+				showPassword={showPassword}
+			/>
 
 			<FormPart>
 				<FormElement

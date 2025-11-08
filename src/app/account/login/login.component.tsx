@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { IconField } from 'primereact/iconfield';
-import { InputIcon } from 'primereact/inputicon';
-import { InputText } from 'primereact/inputtext';
-import React, { useActionState, useEffect, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo, useState } from 'react';
 import { loginAction, loginValidate } from '@/app/account/login/login.action';
 import {
 	type AuthTokenListType,
@@ -14,8 +11,10 @@ import {
 	LoginState,
 } from '@/app/account/login/login.definition';
 import { FormCsrf } from '@/components/form/form-csrf';
-import { FormElement } from '@/components/form/form-element.component';
-import { FormElementError as RawFormElementError } from '@/components/form/form-element-error.component';
+import {
+	FormElementEmail,
+	FormElementPassword,
+} from '@/components/form/form-element.component';
 import { FormError } from '@/components/form/form-error.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
@@ -26,8 +25,6 @@ import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { removeTokenAccount } from '@/lib/services/account.service';
 import { formatDate } from '@/lib/utils/date';
 import { useAuth } from '@/providers/auth.provider';
-
-const FormElementError = React.memo(RawFormElementError);
 
 export default function Login() {
 	const [state, action, pending] = useActionState(loginAction, LoginState);
@@ -49,11 +46,11 @@ export default function Login() {
 		});
 
 	const handleChange = (
-		name: keyof LoginFormFieldsType,
-		value: string | boolean,
+		name: string,
+		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name);
+		markFieldAsTouched(name as keyof LoginFormFieldsType);
 	};
 
 	useEffect(() => {
@@ -110,82 +107,24 @@ export default function Login() {
 				<span>Secure login. Resume your personalized experience.</span>
 			</FormPart>
 
-			<FormPart>
-				<FormElement
-					labelText="Email Address"
-					labelFor={elementIds.email}
-				>
-					<div>
-						<IconField iconPosition="left">
-							<InputIcon className="flex items-center">
-								<Icons.Email className="opacity-60" />
-							</InputIcon>
-							<InputText
-								className="p-inputtext-sm w-full"
-								id={elementIds.email}
-								name="email"
-								placeholder="eg: example@domain.com"
-								autoComplete={'email'}
-								disabled={pending}
-								invalid={!!errors.email}
-								value={formValues.email ?? ''}
-								onChange={(e) =>
-									handleChange('email', e.target.value)
-								}
-							/>
-						</IconField>
-						<FormElementError messages={errors.email} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementEmail
+				id={elementIds.email}
+				value={formValues.email ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.email}
+			/>
 
-			<FormPart>
-				<FormElement
-					labelText="Password"
-					labelFor={elementIds.password}
-				>
-					<div>
-						<div className="relative">
-							<IconField iconPosition="left">
-								<InputIcon className="flex items-center">
-									<Icons.Password className="opacity-60" />
-								</InputIcon>
-								<InputText
-									className="p-inputtext-sm w-full !pr-10"
-									id={elementIds.password}
-									name="password"
-									type={showPassword ? 'text' : 'password'}
-									placeholder="Password"
-									autoComplete={'current-password'}
-									disabled={pending}
-									invalid={!!errors.password}
-									value={formValues.password ?? ''}
-									onChange={(e) =>
-										handleChange('password', e.target.value)
-									}
-								/>
-							</IconField>
-							<button
-								type="button"
-								className="absolute right-3 top-3 focus:outline-none hover:opacity-100 transition-opacity"
-								onClick={() => setShowPassword(!showPassword)}
-								aria-label={
-									showPassword
-										? 'Hide password'
-										: 'Show password'
-								}
-							>
-								{showPassword ? (
-									<Icons.Obscured className="opacity-60 hover:opacity-100 w-4 h-4" />
-								) : (
-									<Icons.Visible className="opacity-60 hover:opacity-100 w-4 h-4" />
-								)}
-							</button>
-						</div>
-						<FormElementError messages={errors.password} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormElementPassword
+				autoComplete="current-password"
+				id={elementIds.password}
+				value={formValues.password ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.password}
+				showPassword={showPassword}
+				setShowPassword={setShowPassword}
+			/>
 
 			<FormPart>
 				<button

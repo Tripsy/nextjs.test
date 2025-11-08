@@ -12,6 +12,7 @@ import {
 	DataSourceConfigUsers,
 	type DataSourceUsersType,
 } from '@/app/dashboard/users/users.definition';
+import type { HandleChangeType } from '@/components/form/form-element.component';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
 
@@ -110,7 +111,7 @@ export type FormManageType<K extends keyof DataSourceType> =
 				actionName: 'create' | 'update';
 				formValues: F;
 				errors: Partial<Record<keyof F, string[]>>;
-				handleChange: (field: keyof F, value: string | boolean) => void;
+				handleChange: HandleChangeType;
 				pending: boolean;
 			}
 		: never;

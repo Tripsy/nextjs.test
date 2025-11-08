@@ -6,7 +6,10 @@ import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import type { Nullable } from 'primereact/ts-helpers';
 import { handleReset } from '@/app/dashboard/_components/data-table-actions.component';
-import { FormElement } from '@/components/form/form-element.component';
+import {
+	FormElement,
+	type SelectOptionsType,
+} from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
 import type { DataSourceType } from '@/config/data-source';
@@ -15,16 +18,11 @@ import { useElementIds } from '@/hooks/use-element-ids.hook';
 import type { MatchModeType } from '@/lib/utils/data-table';
 import { getValidDate, stringToDate } from '@/lib/utils/date';
 
-export type SelectOptionsType<V> = {
-	label: string;
-	value: V;
-}[];
-
 type HandleSelectChangeType<K extends keyof DataSourceType> = <
 	F extends keyof DataSourceType[K]['dataTableFilter'],
 >(
 	field: F,
-	value: string | number,
+	value: string,
 ) => void;
 
 export function FormFiltersSelect<K extends keyof DataSourceType, V>({

@@ -61,7 +61,7 @@ export function useFormValidation<T extends Record<string, unknown>>({
 				return;
 			}
 
-			// Calculate fields to validate
+			// Determine fields to validate
 			const fieldsToValidate = submitted
 				? formValues
 				: Object.keys(touchedFields).reduce(
@@ -70,6 +70,7 @@ export function useFormValidation<T extends Record<string, unknown>>({
 								acc[key as keyof T] =
 									formValues[key as keyof T];
 							}
+
 							return acc;
 						},
 						{} as Partial<T>,
@@ -87,19 +88,35 @@ export function useFormValidation<T extends Record<string, unknown>>({
 				const fieldErrors = (validated.error?.flatten().fieldErrors ||
 					{}) as Partial<Record<keyof T, string[]>>;
 
-				const filteredErrors = submitted
-					? fieldErrors
-					: (Object.keys(fieldErrors) as (keyof T)[])
-							.filter((key) => touchedFields[key])
-							.reduce(
-								(acc, key) => {
-									acc[key] = fieldErrors[key]; // ✅ now TS is happy
-									return acc;
-								},
-								{} as Partial<Record<keyof T, string[]>>,
-							);
+				if (submitted) {
+					// Show ALL errors when submitted
+					setErrors(fieldErrors);
+				} else {
+					// When not submitted:
+					// 1. Keep existing errors (fields that were previously invalid)
+					// 2. Add new errors for currently touched fields
+					setErrors((prevErrors) => {
+						const newErrors = { ...prevErrors };
 
-				setErrors(filteredErrors);
+						// Update errors for all currently touched fields
+						Object.keys(touchedFields).forEach((key) => {
+							const fieldName = key as keyof T;
+
+							if (touchedFields[fieldName]) {
+								// If this touched field has a validation error, add it
+								// If it's valid now, remove the error
+								if (fieldErrors[fieldName]) {
+									newErrors[fieldName] =
+										fieldErrors[fieldName];
+								} else {
+									delete newErrors[fieldName];
+								}
+							}
+						});
+
+						return newErrors;
+					});
+				}
 			}
 		},
 		[formValues, touchedFields, submitted, validate],

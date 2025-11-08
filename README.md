@@ -1,12 +1,13 @@
 # TODO
 
-1. fix latest biome errors - deepseek
-2. templates
-3. Recap NextJs documentation
-4. recover password & other account pages
-5. terms page
-6. Replace all console.error with logging
-7. More language vars 
+1. learn about react-dev-tools
+2. cron-history
+3. templates
+4. Recap NextJs documentation
+5. recover password & other account pages
+6. terms page
+7. Replace all console.error with logging
+8. More language vars 
 
 # IDEAS
 

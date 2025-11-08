@@ -129,11 +129,11 @@ export function FormManage<K extends keyof DataSourceType>({
 		});
 
 	const handleChange = (
-		name: keyof FormValuesType<K>,
+		name: string,
 		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name);
+		markFieldAsTouched(name as keyof FormValuesType<K>);
 	};
 
 	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
@@ -185,7 +185,7 @@ export function FormManage<K extends keyof DataSourceType>({
 				errors,
 				handleChange,
 				pending,
-			} as unknown as FormManageType<K>)
+			} as FormManageType<K>)
 		: children;
 
 	return (
