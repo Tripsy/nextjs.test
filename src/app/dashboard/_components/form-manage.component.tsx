@@ -1,143 +1,240 @@
 'use client';
 
-import React, {cloneElement, isValidElement, useActionState, useCallback, useEffect} from 'react';
-import {lang} from '@/config/lang';
-import {getActionIcon, Icons} from '@/components/icon.component';
-import {FormPart} from '@/components/form/form-part.component';
-import {useFormValidation, useFormValues} from '@/hooks';
-import {formAction} from '@/app/dashboard/_actions';
-import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
-import {useStore} from 'zustand/react';
-import {useToast} from '@/providers/toast.provider';
-import {DataSourceType, FormManageContentType, getDataSourceConfig} from '@/config/data-source';
-import {FormError} from '@/components/form/form-error.component';
-import {handleReset} from '@/app/dashboard/_components/data-table-actions.component';
+import type React from 'react';
+import {
+	cloneElement,
+	isValidElement,
+	useActionState,
+	useCallback,
+	useEffect,
+	useMemo,
+} from 'react';
+import type { ZodError } from 'zod';
+import { useStore } from 'zustand/react';
+import { formAction } from '@/app/dashboard/_actions';
+import { handleReset } from '@/app/dashboard/_components/data-table-actions.component';
+import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { FormError } from '@/components/form/form-error.component';
+import { FormPart } from '@/components/form/form-part.component';
+import { getActionIcon, Icons } from '@/components/icon.component';
+import {
+	type DataSourceType,
+	type FormManageType,
+	type FormStateType,
+	type FormValuesType,
+	getDataSourceConfig,
+} from '@/config/data-source';
+import { useFormValidation, useFormValues } from '@/hooks';
+import { useTranslation } from '@/hooks/use-translation.hook';
+import ValueError from '@/lib/exceptions/value.error';
+import { useToast } from '@/providers/toast.provider';
 
-export function FormManage({children}: {children: React.ReactNode}) {
-    const {dataSource, modelStore} = useDataTable();
-    const {showToast} = useToast();
+export function FormManage<K extends keyof DataSourceType>({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const { dataSource, modelStore } = useDataTable<K>();
+	const { showToast } = useToast();
 
-    const actionName = useStore(modelStore, (state) => state.actionName) as 'create' | 'update';
-    const actionEntry = useStore(modelStore, (state) => state.actionEntry);
-    const closeOut = useStore(modelStore, (state) => state.closeOut);
-    const refreshTableState = useStore(modelStore, (state) => state.refreshTableState);
+	const actionName = useStore(modelStore, (state) => state.actionName);
+	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
+	const closeOut = useStore(modelStore, (state) => state.closeOut);
+	const refreshTableState = useStore(
+		modelStore,
+		(state) => state.refreshTableState,
+	);
 
-    const functions = getDataSourceConfig(dataSource, 'functions');
-    const syncFormStateFunction = functions?.syncFormState;
+	if (!actionName) {
+		throw new Error('actionName appears to be null');
+	}
 
-    const formState = getDataSourceConfig(dataSource, 'formState');
-    const initState = actionName == 'update' && actionEntry ? syncFormStateFunction(formState, actionEntry) : formState;
+	const functions = getDataSourceConfig(dataSource, 'functions');
 
-    const [state, action, pending] = useActionState(formAction<typeof dataSource>, initState);
+	// Determine syncFormState function
+	if (!('syncFormState' in functions)) {
+		throw new ValueError(
+			`'syncFormState' function is not defined for ${dataSource}`,
+		);
+	}
 
-    const [formValues, setFormValues] = useFormValues<DataSourceType[typeof dataSource]['formValues']>(state.values);
+	const syncFormStateFunction = functions.syncFormState;
 
-    const validateFormFunction = functions?.validateForm;
+	// Fighting with Typescript & Eslint
+	if (!syncFormStateFunction) {
+		throw new ValueError(
+			`'syncFormState' function is not defined for ${dataSource}`,
+		);
+	}
 
-    const validate = useCallback(
-        () => validateFormFunction(formValues, state.id),
-        [formValues, state.id, validateFormFunction]
-    );
+	// Determine initial form state
+	const formState = getDataSourceConfig(dataSource, 'formState');
 
-    const {
-        errors,
-        submitted,
-        setSubmitted,
-        markFieldAsTouched
-    } = useFormValidation<DataSourceType[typeof dataSource]['formValues']>({
-        formValues: formValues,
-        validate: validate,
-        debounceDelay: 800,
-    });
+	// Fighting with Typescript & Eslint
+	if (!formState) {
+		throw new ValueError(`'formState' is not defined for ${dataSource}`);
+	}
 
-    const handleChange = (name: keyof DataSourceType[typeof dataSource]['formValues'], value: string | boolean) => {
-        setFormValues(prev => ({...prev, [name]: value}));
-        markFieldAsTouched(name);
-    };
+	const initState =
+		actionName === 'update' && actionEntry && syncFormStateFunction
+			? syncFormStateFunction(formState, actionEntry)
+			: formState;
 
-    // Handle success state
-    useEffect(() => {
-        if (state?.situation === 'success') {
+	const [state, action, pending] = useActionState<FormStateType<K>, FormData>(
+		async (state: FormStateType<K>, formData: FormData) =>
+			formAction<K>(state, formData),
+		initState as Awaited<FormStateType<K>>,
+	);
 
-            if (state?.result) {
-                if (actionName === 'create') {
-                    handleReset('FormManage'); // We trigger reset instead of updating data table state
-                } else {
-                    refreshTableState();
-                }
-            }
+	const [formValues, setFormValues] = useFormValues<FormValuesType<K>>(
+		state.values as FormValuesType<K>,
+	);
 
-            showToast({
-                severity: 'success',
-                summary: 'Success',
-                detail: lang(`${dataSource}.action.${actionName}.success`),
-            });
+	// Determine validateForm function
+	if (!('validateForm' in functions)) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
 
-            closeOut();
-        }
+	const validateFormFunction = functions.validateForm;
 
-    }, [state?.situation, showToast, closeOut, actionName, state?.result, refreshTableState, dataSource]);
+	// Fighting with Typescript & Eslint
+	if (!validateFormFunction) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
 
-    // const FormManageContent = getFormManageContent(actionName);
+	const validate = useCallback(
+		(
+			values: FormValuesType<K>,
+		): {
+			success: boolean;
+			error?: ZodError<FormValuesType<K>>;
+		} => {
+			return validateFormFunction(values, state.id) as {
+				success: boolean;
+				error?: ZodError<FormValuesType<K>>;
+			};
+		},
+		[state.id, validateFormFunction],
+	);
 
-    const actionLabel = lang(`${dataSource}.action.${actionName}.label`);
-    const ActionButtonIcon = getActionIcon(actionName);
+	const { errors, submitted, setSubmitted, markFieldAsTouched } =
+		useFormValidation<FormValuesType<K>>({
+			formValues,
+			validate,
+			debounceDelay: 800,
+		});
 
-    const injectedChild = isValidElement(children)
-        ? cloneElement(children, {
-            actionName,
-            formValues,
-            errors,
-            handleChange,
-            pending,
-        } as FormManageContentType<typeof dataSource>)
-        : children;
+	const handleChange = (
+		name: string,
+		value: string | boolean | number | Date,
+	) => {
+		setFormValues((prev) => ({ ...prev, [name]: value }));
+		markFieldAsTouched(name as keyof FormValuesType<K>);
+	};
 
-    return (
-        <form
-            action={async (formData) => {
-                setSubmitted(true);
-                action(formData);
-            }}
-            className="form-section"
-        >
-            {injectedChild}
+	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
+	const successMessageKey = `${dataSource}.action.${actionName}.success`;
 
-            <FormPart>
-                <div className="flex justify-end gap-3">
-                    <button
-                        type="submit"
-                        className="btn btn-info"
-                        disabled={pending || (submitted && Object.keys(errors).length > 0)}
-                        aria-busy={pending}
-                    >
-                        {pending ? (
-                            <span className="flex items-center gap-2">
-                                <Icons.Loading className="w-4 h-4 animate-spin"/>
-                                Saving...
-                            </span>
-                        ) : submitted && Object.keys(errors).length > 0 ? (
-                            <span className="flex items-center gap-2">
-                                <Icons.Error className="w-4 h-4 animate-pulse"/>
-                                {actionLabel}
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-2">
-                                <ActionButtonIcon/>
-                                {actionLabel}
-                            </span>
-                        )}
-                    </button>
-                </div>
-            </FormPart>
+	const translationsKeys = useMemo(
+		() => [successMessageKey, actionLabelKey],
+		[actionLabelKey, successMessageKey],
+	);
 
-            {state?.situation === 'error' && state.message && (
-                <FormError>
-                    <>
-                        <Icons.Error/> {state.message}
-                    </>
-                </FormError>
-            )}
-        </form>
-    );
+	const { translations } = useTranslation(translationsKeys);
+
+	// Handle success state
+	useEffect(() => {
+		if (state?.situation === 'success') {
+			if (state?.resultData) {
+				if (actionName === 'create') {
+					handleReset('FormManage'); // We trigger reset instead of updating data table state
+				} else {
+					refreshTableState();
+				}
+			}
+
+			showToast({
+				severity: 'success',
+				summary: 'Success',
+				detail: translations[successMessageKey],
+			});
+
+			closeOut();
+		}
+	}, [
+		state?.situation,
+		showToast,
+		closeOut,
+		actionName,
+		state?.resultData,
+		refreshTableState,
+		translations,
+		successMessageKey,
+	]);
+
+	const ActionButtonIcon = getActionIcon(actionName);
+
+	const injectedChild = isValidElement(children)
+		? cloneElement(children, {
+				actionName,
+				formValues,
+				errors,
+				handleChange,
+				pending,
+			} as FormManageType<K>)
+		: children;
+
+	return (
+		<form
+			key={`form-${actionName}`}
+			action={action}
+			onSubmit={() => setSubmitted(true)}
+			className="form-section"
+		>
+			{injectedChild}
+
+			<FormPart>
+				<div className="flex justify-end gap-3">
+					<button
+						type="submit"
+						className="btn btn-info"
+						disabled={
+							pending ||
+							(submitted && Object.keys(errors).length > 0)
+						}
+						aria-busy={pending}
+					>
+						{pending ? (
+							<span className="flex items-center gap-2">
+								<Icons.Loading className="w-4 h-4 animate-spin" />
+								Saving...
+							</span>
+						) : submitted && Object.keys(errors).length > 0 ? (
+							<span className="flex items-center gap-2">
+								<Icons.Error className="w-4 h-4 animate-pulse" />
+								{translations[actionLabelKey]}
+							</span>
+						) : (
+							<span className="flex items-center gap-2">
+								<ActionButtonIcon />
+								{translations[actionLabelKey]}
+							</span>
+						)}
+					</button>
+				</div>
+			</FormPart>
+
+			{state?.situation === 'error' && state.message && (
+				<FormError>
+					<div>
+						<Icons.Error /> {state.message}
+					</div>
+				</FormError>
+			)}
+		</form>
+	);
 }

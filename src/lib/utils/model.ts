@@ -5,21 +5,23 @@
  * @param dateFields Array of date field names to normalize (default: ['created_at', 'updated_at'])
  */
 export function normalizeDates<
-    T extends Record<string, unknown>,
-    K extends keyof T & string = keyof T & string
+	T extends Record<string, unknown>,
+	K extends keyof T & string = keyof T & string,
 >(
-    obj: T | null,
-    dateFields: string[] = ['created_at', 'updated_at']
+	obj: T | null,
+	dateFields: string[] = ['created_at', 'updated_at'],
 ): { [P in keyof T]: P extends K ? Date : T[P] } | null {
-    if (!obj) return null;
+	if (!obj) return null;
 
-    const result = {...obj};
+	const result = { ...obj };
 
-    dateFields.forEach((field) => {
-        if (field in result) {
-            (result as Record<string, unknown>)[field] = new Date(result[field] as unknown as string);
-        }
-    });
+	dateFields.forEach((field) => {
+		if (field in result) {
+			(result as Record<string, unknown>)[field] = new Date(
+				result[field] as unknown as string,
+			);
+		}
+	});
 
-    return result as { [P in keyof T]: P extends K ? Date : T[P] };
+	return result as { [P in keyof T]: P extends K ? Date : T[P] };
 }

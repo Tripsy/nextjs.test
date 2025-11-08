@@ -1,93 +1,44 @@
-// export const getQueryParams = function () {
-//     return (new URL(window.location.href)).searchParams
-// }
-//
-// export const getQueryParam = function (name) {
-//     return getQueryParams().get(name)
-// }
+function getCookieDomain(domain?: string): string {
+	if (domain) {
+		return domain;
+	}
 
-function getCookieDomainPart(domain?: string) {
-    if (domain) {
-        return ';domain=' + domain;
-    }
+	const host = document.location.hostname;
+	const parts = host.split('.');
+	if (parts.length > 2) {
+		return `.${parts.slice(-2).join('.')}`;
+	}
 
-    return ';domain=.' + document.location.host;
+	return `.${host}`;
 }
 
-export const setCookie = function (name: string, value: string, expireSeconds: number = 86400, domain?: string) {
-    let expires = '';
+export async function setCookie(
+	name: string,
+	value: string,
+	expireSeconds = 86400,
+	domain?: string,
+): Promise<void> {
+	const expires = Date.now() + expireSeconds * 1000;
 
-    if (expireSeconds) {
-        const date = new Date();
-
-        date.setTime(date.getTime() + expireSeconds * 1000);
-
-        expires = '; expires=' + date.toUTCString();
-    }
-
-    document.cookie = name + '=' + encodeURIComponent(value || '') + expires + getCookieDomainPart(domain) + ';path=/';
-
-    return;
+	await cookieStore.set({
+		name,
+		value: encodeURIComponent(value || ''),
+		expires,
+		domain: getCookieDomain(domain),
+		path: '/',
+	});
 }
 
-export const readCookie = function(name: string): string | null {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith(name + '='))
-        ?.split('=')[1];
+export async function readCookie(name: string): Promise<string | null> {
+	const cookie = await cookieStore.get(name);
 
-    if (cookieValue) {
-        return decodeURIComponent(cookieValue);
-    }
+	if (!cookie?.value) {
+		return null;
+	}
 
-    return null;
+	return decodeURIComponent(cookie.value);
 }
 
-export const removeCookie = function (name: string, domain?: string) {
-    document.cookie = name + `=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${getCookieDomainPart(domain)}`;
-};
-
-// // path = `value` OR `nested.value`
-// export const getObjectValue = function (object, path) {
-//     const keys = path.split('.')
-//     let result = object
-//
-//     for (let key of keys) {
-//         result = result[key]
-//
-//         if (result === undefined) {
-//             return undefined
-//         }
-//     }
-//
-//     return result
-// }
-//
-// export const setObjectValue = function (object, path, value) {
-//     const keys = path.split('.')
-//     let result = object
-//
-//     for (let i = 0; i < keys.length - 1; i++) {
-//         const key = keys[i]
-//
-//         if (result[key] === undefined) {
-//             result[key] = {} // Create nested object if it doesn't exist
-//         }
-//
-//         result = result[key]
-//     }
-//
-//     result[keys[keys.length - 1]] = value
-// }
-//
-// export const getFirstElementFromArray = function (a: []) {
-//     return a.at(0)
-// }
-//
-// export const getLastElementFromArray = function (a) {
-//     return a.at(-1)
-// }
-//
-// export const isViewportMobile = function () {
-//     return window.matchMedia('(max-width: 767px)').matches
-// }
+export async function removeCookie(name: string): Promise<void> {
+	await cookieStore.delete(name);
+}

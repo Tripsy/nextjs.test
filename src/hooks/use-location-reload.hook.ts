@@ -1,12 +1,12 @@
-import {useEffect} from 'react';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export function useLocationReload(condition: boolean) {
-    const router = useRouter();
+	const router = useRouter();
 
-    useEffect(() => {
-        if (condition) {
-            router.refresh();
-        }
-    }, [condition, router]);
+	useEffect(() => {
+		if (condition) {
+			router.refresh();
+		}
+	}, [condition, router]);
 }

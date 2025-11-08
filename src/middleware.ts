@@ -1,151 +1,227 @@
-import type {NextRequest} from 'next/server';
-import {NextResponse} from 'next/server';
-import Routes, {RouteAuth, RouteMatch} from '@/config/routes';
-import {ApiRequest, getResponseData, ResponseFetch} from '@/lib/utils/api';
-import {AuthModel, hasPermission, prepareAuthModel} from '@/lib/models/auth.model';
-import {lang} from '@/config/lang';
-import {getTrackedCookie, getTrackedCookieName, TrackedCookie} from '@/lib/utils/session';
-import {cfg} from '@/config/settings';
-import {apiHeaders} from '@/lib/utils/system';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import Routes, { RouteAuth, type RouteMatch } from '@/config/routes';
+import { cfg, isSupportedLanguage } from '@/config/settings';
+import {
+	type AuthModel,
+	hasPermission,
+	prepareAuthModel,
+} from '@/lib/models/auth.model';
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/utils/api';
+import { getTrackedCookie, getTrackedCookieName } from '@/lib/utils/session';
+import { apiHeaders } from '@/lib/utils/system';
 
 // import {getRedisClient} from '@/config/init-redis.config';
 
-function blockedOrigin(req: NextRequest) {
-    const ALLOWED_ORIGIN = ['http://localhost:3000', 'http://nextjs.test'];
+class MiddlewareContext {
+	req: NextRequest;
+	res: NextResponse;
 
-    const origin = req.headers.get('origin');
-    const referer = req.headers.get('referer');
+	constructor(req: NextRequest) {
+		this.req = req;
+		this.res = NextResponse.next();
+	}
 
-    // Probably a same-origin browser request — allow it
-    if (!origin && !referer) {
-        return false;
-    }
+	success() {
+		this.res.headers.set('X-Content-Type-Options', 'nosniff');
 
-    // Check origin header
-    if (origin && ALLOWED_ORIGIN.includes(origin)) {
-        return false; // Not blocked
-    }
+		// Determine language; add it to headers; create cookie
+		this.setupLanguage();
 
-    // Check referer header
-    if (referer) {
-        try {
-            const refererUrl = new URL(referer);
-            const refererOrigin = `${refererUrl.protocol}//${refererUrl.host}`;
+		return this.res;
+	}
 
-            if (ALLOWED_ORIGIN.includes(refererOrigin)) {
-                return false; // Not blocked
-            }
-        } catch {
-            console.warn('Invalid referer URL:', referer);
-        }
-    }
+	redirect(url: URL) {
+		return NextResponse.redirect(url);
+	}
 
-    return true; // Blocked
-}
+	redirectToLogin() {
+		// Create the full destination URL with all query params
+		const currentUrl = new URL(this.req.url);
+		const destinationPath = currentUrl.pathname + currentUrl.search;
 
-/**
- * Redirect to the login page
- *
- * @param request
- */
-function redirectToLogin(request: NextRequest) {
-    const loginUrl = new URL(Routes.get('login'), request.url);
+		// Create the login URL
+		const loginUrl = new URL(Routes.get('login'), this.req.url);
 
-    // Create the full destination URL with all query params
-    const currentUrl = new URL(request.url);
-    const destinationPath = currentUrl.pathname + currentUrl.search;
+		// Add destination path as query parameter
+		loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
 
-    // URL-encode the full destination including query params
-    loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
+		return this.redirect(loginUrl);
+	}
 
-    return NextResponse.redirect(loginUrl);
-}
+	redirectToError(r: string) {
+		const redirectUrl = new URL(
+			Routes.get('status', { type: 'error' }),
+			this.req.url,
+		);
 
-/**
- * Redirect to the error page
- * The error message will be carried as a query param
- *
- * @param request
- * @param error
- */
-function redirectToError(request: NextRequest, error: Error | string) {
-    const redirectUrl = new URL(Routes.get('status', {type: 'error'}), request.url);
+		redirectUrl.searchParams.set('r', r);
 
-    if (error) {
-        let logMessage: string;
+		return this.redirect(redirectUrl);
+	}
 
-        if (error instanceof Error) {
-            logMessage = error.message;
-        } else {
-            logMessage = error;
-        }
+	setupLanguage() {
+		// 1. Check query parameter first (highest priority)
+		const url = new URL(this.req.url);
+		const queryLang = url.searchParams.get('lang');
 
-        redirectUrl.searchParams.set('msg', logMessage);
-    }
+		// 2. Check existing cookie
+		const cookieLang = this.req.cookies.get('preferred-language')?.value;
 
-    return NextResponse.redirect(redirectUrl);
-}
+		// 3. Check Accept-Language header
+		const acceptLanguage = this.req.headers.get('accept-language');
+		const headerLang = acceptLanguage?.split(',')[0]?.split('-')[0];
 
-/**
- * Returns a success response
- *
- * @returns
- */
-async function responseSuccess() {
-    const response = NextResponse.next();
+		// Determine language with priority: query > cookie > header
+		const language = queryLang || cookieLang || headerLang;
 
-    response.headers.set('X-Content-Type-Options', 'nosniff');
+		if (language && isSupportedLanguage(language)) {
+			if (language !== cookieLang) {
+				this.res.cookies.set('preferred-language', language, {
+					httpOnly: true,
+					secure: cfg('app.environment') === 'production',
+					path: '/',
+					sameSite: 'lax',
+					maxAge: 60 * 60 * 24 * 365,
+				});
+			}
 
-    // `unsafe-inline` will block inline scripts (eg: <script>alert()</script>)
-    // `default-src 'self'; script-src 'self' will block any CSS, JS or images loaded from external sources
-    // is good for security but some resources need to be whitelisted (ex: FontAwesome)
-    // if (cfg('environment') === 'production') {
-    //     response.headers.set(
-    //         'Content-Security-Policy',
-    //         "default-src 'self'; script-src 'self' 'unsafe-inline'"
-    //     );
-    // }
+			this.res.headers.set('x-language', language);
+		}
+	}
 
-    return response;
-}
+	isValidOrigin() {
+		const origin = this.req.headers.get('origin');
+		const referer = this.req.headers.get('referer');
 
-/**
- * Extends a success response to an authorized response
- * It adds `x-auth-data` header & refreshes the session token when needed
- *
- * @param sessionToken
- * @param authModel
- */
-async function responseAuthorized(sessionToken: TrackedCookie, authModel: AuthModel) {
-    const response = await responseSuccess();
+		const allowedOrigins = cfg('security.allowedOrigins') as string[];
 
-    // Set auth data as a header
-    response.headers.set('x-auth-data', JSON.stringify(authModel));
+		// Probably a same-origin browser request — allow it
+		if (!origin && !referer) {
+			return true;
+		}
 
-    if (sessionToken.action === 'set' && sessionToken.value) {
-        const cookieName = cfg('user.sessionToken');
-        const cookieMaxAge = Number(cfg('user.sessionMaxAge'));
+		// Check origin
+		if (origin && allowedOrigins.includes(origin)) {
+			return true;
+		}
 
-        response.cookies.set(cookieName, sessionToken.value, {
-            httpOnly: true,
-            secure: cfg('environment') === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: cookieMaxAge,
-        });
+		if (referer) {
+			try {
+				const refererUrl = new URL(referer || '');
 
-        const cookieExpireValue = Date.now() + (cookieMaxAge * 1000);
+				return allowedOrigins.includes(
+					`${refererUrl.protocol}//${refererUrl.host}`,
+				);
+			} catch {
+				return false;
+			}
+		}
 
-        response.cookies.set(getTrackedCookieName(cookieName), String(cookieExpireValue), {
-            httpOnly: true,
-            secure: cfg('environment') === 'production',
-            path: '/',
-            sameSite: 'lax',
-            maxAge: cookieMaxAge,
-        });
-    }
+		return false;
+	}
 
-    return response;
+	destroySession() {
+		this.res.cookies.delete(cfg('user.sessionToken') as string);
+	}
+
+	async handleAuth(
+		routeMatch: RouteMatch | undefined,
+	): Promise<NextResponse> {
+		const sessionToken = await getTrackedCookie(
+			cfg('user.sessionToken') as string,
+		);
+
+		const { auth: routeAuth, permission: routePermission } =
+			routeMatch?.props || {
+				auth: RouteAuth.PUBLIC,
+				permission: undefined,
+			};
+
+		if (!sessionToken.value) {
+			switch (routeAuth) {
+				case RouteAuth.UNAUTHENTICATED:
+				case RouteAuth.PUBLIC:
+					return this.success();
+				case RouteAuth.AUTHENTICATED:
+				case RouteAuth.PROTECTED:
+					return this.redirectToLogin();
+				default:
+					return this.redirectToError('undefined_route');
+			}
+		}
+
+		const authModel = await fetchAuthModel(sessionToken.value);
+
+		if (!authModel) {
+			switch (routeAuth) {
+				case RouteAuth.UNAUTHENTICATED:
+				case RouteAuth.PUBLIC: {
+					// Destroy session -> token exists but is invalid
+					this.destroySession();
+
+					return this.success();
+				}
+				case RouteAuth.AUTHENTICATED:
+				case RouteAuth.PROTECTED: {
+					this.res = this.redirectToError('unauthorized');
+
+					// Destroy session -> token exists but is invalid
+					this.destroySession();
+
+					return this.res;
+				}
+				default: {
+					return this.redirectToError('undefined_route');
+				}
+			}
+		}
+
+		if (routeAuth === RouteAuth.UNAUTHENTICATED) {
+			return this.redirectToError('already_logged_in');
+		}
+
+		if (routeAuth === RouteAuth.PROTECTED) {
+			if (!hasPermission(authModel, routePermission)) {
+				return this.redirectToError('unauthorized');
+			}
+		}
+
+		this.res.headers.set('x-auth-data', JSON.stringify(authModel));
+
+		if (sessionToken.action === 'set' && sessionToken.value) {
+			const cookieName = cfg('user.sessionToken') as string;
+			const cookieMaxAge = cfg('user.sessionMaxAge') as number;
+
+			this.res.cookies.set(cookieName, sessionToken.value, {
+				httpOnly: true,
+				secure: cfg('app.environment') === 'production',
+				path: '/',
+				sameSite: 'lax',
+				maxAge: cookieMaxAge,
+			});
+
+			const cookieExpireValue = Date.now() + cookieMaxAge * 1000;
+
+			this.res.cookies.set(
+				getTrackedCookieName(cookieName),
+				String(cookieExpireValue),
+				{
+					httpOnly: true,
+					secure: cfg('app.environment') === 'production',
+					path: '/',
+					sameSite: 'lax',
+					maxAge: cookieMaxAge,
+				},
+			);
+		}
+
+		return this.success();
+	}
 }
 
 // /**
@@ -189,142 +265,84 @@ async function responseAuthorized(sessionToken: TrackedCookie, authModel: AuthMo
  * @param token
  */
 async function fetchAuthModel(token: string): Promise<AuthModel> {
-    try {
-        const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
-            .setRequestMode('remote-api')
-            .doFetch('/account/details', {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    ...await apiHeaders()
-                }
-            });
+	try {
+		const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
+			.setRequestMode('remote-api')
+			.doFetch('/account/details', {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					...(await apiHeaders()),
+				},
+			});
 
-        if (fetchResponse?.success) {
-            const responseData = getResponseData(fetchResponse);
+		if (fetchResponse?.success) {
+			const responseData = getResponseData(fetchResponse);
 
-            if (responseData) {
-                return prepareAuthModel(responseData);
-            }
-        }
+			if (responseData) {
+				return prepareAuthModel(responseData);
+			}
+		}
 
-        return null;
-    } catch {
-        return null;
-    }
-}
-
-async function handleAuthRequirement(req: NextRequest, routeMatch: RouteMatch | undefined): Promise<NextResponse> {
-    const sessionToken = await getTrackedCookie(cfg('user.sessionToken'));
-
-    const {auth: routeAuth, permission: routePermission} = routeMatch?.props || {
-        routeAuth: RouteAuth.PUBLIC, routePermission: undefined
-    };
-
-    if (!sessionToken.value) {
-        switch (routeAuth) {
-            case RouteAuth.UNAUTHENTICATED:
-            case RouteAuth.PUBLIC:
-                return await responseSuccess();
-            case RouteAuth.AUTHENTICATED:
-            case RouteAuth.PROTECTED:
-                return redirectToLogin(req);
-            default:
-                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-        }
-    }
-
-    const authModel = await fetchAuthModel(sessionToken.value);
-
-    if (!authModel) {
-        switch (routeAuth) {
-            case RouteAuth.UNAUTHENTICATED:
-            case RouteAuth.PUBLIC: {
-                const response = await responseSuccess();
-
-                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
-
-                return response;
-            }
-            case RouteAuth.AUTHENTICATED:
-            case RouteAuth.PROTECTED: {
-                const msg = lang('auth.message.unauthorized');
-                const response = redirectToError(req, msg);
-
-                response.cookies.delete(cfg('user.sessionToken')); // Session token exists but is invalid so it is removed
-
-                return response;
-            }
-            default: {
-                return redirectToError(req, `Unknown route auth: ${routeAuth}`);
-            }
-        }
-    }
-
-    if (routeAuth === RouteAuth.UNAUTHENTICATED) {
-        return redirectToError(req, lang('auth.message.already_logged_in'));
-    }
-
-    if (routeAuth === RouteAuth.PROTECTED) {
-        if (!hasPermission(authModel, routePermission)) {
-            return redirectToError(req, lang('auth.message.unauthorized'));
-        }
-    }
-
-    return responseAuthorized(sessionToken, authModel);
+		return null;
+	} catch {
+		return null;
+	}
 }
 
 export async function middleware(req: NextRequest) {
-    // Skip middleware for Server Actions
-    if (req.headers.get('next-action')) {
-        return NextResponse.next();
-    }
+	const ctx = new MiddlewareContext(req);
 
-    // Allow preflight and HEAD requests unconditionally
-    if (['HEAD', 'OPTIONS'].includes(req.method)) {
-        return NextResponse.next();
-    }
+	// Skip middleware for Server Actions
+	if (req.headers.get('next-action')) {
+		return ctx.success();
+	}
 
-    // Block suspicious origins
-    if (blockedOrigin(req)) {
-        return new NextResponse('Forbidden', {status: 403});
-    }
+	// Skip preflight and HEAD requests
+	if (['HEAD', 'OPTIONS'].includes(req.method)) {
+		return ctx.success();
+	}
 
-    // Match route
-    const pathname = req.nextUrl.pathname;
+	// Block suspicious origins
+	if (!ctx.isValidOrigin()) {
+		return new NextResponse('Forbidden', {
+			status: 403,
+		});
+	}
 
-    const routeMatch = Routes.match(pathname);
+	const pathname = req.nextUrl.pathname;
+	const routeMatch = Routes.match(pathname);
 
-    if (!routeMatch) {
-        return responseSuccess();
-    }
+	if (!routeMatch) {
+		return ctx.success();
+	}
 
-    // // Rate limit
-    // const {isAllowed, retryAfter} = await rateLimit(req);
-    //
-    // if (!isAllowed) {
-    //     return new NextResponse(
-    //         JSON.stringify({error: 'Too many requests. Please try again later.'}),
-    //         {
-    //             status: 429,
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Retry-After': String(retryAfter),
-    //             },
-    //         }
-    //     );
-    // }
+	// // Rate limit
+	// const {isAllowed, retryAfter} = await rateLimit(req);
+	//
+	// if (!isAllowed) {
+	//     return new NextResponse(
+	//         JSON.stringify({error: 'Too many requests. Please try again later.'}),
+	//         {
+	//             status: 429,
+	//             headers: {
+	//                 'Content-Type': 'application/json',
+	//                 'Retry-After': String(retryAfter),
+	//             },
+	//         }
+	//     );
+	// }
 
-    // Skip auth check for proxy routes - they will fail at remote API if is the case
-    if (!['proxy'].includes(routeMatch.name)) {
-        return await handleAuthRequirement(req, routeMatch);
-    }
+	// Skip auth check for proxy routes - they will fail at remote API if is the case
+	if (!['proxy'].includes(routeMatch.name)) {
+		return await ctx.handleAuth(routeMatch);
+	}
 
-    return responseSuccess();
+	return ctx.success();
 }
 
 export const config = {
-    matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)).*)',
-    ],
+	matcher: [
+		'/((?!_next/static|_next/image|favicon.ico|.*\\.(?:ico|png|jpg|jpeg|svg|css|js|json|woff2?|ttf|eot)).*)',
+	],
 };

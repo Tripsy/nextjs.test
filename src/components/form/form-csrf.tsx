@@ -1,39 +1,37 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {ApiRequest} from '@/lib/utils/api';
+import { useEffect, useState } from 'react';
+import { ApiRequest } from '@/lib/utils/api';
 
 async function fetchCsrfToken() {
-    try {
-        const result = await new ApiRequest()
-            .setRequestMode('same-site')
-            .setRequestInit({
-                credentials: 'same-origin',
-            })
-            .doFetch<{csrfToken: string}>('csrf', {
-                method: 'GET'
-            });
+	try {
+		const result = await new ApiRequest()
+			.setRequestMode('same-site')
+			.setRequestInit({
+				credentials: 'same-origin',
+			})
+			.doFetch<{ csrfToken: string }>('csrf', {
+				method: 'GET',
+			});
 
-        return result?.data?.csrfToken || '';
-    } catch (error) {
-        console.error('Failed to fetch CSRF token:', error);
+		return result?.data?.csrfToken || '';
+	} catch (error) {
+		console.error('Failed to fetch CSRF token:', error);
 
-        return '';
-    }
+		return '';
+	}
 }
 
-export function FormCsrf({inputName}: { inputName: string }) {
-    const [csrfToken, setCsrfToken] = useState('');
+export function FormCsrf({ inputName }: { inputName: string }) {
+	const [csrfToken, setCsrfToken] = useState('');
 
-    useEffect(() => {
-        (async () => {
-            const token = await fetchCsrfToken();
+	useEffect(() => {
+		(async () => {
+			const token = await fetchCsrfToken();
 
-            setCsrfToken(token);
-        })();
-    }, []);
+			setCsrfToken(token);
+		})();
+	}, []);
 
-    return (
-        <input type="hidden" name={inputName} value={csrfToken}/>
-    );
+	return <input type="hidden" name={inputName} value={csrfToken} />;
 }

@@ -1,40 +1,53 @@
 'use client';
 
-import React, {JSX} from 'react';
+import type { JSX } from 'react';
+import { DataTableActions } from '@/app/dashboard/_components/data-table-actions.component';
 import DataTableList from '@/app/dashboard/_components/data-table-list.component';
-import {DataTableFiltersUsers} from '@/app/dashboard/users/data-table-filters-users.component';
-import {DataTableActions} from '@/app/dashboard/_components/data-table-actions.component';
-import {DataTableProvider} from '@/app/dashboard/_providers/data-table-provider';
-import {Loading} from '@/components/loading.component';
-import {useMounted} from '@/hooks';
-import {createModelStore} from '@/app/dashboard/_stores/model.store';
-import {DataTableManage} from '@/app/dashboard/_components/data-table-manage.component';
-import {ActionUsers} from '@/app/dashboard/users/action-users.component';
-import {FormManageContentUsers} from '@/app/dashboard/users/form-manage-content-users.component';
+import { DataTableModal } from '@/app/dashboard/_components/data-table-modal.component';
+import { DataTableProvider } from '@/app/dashboard/_providers/data-table-provider';
+import { createModelStore } from '@/app/dashboard/_stores/model.store';
+import { DataTableUsersFilters } from '@/app/dashboard/users/data-table-users-filters.component';
+import { FormManageUser } from '@/app/dashboard/users/form-manage-user.component';
+import { SetupPermissionsUser } from '@/app/dashboard/users/setup-permissions-user.component';
+import { ViewUser } from '@/app/dashboard/users/view-user.component';
+import { Loading } from '@/components/loading.component';
+import { useMounted } from '@/hooks';
 
 const modelStore = createModelStore('users');
 
 export const DataTableUsers = (): JSX.Element => {
-    const isMounted = useMounted();
+	const isMounted = useMounted();
 
-    if (!isMounted) {
-        return <Loading/>;
-    }
+	if (!isMounted) {
+		return <Loading />;
+	}
 
-    return (
-        <DataTableProvider dataSource="users" selectionMode="checkbox" modelStore={modelStore}>
-            <div className="standard-box p-4 shadow-md">
-                <DataTableFiltersUsers/>
-                <DataTableActions/>
-                <DataTableList
-                    dataKey="id"
-                    scrollHeight="400px"
-                />
-            </div>
-            <DataTableManage actionComponent={ActionUsers}>
-                {/* @ts-expect-error FormManageContentUsers props are injected at runtime via FormManage */}
-                <FormManageContentUsers />
-            </DataTableManage>
-        </DataTableProvider>
-    );
-}
+	return (
+		<DataTableProvider
+			dataSource="users"
+			selectionMode="checkbox"
+			modelStore={modelStore}
+		>
+			<div className="standard-box p-4 shadow-md">
+				<DataTableUsersFilters />
+				<DataTableActions />
+				<DataTableList dataKey="id" scrollHeight="400px" />
+			</div>
+
+			<DataTableModal<'users'>
+				modals={{
+					// @ts-expect-error FormManageUser props are injected at runtime via FormManage
+					create: <FormManageUser />,
+					// @ts-expect-error FormManageUser props are injected at runtime via FormManage
+					update: <FormManageUser />,
+					permissions: <SetupPermissionsUser />,
+					view: <ViewUser />,
+				}}
+				modalClass={{
+					permissions: 'max-w-xl',
+					view: 'max-w-2xl!',
+				}}
+			/>
+		</DataTableProvider>
+	);
+};

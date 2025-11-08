@@ -1,0 +1,161 @@
+'use client';
+
+import clsx from 'clsx';
+import { type JSX, useMemo } from 'react';
+import { Icons } from '@/components/icon.component';
+import type { DataSourceType, DataTableColumnType } from '@/config/data-source';
+import { useTranslation } from '@/hooks/use-translation.hook';
+import { formatDate } from '@/lib/utils/date';
+import { capitalizeFirstLetter } from '@/lib/utils/string';
+
+const statusList = {
+	active: {
+		label: 'Active',
+		class: 'badge badge-success h-8',
+		icon: <Icons.Status.Active />,
+	},
+	pending: {
+		label: 'Pending',
+		class: 'badge badge-warning h-8',
+		icon: <Icons.Status.Pending />,
+	},
+	inactive: {
+		label: 'Inactive',
+		class: 'badge badge-error h-8',
+		icon: <Icons.Status.Inactive />,
+	},
+	deleted: {
+		label: 'Deleted',
+		class: 'badge badge-neutral h-8',
+		icon: <Icons.Status.Deleted />,
+	},
+};
+
+export const DisplayDeleted = ({
+	value,
+	isDeleted,
+}: {
+	value: string | JSX.Element;
+	isDeleted: boolean;
+}) => {
+	return <div className={clsx(isDeleted && 'line-through')}>{value}</div>;
+};
+
+export const DisplayStatus = ({
+	status,
+}: {
+	status: keyof typeof statusList;
+}) => {
+	const statusProps = statusList[status as keyof typeof statusList];
+
+	return (
+		<div
+			className={`${statusProps.class} w-full text-white dark:text-black opacity-70 hover:opacity-100`}
+		>
+			{statusProps.icon}
+			{statusProps.label}
+		</div>
+	);
+};
+
+export const DisplayAction = <K extends keyof DataSourceType>({
+	value,
+	action,
+	entry,
+}: {
+	value: string | JSX.Element;
+	action: NonNullable<DataTableValueOptionsType<K>['action']>;
+	entry: DataSourceType[K]['model'];
+}) => {
+	const actionName =
+		typeof action.name === 'function' ? action.name(entry) : action.name;
+
+	const actionTitleKey = `${action.source}.action.${actionName}.title`;
+
+	const translationsKeys = useMemo(() => [actionTitleKey], [actionTitleKey]);
+
+	const { translations } = useTranslation(translationsKeys);
+
+	if (!actionName) {
+		return value;
+	}
+
+	const triggerAction = () => {
+		const event = new CustomEvent('useDataTableAction', {
+			detail: {
+				source: action.source,
+				actionName: actionName,
+				entry,
+			},
+		});
+
+		window.dispatchEvent(event);
+	};
+
+	return (
+		<button
+			type="button"
+			onClick={triggerAction}
+			title={translations[actionTitleKey]}
+			className="cursor-pointer hover:underline"
+		>
+			{value}
+		</button>
+	);
+};
+
+export type DataTableValueOptionsType<K extends keyof DataSourceType> = {
+	capitalize?: boolean;
+	markDeleted?: boolean;
+	isStatus?: boolean;
+	displayDate?: boolean;
+	source?: string;
+	action?: {
+		name:
+			| null
+			| string
+			| ((entry: DataSourceType[K]['model']) => string | null);
+		source: string;
+	};
+};
+
+export const DataTableValue = <K extends keyof DataSourceType>(
+	entry: DataSourceType[K]['model'],
+	column: DataTableColumnType<DataSourceType[K]['model']>,
+	options: DataTableValueOptionsType<K>,
+) => {
+	let value: string | JSX.Element = entry[column.field] as string; // Assumption: The field value is a string
+
+	if (options.capitalize) {
+		value = capitalizeFirstLetter(value);
+	}
+
+	if (options.displayDate) {
+		value = formatDate(value, 'date-time') || '-';
+	}
+
+	if (options.isStatus && column.field === 'status' && 'status' in entry) {
+		const status =
+			options.markDeleted && 'deleted_at' in entry && entry?.deleted_at
+				? 'deleted'
+				: (entry.status as keyof typeof statusList);
+
+		value = <DisplayStatus status={status} />;
+	} else if (options.markDeleted && 'deleted_at' in entry) {
+		value = (
+			<DisplayDeleted value={value} isDeleted={!!entry?.deleted_at} />
+		);
+	}
+
+	if (options.action) {
+		value = (
+			<DisplayAction
+				value={value}
+				action={options.action}
+				entry={entry}
+			/>
+		);
+	}
+
+	return value;
+};

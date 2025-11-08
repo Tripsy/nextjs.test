@@ -1,92 +1,134 @@
-import {useState, useCallback, useRef} from 'react';
-import {useDebouncedEffect} from '@/hooks/use-debounced-effect.hook';
-import {ZodError} from 'zod';
 import isEqual from 'fast-deep-equal';
+import { useCallback, useRef, useState } from 'react';
+import type { ZodError } from 'zod';
+import { useDebouncedEffect } from '@/hooks/use-debounced-effect.hook';
 
-interface UseFormValidationProps<T> {
-    formValues: T;
-    validate: (values: T) => { success: boolean; error?: ZodError<T> };
-    debounceDelay?: number;
+interface UseFormValidationProps<K> {
+	formValues: K;
+	validate: (values: K) => { success: boolean; error?: ZodError<K> };
+	debounceDelay?: number;
 }
 
 export function useFormValidation<T extends Record<string, unknown>>({
-    formValues,
-    validate,
-    debounceDelay = 800,
+	formValues,
+	validate,
+	debounceDelay = 800,
 }: UseFormValidationProps<T>) {
-    const [errors, setErrors] = useState<Partial<Record<keyof T, string[]>>>({});
-    const [touchedFields, setTouchedFields] = useState<Partial<Record<keyof T, boolean>>>({});
-    const [submitted, setSubmitted] = useState(false);
+	const [errors, setErrors] = useState<Partial<Record<keyof T, string[]>>>(
+		{},
+	);
+	const [touchedFields, setTouchedFields] = useState<
+		Partial<Record<keyof T, boolean>>
+	>({});
+	const [submitted, setSubmitted] = useState(false);
 
-    const prevValuesRef = useRef<T>(formValues);
-    const prevTouchedRef = useRef(touchedFields);
-    const prevSubmittedRef = useRef(submitted);
+	const prevValuesRef = useRef<T>(formValues);
+	const prevTouchedRef = useRef(touchedFields);
+	const prevSubmittedRef = useRef(submitted);
 
-    const markFieldAsTouched = useCallback((field: keyof T) => {
-        setTouchedFields(prev => prev[field] ? prev : {...prev, [field]: true});
-    }, []);
+	const markFieldAsTouched = useCallback((field: keyof T) => {
+		setTouchedFields((prev) =>
+			prev[field] ? prev : { ...prev, [field]: true },
+		);
+	}, []);
 
-    useDebouncedEffect(() => {
-        const valuesChanged = !isEqual(prevValuesRef.current, formValues);
-        const touchedChanged = !isEqual(prevTouchedRef.current, touchedFields);
-        const submittedChanged = prevSubmittedRef.current !== submitted;
+	useDebouncedEffect(
+		() => {
+			const valuesChanged = !isEqual(prevValuesRef.current, formValues);
+			const touchedChanged = !isEqual(
+				prevTouchedRef.current,
+				touchedFields,
+			);
+			const submittedChanged = prevSubmittedRef.current !== submitted;
 
-        // Reset submitted if values changed
-        if (submitted && valuesChanged) {
-            setSubmitted(false);
-        }
+			// Reset submitted if values changed
+			if (submitted && valuesChanged) {
+				setSubmitted(false);
+			}
 
-        const shouldValidate = submitted || Object.keys(touchedFields).length > 0;
+			const shouldValidate =
+				submitted || Object.keys(touchedFields).length > 0;
 
-        prevValuesRef.current = formValues;
-        prevTouchedRef.current = touchedFields;
-        prevSubmittedRef.current = submitted;
+			prevValuesRef.current = formValues;
+			prevTouchedRef.current = touchedFields;
+			prevSubmittedRef.current = submitted;
 
-        // Check if we should run validation
-        if (!shouldValidate || (!valuesChanged && !touchedChanged && !submittedChanged)) {
-            return;
-        }
+			// Check if we should run validation
+			if (
+				!shouldValidate ||
+				(!valuesChanged && !touchedChanged && !submittedChanged)
+			) {
+				return;
+			}
 
-        // Calculate fields to validate
-        const fieldsToValidate = submitted
-            ? formValues
-            : Object.keys(touchedFields).reduce((acc, key) => {
-                if (touchedFields[key as keyof T]) {
-                    acc[key as keyof T] = formValues[key as keyof T];
-                }
-                return acc;
-            }, {} as Partial<T>);
+			// Determine fields to validate
+			const fieldsToValidate = submitted
+				? formValues
+				: Object.keys(touchedFields).reduce(
+						(acc, key) => {
+							if (touchedFields[key as keyof T]) {
+								acc[key as keyof T] =
+									formValues[key as keyof T];
+							}
 
-        if (Object.keys(fieldsToValidate).length === 0) {
-            return;
-        }
+							return acc;
+						},
+						{} as Partial<T>,
+					);
 
-        const validated = validate(formValues);
+			if (Object.keys(fieldsToValidate).length === 0) {
+				return;
+			}
 
-        if (validated.success) {
-            setErrors({});
-        } else {
-            const fieldErrors = (validated.error?.flatten().fieldErrors || {}) as Partial<Record<keyof T, string[]>>;
+			const validated = validate(formValues);
 
-            const filteredErrors = submitted ? fieldErrors :
-                (Object.keys(fieldErrors) as (keyof T)[])
-                    .filter(key => touchedFields[key])
-                    .reduce((acc, key) => {
-                        acc[key] = fieldErrors[key]; // ✅ now TS is happy
-                        return acc;
-                    }, {} as Partial<Record<keyof T, string[]>>);
+			if (validated.success) {
+				setErrors({});
+			} else {
+				const fieldErrors = (validated.error?.flatten().fieldErrors ||
+					{}) as Partial<Record<keyof T, string[]>>;
 
+				if (submitted) {
+					// Show ALL errors when submitted
+					setErrors(fieldErrors);
+				} else {
+					// When not submitted:
+					// 1. Keep existing errors (fields that were previously invalid)
+					// 2. Add new errors for currently touched fields
+					setErrors((prevErrors) => {
+						const newErrors = { ...prevErrors };
 
-            setErrors(filteredErrors);
-        }
-    }, [formValues, touchedFields, submitted, validate], debounceDelay);
+						// Update errors for all currently touched fields
+						Object.keys(touchedFields).forEach((key) => {
+							const fieldName = key as keyof T;
 
-    return {
-        errors,
-        setErrors,
-        submitted,
-        setSubmitted,
-        touchedFields,
-        markFieldAsTouched
-    };
+							if (touchedFields[fieldName]) {
+								// If this touched field has a validation error, add it
+								// If it's valid now, remove the error
+								if (fieldErrors[fieldName]) {
+									newErrors[fieldName] =
+										fieldErrors[fieldName];
+								} else {
+									delete newErrors[fieldName];
+								}
+							}
+						});
+
+						return newErrors;
+					});
+				}
+			}
+		},
+		[formValues, touchedFields, submitted, validate],
+		debounceDelay,
+	);
+
+	return {
+		errors,
+		setErrors,
+		submitted,
+		setSubmitted,
+		touchedFields,
+		markFieldAsTouched,
+	};
 }

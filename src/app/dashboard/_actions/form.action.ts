@@ -1,98 +1,150 @@
-import {lang} from '@/config/lang';
-import {DataSourceType, getDataSourceConfig} from '@/config/data-source';
+import {
+	type CreateFunctionType,
+	type DataSourceType,
+	type FormStateType,
+	type FormValuesType,
+	getDataSourceConfig,
+	type UpdateFunctionType,
+	type ValidationReturnType,
+} from '@/config/data-source';
+import { translate } from '@/config/lang';
+import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
 
 export function getFormValues<K extends keyof DataSourceType>(
-    dataSource: keyof DataSourceType,
-    formData: FormData
-): DataSourceType[K]['formState']['values'] {
-    const functions = getDataSourceConfig(dataSource, 'functions');
-    const getFormValuesFunction = functions?.getFormValues;
+	dataSource: K,
+	formData: FormData,
+): FormValuesType<K> {
+	const functions = getDataSourceConfig(dataSource, 'functions');
 
-    if (!getFormValuesFunction) {
-        throw new ValueError('`getFormValuesFunction` is not defined for `' + dataSource + '`');
-    }
+	if (!('getFormValues' in functions)) {
+		throw new ValueError(
+			`'getFormValues' function is not defined for ${dataSource}`,
+		);
+	}
 
-    return getFormValuesFunction(formData);
+	const getFormValuesFunction = functions.getFormValues;
+
+	// Fighting with Typescript & Eslint
+	if (!getFormValuesFunction) {
+		throw new ValueError(
+			`'getFormValues' function is not defined for ${dataSource}`,
+		);
+	}
+
+	return getFormValuesFunction(formData) as FormValuesType<K>;
 }
 
 export function handleValidate<K extends keyof DataSourceType>(
-    dataSource: keyof DataSourceType,
-    values: DataSourceType[K]['formState']['values'],
-    id?: number
-) {
-    const functions = getDataSourceConfig(dataSource, 'functions');
-    const validateFormFunction = functions?.validateForm;
-    
-    return validateFormFunction(values, id);
+	dataSource: K,
+	values: FormValuesType<K>,
+	id?: number,
+): ValidationReturnType<K> {
+	const functions = getDataSourceConfig(dataSource, 'functions');
+
+	if (!('validateForm' in functions)) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
+
+	const validateFormFunction = functions.validateForm;
+
+	// Fighting with Typescript & Eslint
+	if (!validateFormFunction) {
+		throw new ValueError(
+			`'validateForm' function is not defined for ${dataSource}`,
+		);
+	}
+
+	return validateFormFunction(values, id) as ValidationReturnType<K>;
 }
 
 export async function formAction<K extends keyof DataSourceType>(
-    state: DataSourceType[K]['formState'],
-    formData: FormData
-): Promise<DataSourceType[K]['formState']> {
-    async function executeFetch(data: DataSourceType[K]['formState']['values'], id?: number) {
-        const actions = getDataSourceConfig(state.dataSource, 'actions');
+	state: FormStateType<K>,
+	formData: FormData,
+): Promise<FormStateType<K>> {
+	async function executeFetch(data: FormStateType<K>['values'], id?: number) {
+		const actions = getDataSourceConfig(state.dataSource, 'actions');
 
-        if (id) {
-            const updateFunction = actions?.update?.function;
+		if (id) {
+			const updateFunction = actions?.update?.function as
+				| UpdateFunctionType<K>
+				| undefined;
 
-            // Not all the models have `update` function
-            if (!updateFunction) {
-                throw new ValueError('`update` function is not defined for `' + state.dataSource + '`');
-            }
+			// Not all the models have `update` function
+			if (!updateFunction) {
+				throw new ValueError(
+					`'update' function is not defined for ${state.dataSource}`,
+				);
+			}
 
-            return updateFunction(data, id);
-        }
+			return updateFunction(data, id);
+		}
 
-        const createFunction = actions?.create?.function;
+		const createFunction = actions?.create?.function as
+			| CreateFunctionType<K>
+			| undefined;
 
-        // Not all the models have `create` function
-        if (!createFunction) {
-            throw new ValueError('`create` function is not defined for `' + state.dataSource + '`');
-        }
+		// Not all the models have `create` function
+		if (!createFunction) {
+			throw new ValueError(
+				`'create' function is not defined for ${state.dataSource}`,
+			);
+		}
 
-        return createFunction(data);
-    }
+		return createFunction(data);
+	}
 
-    try {
-        const values = getFormValues<K>(state.dataSource, formData);
-        const validated = handleValidate(state.dataSource, values, state.id);
+	try {
+		const values = getFormValues(state.dataSource, formData);
+		const validated = handleValidate(state.dataSource, values, state.id);
 
-        const result = {
-            ...state, // Spread existing state
-            values, // Override with new values
-        };
+		if (!validated) {
+			return {
+				...state,
+				situation: 'error',
+				message: await translate('error.validation'),
+			};
+		}
 
-        if (!validated.success) {
-            return {
-                ...result,
-                situation: 'error',
-                message: lang('error.validation'),
-                errors: validated.error.flatten().fieldErrors
-            };
-        }
-        
-        const fetchResponse = await executeFetch(validated.data, state.id);
+		const result = {
+			...state, // Spread existing state
+			values, // Override with new values
+		};
 
-        return {
-            ...result,
-            errors: {},
-            message: fetchResponse?.message || null,
-            situation: fetchResponse?.success ? 'success' : 'error',
-            result: fetchResponse?.data
-        };
-    } catch (error: unknown) {
-        console.error(error); // TODO
+		if (!validated.success) {
+			return {
+				...result,
+				situation: 'error',
+				message: await translate('error.validation'),
+				errors: validated.error.flatten().fieldErrors as Partial<
+					Record<keyof FormValuesType<K>, string[]>
+				>,
+			};
+		}
 
-        const message = error instanceof ValueError
-            ? error.message
-            : lang('error.form');
+		const fetchResponse = await executeFetch(validated.data, state.id);
 
-        return {
-            ...state,
-            message: message,
-            situation: 'error',
-        };
-    }
+		return {
+			...result,
+			errors: {},
+			message: fetchResponse?.message || null,
+			situation: fetchResponse?.success ? 'success' : 'error',
+			resultData: fetchResponse?.data,
+		};
+	} catch (error: unknown) {
+		console.error(error);
+
+		const message =
+			error instanceof ValueError || error instanceof ApiError
+				? error.message
+				: await translate('error.form');
+
+		return {
+			...state,
+			message: message,
+			situation: 'error',
+		};
+	}
 }

@@ -1,22 +1,24 @@
-import type {Metadata} from 'next';
-import {BreadcrumbType} from '@/app/dashboard/_providers/breadcrumb.provider';
+import type { Metadata } from 'next';
 import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
-import React from 'react';
-import {lang} from '@/config/lang';
+import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
+import { translate } from '@/config/lang';
+import { cfg } from '@/config/settings';
 
-export const metadata: Metadata = {
-    title: `Dashboard | ${lang('app.name')}`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('dashboard.meta.title', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
 export default function Page() {
-    const items: BreadcrumbType[] = [
-        {label: 'Dashboard'}
-    ];
+	const items: BreadcrumbType[] = [{ label: 'Dashboard' }];
 
-    return (
-        <>
-            <NavBreadcrumbSetter items={items}/>
-            Dashboard
-        </>
-    );
+	return (
+		<>
+			<NavBreadcrumbSetter items={items} />
+			Dashboard
+		</>
+	);
 }

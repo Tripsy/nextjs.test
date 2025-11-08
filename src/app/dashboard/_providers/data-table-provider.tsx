@@ -1,79 +1,110 @@
 'use client';
 
-import React, {createContext,ReactNode, useContext, useRef, useMemo} from 'react';
-import {DataSourceType, DataTableSelectionModeType, getDataSourceConfig, DataTableStateType} from '@/config/data-source';
-import {useDebouncedEffect} from '@/hooks';
-import {useStore} from 'zustand/react';
-import {ModelStoreType} from '@/app/dashboard/_stores/model.store';
+import {
+	createContext,
+	type ReactNode,
+	useContext,
+	useMemo,
+	useRef,
+} from 'react';
+import { useStore } from 'zustand/react';
+import type { ModelStoreType } from '@/app/dashboard/_stores/model.store';
+import {
+	type DataSourceType,
+	type DataTableSelectionModeType,
+	type DataTableStateType,
+	getDataSourceConfig,
+} from '@/config/data-source';
+import { useDebouncedEffect } from '@/hooks';
 
 type DataTableContextType<K extends keyof DataSourceType> = {
-    dataSource: K;
-    dataStorageKey: string;
-    selectionMode: DataTableSelectionModeType;
-    stateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
-    modelStore: ModelStoreType<K>;
+	dataSource: K;
+	dataStorageKey: string;
+	selectionMode: DataTableSelectionModeType;
+	stateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+	modelStore: ModelStoreType<K>;
 };
 
-const DataTableContext = createContext<DataTableContextType<keyof DataSourceType> | undefined>(undefined);
+const DataTableContext = createContext<
+	DataTableContextType<keyof DataSourceType> | undefined
+>(undefined);
 
 function DataTableProvider<K extends keyof DataSourceType>({
-   dataSource,
-   selectionMode,
-   modelStore,
-   children
+	dataSource,
+	selectionMode,
+	modelStore,
+	children,
 }: {
-    dataSource: K,
-    selectionMode: DataTableSelectionModeType,
-    modelStore: ModelStoreType,
-    children: ReactNode
+	dataSource: K;
+	selectionMode: DataTableSelectionModeType;
+	modelStore: ModelStoreType<K>;
+	children: ReactNode;
 }) {
-    const dataStorageKey = useMemo(() => `data-table-state-${dataSource}`, [dataSource]);
-    const stateDefault = getDataSourceConfig(dataSource, 'dataTableState');
+	const dataStorageKey = useMemo(
+		() => `data-table-state-${dataSource}`,
+		[dataSource],
+	);
+	const stateDefault = getDataSourceConfig(dataSource, 'dataTableState');
 
-    const selectedEntries = useStore(modelStore, (state) => state.selectedEntries);
+	const selectedEntries = useStore(
+		modelStore,
+		(state) => state.selectedEntries,
+	);
 
-    const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
+	const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
 
-    useDebouncedEffect(() => {
-        const functions = getDataSourceConfig(dataSource, 'functions');
+	useDebouncedEffect(
+		() => {
+			const functions = getDataSourceConfig(dataSource, 'functions');
 
-        const onRowSelect = functions.onRowSelect;
-        const onRowUnselect = functions.onRowUnselect;
+			const onRowSelect = functions.onRowSelect;
+			const onRowUnselect = functions.onRowUnselect;
 
-        const prevSelected = prevSelectedEntriesRef.current;
+			const prevSelected = prevSelectedEntriesRef.current;
 
-        if (onRowSelect && selectedEntries.length === 1) {
-            onRowSelect(selectedEntries[0]);
-        }
+			if (onRowSelect && selectedEntries.length === 1) {
+				onRowSelect(selectedEntries[0]);
+			}
 
-        if (onRowUnselect && selectedEntries.length === 0 && prevSelected.length === 1) {
-            onRowUnselect(prevSelected[0]);
-        }
+			if (
+				onRowUnselect &&
+				selectedEntries.length === 0 &&
+				prevSelected.length === 1
+			) {
+				onRowUnselect(prevSelected[0]);
+			}
 
-        prevSelectedEntriesRef.current = selectedEntries;
-    }, [selectedEntries], 1000);
+			prevSelectedEntriesRef.current = selectedEntries;
+		},
+		[selectedEntries],
+		1000,
+	);
 
-    return (
-        <DataTableContext.Provider value={{
-            dataSource,
-            dataStorageKey,
-            selectionMode,
-            stateDefault,
-            modelStore
-        }}>
-            {children}
-        </DataTableContext.Provider>
-    );
+	return (
+		<DataTableContext.Provider
+			value={{
+				dataSource,
+				dataStorageKey,
+				selectionMode,
+				stateDefault,
+				modelStore,
+			}}
+		>
+			{children}
+		</DataTableContext.Provider>
+	);
 }
 
-function useDataTable() {
-    const context = useContext(DataTableContext);
+function useDataTable<K extends keyof DataSourceType>() {
+	const context = useContext(DataTableContext) as
+		| DataTableContextType<K>
+		| undefined;
 
-    if (!context) {
-        throw new Error('useDataTable must be used within a DataTableProvider');
-    }
+	if (!context) {
+		throw new Error('useDataTable must be used within a DataTableProvider');
+	}
 
-    return context;
+	return context;
 }
 
-export {DataTableProvider, useDataTable};
+export { DataTableProvider, useDataTable };

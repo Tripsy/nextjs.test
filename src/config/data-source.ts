@@ -1,67 +1,76 @@
+import type React from 'react';
+import type { SafeParseError, SafeParseSuccess } from 'zod';
 import {
-    DataSourceConfigUsers,
-    DataSourceUsersType
+	DataSourceConfigLogData,
+	type DataSourceLogDataType,
+} from '@/app/dashboard/log-data/log-data.definition';
+import {
+	DataSourceConfigPermissions,
+	type DataSourcePermissionsType,
+} from '@/app/dashboard/permissions/permissions.definition';
+import {
+	DataSourceConfigUsers,
+	type DataSourceUsersType,
 } from '@/app/dashboard/users/users.definition';
-import React from 'react';
-import {ResponseFetch} from '@/lib/utils/api';
-import {FormSituationType} from '@/lib/types';
+import type { HandleChangeType } from '@/components/form/form-element.component';
+import type { FormSituationType } from '@/lib/types';
+import type { ResponseFetch } from '@/lib/utils/api';
 
 export type FindFunctionParamsType = {
-    order_by: string;
-    direction: 'ASC' | 'DESC';
-    limit: number;
-    page: number;
-    filter: string;
+	order_by?: string;
+	direction?: 'ASC' | 'DESC';
+	limit?: number;
+	page?: number;
+	filter?: string;
 };
 
 export type FindFunctionResponseType<K extends keyof DataSourceType> = {
-    entries: DataSourceType[K]['model'][];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-    };
+	entries: DataSourceType[K]['model'][];
+	pagination: {
+		page: number;
+		limit: number;
+		total: number;
+	};
 };
 
 export type FindFunctionType<K extends keyof DataSourceType> = (
-    params: FindFunctionParamsType
+	params: FindFunctionParamsType,
 ) => Promise<FindFunctionResponseType<K> | undefined>;
 
-export type CreateFunctionType<K extends keyof DataSourceType> = (
-    data: DataSourceType[K]['formState']['values']
-) => Promise<ResponseFetch<Partial<DataSourceType[K]['model']>>>;
+export type CreateFunctionType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends { formValues: infer F; model: infer M }
+		? (data: F) => Promise<ResponseFetch<Partial<M>>>
+		: never;
 
-export type UpdateFunctionType<K extends keyof DataSourceType> = (
-    data: DataSourceType[K]['formState']['values'],
-    id: number
-) => Promise<ResponseFetch<Partial<DataSourceType[K]['model']>>>;
+export type UpdateFunctionType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends { formValues: infer F; model: infer M }
+		? (data: F, id: number) => Promise<ResponseFetch<Partial<M>>>
+		: never;
 
 export type DeleteFunctionType = (
-    ids: number[]
+	ids: number[],
 ) => Promise<ResponseFetch<null>>;
-
-export type ValidateFormFunctionType<K extends keyof DataSourceType> = (
-    values: DataSourceType[K]['formState']['values'],
-    id?: number
-) => DataSourceType[K]['validationResult'];
 
 export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
 
 export type DataTableStateType<Filter> = {
-    reloadTrigger: number; // Flag used to reload the data table entries
-    first: number;
-    rows: number;
-    sortField: string;
-    sortOrder: 1 | 0 | -1 | null | undefined;
-    filters: Filter;
+	reloadTrigger: number; // Flag used to reload the data table entries
+	first: number;
+	rows: number;
+	sortField: string;
+	sortOrder: 1 | 0 | -1 | null | undefined;
+	filters: Filter;
 };
 
 export type DataTableColumnType<Model> = {
-    field: keyof Model & string;
-    header: string;
-    sortable?: boolean;
-    body?: (rowData: Model, column: DataTableColumnType<Model>) => React.JSX.Element | string;
-    style?: React.CSSProperties;
+	field: keyof Model & string;
+	header: string;
+	sortable?: boolean;
+	body?: (
+		rowData: Model,
+		column: DataTableColumnType<Model>,
+	) => React.JSX.Element | string;
+	style?: React.CSSProperties;
 };
 
 /**
@@ -70,82 +79,122 @@ export type DataTableColumnType<Model> = {
  *      free ~ not dependent on selected entries,
  *      single ~ only one entry allowed,
  *      multiple ~ multiple entries allowed
- * `position` where to display action button (left or right)
+ * `position` where to display action button (left, right, hidden)
  * `function` function to perform action
  * `button` action button configuration
  */
+export type DataTableActionModeType = 'form' | 'action' | 'other';
+
 export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
-    permission: string;
-    allowedEntries: 'free' | 'single' | 'multiple';
-    entryCustomCheck?: (entry: DataSourceType[K]['model']) => boolean;
-    position: 'left' | 'right';
-    function: F;
-    button: {
-        className: string;
-    };
+	mode: DataTableActionModeType;
+	permission: string;
+	allowedEntries: 'free' | 'single' | 'multiple';
+	entryCustomCheck?: (entry: DataSourceType[K]['model']) => boolean;
+	position: 'left' | 'right' | 'hidden';
+	function?: F;
+	button: {
+		className: string;
+	};
 };
 
 export type DataTableActionsType<K extends keyof DataSourceType> = {
-    [key: string]: DataTableActionConfigType<unknown, K>;
+	[key: string]: DataTableActionConfigType<unknown, K>;
 } & {
-    create?: DataTableActionConfigType<CreateFunctionType<K>, K>;
-    update?: DataTableActionConfigType<UpdateFunctionType<K>, K>;
-    delete?: DataTableActionConfigType<DeleteFunctionType, K>;
+	create?: DataTableActionConfigType<CreateFunctionType<K>, K>;
+	update?: DataTableActionConfigType<UpdateFunctionType<K>, K>;
+	delete?: DataTableActionConfigType<DeleteFunctionType, K>;
 };
-export type FormManageContentType<K extends keyof DataSourceType> = {
-    actionName: 'create' | 'update';
-    formValues: DataSourceType[K]['formValues'];
-    errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
-    handleChange: (field: keyof DataSourceType[K]['formValues'], value: string | boolean) => void;
-    pending: boolean;
-}; // The props are required but marked as optional to avoid TS error when providing the children (ex: FormManageContentUsers) to DataTableManage
+
+export type FormManageType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends { formValues: infer F }
+		? {
+				actionName: 'create' | 'update';
+				formValues: F;
+				errors: Partial<Record<keyof F, string[]>>;
+				handleChange: HandleChangeType;
+				pending: boolean;
+			}
+		: never;
 
 export type DataSourceType = {
-    users: DataSourceUsersType;
+	users: DataSourceUsersType;
+	permissions: DataSourcePermissionsType;
+	log_data: DataSourceLogDataType;
 };
 
-export type FormStateType<K extends keyof DataSourceType> = {
-    dataSource: keyof DataSourceType;
-    id?: number;
-    values: DataSourceType[K]['formValues'];
-    errors: Partial<Record<keyof DataSourceType[K]['formValues'], string[]>>;
-    message: string | null;
-    situation: FormSituationType;
-    result?: ResponseFetch<DataSourceType[K]['model']>
+export type FormStateType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends { formValues: infer F; model: infer M }
+		? {
+				dataSource: K;
+				id?: number;
+				values: F;
+				errors: Partial<Record<keyof F, string[]>>;
+				message: string | null;
+				situation: FormSituationType;
+				resultData?: Partial<M>;
+			}
+		: never;
+
+export type FormValuesType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends { formValues: infer F }
+		? F extends Record<string, unknown>
+			? F
+			: Record<string, unknown>
+		: Record<string, unknown>;
+
+export type ValidateFormFunctionType<K extends keyof DataSourceType> =
+	DataSourceType[K] extends {
+		formValues: infer F;
+		validationResult: infer VR;
+	}
+		? (values: F, id?: number) => VR
+		: never;
+
+export type ValidationReturnType<T extends keyof DataSourceType> =
+	| SafeParseSuccess<FormValuesType<T>>
+	| SafeParseError<FormValuesType<T>>
+	| undefined;
+
+export type DataSourceConfigType<K extends keyof DataSourceType> = {
+	dataTableState: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+	dataTableColumns: DataTableColumnType<DataSourceType[K]['model']>[];
+	formState?: FormStateType<K>;
+	functions: {
+		find: FindFunctionType<K>;
+		onRowSelect?: (entry: DataSourceType[K]['model']) => void;
+		onRowUnselect?: (entry: DataSourceType[K]['model']) => void;
+		displayActionEntries?: (
+			entries: DataSourceType[K]['model'][],
+		) => { id: number; label: string }[];
+	} & (DataSourceType[K] extends { formValues: infer F }
+		? {
+				validateForm?: ValidateFormFunctionType<K>;
+				getFormValues?: (formData: FormData) => F;
+				syncFormState?: (
+					state: FormStateType<K>,
+					model: DataSourceType[K]['model'],
+				) => FormStateType<K>;
+			}
+		: object);
+	actions?: DataTableActionsType<K>;
 };
 
-type DataSourceConfigType<K extends keyof DataSourceType> = {
-    dataTableState: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
-    dataTableColumns: DataTableColumnType<DataSourceType[K]['model']>[];
-    formState: FormStateType<K>;
-    functions: {
-        find: FindFunctionType<K>,
-        onRowSelect?: (entry: DataSourceType[K]['model']) => void;
-        onRowUnselect?: (entry: DataSourceType[K]['model']) => void;
-        validateForm: ValidateFormFunctionType<K>,
-        getFormValues: (formData: FormData) => DataSourceType[K]['formValues'];
-        syncFormState: (state: DataSourceType[K]['formState'], model: DataSourceType[K]['model']) => DataSourceType[K]['formState'];
-    };
-    actions?: DataTableActionsType<K>;
-};
-
-const DataSourceConfig: {
-    [K in keyof DataSourceType]: DataSourceConfigType<K>
+export const DataSourceConfig: {
+	[K in keyof DataSourceType]: DataSourceConfigType<K>;
 } = {
-    users: DataSourceConfigUsers,
+	users: DataSourceConfigUsers,
+	permissions: DataSourceConfigPermissions,
+	log_data: DataSourceConfigLogData,
 };
 
 export type DataTablePropsType = {
-    dataKey: string;
-    scrollHeight?: string;
+	dataKey: string;
+	scrollHeight?: string;
 };
 
 export function getDataSourceConfig<
-    K extends keyof DataSourceType,
-    P extends keyof (typeof DataSourceConfig)[K]
->(
-    dataSource: K,
-    prop: P
-): (typeof DataSourceConfig)[K][P] {
-    return DataSourceConfig[dataSource][prop];
+	K extends keyof DataSourceType,
+	P extends keyof (typeof DataSourceConfig)[K],
+>(dataSource: K, prop: P): (typeof DataSourceConfig)[K][P] {
+	return DataSourceConfig[dataSource][prop];
 }

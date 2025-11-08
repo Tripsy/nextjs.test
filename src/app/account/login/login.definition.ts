@@ -1,45 +1,55 @@
-import {z} from 'zod';
-import {lang} from '@/config/lang';
-import {FormSituationType} from '@/lib/types';
+import { z } from 'zod';
+import { translateBatch } from '@/config/lang';
+import type { FormSituationType } from '@/lib/types';
 
 export type LoginFormFieldsType = {
-    email: string;
-    password: string;
+	email: string;
+	password: string;
 };
 
-export type LoginSituationType = FormSituationType | 'csrf_error' | 'max_active_sessions';
+export type LoginSituationType =
+	| FormSituationType
+	| 'csrf_error'
+	| 'max_active_sessions';
 
 export type LoginStateType = {
-    values: LoginFormFieldsType;
-    errors: Partial<Record<keyof LoginFormFieldsType, string[]>>;
-    message: string | null;
-    situation: LoginSituationType;
-    body?: { authValidTokens: AuthTokenListType };
+	values: LoginFormFieldsType;
+	errors: Partial<Record<keyof LoginFormFieldsType, string[]>>;
+	message: string | null;
+	situation: LoginSituationType;
+	body?: { authValidTokens: AuthTokenListType };
 };
 
 export const LoginState: LoginStateType = {
-    values: {
-        email: '',
-        password: '',
-    },
-    errors: {},
-    message: null,
-    situation: null
+	values: {
+		email: '',
+		password: '',
+	},
+	errors: {},
+	message: null,
+	situation: null,
 };
 
 export type AuthTokenType = {
-    ident: string;
-    label: string;
-    used_at: string; // ISO date string
+	ident: string;
+	label: string;
+	used_at: string; // ISO date string
 };
 
 export type AuthTokenListType = AuthTokenType[];
 
+const translations = await translateBatch([
+	'login.validation.email',
+	'login.validation.password',
+]);
+
 export const LoginSchema = z.object({
-    email: z
-        .string({message: lang('login.validation.email')}).trim()
-        .email({message: lang('login.validation.email')}),
-    password: z
-        .string({message: lang('login.validation.password')}).trim()
-        .nonempty({message: lang('login.validation.password')})
+	email: z
+		.string()
+		.trim()
+		.email({ message: translations['login.validation.email'] }),
+	password: z
+		.string({ message: translations['login.validation.password'] })
+		.trim()
+		.nonempty({ message: translations['login.validation.password'] }),
 });

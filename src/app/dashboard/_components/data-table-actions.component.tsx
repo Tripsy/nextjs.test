@@ -1,147 +1,238 @@
 'use client';
 
-import {Icons} from '@/components/icon.component';
-import {useDataTable} from '@/app/dashboard/_providers/data-table-provider';
-import {DataTableSelectionModeType, getDataSourceConfig} from '@/config/data-source';
-import {useStore} from 'zustand/react';
-import {hasPermission} from '@/lib/models/auth.model';
-import {useAuth} from '@/providers/auth.provider';
-import {useToast} from '@/providers/toast.provider';
-import React, {useMemo} from 'react';
-import {DataTableActionButton} from '@/app/dashboard/_components/data-table-action-button.component';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useStore } from 'zustand/react';
+import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
+import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
+import { hasPermission } from '@/lib/models/auth.model';
+import { useAuth } from '@/providers/auth.provider';
+import { useToast } from '@/providers/toast.provider';
 
 export const handleReset = (source: string) => {
-    const event = new CustomEvent('filterReset', {
-        detail: {
-            source: source
-        }
-    });
+	const event = new CustomEvent('filterReset', {
+		detail: {
+			source: source,
+		},
+	});
 
-    window.dispatchEvent(event);
+	window.dispatchEvent(event);
 };
 
 type ActionKey = 'create' | 'update' | 'delete' | string;
 
 export function DataTableActions() {
-    const {dataSource, selectionMode, modelStore} = useDataTable();
-    const {auth} = useAuth();
-    const {showToast} = useToast();
+	const [error, setError] = useState<string | null>(null);
 
-    const openCreate = useStore(modelStore, (state) => state.openCreate);
-    const openUpdate = useStore(modelStore, (state) => state.openUpdate);
-    const openAction = useStore(modelStore, (state) => state.openAction);
-    const setActionEntry = useStore(modelStore, (state) => state.setActionEntry);
-    const selectedEntries = useStore(modelStore, (state) => state.selectedEntries);
+	const { dataSource, selectionMode, modelStore } = useDataTable();
+	const { auth } = useAuth();
+	const { showToast } = useToast();
 
-    const actions = useMemo(() => getDataSourceConfig(dataSource, 'actions'), [dataSource]);
-    const isMultipleSelectionMode = (selectionMode: DataTableSelectionModeType) =>
-        selectionMode === 'multiple';
+	const openCreate = useStore(modelStore, (state) => state.openCreate);
+	const openUpdate = useStore(modelStore, (state) => state.openUpdate);
+	const openAction = useStore(modelStore, (state) => state.openAction);
+	const setActionEntry = useStore(
+		modelStore,
+		(state) => state.setActionEntry,
+	);
+	const selectedEntries = useStore(
+		modelStore,
+		(state) => state.selectedEntries,
+	);
 
-    const allowAction = (permission: string, allowedEntries: 'free' | 'single' | 'multiple', entryCustomCheck?: (entry: unknown) => boolean) => {
-        if (allowedEntries === 'single') {
-            if (selectedEntries.length !== 1) {
-                return false;
-            }
+	const actions = useMemo(
+		() => getDataSourceConfig(dataSource, 'actions'),
+		[dataSource],
+	);
 
-            if (entryCustomCheck && !entryCustomCheck(selectedEntries[0])) {
-                return false;
-            }
-        }
+	const allowAction = useCallback(
+		<K extends keyof DataSourceType>(
+			entries: DataSourceType[K]['model'][],
+			permission: string,
+			allowedEntries: 'free' | 'single' | 'multiple',
+			entryCustomCheck?: (entry: unknown) => boolean,
+		) => {
+			if (allowedEntries === 'single') {
+				if (entries.length !== 1) {
+					return false;
+				}
 
-        if (allowedEntries === 'multiple' && selectedEntries.length === 0) {
-            return false;
-        }
+				if (entryCustomCheck && !entryCustomCheck(entries[0])) {
+					return false;
+				}
+			}
 
-        return hasPermission(auth, permission);
-    };
+			if (allowedEntries === 'multiple' && entries.length === 0) {
+				return false;
+			}
 
-    const handleClick = (
-        actionName: ActionKey,
-        permission: string,
-        allowedEntries: 'free' | 'single' | 'multiple',
-        entryCustomCheck?: (entry: unknown) => boolean) => {
-            if (!allowAction(permission, allowedEntries, entryCustomCheck)) {
-                showToast({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Operation not allowed',
-                });
+			return hasPermission(auth, permission);
+		},
+		[auth],
+	);
 
-                return;
-            }
+	const handleClick = useCallback(
+		<K extends keyof DataSourceType>(
+			entries: DataSourceType[K]['model'][],
+			actionName: ActionKey,
+			permission: string,
+			allowedEntries: 'free' | 'single' | 'multiple',
+			entryCustomCheck?: (entry: unknown) => boolean,
+		) => {
+			if (
+				!allowAction(
+					entries,
+					permission,
+					allowedEntries,
+					entryCustomCheck,
+				)
+			) {
+				setError('Operation not allowed');
 
-            switch (actionName) {
-                case 'create':
-                    openCreate();
-                    break;
-                case 'update':
-                    setActionEntry(selectedEntries[0]);
-                    openUpdate();
-                    break;
-                default:
-                    if (allowedEntries === 'single') {
-                        setActionEntry(selectedEntries[0]);
-                    }
+				return;
+			}
 
-                    openAction(actionName);
-                    break;
-            }
-    };
+			switch (actionName) {
+				case 'create':
+					openCreate();
+					break;
+				case 'update':
+					setActionEntry(entries[0]);
+					openUpdate();
+					break;
+				default:
+					if (allowedEntries === 'single') {
+						setActionEntry(entries[0]);
+					}
 
-    const renderActions = (position: 'left' | 'right') => {
-        if (!actions) {
-            return null;
-        }
+					openAction(actionName);
+					break;
+			}
+		},
+		[allowAction, openAction, openCreate, openUpdate, setActionEntry],
+	);
 
-        return Object.entries(actions).map(([actionName, actionProps]) => {
-            if (actionProps.position !== position) {
-                return null;
-            }
+	const renderActions = (position: 'left' | 'right') => {
+		if (!actions) {
+			return null;
+		}
 
-            const customCheck = actionProps.entryCustomCheck as ((entry: unknown) => boolean) | undefined;
+		return Object.entries(actions).map(([actionName, actionProps]) => {
+			if (
+				selectedEntries.length === 0 &&
+				actionProps.allowedEntries !== 'free'
+			) {
+				return null;
+			}
 
-            if (!allowAction(actionProps.permission, actionProps.allowedEntries, customCheck)) {
-                return null;
-            }
+			if (actionProps.position !== position) {
+				return null;
+			}
 
-            return (
-                <DataTableActionButton
-                    key={`button-${actionName}`}
-                    dataSource={dataSource}
-                    actionName={actionName}
-                    className={actionProps.button?.className}
-                    handleClick={() => handleClick(actionName, actionProps.permission, actionProps.allowedEntries, customCheck)}
-                />
-            );
-        });
-    };
+			const customCheck = actionProps.entryCustomCheck as
+				| ((entry: unknown) => boolean)
+				| undefined;
 
-    return (
-        <div className="my-6 pt-4 border-t border-line flex justify-between">
-            <div className="flex items-center gap-4">
-                {isMultipleSelectionMode(selectionMode) && (
-                    <div>
-                        {selectedEntries.length} selected
-                    </div>
-                )}
+			if (
+				!allowAction(
+					selectedEntries,
+					actionProps.permission,
+					actionProps.allowedEntries,
+					customCheck,
+				)
+			) {
+				return null;
+			}
 
-                {selectedEntries.length > 0 && (
-                    <div className="flex gap-4">
-                        {renderActions('left')}
-                    </div>
-                )}
-            </div>
-            <div className="flex gap-4">
-                <button
-                    className="btn btn-action-reset-filter"
-                    onClick={() => handleReset('DataTableActions')}
-                    title="Reset filters"
-                >
-                    <Icons.Action.Reset className="w-4 h-4"/>
-                    Reset
-                </button>
-                {renderActions('right')}
-            </div>
-        </div>
-    );
+			return (
+				<DataTableActionButton
+					key={`button-${actionName}`}
+					dataSource={dataSource}
+					actionName={actionName}
+					className={actionProps.button?.className}
+					handleClick={() =>
+						handleClick(
+							selectedEntries,
+							actionName,
+							actionProps.permission,
+							actionProps.allowedEntries,
+							customCheck,
+						)
+					}
+				/>
+			);
+		});
+	};
+
+	useEffect(() => {
+		const handleUseDataTableAction = <K extends keyof DataSourceType>(
+			event: CustomEvent<{
+				source: string;
+				actionName: string;
+				entry: unknown;
+			}>,
+		) => {
+			console.log('Received useAction event:', event.detail);
+
+			const actionName = event.detail.actionName;
+			const actionProps = actions?.[actionName];
+			const eventEntry = event.detail.entry as DataSourceType[K]['model'];
+
+			if (!actionProps) {
+				setError(
+					`'actionProps' action props are not defined for ${actionName}`,
+				);
+
+				return;
+			}
+
+			const customCheck = actionProps.entryCustomCheck as
+				| ((entry: unknown) => boolean)
+				| undefined;
+
+			handleClick(
+				[eventEntry],
+				actionName,
+				actionProps.permission,
+				actionProps.allowedEntries,
+				customCheck,
+			);
+		};
+
+		// Attach listener
+		window.addEventListener(
+			'useDataTableAction',
+			handleUseDataTableAction as EventListener,
+		);
+
+		// Cleanup on unmount
+		return () => {
+			window.removeEventListener(
+				'useDataTableAction',
+				handleUseDataTableAction as EventListener,
+			);
+		};
+	}, [actions, handleClick]);
+
+	if (error) {
+		showToast({
+			severity: 'error',
+			summary: 'Error',
+			detail: error,
+		});
+
+		return;
+	}
+
+	return (
+		<div className="flex flex-wrap gap-4 justify-between min-h-18 py-4">
+			<div className="flex flex-wrap gap-4 items-center">
+				{selectionMode === 'multiple' && (
+					<div>{selectedEntries.length} selected</div>
+				)}
+				{renderActions('left')}
+			</div>
+			<div className="flex flex-wrap gap-4">{renderActions('right')}</div>
+		</div>
+	);
 }

@@ -1,29 +1,54 @@
-import {DropdownChangeEvent} from 'primereact/dropdown';
-import {CheckboxChangeEvent} from 'primereact/checkbox';
-import {Nullable} from 'primereact/ts-helpers';
-import {formatDate} from '@/lib/utils/date';
-import {DataSourceType} from '@/config/data-source';
+import type { Nullable } from 'primereact/ts-helpers';
+import type { DataSourceType } from '@/config/data-source';
+import { formatDate } from '@/lib/utils/date';
+
+export type MatchModeType = 'contains' | 'equals' | 'dateAfter' | 'dateBefore';
 
 export function createFilterHandlers<K extends keyof DataSourceType>(
-    update: <T extends keyof DataSourceType[K]['dataTableFilter']>(
-        newFilters: Pick<DataSourceType[K]['dataTableFilter'], T>
-    ) => void
+	update: <T extends keyof DataSourceType[K]['dataTableFilter']>(
+		newFilters: Pick<DataSourceType[K]['dataTableFilter'], T>,
+	) => void,
 ) {
-    return {
-        handleTermChange: (value: string) =>
-            update({global: {value: value, matchMode: 'contains'}}),
+	return {
+		handleInputChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
+			field: F,
+			value: string,
+		) =>
+			update({
+				[field]: { value, matchMode: 'contains' as MatchModeType },
+			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-        handleStatusChange: (e: DropdownChangeEvent) =>
-            update({status: {value: e.value, matchMode: 'equals'}}),
+		handleSelectChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
+			field: F,
+			value: string | number,
+		) =>
+			update({
+				[field]: { value, matchMode: 'equals' as MatchModeType },
+			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-        handleIsDeletedChange: (e: CheckboxChangeEvent) =>
-            update({is_deleted: {value: e.checked ?? false, matchMode: 'equals'}}),
+		handleCheckboxChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
+			field: F,
+			value: boolean,
+		) =>
+			update({
+				[field]: { value, matchMode: 'equals' },
+			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
 
-        handleCreateDateStartChange: (e: { value: Nullable<Date> }) =>
-            update({create_date_start: {value: formatDate(e.value), matchMode: 'dateAfter'}}),
-
-        handleCreateDateEndChange: (e: { value: Nullable<Date> }) =>
-            update({create_date_end: {value: formatDate(e.value), matchMode: 'dateBefore'}}),
-    };
+		handleDateChange: <
+			F extends keyof DataSourceType[K]['dataTableFilter'],
+		>(
+			field: F,
+			value: Nullable<Date>,
+			matchMode: MatchModeType,
+		) =>
+			update({
+				[field]: { value: formatDate(value), matchMode: matchMode },
+			} as Pick<DataSourceType[K]['dataTableFilter'], F>),
+	};
 }
-

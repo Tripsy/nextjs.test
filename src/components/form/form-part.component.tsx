@@ -1,14 +1,12 @@
-import React, {JSX} from 'react';
 import clsx from 'clsx';
+import type { JSX } from 'react';
 
 export const FormPart = ({
-   children,
-   className
+	children,
+	className,
 }: {
-    children: JSX.Element,
-    className?: string
+	children: JSX.Element;
+	className?: string;
 }): JSX.Element | null => (
-    <div className={clsx('form-part', className)}>
-        {children}
-    </div>
+	<div className={clsx('form-part', className)}>{children}</div>
 );

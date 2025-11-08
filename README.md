@@ -1,10 +1,13 @@
 # TODO
 
-1. ActionUsers implementation
-2. Recap NextJs documentation
-3. recover password & other account pages
-4. terms page
-5. Replace all console.error with logging
+1. learn about react-dev-tools
+2. cron-history
+3. templates
+4. Recap NextJs documentation
+5. recover password & other account pages
+6. terms page
+7. Replace all console.error with logging
+8. More language vars 
 
 # IDEAS
 
@@ -57,37 +60,3 @@ io.emit("new-message", msg); // Broadcast to all clients
 socket.on("new-message", (msg) => {
 addMessageToUI(msg); // Update chat UI
 });
-
--------------------------
-
-<Notice type="error" message="Testing error layout" />
-
-<Notice type="warning" message="Testing error layout" />
-
-<Notice type="loading" />
-
-<Notice type="info" message="Testing info layout" />
-
-<Notice type="success" message="Testing info layout" />
-
-
--------------------------
-
-// When user updates their profile
-const updateProfile = async (data) => {
-const updatedUser = await api.updateProfile(auth.id, data);
-setAuth({ ...auth, ...updatedUser }); // Merge updates
-};
-
-// In your auth provider - Cross-Tab Sync
-useEffect(() => {
-const handleStorage = (e: StorageEvent) => {
-if (e.key === 'auth-event') {
-const newAuth = JSON.parse(e.newValue || 'null');
-setAuth(newAuth); // Sync across browser tabs
-}
-};
-
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-}, []);
