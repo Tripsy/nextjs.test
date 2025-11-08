@@ -7,6 +7,7 @@ import logout from '@/locales/en/logout.json';
 import permissions from '@/locales/en/permissions.json';
 import register from '@/locales/en/register.json';
 import users from '@/locales/en/users.json';
+import cron_history from '@/locales/en/cron_history.json';
 
 const en = {
 	app,
@@ -18,6 +19,7 @@ const en = {
 	permissions,
 	register,
 	users,
+	cron_history,
 };
 
 export default en;

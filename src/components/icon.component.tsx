@@ -118,6 +118,15 @@ export const Icons = {
 		Deleted: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faBan} {...props} />
 		),
+		Ok: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faThumbsUp} {...props} />
+		),
+		Error: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faCircleExclamation} {...props} />
+		),
+		Warning: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faTriangleExclamation} {...props} />
+		),
 	},
 	Action: {
 		Create: (props: Partial<FontAwesomeIconProps>) => (

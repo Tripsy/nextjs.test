@@ -2,8 +2,10 @@
 
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { type UserModel, UserStatusEnum } from '@/lib/models/user.model';
+import { type UserModel } from '@/lib/models/user.model';
 import { formatDate } from '@/lib/utils/date';
+import {DisplayStatus} from "@/app/dashboard/_components/data-table-value";
+import {capitalizeFirstLetter} from "@/lib/utils/string";
 
 export function ViewUser() {
 	const { modelStore } = useDataTable<'users'>();
@@ -56,30 +58,22 @@ export function ViewUser() {
 					Account Info
 				</h3>
 				<div className="ml-4 space-y-1 text-sm">
-					<p>
-						<span className="font-semibold">Role:</span> {role}
-					</p>
-					<p>
+					<div>
+						<span className="font-semibold">Role:</span> {capitalizeFirstLetter(role)}
+					</div>
+					<div className="flex items-center gap-2">
 						<span className="font-semibold">Status:</span>{' '}
-						<span
-							className={
-								status === UserStatusEnum.ACTIVE
-									? 'text-green-600'
-									: status === UserStatusEnum.INACTIVE
-										? 'text-yellow-600'
-										: 'text-gray-600'
-							}
-						>
-							{status}
-						</span>
-					</p>
+						<div className="max-w-[240px]">
+							<DisplayStatus status={status} />
+						</div>
+					</div>
 					{deleted_at && (
-						<p>
+						<div>
 							<span className="font-semibold">Deleted At:</span>{' '}
 							<span className="text-red-500">
 								{formatDate(deleted_at, 'date-time')}
 							</span>
-						</p>
+						</div>
 					)}
 				</div>
 			</div>

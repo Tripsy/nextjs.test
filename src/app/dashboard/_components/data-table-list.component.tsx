@@ -254,6 +254,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 	return (
 		<DataTable
+			emptyMessage="No entries found."
 			value={data}
 			lazy
 			dataKey={props.dataKey}

@@ -122,7 +122,7 @@ export function SideMenu() {
 				title: 'Settings',
 				items: [
 					{
-						href: Routes.get('template-find'),
+						href: Routes.get('template'),
 						label: 'Templates',
 						icon: faFileLines,
 						permission: hasPermission(auth, 'template.find'),
@@ -134,19 +134,19 @@ export function SideMenu() {
 				title: 'System Logs',
 				items: [
 					{
-						href: Routes.get('log-data-find'),
+						href: Routes.get('log-data'),
 						label: 'Log Data',
 						icon: faDatabase,
 						permission: hasPermission(auth, 'log_data.find'),
 					},
 					{
-						href: Routes.get('cron-history-find'),
+						href: Routes.get('cron-history'),
 						label: 'Cron History',
 						icon: faFileWaveform,
 						permission: hasPermission(auth, 'cron_history.find'),
 					},
 					{
-						href: Routes.get('mail-queue-find'),
+						href: Routes.get('mail-queue'),
 						label: 'Mail Queue',
 						icon: faEnvelopesBulk,
 						permission: hasPermission(auth, 'mail_queue.find'),
@@ -159,13 +159,13 @@ export function SideMenu() {
 				defaultOpen: true,
 				items: [
 					{
-						href: Routes.get('user-find'),
+						href: Routes.get('user'),
 						label: 'Users',
 						icon: faUserGroup,
 						permission: hasPermission(auth, 'user.find'),
 					},
 					{
-						href: Routes.get('permission-find'),
+						href: Routes.get('permission'),
 						label: 'Permissions',
 						icon: faUserLock,
 						permission: hasPermission(auth, 'permission.find'),

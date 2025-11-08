@@ -1,0 +1,17 @@
+{
+	"meta": {
+		"title": "Cron Records - Dashboard | {{app_name}}"
+	},
+	"action": {
+		"delete": {
+			"title": "Delete cron record(s)",
+			"label": "Delete",
+			"success": "Cron record(s) deleted",
+			"confirmText": "Are you sure you want to delete the selected cron record(s)?"
+		},
+		"view": {
+			"title": "Cron record details",
+			"label": "View"
+		}
+	}
+}

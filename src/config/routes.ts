@@ -172,22 +172,22 @@ Routes.group('account')
 Routes.group('dashboard')
 	.auth(RouteAuth.PROTECTED)
 	.add('dashboard', '/dashboard')
-	.add('template-find', '/dashboard/templates', {
+	.add('template', '/dashboard/templates', {
 		permission: 'template.find',
 	})
-	.add('log-data-find', '/dashboard/log-data', {
+	.add('log-data', '/dashboard/log-data', {
 		permission: 'log_data.find',
 	})
-	.add('cron-history-find', '/dashboard/cron-history', {
+	.add('cron-history', '/dashboard/cron-history', {
 		permission: 'cron_history.find',
 	})
-	.add('mail-queue-find', '/dashboard/mail-queue', {
+	.add('mail-queue', '/dashboard/mail-queue', {
 		permission: 'mail_queue.find',
 	})
-	.add('user-find', '/dashboard/users', {
+	.add('user', '/dashboard/users', {
 		permission: 'user.find',
 	})
-	.add('permission-find', '/dashboard/permissions', {
+	.add('permission', '/dashboard/permissions', {
 		permission: 'permission.find',
 	});
 

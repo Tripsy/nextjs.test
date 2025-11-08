@@ -15,6 +15,10 @@ import {
 import type { HandleChangeType } from '@/components/form/form-element.component';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
+import {
+	DataSourceConfigCronHistory,
+	DataSourceCronHistoryType
+} from "@/app/dashboard/cron-history/cron-history.definition";
 
 export type FindFunctionParamsType = {
 	order_by?: string;
@@ -120,6 +124,7 @@ export type DataSourceType = {
 	users: DataSourceUsersType;
 	permissions: DataSourcePermissionsType;
 	log_data: DataSourceLogDataType;
+	cron_history: DataSourceCronHistoryType;
 };
 
 export type FormStateType<K extends keyof DataSourceType> =
@@ -185,6 +190,7 @@ export const DataSourceConfig: {
 	users: DataSourceConfigUsers,
 	permissions: DataSourceConfigPermissions,
 	log_data: DataSourceConfigLogData,
+	cron_history: DataSourceConfigCronHistory,
 };
 
 export type DataTablePropsType = {

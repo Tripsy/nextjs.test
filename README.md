@@ -1,13 +1,14 @@
 # TODO
 
 1. learn about react-dev-tools
-2. cron-history
+2. mail-queue
 3. templates
 4. Recap NextJs documentation
 5. recover password & other account pages
 6. terms page
 7. Replace all console.error with logging
 8. More language vars 
+9. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 
@@ -21,8 +22,7 @@
 
 # NOTES
 
-- middleware.ts has a special config which controls via `matcher` what requests are handled by middleware
-- middleware.ts will add special headers via `responseSuccess` - for production ready it will need some revision
+- 
 
 # BUGS & ISSUES
 

@@ -8,7 +8,7 @@ import { useTranslation } from '@/hooks/use-translation.hook';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
-const statusList = {
+export const statusList = {
 	active: {
 		label: 'Active',
 		class: 'badge badge-success h-8',
@@ -29,6 +29,21 @@ const statusList = {
 		class: 'badge badge-neutral h-8',
 		icon: <Icons.Status.Deleted />,
 	},
+	ok: {
+		label: 'Ok',
+		class: 'badge badge-success h-8',
+		icon: <Icons.Status.Ok />,
+	},
+	error: {
+		label: 'Error',
+		class: 'badge badge-error h-8',
+		icon: <Icons.Status.Error />,
+	},
+	warning: {
+		label: 'Warning',
+		class: 'badge badge-warning h-8',
+		icon: <Icons.Status.Warning />,
+	}
 };
 
 export const DisplayDeleted = ({
@@ -44,7 +59,7 @@ export const DisplayDeleted = ({
 export const DisplayStatus = ({
 	status,
 }: {
-	status: keyof typeof statusList;
+	status: string;
 }) => {
 	const statusProps = statusList[status as keyof typeof statusList];
 

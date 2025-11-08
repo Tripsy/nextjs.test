@@ -10,24 +10,19 @@ import {
 	FormFiltersSelect,
 } from '@/app/dashboard/_components/form-filters.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableLogDataFiltersType } from '@/app/dashboard/log-data/log-data.definition';
+import type { DataTableCronHistoryFiltersType } from '@/app/dashboard/cron-history/cron-history.definition';
 import { useSearchFilter } from '@/hooks';
-import { LogCategoryEnum, LogLevelEnum } from '@/lib/models/log-data.model';
+import {CronHistoryStatusEnum} from '@/lib/models/cron-history.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
-const logLevels = Object.values(LogLevelEnum).map((v) => ({
+const statuses = Object.values(CronHistoryStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
 
-const logCategories = Object.values(LogCategoryEnum).map((v) => ({
-	label: capitalizeFirstLetter(v),
-	value: v,
-}));
-
-export const DataTableLogDataFilters = (): React.JSX.Element => {
-	const { stateDefault, modelStore } = useDataTable<'log_data'>();
+export const DataTableCronHistoryFilters = (): React.JSX.Element => {
+	const { stateDefault, modelStore } = useDataTable<'cron_history'>();
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -36,7 +31,7 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableLogDataFiltersType>) => {
+		(newFilters: Partial<DataTableCronHistoryFiltersType>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});
@@ -45,7 +40,7 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	);
 
 	const handlers = useMemo(
-		() => createFilterHandlers<'log_data'>(updateFilters),
+		() => createFilterHandlers<'cron_history'>(updateFilters),
 		[updateFilters],
 	);
 
@@ -91,37 +86,29 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Pid / Message / Context"
+				labelText="ID / Label / Content"
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Category"
-				fieldName="category"
-				fieldValue={filters.category.value}
-				selectOptions={logCategories}
-				handleSelectChange={handleSelectChange}
-			/>
-
-			<FormFiltersSelect
-				labelText="Level"
-				fieldName="level"
-				fieldValue={filters.level.value}
-				selectOptions={logLevels}
+				labelText="Status"
+				fieldName="status"
+				fieldValue={filters.status.value}
+				selectOptions={statuses}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersDateRange
-				labelText="Created Date"
-				startDateField="create_date_start"
-				startDateValue={filters.create_date_start?.value ?? ''}
-				endDateField="create_date_end"
-				endDateValue={filters.create_date_end?.value ?? ''}
+				labelText="Start Date"
+				startDateField="start_date_start"
+				startDateValue={filters.start_date_start?.value ?? ''}
+				endDateField="start_date_end"
+				endDateValue={filters.start_date_end?.value ?? ''}
 				handleDateChange={handleDateChange}
 			/>
 
-			<FormFiltersReset source="DataTableLogDataFilters" />
+			<FormFiltersReset source="DataTableCronHistoryFilters" />
 		</div>
 	);
 };
