@@ -12,14 +12,17 @@ import {
 } from '@/components/form/form-element.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { Icons } from '@/components/icon.component';
-import type { DataSourceType } from '@/config/data-source';
+import type {
+	DataSourceTableFilter,
+	DataSourceType,
+} from '@/config/data-source';
 import type { useSearchFilter } from '@/hooks';
 import { useElementIds } from '@/hooks/use-element-ids.hook';
 import type { MatchModeType } from '@/lib/utils/data-table';
 import { getValidDate, stringToDate } from '@/lib/utils/date';
 
 type HandleSelectChangeType<K extends keyof DataSourceType> = <
-	F extends keyof DataSourceType[K]['dataTableFilter'],
+	F extends keyof DataSourceTableFilter<K>,
 >(
 	field: F,
 	value: string,
@@ -55,7 +58,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 					options={selectOptions}
 					onChange={(e) =>
 						handleSelectChange(
-							fieldName as keyof DataSourceType[K]['dataTableFilter'],
+							fieldName as keyof DataSourceTableFilter<K>,
 							e.value,
 						)
 					}
@@ -105,7 +108,7 @@ export function FormFiltersSearch({
 }
 
 type HandleDateChangeType<K extends keyof DataSourceType> = <
-	F extends keyof DataSourceType[K]['dataTableFilter'],
+	F extends keyof DataSourceTableFilter<K>,
 >(
 	field: F,
 	value: Nullable<Date>,
@@ -146,7 +149,7 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 						value={stringToDate(startDateValue)}
 						onChange={(e) =>
 							handleDateChange(
-								startDateField as keyof DataSourceType[K]['dataTableFilter'],
+								startDateField as keyof DataSourceTableFilter<K>,
 								e.value,
 								'dateAfter',
 							)
@@ -161,7 +164,7 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 						value={stringToDate(endDateValue)}
 						onChange={(e) =>
 							handleDateChange(
-								endDateField as keyof DataSourceType[K]['dataTableFilter'],
+								endDateField as keyof DataSourceTableFilter<K>,
 								e.value,
 								'dateBefore',
 							)
@@ -182,7 +185,7 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 }: {
 	is_deleted: boolean;
 	handleCheckboxChange: (
-		name: keyof DataSourceType[K]['dataTableFilter'],
+		name: keyof DataSourceTableFilter<K>,
 		value: boolean,
 	) => void;
 }) {
@@ -198,7 +201,7 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 						checked={is_deleted}
 						onChange={(e) =>
 							handleCheckboxChange(
-								'is_deleted' as keyof DataSourceType[K]['dataTableFilter'],
+								'is_deleted' as keyof DataSourceTableFilter<K>,
 								e.checked ?? false,
 							)
 						}

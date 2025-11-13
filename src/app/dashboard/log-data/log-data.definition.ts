@@ -1,7 +1,7 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
-import type { LogDataModel } from '@/lib/models/log-data.model';
+import type { LogDataModel } from '@/lib/entities/log-data.model';
 import { deleteLogData, findLogData } from '@/lib/services/log-data.service';
 
 export type DataTableLogDataFiltersType = {
@@ -17,7 +17,7 @@ function displayActionEntriesLogData(entries: LogDataModel[]) {
 }
 
 export type DataSourceLogDataType = {
-	dataTableFilter: DataTableLogDataFiltersType;
+	tableFilter: DataTableLogDataFiltersType;
 	model: LogDataModel;
 };
 

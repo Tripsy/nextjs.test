@@ -4,8 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
-import { hasPermission } from '@/lib/models/auth.model';
+import {
+	type DataSourceModel,
+	type DataSourceType,
+	getDataSourceConfig,
+} from '@/config/data-source';
+import { hasPermission } from '@/lib/entities/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 import { useToast } from '@/providers/toast.provider';
 
@@ -47,7 +51,7 @@ export function DataTableActions() {
 
 	const allowAction = useCallback(
 		<K extends keyof DataSourceType>(
-			entries: DataSourceType[K]['model'][],
+			entries: DataSourceModel<K>[],
 			permission: string,
 			allowedEntries: 'free' | 'single' | 'multiple',
 			entryCustomCheck?: (entry: unknown) => boolean,
@@ -73,7 +77,7 @@ export function DataTableActions() {
 
 	const handleClick = useCallback(
 		<K extends keyof DataSourceType>(
-			entries: DataSourceType[K]['model'][],
+			entries: DataSourceModel<K>[],
 			actionName: ActionKey,
 			permission: string,
 			allowedEntries: 'free' | 'single' | 'multiple',
@@ -172,11 +176,9 @@ export function DataTableActions() {
 				entry: unknown;
 			}>,
 		) => {
-			console.log('Received useAction event:', event.detail);
-
 			const actionName = event.detail.actionName;
 			const actionProps = actions?.[actionName];
-			const eventEntry = event.detail.entry as DataSourceType[K]['model'];
+			const eventEntry = event.detail.entry as DataSourceModel<K>;
 
 			if (!actionProps) {
 				setError(

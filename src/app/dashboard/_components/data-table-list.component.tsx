@@ -3,6 +3,7 @@
 import { Column } from 'primereact/column';
 import {
 	DataTable,
+	type DataTableFilterMeta,
 	type DataTablePageEvent,
 	type DataTableSortEvent,
 } from 'primereact/datatable';
@@ -12,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import {
+	type DataSourceModel,
 	type DataSourceType,
 	type DataTablePropsType,
 	getDataSourceConfig,
@@ -56,7 +58,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	const isLoading = useStore(modelStore, (state) => state.isLoading);
 	const setLoading = useStore(modelStore, (state) => state.setLoading);
 
-	const [data, setData] = useState<DataSourceType[K]['model'][]>([]);
+	const [data, setData] = useState<DataSourceModel<K>[]>([]);
 	const [totalRecords, setTotalRecords] = useState(0);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset to first page when filters change
@@ -68,10 +70,71 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		});
 	}, [clearSelectedEntries, updateTableState, tableState.filters]);
 
+	// const findFunctionFilter = useMemo(() => {
+	// 	const params = Object.entries(tableState.filters).reduce(
+	// 		(acc, [key, filterObj]) => {
+	// 			const value = filterObj?.value;
+	//
+	// 			// Skip empty or null values
+	// 			if (value == null || value === '') {
+	// 				return acc;
+	// 			}
+	//
+	// 			// Handle date filters
+	// 			if (/_date_start$/.test(key)) {
+	// 				const date = getMomentInstanceFromDate(value);
+	//
+	// 				if (!date) {
+	// 					throw new Error(`Invalid start date: ${value}`);
+	// 				}
+	//
+	// 				acc[key] = date.startOf('day').toISOString();
+	// 			} else if (/_date_end$/.test(key)) {
+	// 				const date = getMomentInstanceFromDate(value);
+	//
+	// 				if (!date) {
+	// 					throw new Error(`Invalid start date: ${value}`);
+	// 				}
+	//
+	// 				acc[key] = date.endOf('day').toISOString();
+	// 			} else {
+	// 				// Normal filters
+	// 				acc[key === 'global' ? 'term' : String(key)] =
+	// 					String(value);
+	// 			}
+	//
+	// 			return acc;
+	// 		},
+	// 		{} as Record<string, string>,
+	// 	);
+	//
+	// 	return JSON.stringify(params);
+	// }, [tableState.filters]);
+
 	const findFunctionFilter = useMemo(() => {
-		const params = Object.entries(tableState.filters).reduce(
+		// Type guard to ensure filters is a proper object
+		if (
+			!tableState.filters ||
+			typeof tableState.filters !== 'object' ||
+			Array.isArray(tableState.filters)
+		) {
+			return JSON.stringify({});
+		}
+
+		const params = Object.entries(
+			tableState.filters as Record<string, unknown>,
+		).reduce(
 			(acc, [key, filterObj]) => {
-				const value = filterObj?.value;
+				// Additional type check for filterObj
+				if (
+					!filterObj ||
+					typeof filterObj !== 'object' ||
+					Array.isArray(filterObj)
+				) {
+					return acc;
+				}
+
+				const value = (filterObj as { value?: unknown }).value;
 
 				// Skip empty or null values
 				if (value == null || value === '') {
@@ -80,7 +143,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 				// Handle date filters
 				if (/_date_start$/.test(key)) {
-					const date = getMomentInstanceFromDate(value);
+					const date = getMomentInstanceFromDate(value as string);
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
@@ -88,7 +151,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 					acc[key] = date.startOf('day').toISOString();
 				} else if (/_date_end$/.test(key)) {
-					const date = getMomentInstanceFromDate(value);
+					const date = getMomentInstanceFromDate(value as string);
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
@@ -217,7 +280,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	);
 
 	const onSelectionChange = useCallback(
-		(event: SelectionChangeEvent<DataSourceType[K]['model']>) => {
+		(event: SelectionChangeEvent<DataSourceModel<K>>) => {
 			setSelectedEntries(event.value);
 		},
 		[setSelectedEntries],
@@ -278,7 +341,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 			reorderableColumns
 			stateStorage="local"
 			stateKey={dataStorageKey}
-			filters={tableState.filters}
+			filters={tableState.filters as DataTableFilterMeta}
 			paginator
 			rowsPerPageOptions={[5, 10, 25, 50]}
 			paginatorTemplate={paginatorTemplate}

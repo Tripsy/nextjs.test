@@ -2,7 +2,7 @@ import isEqual from 'fast-deep-equal';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-export function useFormValues<T>(
+export function useFormValues<T extends Record<string, unknown>>(
 	stateValues: T,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
 	const [formValues, setFormValues] = useState<T>(() => stateValues);

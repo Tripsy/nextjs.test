@@ -1,4 +1,4 @@
-import { type UserModel, UserRoleEnum } from '@/lib/models/user.model';
+import { type UserModel, UserRoleEnum } from '@/lib/entities/user.model';
 import { normalizeDates } from '@/lib/utils/model';
 
 export type AuthModel =

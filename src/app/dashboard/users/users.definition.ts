@@ -8,12 +8,12 @@ import type {
 } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
 import { cfg } from '@/config/settings';
-import { LanguageEnum } from '@/lib/enums';
 import {
 	type UserModel,
 	UserRoleEnum,
 	UserStatusEnum,
-} from '@/lib/models/user.model';
+} from '@/lib/entities/user.model';
+import { LanguageEnum } from '@/lib/enums';
 import {
 	createUser,
 	deleteUser,
@@ -180,20 +180,10 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 	}
 });
 
-type ValidationResultUsersType =
-	| z.SafeParseReturnType<
-			DataSourceType['users']['formValues'],
-			z.infer<typeof ValidateSchemaCreateUsers>
-	  >
-	| z.SafeParseReturnType<
-			DataSourceType['users']['formValues'],
-			z.infer<typeof ValidateSchemaUpdateUsers>
-	  >;
-
 function validateFormUsers(
 	values: DataSourceType['users']['formValues'],
 	id?: number,
-): ValidationResultUsersType {
+) {
 	if (id) {
 		return ValidateSchemaUpdateUsers.safeParse(values);
 	}
@@ -246,7 +236,7 @@ function displayActionEntriesUsers(entries: UserModel[]) {
 }
 
 export type DataSourceUsersType = {
-	dataTableFilter: DataTableUsersFiltersType;
+	tableFilter: DataTableUsersFiltersType;
 	model: UserModel;
 	formState: FormStateType<'users'>;
 	formValues: {
@@ -257,7 +247,6 @@ export type DataSourceUsersType = {
 		language: LanguageEnum;
 		role: UserRoleEnum;
 	};
-	validationResult: ValidationResultUsersType;
 };
 
 const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [

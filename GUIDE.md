@@ -1,6 +1,6 @@
 # Adding new model for `dashboard` (ex: `cars`)
 
-1. Create `lib/models/cars.model.ts` from `lib/models/user.model.ts`
+1. Create `lib/entities/cars.model.ts` from `lib/entities/users.model.ts`
 2. Duplicate `src/dashboard/users` > `src/dashboard/cars` & rename files
     1. page.tsx
     2. cars.definition.ts

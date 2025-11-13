@@ -15,7 +15,7 @@ import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { AwesomeIcon } from '@/components/icon.component';
 import Routes from '@/config/routes';
 import { useDebouncedEffect } from '@/hooks';
-import { hasPermission } from '@/lib/models/auth.model';
+import { hasPermission } from '@/lib/entities/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 
 type SideMenuGroupProps = {

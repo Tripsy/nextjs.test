@@ -12,8 +12,8 @@ import { FormElementError } from '@/components/form/form-element-error.component
 import { FormPart } from '@/components/form/form-part.component';
 import type { FormManageType } from '@/config/data-source';
 import { useElementIds } from '@/hooks/use-element-ids.hook';
+import { UserRoleEnum } from '@/lib/entities/user.model';
 import { LanguageEnum } from '@/lib/enums';
-import { UserRoleEnum } from '@/lib/models/user.model';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((v) => ({
@@ -126,8 +126,8 @@ export function FormManageUser({
 										name="role"
 										value={value}
 										className={clsx('radio', {
-											'radio-error': errors.language,
-											'radio-info': !errors.language,
+											'radio-error': errors.role,
+											'radio-info': !errors.role,
 										})}
 										disabled={pending}
 										checked={formValues.role === value}

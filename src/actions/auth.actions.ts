@@ -2,8 +2,8 @@
 
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
+import { type AuthModel, prepareAuthModel } from '@/lib/entities/auth.model';
 import { ApiError } from '@/lib/exceptions/api.error';
-import { type AuthModel, prepareAuthModel } from '@/lib/models/auth.model';
 import {
 	ApiRequest,
 	getResponseData,

@@ -7,7 +7,7 @@ import { Loading } from '@/components/loading.component';
 import { Notice } from '@/components/notice.component';
 import Routes, { RouteAuth } from '@/config/routes';
 import { useTranslation } from '@/hooks/use-translation.hook';
-import { hasPermission } from '@/lib/models/auth.model';
+import { hasPermission } from '@/lib/entities/auth.model';
 import { useAuth } from '@/providers/auth.provider';
 
 type ProtectedRouteProps = {

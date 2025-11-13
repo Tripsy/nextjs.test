@@ -1,8 +1,11 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
-import type { CronHistoryModel } from '@/lib/models/cron-history.model';
-import {deleteCronHistory, findCronHistory} from "@/lib/services/cron-history.service";
+import type { CronHistoryModel } from '@/lib/entities/cron-history.model';
+import {
+	deleteCronHistory,
+	findCronHistory,
+} from '@/lib/services/cron-history.service';
 
 export type DataTableCronHistoryFiltersType = {
 	global: DataTableFilterMetaData;
@@ -16,7 +19,7 @@ function displayActionEntriesCronHistory(entries: CronHistoryModel[]) {
 }
 
 export type DataSourceCronHistoryType = {
-	dataTableFilter: DataTableCronHistoryFiltersType;
+	tableFilter: DataTableCronHistoryFiltersType;
 	model: CronHistoryModel;
 };
 

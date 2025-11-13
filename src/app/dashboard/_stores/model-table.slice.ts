@@ -2,17 +2,16 @@ import type { Draft } from 'immer';
 import type { StateCreator } from 'zustand';
 import type { ModelStore } from '@/app/dashboard/_stores/model.store';
 import {
+	type DataSourceTableFilter,
 	type DataSourceType,
 	type DataTableStateType,
 	getDataSourceConfig,
 } from '@/config/data-source';
 
 export interface ModelTableSlice<K extends keyof DataSourceType> {
-	tableState: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+	tableState: DataTableStateType<DataSourceTableFilter<K>>;
 	updateTableState: (
-		newState: Partial<
-			DataTableStateType<DataSourceType[K]['dataTableFilter']>
-		>,
+		newState: Partial<DataTableStateType<DataSourceTableFilter<K>>>,
 	) => void;
 	refreshTableState: () => void;
 }
@@ -35,9 +34,8 @@ export const createModelTableSlice =
 					...state.tableState,
 					...newState,
 					filters:
-						(newState.filters as Draft<
-							DataSourceType[K]['dataTableFilter']
-						>) || state.tableState.filters,
+						(newState.filters as Draft<DataSourceTableFilter<K>>) ||
+						state.tableState.filters,
 				};
 			}),
 

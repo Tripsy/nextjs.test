@@ -19,7 +19,6 @@ export async function GET(): Promise<NextResponseLanguage> {
 	const fromCookie = cookieStore.get('preferred-language')?.value;
 	const fallback = cfg('app.language') as string;
 
-	console.log(fromHeader, fromCookie, fallback);
 	const language = fromHeader || fromCookie || fallback;
 
 	const languageSelected = isSupportedLanguage(language)

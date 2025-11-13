@@ -7,7 +7,7 @@ import { useElementIds } from '@/hooks/use-element-ids.hook';
 import {
 	PermissionEntitiesEnum,
 	PermissionOperationEnum,
-} from '@/lib/models/permission.model';
+} from '@/lib/entities/permission.model';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const entities = Object.values(PermissionEntitiesEnum).map((v) => ({

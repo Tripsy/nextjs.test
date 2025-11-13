@@ -1,20 +1,21 @@
 import {
 	type CreateFunctionType,
+	type DataSourceFormValues,
 	type DataSourceType,
 	type FormStateType,
-	type FormValuesType,
 	getDataSourceConfig,
 	type UpdateFunctionType,
-	type ValidationReturnType,
 } from '@/config/data-source';
 import { translate } from '@/config/lang';
+import type { ValidationReturnType } from '@/hooks';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
+import { accumulateZodErrors } from '@/lib/utils/form';
 
 export function getFormValues<K extends keyof DataSourceType>(
 	dataSource: K,
 	formData: FormData,
-): FormValuesType<K> {
+): DataSourceFormValues<K> {
 	const functions = getDataSourceConfig(dataSource, 'functions');
 
 	if (!('getFormValues' in functions)) {
@@ -32,14 +33,14 @@ export function getFormValues<K extends keyof DataSourceType>(
 		);
 	}
 
-	return getFormValuesFunction(formData) as FormValuesType<K>;
+	return getFormValuesFunction(formData) as DataSourceFormValues<K>;
 }
 
 export function handleValidate<K extends keyof DataSourceType>(
 	dataSource: K,
-	values: FormValuesType<K>,
+	values: DataSourceFormValues<K>,
 	id?: number,
-): ValidationReturnType<K> {
+): ValidationReturnType<DataSourceFormValues<K>> {
 	const functions = getDataSourceConfig(dataSource, 'functions');
 
 	if (!('validateForm' in functions)) {
@@ -57,7 +58,7 @@ export function handleValidate<K extends keyof DataSourceType>(
 		);
 	}
 
-	return validateFormFunction(values, id) as ValidationReturnType<K>;
+	return validateFormFunction(values, id);
 }
 
 export async function formAction<K extends keyof DataSourceType>(
@@ -72,7 +73,7 @@ export async function formAction<K extends keyof DataSourceType>(
 				| UpdateFunctionType<K>
 				| undefined;
 
-			// Not all the models have `update` function
+			// Not all the entities have `update` function
 			if (!updateFunction) {
 				throw new ValueError(
 					`'update' function is not defined for ${state.dataSource}`,
@@ -86,7 +87,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			| CreateFunctionType<K>
 			| undefined;
 
-		// Not all the models have `create` function
+		// Not all the entities have `create` function
 		if (!createFunction) {
 			throw new ValueError(
 				`'create' function is not defined for ${state.dataSource}`,
@@ -114,13 +115,15 @@ export async function formAction<K extends keyof DataSourceType>(
 		};
 
 		if (!validated.success) {
+			const errors = accumulateZodErrors<DataSourceFormValues<K>>(
+				validated.error,
+			);
+
 			return {
 				...result,
 				situation: 'error',
 				message: await translate('error.validation'),
-				errors: validated.error.flatten().fieldErrors as Partial<
-					Record<keyof FormValuesType<K>, string[]>
-				>,
+				errors,
 			};
 		}
 

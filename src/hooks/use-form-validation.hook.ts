@@ -1,15 +1,18 @@
 import isEqual from 'fast-deep-equal';
 import { useCallback, useRef, useState } from 'react';
-import type { ZodError } from 'zod';
+import type { SafeParseError, SafeParseSuccess } from 'zod';
 import { useDebouncedEffect } from '@/hooks/use-debounced-effect.hook';
+import { accumulateZodErrors } from '@/lib/utils/form';
+
+export type ValidationReturnType<K> = SafeParseSuccess<K> | SafeParseError<K>;
 
 interface UseFormValidationProps<K> {
 	formValues: K;
-	validate: (values: K) => { success: boolean; error?: ZodError<K> };
+	validate: (values: K) => ValidationReturnType<K>;
 	debounceDelay?: number;
 }
 
-export function useFormValidation<T extends Record<string, unknown>>({
+export function useFormValidation<T>({
 	formValues,
 	validate,
 	debounceDelay = 800,
@@ -85,8 +88,7 @@ export function useFormValidation<T extends Record<string, unknown>>({
 			if (validated.success) {
 				setErrors({});
 			} else {
-				const fieldErrors = (validated.error?.flatten().fieldErrors ||
-					{}) as Partial<Record<keyof T, string[]>>;
+				const fieldErrors = accumulateZodErrors<T>(validated.error);
 
 				if (submitted) {
 					// Show ALL errors when submitted

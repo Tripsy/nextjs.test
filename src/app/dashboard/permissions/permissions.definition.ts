@@ -10,7 +10,7 @@ import {
 	PermissionEntitiesEnum,
 	type PermissionModel,
 	PermissionOperationEnum,
-} from '@/lib/models/permission.model';
+} from '@/lib/entities/permission.model';
 import {
 	createPermissions,
 	deletePermissions,
@@ -38,14 +38,9 @@ const ValidateSchemaBasePermissions = z.object({
 	}),
 });
 
-type ValidationResultPermissionsType = z.SafeParseReturnType<
-	DataSourceType['permissions']['formValues'],
-	z.infer<typeof ValidateSchemaBasePermissions>
->;
-
 function validateFormPermissions(
 	values: DataSourceType['permissions']['formValues'],
-): ValidationResultPermissionsType {
+) {
 	return ValidateSchemaBasePermissions.safeParse(values);
 }
 
@@ -93,14 +88,13 @@ function displayActionEntriesPermissions(entries: PermissionModel[]) {
 }
 
 export type DataSourcePermissionsType = {
-	dataTableFilter: DataTablePermissionsFiltersType;
+	tableFilter: DataTablePermissionsFiltersType;
 	model: PermissionModel;
 	formState: FormStateType<'permissions'>;
 	formValues: {
 		entity: PermissionEntitiesEnum;
 		operation: PermissionOperationEnum;
 	};
-	validationResult: ValidationResultPermissionsType;
 };
 
 const DataTableColumnsPermissions: DataTableColumnType<PermissionModel>[] = [

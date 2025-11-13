@@ -23,6 +23,7 @@ import {
 	faScrewdriverWrench,
 	faSpinner,
 	faSun,
+	faTag,
 	faThumbsUp,
 	faTrashCan,
 	faTriangleExclamation,
@@ -104,6 +105,9 @@ export const Icons = {
 	),
 	Obscured: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faEyeSlash} {...props} />
+	),
+	Tag: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faTag} {...props} />
 	),
 	Status: {
 		Active: (props: Partial<FontAwesomeIconProps>) => (

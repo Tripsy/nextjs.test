@@ -6,7 +6,7 @@ import {
 	type AuthModel,
 	hasPermission,
 	prepareAuthModel,
-} from '@/lib/models/auth.model';
+} from '@/lib/entities/auth.model';
 import {
 	ApiRequest,
 	getResponseData,

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { Loading } from '@/components/loading.component';
-import type { PermissionModel } from '@/lib/models/permission.model';
+import type { PermissionModel } from '@/lib/entities/permission.model';
 import { findPermissions } from '@/lib/services/permissions.service';
 import {
 	createUserPermissions,

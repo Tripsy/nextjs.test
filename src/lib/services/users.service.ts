@@ -7,7 +7,7 @@ import type {
 	FindFunctionType,
 	UpdateFunctionType,
 } from '@/config/data-source';
-import type { UserPermissionModel } from '@/lib/models/user-permission.model';
+import type { UserPermissionModel } from '@/lib/entities/user-permission.model';
 import {
 	ApiRequest,
 	getResponseData,

@@ -1,0 +1,44 @@
+{
+	"meta": {
+		"title": "Templates - Dashboard | {{app_name}}"
+	},
+	"validation": {
+		"label_invalid": "Set label",
+		"language_invalid": "Select a valid language",
+		"type_invalid": "Select a valid type",
+		"email_subject_invalid": "Set email subject",
+		"email_html_invalid": "Set email html",
+		"email_layout_invalid": "Set email layout",
+		"page_title_invalid": "Set page title",
+		"page_body_invalid": "Set page body",
+		"page_layout_invalid": "Set page layout"
+	},
+	"action": {
+		"create": {
+			"title": "Add new template",
+			"label": "Add",
+			"success": "New template added successfully"
+		},
+		"update": {
+			"title": "Edit template",
+			"label": "Update",
+			"success": "Template updated successfully"
+		},
+		"delete": {
+			"title": "Delete template",
+			"label": "Delete",
+			"success": "Template deleted successfully",
+			"confirmText": "Are you sure you want to delete this template?"
+		},
+		"restore": {
+			"title": "Restore template",
+			"label": "Restore",
+			"success": "Template restored successfully",
+			"confirmText": "Are you sure you want to restore this template?"
+		},
+		"view": {
+			"title": "Template details",
+			"label": "View details"
+		}
+	}
+}

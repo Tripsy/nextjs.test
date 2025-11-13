@@ -1,13 +1,13 @@
 import type { Draft } from 'immer';
 import type { StateCreator } from 'zustand';
 import type { ModelStore } from '@/app/dashboard/_stores/model.store';
-import type { DataSourceType } from '@/config/data-source';
+import type { DataSourceModel, DataSourceType } from '@/config/data-source';
 
 export interface ModelModalSlice<K extends keyof DataSourceType> {
 	isOpen: boolean;
 	actionName: string | null;
-	actionEntry: DataSourceType[K]['model'] | null;
-	setActionEntry: (entry: DataSourceType[K]['model']) => void;
+	actionEntry: DataSourceModel<K> | null;
+	setActionEntry: (entry: DataSourceModel<K>) => void;
 	openCreate: () => void;
 	openUpdate: () => void;
 	openAction: (name: string) => void;
@@ -46,7 +46,7 @@ export const createModelModalSlice =
 
 		setActionEntry: (entry) =>
 			set((state: Draft<ModelModalSlice<K>>) => {
-				state.actionEntry = entry as Draft<DataSourceType[K]['model']>;
+				state.actionEntry = entry as Draft<DataSourceModel<K>>;
 			}),
 
 		closeOut: () =>

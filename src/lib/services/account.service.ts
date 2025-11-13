@@ -3,7 +3,7 @@ import type {
 	LoginFormFieldsType,
 } from '@/app/account/login/login.definition';
 import type { RegisterFormFieldsType } from '@/app/account/register/register.definition';
-import type { UserModel } from '@/lib/models/user.model';
+import type { UserModel } from '@/lib/entities/user.model';
 import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
 
 export async function registerAccount(

@@ -1,11 +1,11 @@
 'use client';
 
 import { useStore } from 'zustand/react';
+import { DisplayStatus } from '@/app/dashboard/_components/data-table-value';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { type UserModel } from '@/lib/models/user.model';
+import type { UserModel } from '@/lib/entities/user.model';
 import { formatDate } from '@/lib/utils/date';
-import {DisplayStatus} from "@/app/dashboard/_components/data-table-value";
-import {capitalizeFirstLetter} from "@/lib/utils/string";
+import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 export function ViewUser() {
 	const { modelStore } = useDataTable<'users'>();
@@ -59,7 +59,8 @@ export function ViewUser() {
 				</h3>
 				<div className="ml-4 space-y-1 text-sm">
 					<div>
-						<span className="font-semibold">Role:</span> {capitalizeFirstLetter(role)}
+						<span className="font-semibold">Role:</span>{' '}
+						{capitalizeFirstLetter(role)}
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="font-semibold">Status:</span>{' '}

@@ -9,7 +9,6 @@ import {
 	useEffect,
 	useMemo,
 } from 'react';
-import type { ZodError } from 'zod';
 import { useStore } from 'zustand/react';
 import { formAction } from '@/app/dashboard/_actions';
 import { handleReset } from '@/app/dashboard/_components/data-table-actions.component';
@@ -18,10 +17,10 @@ import { FormError } from '@/components/form/form-error.component';
 import { FormPart } from '@/components/form/form-part.component';
 import { getActionIcon, Icons } from '@/components/icon.component';
 import {
+	type DataSourceFormValues,
 	type DataSourceType,
 	type FormManageType,
 	type FormStateType,
-	type FormValuesType,
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { useFormValidation, useFormValues } from '@/hooks';
@@ -86,8 +85,8 @@ export function FormManage<K extends keyof DataSourceType>({
 		initState as Awaited<FormStateType<K>>,
 	);
 
-	const [formValues, setFormValues] = useFormValues<FormValuesType<K>>(
-		state.values as FormValuesType<K>,
+	const [formValues, setFormValues] = useFormValues<DataSourceFormValues<K>>(
+		state.values,
 	);
 
 	// Determine validateForm function
@@ -107,22 +106,14 @@ export function FormManage<K extends keyof DataSourceType>({
 	}
 
 	const validate = useCallback(
-		(
-			values: FormValuesType<K>,
-		): {
-			success: boolean;
-			error?: ZodError<FormValuesType<K>>;
-		} => {
-			return validateFormFunction(values, state.id) as {
-				success: boolean;
-				error?: ZodError<FormValuesType<K>>;
-			};
+		(values: DataSourceFormValues<K>) => {
+			return validateFormFunction(values, state.id);
 		},
 		[state.id, validateFormFunction],
 	);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
-		useFormValidation<FormValuesType<K>>({
+		useFormValidation<DataSourceFormValues<K>>({
 			formValues,
 			validate,
 			debounceDelay: 800,
@@ -133,7 +124,7 @@ export function FormManage<K extends keyof DataSourceType>({
 		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name as keyof FormValuesType<K>);
+		markFieldAsTouched(name as keyof DataSourceFormValues<K>);
 	};
 
 	const actionLabelKey = `${dataSource}.action.${actionName}.label`;

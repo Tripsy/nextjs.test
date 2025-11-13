@@ -87,7 +87,7 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	const ModalComponent = modals?.[actionName] ?? null;
 
 	return (
-		<div className="fixed inset-0 bg-base-300/90 flex items-center justify-center h-full z-50">
+		<div className="fixed inset-0 bg-base-300/90 flex items-center justify-center h-full z-100">
 			<div className={modalClassComputed}>
 				<div className="flex justify-between px-4 py-3 rounded-t-lg shadow-lg">
 					<h1 className="text-lg font-semibold">

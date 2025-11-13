@@ -10,6 +10,8 @@ import {
 import { useStore } from 'zustand/react';
 import type { ModelStoreType } from '@/app/dashboard/_stores/model.store';
 import {
+	type DataSourceModel,
+	type DataSourceTableFilter,
 	type DataSourceType,
 	type DataTableSelectionModeType,
 	type DataTableStateType,
@@ -21,7 +23,7 @@ type DataTableContextType<K extends keyof DataSourceType> = {
 	dataSource: K;
 	dataStorageKey: string;
 	selectionMode: DataTableSelectionModeType;
-	stateDefault: DataTableStateType<DataSourceType[K]['dataTableFilter']>;
+	stateDefault: DataTableStateType<DataSourceTableFilter<K>>;
 	modelStore: ModelStoreType<K>;
 };
 
@@ -51,7 +53,7 @@ function DataTableProvider<K extends keyof DataSourceType>({
 		(state) => state.selectedEntries,
 	);
 
-	const prevSelectedEntriesRef = useRef<DataSourceType[K]['model'][]>([]);
+	const prevSelectedEntriesRef = useRef<DataSourceModel<K>[]>([]);
 
 	useDebouncedEffect(
 		() => {

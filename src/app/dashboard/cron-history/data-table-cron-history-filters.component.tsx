@@ -12,7 +12,7 @@ import {
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import type { DataTableCronHistoryFiltersType } from '@/app/dashboard/cron-history/cron-history.definition';
 import { useSearchFilter } from '@/hooks';
-import {CronHistoryStatusEnum} from '@/lib/models/cron-history.model';
+import { CronHistoryStatusEnum } from '@/lib/entities/cron-history.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 

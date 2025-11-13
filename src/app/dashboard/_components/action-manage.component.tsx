@@ -5,7 +5,11 @@ import { useStore } from 'zustand/react';
 import { DataTableActionButton } from '@/app/dashboard/_components/data-table-action-button.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { Loading } from '@/components/loading.component';
-import { type DataSourceType, getDataSourceConfig } from '@/config/data-source';
+import {
+	type DataSourceModel,
+	type DataSourceType,
+	getDataSourceConfig,
+} from '@/config/data-source';
 import { useTranslation } from '@/hooks/use-translation.hook';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
@@ -13,7 +17,7 @@ import { useToast } from '@/providers/toast.provider';
 
 function displayActionEntries<K extends keyof DataSourceType>(
 	dataSource: K,
-	entries: DataSourceType[K]['model'][],
+	entries: DataSourceModel<K>[],
 ) {
 	const functions = getDataSourceConfig(dataSource, 'functions');
 
@@ -109,11 +113,10 @@ export function ActionManage() {
 			// When allowedEntries is 'single', actionEntry is used, otherwise selectedEntries is used to map through entries
 			const ids = (
 				actionProps.allowedEntries === 'single'
-					? [
-							actionEntry as DataSourceType[typeof dataSource]['model'],
-						]
+					? [actionEntry as DataSourceModel<typeof dataSource>]
 					: selectedEntries
 			).map((entry) => entry.id);
+
 			const fetchResponse = await executeFetch(ids);
 
 			refreshTableState();
@@ -143,7 +146,7 @@ export function ActionManage() {
 	const actionContentEntries = displayActionEntries(
 		dataSource,
 		actionProps.allowedEntries === 'single'
-			? [actionEntry as DataSourceType[typeof dataSource]['model']]
+			? [actionEntry as DataSourceModel<typeof dataSource>]
 			: selectedEntries,
 	);
 

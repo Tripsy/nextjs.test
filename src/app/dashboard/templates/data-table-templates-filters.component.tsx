@@ -4,31 +4,31 @@ import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import {
-	FormFiltersDateRange,
 	FormFiltersReset,
 	FormFiltersSearch,
 	FormFiltersSelect,
 	FormFiltersShowDeleted,
 } from '@/app/dashboard/_components/form-filters.component';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableUsersFiltersType } from '@/app/dashboard/users/users.definition';
+import type { DataTableTemplatesFiltersType } from '@/app/dashboard/templates/templates.definition';
 import { useSearchFilter } from '@/hooks';
-import { UserRoleEnum, UserStatusEnum } from '@/lib/entities/user.model';
+import { TemplateTypeEnum } from '@/lib/entities/template.model';
+import { LanguageEnum } from '@/lib/enums';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
-const statuses = Object.values(UserStatusEnum).map((v) => ({
+const languages = Object.values(LanguageEnum).map((language) => ({
+	label: capitalizeFirstLetter(language),
+	value: language,
+}));
+
+const types = Object.values(TemplateTypeEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
 
-const roles = Object.values(UserRoleEnum).map((v) => ({
-	label: capitalizeFirstLetter(v),
-	value: v,
-}));
-
-export const DataTableUsersFilters = (): React.JSX.Element => {
-	const { stateDefault, modelStore } = useDataTable<'users'>();
+export const DataTableTemplatesFilters = (): React.JSX.Element => {
+	const { stateDefault, modelStore } = useDataTable<'templates'>();
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -37,7 +37,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableUsersFiltersType>) => {
+		(newFilters: Partial<DataTableTemplatesFiltersType>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});
@@ -46,16 +46,12 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	);
 
 	const handlers = useMemo(
-		() => createFilterHandlers<'users'>(updateFilters),
+		() => createFilterHandlers<'templates'>(updateFilters),
 		[updateFilters],
 	);
 
-	const {
-		handleInputChange,
-		handleSelectChange,
-		handleCheckboxChange,
-		handleDateChange,
-	} = handlers;
+	const { handleInputChange, handleSelectChange, handleCheckboxChange } =
+		handlers;
 
 	const searchGlobal = useSearchFilter({
 		initialValue: filters.global?.value ?? '',
@@ -91,34 +87,25 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Email / Name"
+				labelText="ID / Label / Content"
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Status"
-				fieldName="status"
-				fieldValue={filters.status.value}
-				selectOptions={statuses}
+				labelText="Language"
+				fieldName="language"
+				fieldValue={filters.language.value}
+				selectOptions={languages}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersSelect
-				labelText="Role"
-				fieldName="role"
-				fieldValue={filters.role.value}
-				selectOptions={roles}
+				labelText="Type"
+				fieldName="type"
+				fieldValue={filters.type.value}
+				selectOptions={types}
 				handleSelectChange={handleSelectChange}
-			/>
-
-			<FormFiltersDateRange
-				labelText="Created Date"
-				startDateField="create_date_start"
-				startDateValue={filters.create_date_start?.value ?? ''}
-				endDateField="create_date_end"
-				endDateValue={filters.create_date_end?.value ?? ''}
-				handleDateChange={handleDateChange}
 			/>
 
 			<FormFiltersShowDeleted
@@ -126,7 +113,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 				handleCheckboxChange={handleCheckboxChange}
 			/>
 
-			<FormFiltersReset source="DataTableUsersFilters" />
+			<FormFiltersReset source="DataTableTemplatesFilters" />
 		</div>
 	);
 };

@@ -12,7 +12,7 @@ import {
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import type { DataTableLogDataFiltersType } from '@/app/dashboard/log-data/log-data.definition';
 import { useSearchFilter } from '@/hooks';
-import { LogCategoryEnum, LogLevelEnum } from '@/lib/models/log-data.model';
+import { LogCategoryEnum, LogLevelEnum } from '@/lib/entities/log-data.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 

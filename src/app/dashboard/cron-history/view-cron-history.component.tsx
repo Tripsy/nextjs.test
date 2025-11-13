@@ -1,7 +1,7 @@
 import { useStore } from 'zustand/react';
+import { DisplayStatus } from '@/app/dashboard/_components/data-table-value';
 import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
 import { parseJson } from '@/lib/utils/string';
-import {DisplayStatus} from "@/app/dashboard/_components/data-table-value";
 
 export function ViewCronHistory() {
 	const { modelStore } = useDataTable<'cron_history'>();
@@ -11,15 +11,8 @@ export function ViewCronHistory() {
 		return <div className="text-center p-6">No log entry selected.</div>;
 	}
 
-	const {
-		id,
-		label,
-		start_at,
-		end_at,
-		status,
-		run_time,
-		content
-	} = actionEntry;
+	const { id, label, start_at, end_at, status, run_time, content } =
+		actionEntry;
 
 	const parsedContent = parseJson(content);
 
@@ -51,7 +44,8 @@ export function ViewCronHistory() {
 						</div>
 					</div>
 					<div>
-						<span className="font-semibold">Run Time:</span> {run_time} second(s)
+						<span className="font-semibold">Run Time:</span>{' '}
+						{run_time} second(s)
 					</div>
 				</div>
 			</div>
@@ -64,8 +58,12 @@ export function ViewCronHistory() {
 					<div className="ml-4 space-y-1">
 						{Object.entries(parsedContent).map(([key, value]) => (
 							<p key={key}>
-								<span className="font-semibold capitalize">{key}:</span>{' '}
-								{typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+								<span className="font-semibold capitalize">
+									{key}:
+								</span>{' '}
+								{typeof value === 'object'
+									? JSON.stringify(value, null, 2)
+									: String(value)}
 							</p>
 						))}
 					</div>

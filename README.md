@@ -1,11 +1,11 @@
 # TODO
 
 1. learn about react-dev-tools
-2. mail-queue
-3. templates
+2. templates: form manage - editor element enhance && page part > do front pages 
+3. mail-queue
 4. Recap NextJs documentation
 5. recover password & other account pages
-6. terms page
+6. terms page - use templates
 7. Replace all console.error with logging
 8. More language vars 
 9. middleware.ts - for production ready it will need some revision -> security headers

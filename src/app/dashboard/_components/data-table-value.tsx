@@ -3,7 +3,11 @@
 import clsx from 'clsx';
 import { type JSX, useMemo } from 'react';
 import { Icons } from '@/components/icon.component';
-import type { DataSourceType, DataTableColumnType } from '@/config/data-source';
+import type {
+	DataSourceModel,
+	DataSourceType,
+	DataTableColumnType,
+} from '@/config/data-source';
 import { useTranslation } from '@/hooks/use-translation.hook';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
@@ -43,7 +47,7 @@ export const statusList = {
 		label: 'Warning',
 		class: 'badge badge-warning h-8',
 		icon: <Icons.Status.Warning />,
-	}
+	},
 };
 
 export const DisplayDeleted = ({
@@ -56,11 +60,7 @@ export const DisplayDeleted = ({
 	return <div className={clsx(isDeleted && 'line-through')}>{value}</div>;
 };
 
-export const DisplayStatus = ({
-	status,
-}: {
-	status: string;
-}) => {
+export const DisplayStatus = ({ status }: { status: string }) => {
 	const statusProps = statusList[status as keyof typeof statusList];
 
 	return (
@@ -80,7 +80,7 @@ export const DisplayAction = <K extends keyof DataSourceType>({
 }: {
 	value: string | JSX.Element;
 	action: NonNullable<DataTableValueOptionsType<K>['action']>;
-	entry: DataSourceType[K]['model'];
+	entry: DataSourceModel<K>;
 }) => {
 	const actionName =
 		typeof action.name === 'function' ? action.name(entry) : action.name;
@@ -126,17 +126,14 @@ export type DataTableValueOptionsType<K extends keyof DataSourceType> = {
 	displayDate?: boolean;
 	source?: string;
 	action?: {
-		name:
-			| null
-			| string
-			| ((entry: DataSourceType[K]['model']) => string | null);
+		name: null | string | ((entry: DataSourceModel<K>) => string | null);
 		source: string;
 	};
 };
 
 export const DataTableValue = <K extends keyof DataSourceType>(
-	entry: DataSourceType[K]['model'],
-	column: DataTableColumnType<DataSourceType[K]['model']>,
+	entry: DataSourceModel<K> & Record<string, unknown>,
+	column: DataTableColumnType<DataSourceModel<K>>,
 	options: DataTableValueOptionsType<K>,
 ) => {
 	let value: string | JSX.Element = entry[column.field] as string; // Assumption: The field value is a string

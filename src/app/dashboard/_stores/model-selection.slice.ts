@@ -1,11 +1,11 @@
 import type { Draft } from 'immer';
 import type { StateCreator } from 'zustand';
 import type { ModelStore } from '@/app/dashboard/_stores/model.store';
-import type { DataSourceType } from '@/config/data-source';
+import type { DataSourceModel, DataSourceType } from '@/config/data-source';
 
 export interface ModelSelectionSlice<K extends keyof DataSourceType> {
-	selectedEntries: DataSourceType[K]['model'][];
-	setSelectedEntries: (entries: DataSourceType[K]['model'][]) => void;
+	selectedEntries: DataSourceModel<K>[];
+	setSelectedEntries: (entries: DataSourceModel<K>[]) => void;
 	clearSelectedEntries: () => void;
 }
 
@@ -21,9 +21,7 @@ export const createModelSelectionSlice =
 
 		setSelectedEntries: (entries) =>
 			set((state: Draft<ModelSelectionSlice<K>>) => {
-				state.selectedEntries = entries as Draft<
-					DataSourceType[K]['model']
-				>[];
+				state.selectedEntries = entries as Draft<DataSourceModel<K>>[];
 			}),
 
 		clearSelectedEntries: () =>

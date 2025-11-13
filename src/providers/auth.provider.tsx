@@ -10,8 +10,8 @@ import {
 	useState,
 } from 'react';
 import { getAuth } from '@/actions/auth.actions';
+import type { AuthModel } from '@/lib/entities/auth.model';
 import { ApiError } from '@/lib/exceptions/api.error';
-import type { AuthModel } from '@/lib/models/auth.model';
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated' | 'error';
 
