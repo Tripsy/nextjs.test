@@ -85,14 +85,21 @@ export function ViewTemplate() {
 					</h3>
 					<div className="ml-4 space-y-1">
 						{Object.entries(parsedContent).map(([key, value]) => (
-							<p key={key}>
+							<div key={key}>
 								<span className="font-semibold capitalize">
 									{key}:
 								</span>{' '}
-								{typeof value === 'object'
-									? JSON.stringify(value, null, 2)
-									: String(value)}
-							</p>
+								{['body', 'html'].includes(key) ? (
+									<span dangerouslySetInnerHTML={{__html: String(value)}}/>
+								) : (
+									<span>
+										{typeof value === 'object'
+											? JSON.stringify(value, null, 2)
+											: String(value)
+										}
+									</span>
+								)}
+							</div>
 						))}
 					</div>
 				</div>

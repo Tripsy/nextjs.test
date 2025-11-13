@@ -27,6 +27,7 @@ import { useFormValidation, useFormValues } from '@/hooks';
 import { useTranslation } from '@/hooks/use-translation.hook';
 import ValueError from '@/lib/exceptions/value.error';
 import { useToast } from '@/providers/toast.provider';
+import {setObjectValue} from "@/lib/utils/string";
 
 export function FormManage<K extends keyof DataSourceType>({
 	children,
@@ -120,11 +121,23 @@ export function FormManage<K extends keyof DataSourceType>({
 		});
 
 	const handleChange = (
-		name: string,
+		name: string, // eg: content OR content[subject] OR content.subject
 		value: string | boolean | number | Date,
 	) => {
-		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name as keyof DataSourceFormValues<K>);
+		setFormValues((prev) => {
+			// Convert bracket notation to dot notation: content[subject] -> content.subject
+			const dotNotationPath = name.replace(/\[(\w+)]/g, '.$1');
+
+			// Create a deep clone to avoid mutating the previous state
+			const newValues = JSON.parse(JSON.stringify(prev));
+
+			// Use your existing function to set the nested value
+			setObjectValue(newValues, dotNotationPath, value);
+
+			return newValues;
+		});
+
+		markFieldAsTouched(name as keyof DataSourceFormValues<K>); // TODO
 	};
 
 	const actionLabelKey = `${dataSource}.action.${actionName}.label`;

@@ -15,7 +15,8 @@ import {
 } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/enums';
 import { getNestedError } from '@/lib/utils/form';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import {capitalizeFirstLetter, toKebabCase} from '@/lib/utils/string';
+import {InputTextarea} from "primereact/inputtextarea";
 
 const languages = Object.values(LanguageEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
@@ -40,8 +41,6 @@ export function FormManageTemplate({
 }: FormManageType<'templates'>) {
 	const elementIds = useElementIds(['label', 'language', 'type', 'content']);
 
-	console.log(errors);
-
 	return (
 		<>
 			<FormPart>
@@ -59,9 +58,11 @@ export function FormManageTemplate({
 								disabled={pending}
 								invalid={!!errors.label}
 								value={formValues.label ?? ''}
-								onChange={(e) =>
-									handleChange('label', e.target.value)
-								}
+								onChange={(e) => {
+									const value = toKebabCase(e.target.value);
+
+									handleChange('label', value)
+								}}
 							/>
 						</IconField>
 						<FormElementError messages={errors.label} />
@@ -171,14 +172,16 @@ export function FormManageTemplate({
 									name="content[html]"
 									value={formValues.content.html}
 								/>
-								<Editor
+								<InputTextarea
+									id={`${elementIds.label}-html`}
 									value={formValues.content.html}
-									onTextChange={(e) =>
+									onChange={(e) =>
 										handleChange(
 											'content.html',
-											e.htmlValue ?? '',
+											e.target.value ?? '',
 										)
 									}
+									style={{ width: '100%', height: '320px' }}
 								/>
 								<FormElementError
 									messages={getNestedError(
@@ -193,6 +196,113 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Email - Layout"
+							labelFor={`${elementIds.label}-layout`}
+						>
+							<div>
+								<input
+									type="hidden"
+									name="content[layout]"
+									value={formValues.content.layout}
+								/>
+								<Dropdown
+									inputId={`${elementIds.label}-layout`}
+									className="p-inputtext-sm"
+									panelStyle={{ fontSize: '0.875rem' }}
+									disabled={pending}
+									value={formValues.content.layout}
+									options={emailLayouts}
+									onChange={(e) =>
+										handleChange(
+											'content.layout',
+											e.target.value,
+										)
+									}
+								/>
+								<FormElementError
+									messages={getNestedError(
+										errors,
+										'content.layout',
+									)}
+								/>
+							</div>
+						</FormElement>
+					</FormPart>
+				</>
+			)}
+
+			{formValues.type === TemplateTypeEnum.PAGE && (
+				<>
+					<FormPart>
+						<FormElement
+							labelText="Page - Title"
+							labelFor={`${elementIds.label}-title`}
+						>
+							<div>
+								<InputText
+									className="p-inputtext-sm w-full"
+									id={`${elementIds.label}-title`}
+									name="content[title]"
+									placeholder="eg: Terms & conditions"
+									disabled={pending}
+									invalid={
+										!!getNestedError(
+											errors,
+											'content.title',
+										)
+									}
+									value={formValues.content.title ?? ''}
+									onChange={(e) =>
+										handleChange(
+											'content.title',
+											e.target.value,
+										)
+									}
+								/>
+								<FormElementError
+									messages={getNestedError(
+										errors,
+										'content.title',
+									)}
+								/>
+							</div>
+						</FormElement>
+					</FormPart>
+
+					<FormPart>
+						<FormElement
+							labelText="Page - Body"
+							labelFor={`${elementIds.label}-body`}
+						>
+							<div>
+								<input
+									type="hidden"
+									name="content[body]"
+									value={formValues.content.body}
+								/>
+								<InputTextarea
+									id={`${elementIds.label}-body`}
+									value={formValues.content.body}
+									onChange={(e) =>
+										handleChange(
+											'content.body',
+											e.target.value ?? '',
+										)
+									}
+									style={{ width: '100%', height: '320px' }}
+								/>
+								<FormElementError
+									messages={getNestedError(
+										errors,
+										'content.body',
+									)}
+								/>
+							</div>
+						</FormElement>
+					</FormPart>
+
+					<FormPart>
+						<FormElement
+							labelText="Page - Layout"
 							labelFor={`${elementIds.label}-layout`}
 						>
 							<div>

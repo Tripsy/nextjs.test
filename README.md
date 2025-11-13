@@ -1,19 +1,23 @@
 # TODO
 
 1. learn about react-dev-tools
-2. templates: form manage - editor element enhance && page part > do front pages 
-3. mail-queue
-4. Recap NextJs documentation
-5. recover password & other account pages
-6. terms page - use templates
-7. Replace all console.error with logging
-8. More language vars 
-9. middleware.ts - for production ready it will need some revision -> security headers
+2. Test "add" on templates doesn't always refresh list !!! maybe a bug
+3. templates: front-end pages 
+4. mail-queue
+5. Recap NextJs documentation
+6. recover password & other account pages
+7. terms page - use templates
+8. Replace all console.error with logging
+9. More language vars 
+10. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 
 1. dashboard - add history to keep track of last 10 pages
 2. login with google / facebook
+3. For template section 
+   - would be a nice idea to keep track of the last changes (maybe add a new column - prev version id and a button to restore to that version)
+   - view presentation could be enhanced
 
 # SEE ALSO
 

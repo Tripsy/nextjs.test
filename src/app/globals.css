@@ -272,6 +272,22 @@
 		@apply text-sm font-semibold;
 	}
 
+	.form-section .form-part .form-element .ql-editor {
+		@apply bg-base-100;
+	}
+
+	/*.form-section .form-part .form-element .ql-header {*/
+	/*	@apply !text-base-content hover:!text-success;*/
+	/*}*/
+
+	/*.form-section .form-part .form-element .ql-stroke {*/
+	/*	@apply !stroke-base-content hover:!stroke-success;*/
+	/*}*/
+
+	/*.form-section .form-part .form-element .ql-picker {*/
+	/*	@apply !text-base-content;*/
+	/*}*/
+
 	.form-section .form-element .form-element-error {
 		@apply w-full
                 text-error dark:text-base-content

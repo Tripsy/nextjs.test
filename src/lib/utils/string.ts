@@ -4,6 +4,13 @@ export function capitalizeFirstLetter(str: string): string {
 	return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
+export function toKebabCase(str: string): string {
+	return str
+		.toLowerCase()
+		.replace(/\s+/g, '-')
+		.replace(/[^a-z0-9-]/g, '');
+}
+
 export function formatCurrency(
 	value: number,
 	currency: string = 'USD',
@@ -18,6 +25,7 @@ export type ObjectValue =
 	| string
 	| number
 	| boolean
+	| Date
 	| null
 	| undefined
 	| ObjectValue[]
