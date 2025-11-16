@@ -1,5 +1,5 @@
 import { useStore } from 'zustand/react';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { parseJson } from '@/lib/utils/string';
 
 export function ViewLogData() {

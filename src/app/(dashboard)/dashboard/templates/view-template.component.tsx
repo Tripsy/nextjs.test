@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from 'zustand/react';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { TemplateModel } from '@/lib/entities/template.model';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter, parseJson } from '@/lib/utils/string';
@@ -90,13 +90,17 @@ export function ViewTemplate() {
 									{key}:
 								</span>{' '}
 								{['body', 'html'].includes(key) ? (
-									<span dangerouslySetInnerHTML={{__html: String(value)}}/>
+									<span
+										/*biome-ignore lint/security/noDangerouslySetInnerHtml: It's fine*/
+										dangerouslySetInnerHTML={{
+											__html: String(value),
+										}}
+									/>
 								) : (
 									<span>
 										{typeof value === 'object'
 											? JSON.stringify(value, null, 2)
-											: String(value)
-										}
+											: String(value)}
 									</span>
 								)}
 							</div>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Register from '@/app/account/register/register.component';
-import ProtectedRoute from '@/components/protected-route.component';
+import ProtectedRoute from '@/app/_components/protected-route.component';
+import Register from '@/app/(public)/account/register/register.component';
 import { translate } from '@/config/lang';
 import { RouteAuth } from '@/config/routes';
 import { cfg } from '@/config/settings';

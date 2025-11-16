@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
-import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
-import { DataTableCronHistory } from '@/app/dashboard/cron-history/data-table-cron-history.component';
+import NavBreadcrumbSetter from '@/app/(dashboard)/_components/nav-breadcrumb.setter';
+import type { BreadcrumbType } from '@/app/(dashboard)/_providers/breadcrumb.provider';
+import { DataTableCronHistory } from '@/app/(dashboard)/dashboard/cron-history/data-table-cron-history.component';
 import { translate } from '@/config/lang';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';

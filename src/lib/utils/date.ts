@@ -137,9 +137,11 @@ export function getValidDate(date: unknown): Date | undefined {
  * Get a Moment.js instance from a date string or Date object
  *
  * @param value
+ * @param format
  */
 export function getMomentInstanceFromDate(
 	value: string | Date | null | undefined,
+	format: string,
 ): Moment | null {
 	// Handle empty values
 	if (
@@ -151,7 +153,10 @@ export function getMomentInstanceFromDate(
 	}
 
 	// Create moment object
-	const date = moment(value);
+	const date =
+		value instanceof Date
+			? moment(value)
+			: moment(value as string, format, true);
 
 	// Validate date
 	if (!date.isValid()) {

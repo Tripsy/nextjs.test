@@ -4,7 +4,7 @@ import {
 	RegisterSchema,
 	type RegisterSituationType,
 	type RegisterStateType,
-} from '@/app/account/register/register.definition';
+} from '@/app/(public)/account/register/register.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';

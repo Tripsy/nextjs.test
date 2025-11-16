@@ -3,28 +3,30 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useMemo, useState } from 'react';
-import { loginAction, loginValidate } from '@/app/account/login/login.action';
+import { FormCsrf } from '@/app/_components/form/form-csrf';
+import {
+	FormElementEmail,
+	FormElementPassword,
+} from '@/app/_components/form/form-element.component';
+import { FormError } from '@/app/_components/form/form-error.component';
+import { FormPart } from '@/app/_components/form/form-part.component';
+import { Icons } from '@/app/_components/icon.component';
+import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
+import { useAuth } from '@/app/_providers/auth.provider';
+import {
+	loginAction,
+	loginValidate,
+} from '@/app/(public)/account/login/login.action';
 import {
 	type AuthTokenListType,
 	type AuthTokenType,
 	type LoginFormFieldsType,
 	LoginState,
-} from '@/app/account/login/login.definition';
-import { FormCsrf } from '@/components/form/form-csrf';
-import {
-	FormElementEmail,
-	FormElementPassword,
-} from '@/components/form/form-element.component';
-import { FormError } from '@/components/form/form-error.component';
-import { FormPart } from '@/components/form/form-part.component';
-import { Icons } from '@/components/icon.component';
+} from '@/app/(public)/account/login/login.definition';
 import Routes, { isExcludedRoute } from '@/config/routes';
 import { cfg } from '@/config/settings';
-import { useFormValidation, useFormValues } from '@/hooks';
-import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { removeTokenAccount } from '@/lib/services/account.service';
 import { formatDate } from '@/lib/utils/date';
-import { useAuth } from '@/providers/auth.provider';
 
 export default function Login() {
 	const [state, action, pending] = useActionState(loginAction, LoginState);

@@ -1,26 +1,26 @@
 import type React from 'react';
+import type { HandleChangeType } from '@/app/_components/form/form-element.component';
+import type { ValidationReturnType } from '@/app/_hooks';
 import {
 	DataSourceConfigCronHistory,
 	type DataSourceCronHistoryType,
-} from '@/app/dashboard/cron-history/cron-history.definition';
+} from '@/app/(dashboard)/dashboard/cron-history/cron-history.definition';
 import {
 	DataSourceConfigLogData,
 	type DataSourceLogDataType,
-} from '@/app/dashboard/log-data/log-data.definition';
+} from '@/app/(dashboard)/dashboard/log-data/log-data.definition';
 import {
 	DataSourceConfigPermissions,
 	type DataSourcePermissionsType,
-} from '@/app/dashboard/permissions/permissions.definition';
+} from '@/app/(dashboard)/dashboard/permissions/permissions.definition';
 import {
 	DataSourceConfigTemplates,
 	type DataSourceTemplatesType,
-} from '@/app/dashboard/templates/templates.definition';
+} from '@/app/(dashboard)/dashboard/templates/templates.definition';
 import {
 	DataSourceConfigUsers,
 	type DataSourceUsersType,
-} from '@/app/dashboard/users/users.definition';
-import type { HandleChangeType } from '@/components/form/form-element.component';
-import type { ValidationReturnType } from '@/hooks';
+} from '@/app/(dashboard)/dashboard/users/users.definition';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import NavBreadcrumbSetter from '@/app/dashboard/_components/nav-breadcrumb.setter';
-import type { BreadcrumbType } from '@/app/dashboard/_providers/breadcrumb.provider';
-import { DataTableLogData } from '@/app/dashboard/log-data/data-table-log-data.component';
+import NavBreadcrumbSetter from '@/app/(dashboard)/_components/nav-breadcrumb.setter';
+import type { BreadcrumbType } from '@/app/(dashboard)/_providers/breadcrumb.provider';
+import { DataTableLogData } from '@/app/(dashboard)/dashboard/log-data/data-table-log-data.component';
 import { translate } from '@/config/lang';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';

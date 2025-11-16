@@ -1,22 +1,21 @@
 import { Dropdown } from 'primereact/dropdown';
-import { Editor } from 'primereact/editor';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
-import { FormElement } from '@/components/form/form-element.component';
-import { FormElementError } from '@/components/form/form-element-error.component';
-import { FormPart } from '@/components/form/form-part.component';
-import { Icons } from '@/components/icon.component';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { FormElement } from '@/app/_components/form/form-element.component';
+import { FormElementError } from '@/app/_components/form/form-element-error.component';
+import { FormPart } from '@/app/_components/form/form-part.component';
+import { Icons } from '@/app/_components/icon.component';
+import { useElementIds } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
-import { useElementIds } from '@/hooks/use-element-ids.hook';
 import {
 	TemplateLayoutEmailEnum,
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/enums';
 import { getNestedError } from '@/lib/utils/form';
-import {capitalizeFirstLetter, toKebabCase} from '@/lib/utils/string';
-import {InputTextarea} from "primereact/inputtextarea";
+import { capitalizeFirstLetter, toKebabCase } from '@/lib/utils/string';
 
 const languages = Object.values(LanguageEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
@@ -61,7 +60,7 @@ export function FormManageTemplate({
 								onChange={(e) => {
 									const value = toKebabCase(e.target.value);
 
-									handleChange('label', value)
+									handleChange('label', value);
 								}}
 							/>
 						</IconField>

@@ -3,16 +3,16 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import { useSearchFilter } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
 	FormFiltersSearch,
 	FormFiltersSelect,
 	FormFiltersShowDeleted,
-} from '@/app/dashboard/_components/form-filters.component';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableUsersFiltersType } from '@/app/dashboard/users/users.definition';
-import { useSearchFilter } from '@/hooks';
+} from '@/app/(dashboard)/_components/form-filters.component';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
+import type { DataTableUsersFiltersType } from '@/app/(dashboard)/dashboard/users/users.definition';
 import { UserRoleEnum, UserStatusEnum } from '@/lib/entities/user.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';

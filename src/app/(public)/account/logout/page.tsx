@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Logout from '@/app/account/logout/logout.component';
+import Logout from '@/app/(public)/account/logout/logout.component';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 

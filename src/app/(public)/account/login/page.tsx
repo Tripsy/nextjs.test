@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Login from '@/app/account/login/login.component';
+import Login from '@/app/(public)/account/login/login.component';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 

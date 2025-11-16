@@ -1,6 +1,6 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
-import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
+import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type {
 	DataSourceType,
 	DataTableColumnType,

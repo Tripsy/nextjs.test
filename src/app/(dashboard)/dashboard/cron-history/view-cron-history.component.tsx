@@ -1,6 +1,6 @@
 import { useStore } from 'zustand/react';
-import { DisplayStatus } from '@/app/dashboard/_components/data-table-value';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
+import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { parseJson } from '@/lib/utils/string';
 
 export function ViewCronHistory() {

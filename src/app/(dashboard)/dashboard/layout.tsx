@@ -1,17 +1,15 @@
 import Link from 'next/link';
 import type { JSX } from 'react';
-import { NavBreadcrumb } from '@/app/dashboard/_components/nav-breadcrumb.component';
-import { SideMenu } from '@/app/dashboard/_components/side-menu.component';
-import SideMenuSetter from '@/app/dashboard/_components/side-menu.setter';
-import { SideMenuToggle } from '@/app/dashboard/_components/side-menu-toggle.component';
-import { UserMenu } from '@/app/dashboard/_components/user-menu.component';
-import { DashboardProvider } from '@/app/dashboard/_providers/dashboard.provider';
-import ProtectedRoute from '@/components/protected-route.component';
-import { ToggleTheme } from '@/components/toggle-theme';
+import { Footer } from '@/app/_components/layout-default.component';
+import ProtectedRoute from '@/app/_components/protected-route.component';
+import { ToggleTheme } from '@/app/_components/toggle-theme';
+import { NavBreadcrumb } from '@/app/(dashboard)/_components/nav-breadcrumb.component';
+import { SideMenu } from '@/app/(dashboard)/_components/side-menu.component';
+import SideMenuSetter from '@/app/(dashboard)/_components/side-menu.setter';
+import { SideMenuToggle } from '@/app/(dashboard)/_components/side-menu-toggle.component';
+import { UserMenu } from '@/app/(dashboard)/_components/user-menu.component';
+import { DashboardProvider } from '@/app/(dashboard)/_providers/dashboard.provider';
 import Routes, { RouteAuth } from '@/config/routes';
-import {Providers} from "@/app/providers";
-import {getLanguage} from "@/config/lang";
-import {Footer} from "@/app/layout";
 
 function Header() {
 	return (
@@ -42,30 +40,22 @@ function Header() {
 }
 
 export default async function Layout({ children }: { children: JSX.Element }) {
-	const language = await getLanguage();
-
 	return (
-		<Providers>
-			<html lang={language}>
-			<body>
-				<DashboardProvider>
-					<div className="dashboard-layout">
-						<Header />
-						<SideMenuSetter />
-						<main className="main-section">
-							<SideMenu />
-							<div className="content-section">
-								<NavBreadcrumb />
-								<ProtectedRoute routeAuth={RouteAuth.PROTECTED}>
-									{children}
-								</ProtectedRoute>
-							</div>
-						</main>
-						<Footer />
+		<DashboardProvider>
+			<div className="dashboard-layout">
+				<Header />
+				<SideMenuSetter />
+				<main className="main-section">
+					<SideMenu />
+					<div className="content-section">
+						<NavBreadcrumb />
+						<ProtectedRoute routeAuth={RouteAuth.PROTECTED}>
+							{children}
+						</ProtectedRoute>
 					</div>
-				</DashboardProvider>
-			</body>
-			</html>
-		</Providers>
+				</main>
+				<Footer />
+			</div>
+		</DashboardProvider>
 	);
 }

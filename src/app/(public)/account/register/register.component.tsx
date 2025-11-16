@@ -3,30 +3,29 @@
 import clsx from 'clsx';
 import Link from 'next/link';
 import React, { useActionState, useState } from 'react';
-import {
-	registerAction,
-	registerValidate,
-} from '@/app/account/register/register.action';
-import {
-	type RegisterFormFieldsType,
-	RegisterState,
-} from '@/app/account/register/register.definition';
-import { FormCsrf } from '@/components/form/form-csrf';
+import { FormCsrf } from '@/app/_components/form/form-csrf';
 import {
 	FormElement,
 	FormElementEmail,
 	FormElementName,
 	FormElementPassword,
 	FormElementPasswordConfirm,
-} from '@/components/form/form-element.component';
-import { FormElementError as RawFormElementError } from '@/components/form/form-element-error.component';
-import { FormError } from '@/components/form/form-error.component';
-import { FormPart } from '@/components/form/form-part.component';
-import { Icons } from '@/components/icon.component';
+} from '@/app/_components/form/form-element.component';
+import { FormElementError as RawFormElementError } from '@/app/_components/form/form-element-error.component';
+import { FormError } from '@/app/_components/form/form-error.component';
+import { FormPart } from '@/app/_components/form/form-part.component';
+import { Icons } from '@/app/_components/icon.component';
+import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
+import {
+	registerAction,
+	registerValidate,
+} from '@/app/(public)/account/register/register.action';
+import {
+	type RegisterFormFieldsType,
+	RegisterState,
+} from '@/app/(public)/account/register/register.definition';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
-import { useFormValidation, useFormValues } from '@/hooks';
-import { useElementIds } from '@/hooks/use-element-ids.hook';
 import { LanguageEnum } from '@/lib/enums';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 

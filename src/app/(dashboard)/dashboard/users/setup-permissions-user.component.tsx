@@ -3,8 +3,9 @@
 import { Checkbox } from 'primereact/checkbox';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import { Loading } from '@/components/loading.component';
+import { Loading } from '@/app/_components/loading.component';
+import { useToast } from '@/app/_providers/toast.provider';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { PermissionModel } from '@/lib/entities/permission.model';
 import { findPermissions } from '@/lib/services/permissions.service';
 import {
@@ -12,7 +13,6 @@ import {
 	deleteUserPermission,
 	getUserPermissions,
 } from '@/lib/services/users.service';
-import { useToast } from '@/providers/toast.provider';
 
 export function SetupPermissionsUser() {
 	const { modelStore } = useDataTable<'users'>();

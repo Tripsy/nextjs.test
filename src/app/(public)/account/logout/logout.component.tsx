@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { logoutAction } from '@/app/account/logout/logout.action';
-import { LogoutDefaultState } from '@/app/account/logout/logout.definition';
-import { Icons } from '@/components/icon.component';
+import { Icons } from '@/app/_components/icon.component';
+import { useAuth } from '@/app/_providers/auth.provider';
+import { logoutAction } from '@/app/(public)/account/logout/logout.action';
+import { LogoutDefaultState } from '@/app/(public)/account/logout/logout.definition';
 import Routes from '@/config/routes';
-import { useAuth } from '@/providers/auth.provider';
 
 export default function Logout() {
 	const [state, setState] = useState(LogoutDefaultState);

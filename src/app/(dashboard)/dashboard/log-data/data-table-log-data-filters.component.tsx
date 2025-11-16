@@ -3,15 +3,15 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import { useSearchFilter } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
 	FormFiltersSearch,
 	FormFiltersSelect,
-} from '@/app/dashboard/_components/form-filters.component';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTableLogDataFiltersType } from '@/app/dashboard/log-data/log-data.definition';
-import { useSearchFilter } from '@/hooks';
+} from '@/app/(dashboard)/_components/form-filters.component';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
+import type { DataTableLogDataFiltersType } from '@/app/(dashboard)/dashboard/log-data/log-data.definition';
 import { LogCategoryEnum, LogLevelEnum } from '@/lib/entities/log-data.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';

@@ -1,3 +1,4 @@
+import sanitizeHtml from 'sanitize-html';
 import type { z } from 'zod';
 
 export function accumulateZodErrors<T>(
@@ -23,4 +24,47 @@ export function getNestedError<T>(
 	path: string,
 ): string[] | undefined {
 	return errors[path as keyof T];
+}
+
+export function safeHtml(dirtyHtml: string): string {
+	return sanitizeHtml(dirtyHtml, {
+		allowedTags: [
+			'p',
+			'br',
+			'strong',
+			'em',
+			'i',
+			'b',
+			'u',
+			'span',
+			'div',
+			'h1',
+			'h2',
+			'h3',
+			'h4',
+			'h5',
+			'h6',
+			'ul',
+			'ol',
+			'li',
+			'blockquote',
+			'code',
+			'pre',
+			'a',
+			'img',
+			'table',
+			'thead',
+			'tbody',
+			'tr',
+			'th',
+			'td',
+		],
+		allowedAttributes: {
+			a: ['href', 'title', 'target'],
+			img: ['src', 'alt', 'width', 'height'],
+		},
+		disallowedTagsMode: 'discard',
+		allowedSchemes: ['http', 'https', 'mailto'],
+		allowProtocolRelative: false,
+	});
 }

@@ -1,9 +1,9 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
-import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
+import type { ValidationReturnType } from '@/app/_hooks';
+import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType, FormStateType } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
-import type { ValidationReturnType } from '@/hooks';
 import {
 	type TemplateContentEmailType,
 	type TemplateContentPageType,
@@ -20,8 +20,8 @@ import {
 	restoreTemplate,
 	updateTemplate,
 } from '@/lib/services/templates.service';
+import { safeHtml } from '@/lib/utils/form';
 import { parseJson } from '@/lib/utils/string';
-import {safeHtml} from "@/lib/utils/form";
 
 export type DataTableTemplatesFiltersType = {
 	global: DataTableFilterMetaData;
@@ -43,43 +43,40 @@ const translations = await translateBatch([
 ]);
 
 const ValidateSchemaBaseTemplates = z.object({
-	label: z
-		.string()
-		.nonempty({
-			message: translations['templates.validation.label_invalid'],
-		}),
-	language: z
-		.nativeEnum(LanguageEnum, {
-			message: translations['templates.validation.language_invalid'],
-		}),
-	type: z
-		.nativeEnum(TemplateTypeEnum, {
-			message: translations['templates.validation.type_invalid'],
-		}),
+	label: z.string().nonempty({
+		message: translations['templates.validation.label_invalid'],
+	}),
+	language: z.nativeEnum(LanguageEnum, {
+		message: translations['templates.validation.language_invalid'],
+	}),
+	type: z.nativeEnum(TemplateTypeEnum, {
+		message: translations['templates.validation.type_invalid'],
+	}),
 });
 
 const ValidateSchemaEmailTemplates = ValidateSchemaBaseTemplates.extend({
 	type: z.literal(TemplateTypeEnum.EMAIL),
 	content: z.object({
-		subject: z
-			.string()
-			.nonempty({
-				message: translations['templates.validation.email_subject_invalid'],
-			}),
+		subject: z.string().nonempty({
+			message: translations['templates.validation.email_subject_invalid'],
+		}),
 		text: z
 			.string({
-				message: translations['templates.validation.email_text_invalid'],
+				message:
+					translations['templates.validation.email_text_invalid'],
 			})
 			.optional(),
 		html: z
 			.string()
 			.nonempty({
-				message: translations['templates.validation.email_html_invalid'],
+				message:
+					translations['templates.validation.email_html_invalid'],
 			})
 			.transform((val) => safeHtml(val)),
 		layout: z
 			.string({
-				message: translations['templates.validation.email_layout_invalid'],
+				message:
+					translations['templates.validation.email_layout_invalid'],
 			})
 			.optional(),
 	}),
@@ -88,11 +85,9 @@ const ValidateSchemaEmailTemplates = ValidateSchemaBaseTemplates.extend({
 const ValidateSchemaPageTemplates = ValidateSchemaBaseTemplates.extend({
 	type: z.literal(TemplateTypeEnum.PAGE),
 	content: z.object({
-		title: z
-			.string()
-			.nonempty({
-				message: translations['templates.validation.page_title_invalid'],
-			}),
+		title: z.string().nonempty({
+			message: translations['templates.validation.page_title_invalid'],
+		}),
 		body: z
 			.string()
 			.nonempty({
@@ -101,7 +96,8 @@ const ValidateSchemaPageTemplates = ValidateSchemaBaseTemplates.extend({
 			.transform((val) => safeHtml(val)),
 		layout: z
 			.string({
-				message: translations['templates.validation.page_layout_invalid'],
+				message:
+					translations['templates.validation.page_layout_invalid'],
 			})
 			.optional(),
 	}),

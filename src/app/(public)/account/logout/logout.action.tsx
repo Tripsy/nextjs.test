@@ -2,7 +2,7 @@ import { clearAuth } from '@/actions/auth.actions';
 import type {
 	LogoutSituation,
 	LogoutState,
-} from '@/app/account/logout/logout.definition';
+} from '@/app/(public)/account/logout/logout.definition';
 import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { logoutAccount } from '@/lib/services/account.service';

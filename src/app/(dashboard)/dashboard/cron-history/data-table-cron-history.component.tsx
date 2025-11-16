@@ -1,15 +1,15 @@
 'use client';
 
 import type { JSX } from 'react';
-import { DataTableActions } from '@/app/dashboard/_components/data-table-actions.component';
-import DataTableList from '@/app/dashboard/_components/data-table-list.component';
-import { DataTableModal } from '@/app/dashboard/_components/data-table-modal.component';
-import { DataTableProvider } from '@/app/dashboard/_providers/data-table-provider';
-import { createModelStore } from '@/app/dashboard/_stores/model.store';
-import { DataTableCronHistoryFilters } from '@/app/dashboard/cron-history/data-table-cron-history-filters.component';
-import { ViewCronHistory } from '@/app/dashboard/cron-history/view-cron-history.component';
-import { Loading } from '@/components/loading.component';
-import { useMounted } from '@/hooks';
+import { Loading } from '@/app/_components/loading.component';
+import { useMounted } from '@/app/_hooks';
+import { DataTableActions } from '@/app/(dashboard)/_components/data-table-actions.component';
+import DataTableList from '@/app/(dashboard)/_components/data-table-list.component';
+import { DataTableModal } from '@/app/(dashboard)/_components/data-table-modal.component';
+import { DataTableProvider } from '@/app/(dashboard)/_providers/data-table-provider';
+import { createModelStore } from '@/app/(dashboard)/_stores/model.store';
+import { DataTableCronHistoryFilters } from '@/app/(dashboard)/dashboard/cron-history/data-table-cron-history-filters.component';
+import { ViewCronHistory } from '@/app/(dashboard)/dashboard/cron-history/view-cron-history.component';
 
 const modelStore = createModelStore('cron_history');
 

@@ -3,14 +3,14 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import { useSearchFilter } from '@/app/_hooks';
 import {
 	FormFiltersReset,
 	FormFiltersSearch,
 	FormFiltersShowDeleted,
-} from '@/app/dashboard/_components/form-filters.component';
-import { useDataTable } from '@/app/dashboard/_providers/data-table-provider';
-import type { DataTablePermissionsFiltersType } from '@/app/dashboard/permissions/permissions.definition';
-import { useSearchFilter } from '@/hooks';
+} from '@/app/(dashboard)/_components/form-filters.component';
+import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
+import type { DataTablePermissionsFiltersType } from '@/app/(dashboard)/dashboard/permissions/permissions.definition';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 
 export const DataTablePermissionsFilters = (): React.JSX.Element => {

@@ -1,8 +1,8 @@
 import type {
 	AuthTokenListType,
 	LoginFormFieldsType,
-} from '@/app/account/login/login.definition';
-import type { RegisterFormFieldsType } from '@/app/account/register/register.definition';
+} from '@/app/(public)/account/login/login.definition';
+import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
 import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
 

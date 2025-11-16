@@ -1,5 +1,5 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
-import { DataTableValue } from '@/app/dashboard/_components/data-table-value';
+import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import type { CronHistoryModel } from '@/lib/entities/cron-history.model';
 import {

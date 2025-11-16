@@ -1,14 +1,10 @@
 import Link from 'next/link';
-import Home from '@/app/home/home.component';
 import Routes from '@/config/routes';
 
 export default function Page() {
 	return (
 		<div>
-			<main className="flex items-center">
-				<Home />
-				{/*TODO: the home component should be deleted*/}
-			</main>
+			<main className="flex items-center">Lorem ipsum</main>
 			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
 				<Link
 					href={Routes.get('register')}

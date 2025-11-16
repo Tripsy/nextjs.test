@@ -1,9 +1,9 @@
 import { Dropdown } from 'primereact/dropdown';
-import { FormElement } from '@/components/form/form-element.component';
-import { FormElementError } from '@/components/form/form-element-error.component';
-import { FormPart } from '@/components/form/form-part.component';
+import { FormElement } from '@/app/_components/form/form-element.component';
+import { FormElementError } from '@/app/_components/form/form-element-error.component';
+import { FormPart } from '@/app/_components/form/form-part.component';
+import { useElementIds } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
-import { useElementIds } from '@/hooks/use-element-ids.hook';
 import {
 	PermissionEntitiesEnum,
 	PermissionOperationEnum,

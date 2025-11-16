@@ -6,7 +6,7 @@ import {
 	LoginSchema,
 	type LoginSituationType,
 	type LoginStateType,
-} from '@/app/account/login/login.definition';
+} from '@/app/(public)/account/login/login.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';

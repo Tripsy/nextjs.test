@@ -2,8 +2,8 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
-import { Notice } from '@/components/notice.component';
-import { useTranslation } from '@/hooks/use-translation.hook';
+import { Notice } from '@/app/_components/notice.component';
+import { useTranslation } from '@/app/_hooks';
 
 type ParamsType = 'error' | 'warning' | 'info' | 'success';
 
