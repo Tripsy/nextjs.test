@@ -1,8 +1,24 @@
-import Link from 'next/link';
-import type React from 'react';
-import { Icons } from '@/components/icon.component';
-import { ToggleTheme } from '@/components/toggle-theme';
-import Routes from '@/config/routes';
+import type { Metadata } from 'next';
+import './globals.css';
+import { Providers } from '@/app/providers';
+import { getLanguage, translate } from '@/config/lang';
+import { cfg } from '@/config/settings';
+import Link from "next/link";
+import Routes from "@/config/routes";
+import {ToggleTheme} from "@/components/toggle-theme";
+import { Icons } from "@/components/icon.component";
+import {ReactNode} from "react";
+
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('app.name', {
+			app_name: cfg('app.name') as string,
+		}),
+		description: await translate('app.description', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
 function Header() {
 	return (
@@ -58,18 +74,26 @@ export function Footer() {
 	);
 }
 
-export default function LayoutDefault({
+export default async function RootLayout({
 	children,
-}: {
-	children: React.ReactNode;
-}) {
+}: Readonly<{
+	children: ReactNode;
+}>) {
+	const language = await getLanguage();
+
 	return (
-		<div className="default-layout">
-			<Header />
-			<main className="main-section">
-				<div className="content-section">{children}</div>
-			</main>
-			<Footer />
-		</div>
+		<Providers>
+			<html lang={language}>
+				<body>
+					<div className="default-layout">
+						<Header />
+						<main className="main-section">
+							<div className="content-section">{children}</div>
+						</main>
+						<Footer />
+					</div>
+				</body>
+			</html>
+		</Providers>
 	);
 }

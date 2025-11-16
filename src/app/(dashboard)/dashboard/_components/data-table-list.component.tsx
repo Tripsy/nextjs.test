@@ -70,47 +70,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 		});
 	}, [clearSelectedEntries, updateTableState, tableState.filters]);
 
-	// const findFunctionFilter = useMemo(() => {
-	// 	const params = Object.entries(tableState.filters).reduce(
-	// 		(acc, [key, filterObj]) => {
-	// 			const value = filterObj?.value;
-	//
-	// 			// Skip empty or null values
-	// 			if (value == null || value === '') {
-	// 				return acc;
-	// 			}
-	//
-	// 			// Handle date filters
-	// 			if (/_date_start$/.test(key)) {
-	// 				const date = getMomentInstanceFromDate(value);
-	//
-	// 				if (!date) {
-	// 					throw new Error(`Invalid start date: ${value}`);
-	// 				}
-	//
-	// 				acc[key] = date.startOf('day').toISOString();
-	// 			} else if (/_date_end$/.test(key)) {
-	// 				const date = getMomentInstanceFromDate(value);
-	//
-	// 				if (!date) {
-	// 					throw new Error(`Invalid start date: ${value}`);
-	// 				}
-	//
-	// 				acc[key] = date.endOf('day').toISOString();
-	// 			} else {
-	// 				// Normal filters
-	// 				acc[key === 'global' ? 'term' : String(key)] =
-	// 					String(value);
-	// 			}
-	//
-	// 			return acc;
-	// 		},
-	// 		{} as Record<string, string>,
-	// 	);
-	//
-	// 	return JSON.stringify(params);
-	// }, [tableState.filters]);
-
 	const findFunctionFilter = useMemo(() => {
 		// Type guard to ensure filters is a proper object
 		if (
@@ -143,7 +102,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 				// Handle date filters
 				if (/_date_start$/.test(key)) {
-					const date = getMomentInstanceFromDate(value as string);
+					const date = getMomentInstanceFromDate(value as string, 'MM/DD/YYYY');
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
@@ -151,7 +110,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 					acc[key] = date.startOf('day').toISOString();
 				} else if (/_date_end$/.test(key)) {
-					const date = getMomentInstanceFromDate(value as string);
+					const date = getMomentInstanceFromDate(value as string, 'MM/DD/YYYY');
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
