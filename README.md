@@ -1,15 +1,12 @@
 # TODO
 
-1. learn about react-dev-tools
-2. Test "add" on templates doesn't always refresh list !!! maybe a bug
+1. learn about react-dev-tools & recap NextJs documentation
 3. templates: front-end pages 
 4. mail-queue
-5. Recap NextJs documentation
-6. recover password & other account pages
-7. terms page - use templates
-8. Replace all console.error with logging
-9. More language vars 
-10. middleware.ts - for production ready it will need some revision -> security headers
+5. recover password & other account pages
+6. Replace all console.error with logging
+7. More language vars 
+8. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 

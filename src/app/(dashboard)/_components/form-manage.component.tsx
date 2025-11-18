@@ -154,7 +154,8 @@ export function FormManage<K extends keyof DataSourceType>({
 		if (state?.situation === 'success') {
 			if (state?.resultData) {
 				if (actionName === 'create') {
-					handleReset('FormManage'); // We trigger reset instead of updating data table state
+					handleReset('FormManage'); // Reset the form
+					refreshTableState(); // Force data reload to show the new item
 				} else {
 					refreshTableState();
 				}
