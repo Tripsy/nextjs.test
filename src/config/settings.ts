@@ -7,8 +7,9 @@ import {
 const settingsConfig: { [key: string]: ObjectValue } = {
 	app: {
 		language: process.env.NEXT_PUBLIC_APP_LANGUAGE || 'en',
-		supportedLanguages:
-			process.env.NEXT_PUBLIC_APP_SUPPORTED_LANGUAGES || 'en',
+		languageSupported: (process.env.NEXT_PUBLIC_APP_SUPPORTED_LANGUAGES || 'en')
+			.trim()
+			.split(','),
 		environment: process.env.NODE_ENV || 'development',
 		url: process.env.FRONTEND_URL || 'http://nextjs.test',
 		name: process.env.NEXT_PUBLIC_FRONTEND_APP_NAME,
@@ -50,10 +51,6 @@ const settingsConfig: { [key: string]: ObjectValue } = {
 		ttl: process.env.CACHE_TTL || 60,
 	},
 };
-
-// export function cfg(key: string): string {
-// 	return getObjectValue(settingsConfig, key) as string;
-// }
 
 /**
  * Enhanced configuration function
@@ -98,7 +95,7 @@ export function cfg(
 }
 
 export const isSupportedLanguage = (language: string): boolean => {
-	return (cfg('app.supportedLanguages') as string)
-		.split(',')
-		.includes(language);
-};
+	const languages = cfg('app.languageSupported') as string[];
+
+	return Array.isArray(languages) && languages.includes(language);
+}

@@ -161,9 +161,11 @@ class CacheProvider {
 
 				if (keys.length > 0) {
 					const pipeline = this.cache.pipeline();
+
 					keys.forEach((key) => {
 						pipeline.del(key);
 					});
+
 					await pipeline.exec();
 				}
 			} while (cursor !== '0'); // Continue until all keys are scanned

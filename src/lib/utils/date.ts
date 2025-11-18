@@ -176,7 +176,7 @@ export function getMomentInstanceFromDate(
  */
 export function formatDate(
 	value: string | Date | null | undefined,
-	format: string = 'default',
+	format?: 'default' | 'date-time' | string,
 	options?: {
 		strict?: boolean;
 	},
@@ -209,15 +209,14 @@ export function formatDate(
 	// Apply formatting
 	switch (format) {
 		case 'default':
-			return date.format('MM/DD/YYYY');
-		// return date.format('YYYY-MM-DD');
-		case 'default-full':
-			return date.format('MM/DD/YYYY, hh:mm:ss A');
-		case 'iso':
-			return date.toISOString();
+			return date.format('YYYY-MM-DD');
 		case 'date-time':
 			return date.format('DD-MM-YYYY, hh:mm A');
 		default:
-			return date.format(format);
+			if (format) {
+				return date.format(format);
+			}
+
+			return date.toISOString();
 	}
 }

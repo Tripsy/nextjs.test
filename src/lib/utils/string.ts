@@ -26,6 +26,7 @@ export type ObjectValue =
 	| number
 	| boolean
 	| Date
+	| RegExp
 	| null
 	| undefined
 	| ObjectValue[]
