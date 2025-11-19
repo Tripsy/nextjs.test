@@ -203,8 +203,14 @@
 	.dashboard-layout .main-section .content-section {
 		@apply w-full border-l border-[var(--color-line)] transition-all duration-400 px-6 py-8;
 
-		min-height: calc(100vh - 8rem);
 		margin-left: var(--side-menu-width);
+	}
+
+	/* min-height only for md and up */
+	@media (min-width: 768px) {
+		.dashboard-layout .main-section .content-section {
+			min-height: calc(100vh - 8rem);
+		}
 	}
 
 	@media (max-width: 1023px) {
@@ -217,7 +223,7 @@
 		@apply border-none ml-0;
 	}
 
-	/* Data table */
+	/*Data table*/
 
 	.dashboard-layout .p-paginator.data-table-paginator {
 		@apply relative !border-b-0;

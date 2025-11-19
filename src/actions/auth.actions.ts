@@ -86,17 +86,17 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 					success: true,
 				};
 			}
-		} else {
-			await deleteCookie(cfg('user.sessionToken') as string);
-
-			return {
-				data: null,
-				message:
-					fetchResponse?.message ||
-					'Could not retrieve auth model (eg: unknown error)',
-				success: false,
-			};
 		}
+
+		await deleteCookie(cfg('user.sessionToken') as string);
+
+		return {
+			data: null,
+			message:
+				fetchResponse?.message ||
+				'Could not retrieve auth model (eg: unknown error)',
+			success: false,
+		};
 	} catch (error: unknown) {
 		if (error instanceof ApiError && error.status === 401) {
 			await deleteCookie(cfg('user.sessionToken') as string);

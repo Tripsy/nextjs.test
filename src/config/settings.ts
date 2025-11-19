@@ -7,7 +7,9 @@ import {
 const settingsConfig: { [key: string]: ObjectValue } = {
 	app: {
 		language: process.env.NEXT_PUBLIC_APP_LANGUAGE || 'en',
-		languageSupported: (process.env.NEXT_PUBLIC_APP_SUPPORTED_LANGUAGES || 'en')
+		languageSupported: (
+			process.env.NEXT_PUBLIC_APP_SUPPORTED_LANGUAGES || 'en'
+		)
 			.trim()
 			.split(','),
 		environment: process.env.NODE_ENV || 'development',
@@ -98,4 +100,4 @@ export const isSupportedLanguage = (language: string): boolean => {
 	const languages = cfg('app.languageSupported') as string[];
 
 	return Array.isArray(languages) && languages.includes(language);
-}
+};

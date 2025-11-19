@@ -1,15 +1,36 @@
+import Link from 'next/link';
 import { Icons } from '@/app/_components/icon.component';
+import Routes from '@/config/routes';
 
 export function Footer() {
 	return (
 		<footer className="footer sm:footer-horizontal relative bg-base-100 items-center p-4">
-			<aside className="grid-flow-col items-center">
-				<p>
+			<aside className="items-center">
+				<div>
 					Copyright &copy; {new Date().getFullYear()} - All right
 					reserved
-				</p>
+				</div>
+				<div className="flex gap-x-2">
+					<Link
+						href={Routes.get('page', {
+							label: 'terms-and-conditions',
+						})}
+						className="hover:link-info"
+						title="Terms & Conditions"
+					>
+						Terms & Conditions
+					</Link>
+					/
+					<Link
+						href={Routes.get('page', { label: 'privacy-policy' })}
+						className="hover:link-info"
+						title="Privacy Policy"
+					>
+						Privacy Policy
+					</Link>
+				</div>
 			</aside>
-			<nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+			<div className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
 				<a
 					href="https://github.com/Tripsy/nextjs.test/tree/main"
 					title="Github repository"
@@ -26,7 +47,7 @@ export function Footer() {
 				>
 					<Icons.Design.Linkedin className="text-2xl" />
 				</a>
-			</nav>
+			</div>
 		</footer>
 	);
 }

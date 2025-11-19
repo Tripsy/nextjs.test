@@ -152,7 +152,7 @@ const Routes = new RoutesCollection();
 
 Routes.add('home', '/');
 Routes.add('status', '/status/:type');
-Routes.add('terms-and-conditions', '/terms-and-conditions');
+Routes.add('page', '/page/:label');
 
 // API
 Routes.group('api')
