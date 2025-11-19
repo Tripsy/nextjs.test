@@ -127,12 +127,12 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Email - Subject"
-							labelFor={`${elementIds.label}-subject`}
+							labelFor={`${elementIds.content}-subject`}
 						>
 							<div>
 								<InputText
 									className="p-inputtext-sm w-full"
-									id={`${elementIds.label}-subject`}
+									id={`${elementIds.content}-subject`}
 									name="content[subject]"
 									placeholder="eg: Recover password"
 									disabled={pending}
@@ -163,17 +163,13 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Email - Content"
-							labelFor={`${elementIds.label}-html`}
+							labelFor={`${elementIds.content}-html`}
 						>
 							<div>
-								<input
-									type="hidden"
-									name="content[html]"
-									value={formValues.content.html}
-								/>
 								<InputTextarea
-									id={`${elementIds.label}-html`}
-									value={formValues.content.html}
+									id={`${elementIds.content}-html`}
+									name="content[html]"
+									value={formValues.content.html ?? ''}
 									onChange={(e) =>
 										handleChange(
 											'content.html',
@@ -195,7 +191,7 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Email - Layout"
-							labelFor={`${elementIds.label}-layout`}
+							labelFor={`${elementIds.content}-layout`}
 						>
 							<div>
 								<input
@@ -204,7 +200,7 @@ export function FormManageTemplate({
 									value={formValues.content.layout}
 								/>
 								<Dropdown
-									inputId={`${elementIds.label}-layout`}
+									inputId={`${elementIds.content}-layout`}
 									className="p-inputtext-sm"
 									panelStyle={{ fontSize: '0.875rem' }}
 									disabled={pending}
@@ -234,12 +230,12 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Page - Title"
-							labelFor={`${elementIds.label}-title`}
+							labelFor={`${elementIds.content}-title`}
 						>
 							<div>
 								<InputText
 									className="p-inputtext-sm w-full"
-									id={`${elementIds.label}-title`}
+									id={`${elementIds.content}-title`}
 									name="content[title]"
 									placeholder="eg: Terms & conditions"
 									disabled={pending}
@@ -270,17 +266,13 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Page - Body"
-							labelFor={`${elementIds.label}-body`}
+							labelFor={`${elementIds.content}-body`}
 						>
 							<div>
-								<input
-									type="hidden"
-									name="content[body]"
-									value={formValues.content.body}
-								/>
 								<InputTextarea
-									id={`${elementIds.label}-body`}
-									value={formValues.content.body}
+									id={`${elementIds.content}-body`}
+									name="content[body]"
+									value={formValues.content.body ?? ''}
 									onChange={(e) =>
 										handleChange(
 											'content.body',
@@ -302,7 +294,7 @@ export function FormManageTemplate({
 					<FormPart>
 						<FormElement
 							labelText="Page - Layout"
-							labelFor={`${elementIds.label}-layout`}
+							labelFor={`${elementIds.content}-layout`}
 						>
 							<div>
 								<input
@@ -311,7 +303,7 @@ export function FormManageTemplate({
 									value={formValues.content.layout}
 								/>
 								<Dropdown
-									inputId={`${elementIds.label}-layout`}
+									inputId={`${elementIds.content}-layout`}
 									className="p-inputtext-sm"
 									panelStyle={{ fontSize: '0.875rem' }}
 									disabled={pending}
