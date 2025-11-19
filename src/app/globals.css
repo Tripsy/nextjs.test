@@ -323,4 +323,27 @@
 	.dashboard-layout .form-section h1 {
 		@apply text-left pb-4 border-b border-[var(--color-line)];
 	}
+
+	/* Template - Page */
+
+	.page-default h1 {
+		@apply pb-4 border-b border-[var(--color-line)] text-xl font-semibold mb-8;
+	}
+
+	.page-default .page-default-html{
+		@apply mb-8;
+	}
+
+	.page-default .page-default-html h2 {
+		@apply text-lg font-semibold mb-2;
+		@apply mb-4;
+	}
+
+	.page-default .page-default-html p {
+		@apply mb-2;
+	}
+
+	.page-default .page-default-html p + h2 {
+		@apply mt-8;
+	}
 }

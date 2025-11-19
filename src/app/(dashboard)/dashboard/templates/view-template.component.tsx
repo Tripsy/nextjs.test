@@ -89,7 +89,7 @@ export function ViewTemplate() {
 								<span className="font-semibold capitalize">
 									{key}:
 								</span>{' '}
-								{['body', 'html'].includes(key) ? (
+								{['html'].includes(key) ? (
 									<span
 										/*biome-ignore lint/security/noDangerouslySetInnerHtml: It's fine*/
 										dangerouslySetInnerHTML={{

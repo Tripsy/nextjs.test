@@ -88,10 +88,10 @@ const ValidateSchemaPageTemplates = ValidateSchemaBaseTemplates.extend({
 		title: z.string().nonempty({
 			message: translations['templates.validation.page_title_invalid'],
 		}),
-		body: z
+		html: z
 			.string()
 			.nonempty({
-				message: translations['templates.validation.page_body_invalid'],
+				message: translations['templates.validation.page_html_invalid'],
 			})
 			.transform((val) => safeHtml(val)),
 		layout: z
@@ -155,7 +155,7 @@ export function getFormValuesTemplates(formData: FormData): TemplateFormValues {
 		type: TemplateTypeEnum.PAGE,
 		content: {
 			title: (formData.get('content[title]') as string) ?? '',
-			body: (formData.get('content[body]') as string) ?? '',
+			html: (formData.get('content[html]') as string) ?? '',
 			layout:
 				(formData.get('content[layout]') as TemplateLayoutPageEnum) ??
 				TemplateLayoutPageEnum.DEFAULT,

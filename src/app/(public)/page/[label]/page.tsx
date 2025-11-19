@@ -20,7 +20,7 @@ interface Props {
 
 async function getPageData(label: string): Promise<{
 	title: string;
-	content: string;
+	html: string;
 	layout: TemplateLayoutPageEnum;
 	updated_at: string | Date;
 } | null> {
@@ -42,7 +42,7 @@ async function getPageData(label: string): Promise<{
 
 				return {
 					title: content.title,
-					content: content.body,
+					html: content.html,
 					layout: content.layout,
 					updated_at: responseData.updated_at,
 				};
@@ -87,13 +87,12 @@ export default async function Page(props: Props) {
 	}
 
 	return (
-		<div className="default-container">
-			<h1 className="text-xl font-semibold mb-4">{pageData.title}</h1>
-
+		<div className="default-container page-default">
+			<h1>{pageData.title}</h1>
 			<div
-				className="mb-4"
+				className="page-default-html"
 				/*biome-ignore lint/security/noDangerouslySetInnerHtml: It's fine*/
-				dangerouslySetInnerHTML={{ __html: pageData.content }}
+				dangerouslySetInnerHTML={{ __html: pageData.html }}
 			/>
 			<div className="text-sm italic text-right">
 				Last update: {formatDate(pageData.updated_at, 'date-time')}

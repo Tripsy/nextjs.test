@@ -265,17 +265,17 @@ export function FormManageTemplate({
 
 					<FormPart>
 						<FormElement
-							labelText="Page - Body"
-							labelFor={`${elementIds.content}-body`}
+							labelText="Page - Content"
+							labelFor={`${elementIds.content}-html`}
 						>
 							<div>
 								<InputTextarea
-									id={`${elementIds.content}-body`}
-									name="content[body]"
-									value={formValues.content.body ?? ''}
+									id={`${elementIds.content}-html`}
+									name="content[html]"
+									value={formValues.content.html ?? ''}
 									onChange={(e) =>
 										handleChange(
-											'content.body',
+											'content.html',
 											e.target.value ?? '',
 										)
 									}
@@ -284,7 +284,7 @@ export function FormManageTemplate({
 								<FormElementError
 									messages={getNestedError(
 										errors,
-										'content.body',
+										'content.html',
 									)}
 								/>
 							</div>

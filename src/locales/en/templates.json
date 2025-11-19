@@ -10,7 +10,7 @@
 		"email_html_invalid": "Set email html",
 		"email_layout_invalid": "Set email layout",
 		"page_title_invalid": "Set page title",
-		"page_body_invalid": "Set page body",
+		"page_html_invalid": "Set page body",
 		"page_layout_invalid": "Set page layout"
 	},
 	"action": {

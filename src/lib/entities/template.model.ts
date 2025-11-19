@@ -24,7 +24,7 @@ export enum TemplateLayoutPageEnum {
 
 export type TemplateContentPageType = {
 	title: string;
-	body: string;
+	html: string;
 	layout: TemplateLayoutPageEnum;
 };
 
