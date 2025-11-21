@@ -1,5 +1,7 @@
 # TODO
 
+1. action view template on mail queue
+1. filter by to on mail-queue:  QueryFailedError: operator does not exist: json ~~ unknown  ..postgresql LIKE issue
 1. mail-queue
 2. recover password & other account pages
 3. learn about react-dev-tools & recap NextJs documentation

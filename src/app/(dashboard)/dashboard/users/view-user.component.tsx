@@ -47,8 +47,7 @@ export function ViewUser() {
 						<span className="font-semibold">Email:</span> {email}
 					</p>
 					<p>
-						<span className="font-semibold">Language:</span>{' '}
-						{language}
+						<span className="font-semibold">Language:</span> {language}
 					</p>
 				</div>
 			</div>
@@ -90,7 +89,7 @@ export function ViewUser() {
 					</p>
 					<p>
 						<span className="font-semibold">Updated At:</span>{' '}
-						{formatDate(updated_at, 'date-time')}
+						{formatDate(updated_at, 'date-time') || '-'}
 					</p>
 				</div>
 			</div>

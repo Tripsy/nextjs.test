@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { translate } from '@/config/lang';
 
 export function useTranslation(keys: string[]) {
-	const [translations, setTranslations] = useState<Record<string, string>>(
-		{},
-	);
-	const [isTranslationLoading, setIsTranslationLoading] = useState(true);
+	const [state, setState] = useState<{
+		translations: Record<string, string>;
+		isLoading: boolean;
+	}>({
+		translations: {},
+		isLoading: true,
+	});
 
 	useEffect(() => {
 		let isMounted = true;
@@ -21,7 +24,7 @@ export function useTranslation(keys: string[]) {
 					return;
 				}
 
-				const translationMap = keys.reduce(
+				const translations = keys.reduce(
 					(acc, key, index) => {
 						acc[key] = results[index];
 						return acc;
@@ -29,12 +32,18 @@ export function useTranslation(keys: string[]) {
 					{} as Record<string, string>,
 				);
 
-				setTranslations(translationMap);
+				setState({
+					translations: translations,
+					isLoading: false,
+				});
 			} catch (error) {
 				console.error('Failed to load translations:', error);
-			} finally {
+
 				if (isMounted) {
-					setIsTranslationLoading(false);
+					setState((prev) => ({
+						...prev,
+						isLoading: false,
+					}));
 				}
 			}
 		})();
@@ -44,5 +53,8 @@ export function useTranslation(keys: string[]) {
 		};
 	}, [keys]);
 
-	return { translations, isTranslationLoading };
+	return {
+		translations: state.translations,
+		isTranslationLoading: state.isLoading,
+	};
 }

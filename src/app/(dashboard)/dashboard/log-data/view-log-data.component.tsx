@@ -1,6 +1,7 @@
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { parseJson } from '@/lib/utils/string';
+import {formatDate} from "@/lib/utils/date";
 
 export function ViewLogData() {
 	const { modelStore } = useDataTable<'log_data'>();
@@ -50,7 +51,7 @@ export function ViewLogData() {
 					</p>
 					<p>
 						<span className="font-semibold">Created At:</span>{' '}
-						{new Date(created_at).toLocaleString()}
+						{formatDate(created_at, 'date-time')}
 					</p>
 				</div>
 			</div>

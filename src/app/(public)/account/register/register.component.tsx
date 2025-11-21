@@ -219,9 +219,12 @@ export default function Register() {
 								I agree with&nbsp;
 							</span>
 							<Link
-								href={Routes.get('terms-and-conditions')}
+								href={Routes.get('page', {
+									label: 'terms-and-conditions',
+								})}
 								className="link link-info link-hover text-sm"
 								target="_blank"
+								title="Terms & Conditions"
 							>
 								terms and conditions
 							</Link>

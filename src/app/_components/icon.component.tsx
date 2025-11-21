@@ -9,7 +9,7 @@ import {
 	faCircleInfo,
 	faCircleXmark,
 	faClock,
-	faEnvelope,
+	faEnvelope, faEnvelopeCircleCheck,
 	faEye,
 	faEyeSlash,
 	faKey,
@@ -130,6 +130,9 @@ export const Icons = {
 		),
 		Warning: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faTriangleExclamation} {...props} />
+		),
+		Sent: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faEnvelopeCircleCheck} {...props} />
 		),
 	},
 	Action: {

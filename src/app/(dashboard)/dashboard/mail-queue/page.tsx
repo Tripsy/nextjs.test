@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import NavBreadcrumbSetter from '@/app/(dashboard)/_components/nav-breadcrumb.setter';
 import type { BreadcrumbType } from '@/app/(dashboard)/_providers/breadcrumb.provider';
-import { DataTableCronHistory } from '@/app/(dashboard)/dashboard/cron-history/data-table-cron-history.component';
+import { DataTableMailQueue } from '@/app/(dashboard)/dashboard/mail-queue/data-table-mail-queue.component';
 import { translate } from '@/config/lang';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 
 export async function generateMetadata(): Promise<Metadata> {
 	return {
-		title: await translate('cron_history.meta.title', {
+		title: await translate('log_data.meta.title', {
 			app_name: cfg('app.name') as string,
 		}),
 	};
@@ -19,13 +19,13 @@ export default async function Page() {
 			label: await translate('dashboard.labels.dashboard'),
 			href: Routes.get('dashboard'),
 		},
-		{ label: await translate('dashboard.labels.cron_history') },
+		{ label: await translate('dashboard.labels.mail_queue') },
 	];
 
 	return (
 		<>
 			<NavBreadcrumbSetter items={items} />
-			<DataTableCronHistory />
+			<DataTableMailQueue />
 		</>
 	);
 }

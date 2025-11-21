@@ -19,6 +19,7 @@ import {
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { getMomentInstanceFromDate } from '@/lib/utils/date';
+import {cfg} from "@/config/settings";
 
 type SelectionChangeEvent<T> = {
 	originalEvent: React.SyntheticEvent;
@@ -104,7 +105,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 				if (/_date_start$/.test(key)) {
 					const date = getMomentInstanceFromDate(
 						value as string,
-						'MM/DD/YYYY',
+						cfg('app.defaultDateFormat') as string,
 					);
 
 					if (!date) {
@@ -115,7 +116,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 				} else if (/_date_end$/.test(key)) {
 					const date = getMomentInstanceFromDate(
 						value as string,
-						'MM/DD/YYYY',
+						cfg('app.defaultDateFormat') as string,
 					);
 
 					if (!date) {

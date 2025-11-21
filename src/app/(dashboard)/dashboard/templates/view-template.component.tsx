@@ -89,20 +89,11 @@ export function ViewTemplate() {
 								<span className="font-semibold capitalize">
 									{key}:
 								</span>{' '}
-								{['html'].includes(key) ? (
-									<span
-										/*biome-ignore lint/security/noDangerouslySetInnerHtml: It's fine*/
-										dangerouslySetInnerHTML={{
-											__html: String(value),
-										}}
-									/>
-								) : (
-									<span>
-										{typeof value === 'object'
-											? JSON.stringify(value, null, 2)
-											: String(value)}
-									</span>
-								)}
+								<span>
+									{typeof value === 'object'
+										? JSON.stringify(value, null, 2)
+										: String(value)}
+								</span>
 							</div>
 						))}
 					</div>

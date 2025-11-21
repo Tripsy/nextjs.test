@@ -2,6 +2,7 @@ import { useStore } from 'zustand/react';
 import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { parseJson } from '@/lib/utils/string';
+import {formatDate} from "@/lib/utils/date";
 
 export function ViewCronHistory() {
 	const { modelStore } = useDataTable<'cron_history'>();
@@ -31,11 +32,11 @@ export function ViewCronHistory() {
 					</div>
 					<div>
 						<span className="font-semibold">Start At:</span>{' '}
-						{new Date(start_at).toLocaleString()}
+						{formatDate(start_at, 'date-time')}
 					</div>
 					<div>
 						<span className="font-semibold">End At:</span>{' '}
-						{new Date(end_at).toLocaleString()}
+						{formatDate(end_at, 'date-time') || 'n/a'}
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="font-semibold">Status:</span>{' '}

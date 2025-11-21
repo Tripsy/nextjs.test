@@ -13,10 +13,13 @@ export async function generateMetadata(): Promise<Metadata> {
 		}),
 	};
 }
-export default function Page() {
+export default async function Page() {
 	const items: BreadcrumbType[] = [
-		{ label: 'Dashboard', href: Routes.get('dashboard') },
-		{ label: 'Log Data' },
+		{
+			label: await translate('dashboard.labels.dashboard'),
+			href: Routes.get('dashboard'),
+		},
+		{ label: await translate('dashboard.labels.log_data') },
 	];
 
 	return (

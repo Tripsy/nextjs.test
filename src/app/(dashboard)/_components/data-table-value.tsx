@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import { type JSX, useMemo } from 'react';
+import React, { type JSX, useMemo } from 'react';
 import { Icons } from '@/app/_components/icon.component';
 import { useTranslation } from '@/app/_hooks';
 import type {
@@ -48,6 +48,11 @@ export const statusList = {
 		class: 'badge badge-warning h-8',
 		icon: <Icons.Status.Warning />,
 	},
+	sent: {
+		label: 'Sent',
+		class: 'badge badge-success h-8',
+		icon: <Icons.Status.Sent />,
+	}
 };
 
 export const DisplayDeleted = ({
@@ -120,6 +125,7 @@ export const DisplayAction = <K extends keyof DataSourceType>({
 };
 
 export type DataTableValueOptionsType<K extends keyof DataSourceType> = {
+	customValue?: string;
 	capitalize?: boolean;
 	markDeleted?: boolean;
 	isStatus?: boolean;
@@ -136,14 +142,30 @@ export const DataTableValue = <K extends keyof DataSourceType>(
 	column: DataTableColumnType<DataSourceModel<K>>,
 	options: DataTableValueOptionsType<K>,
 ) => {
-	let value: string | JSX.Element = entry[column.field] as string; // Assumption: The field value is a string
+	let outputValue: string | JSX.Element;
+
+	if (options.customValue) {
+		outputValue = options.customValue;
+	} else {
+		const entryValue: string | object = entry[column.field] as string | object;
+
+		if (entryValue == null) {
+			return '-';
+		}
+
+		if (typeof entryValue === 'object') {
+			outputValue = Object.values(entryValue).join(', ');
+		} else {
+			outputValue = entryValue;
+		}
+	}
 
 	if (options.capitalize) {
-		value = capitalizeFirstLetter(value);
+		outputValue = capitalizeFirstLetter(outputValue);
 	}
 
 	if (options.displayDate) {
-		value = formatDate(value, 'date-time') || '-';
+		outputValue = formatDate(outputValue, 'date-time') || '-';
 	}
 
 	if (options.isStatus && column.field === 'status' && 'status' in entry) {
@@ -152,22 +174,22 @@ export const DataTableValue = <K extends keyof DataSourceType>(
 				? 'deleted'
 				: (entry.status as keyof typeof statusList);
 
-		value = <DisplayStatus status={status} />;
+		outputValue = <DisplayStatus status={status} />;
 	} else if (options.markDeleted && 'deleted_at' in entry) {
-		value = (
-			<DisplayDeleted value={value} isDeleted={!!entry?.deleted_at} />
+		outputValue = (
+			<DisplayDeleted value={outputValue} isDeleted={!!entry?.deleted_at} />
 		);
 	}
 
 	if (options.action) {
-		value = (
+		outputValue = (
 			<DisplayAction
-				value={value}
+				value={outputValue}
 				action={options.action}
 				entry={entry}
 			/>
 		);
 	}
 
-	return value;
+	return outputValue;
 };

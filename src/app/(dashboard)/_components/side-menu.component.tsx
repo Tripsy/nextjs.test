@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { AwesomeIcon } from '@/app/_components/icon.component';
-import { useDebouncedEffect } from '@/app/_hooks';
+import { useDebouncedEffect, useTranslation } from '@/app/_hooks';
 import { useAuth } from '@/app/_providers/auth.provider';
 import Routes from '@/config/routes';
 import { hasPermission } from '@/lib/entities/auth.model';
@@ -74,7 +74,7 @@ function SideMenuGroup({
 			>
 				{title}
 			</summary>
-			<ul>{children}</ul>
+			<ul>{validChildren}</ul>
 		</details>
 	);
 }
@@ -102,12 +102,34 @@ function SideMenuGroupItem({ href, label, icon }: SideMenuItemProps) {
 export function SideMenu() {
 	const { auth } = useAuth();
 
+	const translationsKeys = useMemo(
+		() => [
+			'dashboard.labels.content',
+			'dashboard.labels.settings',
+			'dashboard.labels.logs',
+			'dashboard.labels.templates',
+			'dashboard.labels.log_data',
+			'dashboard.labels.cron_history',
+			'dashboard.labels.mail_queue',
+			'dashboard.labels.permissions',
+			'dashboard.labels.users',
+		],
+		[],
+	);
+
+	const { translations, isTranslationLoading } =
+		useTranslation(translationsKeys);
+
 	// Memoize the menu groups to prevent unnecessary re-renders
 	const menuGroups = useMemo(() => {
+		if (isTranslationLoading) {
+			return [];
+		}
+
 		const groups = [
 			{
 				key: 'content',
-				title: 'Content',
+				title: translations['dashboard.labels.content'],
 				items: [
 					{
 						href: '',
@@ -119,11 +141,11 @@ export function SideMenu() {
 			},
 			{
 				key: 'settings',
-				title: 'Settings',
+				title: translations['dashboard.labels.settings'],
 				items: [
 					{
 						href: Routes.get('template'),
-						label: 'Templates',
+						label: translations['dashboard.labels.templates'],
 						icon: faFileLines,
 						permission: hasPermission(auth, 'template.find'),
 					},
@@ -131,23 +153,23 @@ export function SideMenu() {
 			},
 			{
 				key: 'logs',
-				title: 'System Logs',
+				title: translations['dashboard.labels.logs'],
 				items: [
 					{
 						href: Routes.get('log-data'),
-						label: 'Log Data',
+						label: translations['dashboard.labels.log_data'],
 						icon: faDatabase,
 						permission: hasPermission(auth, 'log_data.find'),
 					},
 					{
 						href: Routes.get('cron-history'),
-						label: 'Cron History',
+						label: translations['dashboard.labels.cron_history'],
 						icon: faFileWaveform,
 						permission: hasPermission(auth, 'cron_history.find'),
 					},
 					{
 						href: Routes.get('mail-queue'),
-						label: 'Mail Queue',
+						label: translations['dashboard.labels.mail_queue'],
 						icon: faEnvelopesBulk,
 						permission: hasPermission(auth, 'mail_queue.find'),
 					},
@@ -155,18 +177,18 @@ export function SideMenu() {
 			},
 			{
 				key: 'users',
-				title: 'Users',
+				title: translations['dashboard.labels.users'],
 				defaultOpen: true,
 				items: [
 					{
 						href: Routes.get('user'),
-						label: 'Users',
+						label: translations['dashboard.labels.users'],
 						icon: faUserGroup,
 						permission: hasPermission(auth, 'user.find'),
 					},
 					{
 						href: Routes.get('permission'),
-						label: 'Permissions',
+						label: translations['dashboard.labels.permissions'],
 						icon: faUserLock,
 						permission: hasPermission(auth, 'permission.find'),
 					},
@@ -174,15 +196,9 @@ export function SideMenu() {
 			},
 		];
 
-		return groups.map((group) => {
-			const visible = group.items.some((item) => item.permission);
-
-			// Don't render groups with no visible items
-			if (!visible) {
-				return null;
-			}
-
-			return (
+		return groups
+			.filter((group) => group.items.some((item) => item.permission))
+			.map((group) => (
 				<SideMenuGroup
 					key={`side-menu-${group.key}`}
 					groupKey={`side-menu-${group.key}`}
@@ -201,9 +217,8 @@ export function SideMenu() {
 							),
 					)}
 				</SideMenuGroup>
-			);
-		});
-	}, [auth]);
+			));
+	}, [auth, isTranslationLoading, translations]);
 
 	return <nav className="side-menu-section">{menuGroups}</nav>;
 }

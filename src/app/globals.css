@@ -330,7 +330,7 @@
 		@apply pb-4 border-b border-[var(--color-line)] text-xl font-semibold mb-8;
 	}
 
-	.page-default .page-default-html{
+	.page-default .page-default-html {
 		@apply mb-8;
 	}
 

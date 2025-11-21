@@ -12,8 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
 	};
 }
 
-export default function Page() {
-	const items: BreadcrumbType[] = [{ label: 'Dashboard' }];
+export default async function Page() {
+	const items: BreadcrumbType[] = [
+		{ label: await translate('dashboard.labels.dashboard') },
+	];
 
 	return (
 		<>

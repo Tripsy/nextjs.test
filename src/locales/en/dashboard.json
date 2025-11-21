@@ -1,5 +1,17 @@
 {
 	"meta": {
 		"title": "Dashboard | {{app_name}}"
+	},
+	"labels": {
+		"content": "Content",
+		"settings": "Settings",
+		"dashboard": "Dashboard",
+		"cron_history": "Cron History",
+		"log_data": "Log Data",
+		"mail_queue": "Mail Queue",
+		"permissions": "Permissions",
+		"logs": "System Logs",
+		"templates": "Templates",
+		"users": "Users"
 	}
 }

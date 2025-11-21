@@ -182,7 +182,7 @@ export function DataTableActions() {
 
 			if (!actionProps) {
 				setError(
-					`'actionProps' action props are not defined for ${actionName}`,
+					`'actionProps' action props are not defined for '${actionName}'`,
 				);
 
 				return;
@@ -216,13 +216,19 @@ export function DataTableActions() {
 		};
 	}, [actions, handleClick]);
 
-	if (error) {
-		showToast({
-			severity: 'error',
-			summary: 'Error',
-			detail: error,
-		});
+	useEffect(() => {
+		if (error) {
+			showToast({
+				severity: 'error',
+				summary: 'Error',
+				detail: error,
+			});
 
+			setError(null);
+		}
+	}, [error, showToast]);
+
+	if (error) {
 		return;
 	}
 

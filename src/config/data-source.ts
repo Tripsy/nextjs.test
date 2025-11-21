@@ -23,13 +23,18 @@ import {
 } from '@/app/(dashboard)/dashboard/users/users.definition';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
+import {
+	DataSourceConfigMailQueue,
+	DataSourceMailQueueType
+} from "@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition";
 
 export type DataSourceType = {
-	users: DataSourceUsersType;
-	permissions: DataSourcePermissionsType;
-	log_data: DataSourceLogDataType;
 	cron_history: DataSourceCronHistoryType;
+	log_data: DataSourceLogDataType;
+	mail_queue: DataSourceMailQueueType;
+	permissions: DataSourcePermissionsType;
 	templates: DataSourceTemplatesType;
+	users: DataSourceUsersType;
 };
 
 export type DataSourceModel<K extends keyof DataSourceType> =
@@ -60,15 +65,6 @@ export type FindFunctionResponseType<K extends keyof DataSourceType> = {
 	};
 };
 
-// export type FindFunctionResponseType<K extends keyof DataSourceType> = {
-// 	entries: DataSourceType[K]['model'][];
-// 	pagination: {
-// 		page: number;
-// 		limit: number;
-// 		total: number;
-// 	};
-// };
-
 export type FindFunctionType<K extends keyof DataSourceType> = (
 	params: FindFunctionParamsType,
 ) => Promise<FindFunctionResponseType<K> | undefined>;
@@ -77,20 +73,10 @@ export type CreateFunctionType<K extends keyof DataSourceType> = (
 	data: DataSourceFormValues<K>,
 ) => Promise<ResponseFetch<Partial<DataSourceModel<K>>>>;
 
-// export type CreateFunctionType<K extends keyof DataSourceType> =
-// 	DataSourceType[K] extends { formValues: infer F; model: infer M }
-// 		? (data: F) => Promise<ResponseFetch<Partial<M>>>
-// 		: never;
-
 export type UpdateFunctionType<K extends keyof DataSourceType> = (
 	data: DataSourceFormValues<K>,
 	id: number,
 ) => Promise<ResponseFetch<Partial<DataSourceModel<K>>>>;
-
-// export type UpdateFunctionType<K extends keyof DataSourceType> =
-// 	DataSourceType[K] extends { formValues: infer F; model: infer M }
-// 		? (data: F, id: number) => Promise<ResponseFetch<Partial<M>>>
-// 		: never;
 
 export type DeleteFunctionType = (
 	ids: number[],
@@ -119,6 +105,7 @@ export type DataTableColumnType<Model> = {
 export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
 
 /**
+ * `type` type of action (view, create, update, delete)
  * `permission` required to perform action (e.g. user.create)
  * `allowedEntries`
  *      free ~ not dependent on selected entries,
@@ -129,6 +116,7 @@ export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
  * `button` action button configuration
  */
 export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
+	type?: 'view' | 'create' | 'update' | 'delete';
 	mode: 'form' | 'action' | 'other';
 	permission: string;
 	allowedEntries: 'free' | 'single' | 'multiple';
@@ -198,11 +186,12 @@ export type DataSourceConfigType<K extends keyof DataSourceType> = {
 export const DataSourceConfig: {
 	[K in keyof DataSourceType]: DataSourceConfigType<K>;
 } = {
-	users: DataSourceConfigUsers,
-	permissions: DataSourceConfigPermissions,
-	log_data: DataSourceConfigLogData,
 	cron_history: DataSourceConfigCronHistory,
+	log_data: DataSourceConfigLogData,
+	mail_queue: DataSourceConfigMailQueue,
+	permissions: DataSourceConfigPermissions,
 	templates: DataSourceConfigTemplates,
+	users: DataSourceConfigUsers,
 };
 
 export type DataTablePropsType = {

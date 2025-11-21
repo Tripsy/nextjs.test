@@ -1,4 +1,5 @@
 import moment, { type Moment } from 'moment';
+import {cfg} from "@/config/settings";
 
 /**
  * Check if a string is a valid date
@@ -209,7 +210,7 @@ export function formatDate(
 	// Apply formatting
 	switch (format) {
 		case 'default':
-			return date.format('YYYY-MM-DD');
+			return date.format(cfg('app.defaultDateFormat') as string);
 		case 'date-time':
 			return date.format('DD-MM-YYYY, hh:mm A');
 		default:

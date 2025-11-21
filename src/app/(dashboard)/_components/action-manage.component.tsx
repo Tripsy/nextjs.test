@@ -85,7 +85,7 @@ export function ActionManage() {
 	const actionProps = actions[actionName];
 
 	if (!actionProps) {
-		throw new ValueError(`'actionProps' action props are not defined `);
+		throw new ValueError(`'actionProps' action props are not defined for '${actionName}'`);
 	}
 
 	if (actionProps.allowedEntries === 'single' && !actionEntry) {

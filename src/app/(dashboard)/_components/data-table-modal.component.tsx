@@ -44,12 +44,13 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	}
 
 	const actionMode = actionName ? actions[actionName]?.mode : null;
+	const actionType = (actionName && actions[actionName]?.type) || (actionName || 'undefined');
 
 	useEffect(() => {
 		if (
 			isOpen &&
 			actionName &&
-			['update', 'view'].includes(actionName) &&
+			['update', 'view'].includes(actionType) &&
 			!actionEntry
 		) {
 			showToast({
@@ -60,7 +61,7 @@ export function DataTableModal<K extends keyof DataSourceType>({
 
 			return;
 		}
-	}, [actionEntry, actionName, isOpen, showToast]);
+	}, [actionEntry, actionName, actionType, isOpen, showToast]);
 
 	const handleClose = () => {
 		closeOut();
@@ -75,6 +76,9 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	if (!isOpen || !actionName) {
 		return null;
 	}
+
+	console.log(actionMode);
+	console.log(actionType);
 
 	// Dynamically compute modal class
 	const modalClassComputed = clsx(
