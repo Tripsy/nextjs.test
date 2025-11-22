@@ -1,14 +1,18 @@
 import { useStore } from 'zustand/react';
+import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import {formatDate} from "@/lib/utils/date";
-import {DisplayStatus} from "@/app/(dashboard)/_components/data-table-value";
+import { formatDate } from '@/lib/utils/date';
 
 export function ViewMailQueue() {
 	const { modelStore } = useDataTable<'mail_queue'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	if (!actionEntry) {
-		return <div className="text-center p-6">No entry selected.</div>;
+		return (
+			<div className="min-h-48 flex items-center justify-center">
+				No entry selected.
+			</div>
+		);
 	}
 
 	const {
@@ -22,7 +26,7 @@ export function ViewMailQueue() {
 		error,
 		sent_at,
 		created_at,
-		updated_at
+		updated_at,
 	} = actionEntry;
 
 	return (
@@ -36,10 +40,12 @@ export function ViewMailQueue() {
 						<span className="font-semibold">ID:</span> {id}
 					</p>
 					<p>
-						<span className="font-semibold">Template:</span> {template?.label || 'n/a'}
+						<span className="font-semibold">Template:</span>{' '}
+						{template?.label || 'n/a'}
 					</p>
 					<p>
-						<span className="font-semibold">Language:</span> {language}
+						<span className="font-semibold">Language:</span>{' '}
+						{language}
 					</p>
 					<p>
 						<span className="font-semibold">Created At:</span>{' '}
@@ -64,7 +70,8 @@ export function ViewMailQueue() {
 						</div>
 					</div>
 					<p>
-						<span className="font-semibold">Error:</span> {error || '-'}
+						<span className="font-semibold">Error:</span>{' '}
+						{error || '-'}
 					</p>
 					<p>
 						<span className="font-semibold">Sent At:</span>{' '}
@@ -74,12 +81,12 @@ export function ViewMailQueue() {
 						<span className="font-semibold">Sent To:</span>{' '}
 						{to.name} &lt;{to.address}&gt;
 					</p>
-					{from &&
+					{from && (
 						<p>
 							<span className="font-semibold">Sent From:</span>{' '}
 							{from?.name} &lt;{from?.address}&gt;
 						</p>
-					}
+					)}
 				</div>
 			</div>
 

@@ -12,6 +12,10 @@
 		"view": {
 			"title": "Mail queue details",
 			"label": "View"
+		},
+		"viewTemplate": {
+			"title": "Template details",
+			"label": "View template"
 		}
 	}
 }

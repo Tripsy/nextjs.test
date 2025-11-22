@@ -12,9 +12,9 @@ import {
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableMailQueueFiltersType } from '@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition';
+import { MailQueueStatusEnum } from '@/lib/entities/mail-queue.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
-import {MailQueueStatusEnum} from "@/lib/entities/mail-queue.model";
 
 const statuses = Object.values(MailQueueStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
@@ -96,8 +96,14 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 				handleFilterReset as EventListener,
 			);
 		};
-	}, [searchContent, searchTemplate, searchTo, stateDefault.filters, updateTableState]);
-	
+	}, [
+		searchContent,
+		searchTemplate,
+		searchTo,
+		stateDefault.filters,
+		updateTableState,
+	]);
+
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersDateRange
@@ -116,19 +122,19 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 				selectOptions={statuses}
 				handleSelectChange={handleSelectChange}
 			/>
-			
+
 			<FormFiltersSearch
 				labelText="Template"
 				fieldName="template"
 				search={searchTemplate}
 			/>
-			
+
 			<FormFiltersSearch
 				labelText="Content"
 				fieldName="content"
 				search={searchContent}
 			/>
-			
+
 			<FormFiltersSearch
 				labelText="To"
 				fieldName="to"

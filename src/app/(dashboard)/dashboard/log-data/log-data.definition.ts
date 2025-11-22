@@ -103,9 +103,6 @@ export const DataSourceConfigLogData = {
 			permission: 'log_data.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 	},
 };

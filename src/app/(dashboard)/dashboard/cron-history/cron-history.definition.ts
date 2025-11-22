@@ -103,9 +103,6 @@ export const DataSourceConfigCronHistory = {
 			permission: 'cron_history.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 	},
 };

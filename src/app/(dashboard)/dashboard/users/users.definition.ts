@@ -383,7 +383,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: UserModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: UserModel) => !entry.deleted_at, // Return true if entry is not deleted
 			position: 'left' as const,
 			function: deleteUser,
 			button: {
@@ -394,7 +394,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.update',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: UserModel) =>
+			customEntryCheck: (entry: UserModel) =>
 				!entry.deleted_at &&
 				[UserStatusEnum.PENDING, UserStatusEnum.INACTIVE].includes(
 					entry.status,
@@ -409,7 +409,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.update',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: UserModel) =>
+			customEntryCheck: (entry: UserModel) =>
 				!entry.deleted_at &&
 				[UserStatusEnum.PENDING, UserStatusEnum.ACTIVE].includes(
 					entry.status,
@@ -424,7 +424,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if entry is deleted
 			position: 'left' as const,
 			function: restoreUser,
 			button: {
@@ -435,7 +435,7 @@ export const DataSourceConfigUsers = {
 			mode: 'other' as const,
 			permission: 'permission.update',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: UserModel) =>
+			customEntryCheck: (entry: UserModel) =>
 				entry.role === UserRoleEnum.OPERATOR,
 			position: 'left' as const,
 			button: {
@@ -447,9 +447,6 @@ export const DataSourceConfigUsers = {
 			permission: 'user.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 	},
 };

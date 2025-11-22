@@ -1,5 +1,5 @@
 import moment, { type Moment } from 'moment';
-import {cfg} from "@/config/settings";
+import { cfg } from '@/config/settings';
 
 /**
  * Check if a string is a valid date

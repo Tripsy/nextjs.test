@@ -43,7 +43,10 @@ export function createFilterHandlers<K extends keyof DataSourceType>(
 			matchMode: MatchModeType,
 		) =>
 			update({
-				[field]: { value: formatDate(value, 'default'), matchMode: matchMode },
+				[field]: {
+					value: formatDate(value, 'default'),
+					matchMode: matchMode,
+				},
 			} as Pick<DataSourceTableFilter<K>, F>),
 	};
 }

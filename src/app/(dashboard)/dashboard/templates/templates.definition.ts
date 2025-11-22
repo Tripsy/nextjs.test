@@ -311,7 +311,7 @@ export const DataSourceConfigTemplates = {
 			mode: 'action' as const,
 			permission: 'template.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: TemplateModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: TemplateModel) => !entry.deleted_at, // Return true if entry is not deleted
 			position: 'left' as const,
 			function: deleteTemplate,
 			button: {
@@ -322,7 +322,7 @@ export const DataSourceConfigTemplates = {
 			mode: 'action' as const,
 			permission: 'template.delete',
 			allowedEntries: 'single' as const,
-			entryCustomCheck: (entry: TemplateModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: TemplateModel) => !!entry.deleted_at, // Return true if entry is deleted
 			position: 'left' as const,
 			function: restoreTemplate,
 			button: {
@@ -334,9 +334,6 @@ export const DataSourceConfigTemplates = {
 			permission: 'template.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 	},
 };

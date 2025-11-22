@@ -10,7 +10,7 @@ import { DataTableProvider } from '@/app/(dashboard)/_providers/data-table-provi
 import { createModelStore } from '@/app/(dashboard)/_stores/model.store';
 import { DataTableMailQueueFilters } from '@/app/(dashboard)/dashboard/mail-queue/data-table-mail-queue-filters.component';
 import { ViewMailQueue } from '@/app/(dashboard)/dashboard/mail-queue/view-mail-queue.component';
-import {ViewTemplate} from "@/app/(dashboard)/dashboard/templates/view-template.component";
+import { ViewMailQueueTemplate } from '@/app/(dashboard)/dashboard/mail-queue/view-mail-queue-template.component';
 
 const modelStore = createModelStore('mail_queue');
 
@@ -36,10 +36,11 @@ export const DataTableMailQueue = (): JSX.Element => {
 			<DataTableModal<'mail_queue'>
 				modals={{
 					view: <ViewMailQueue />,
-					viewTemplate: <ViewTemplate />
+					viewTemplate: <ViewMailQueueTemplate />,
 				}}
 				modalClass={{
 					view: 'max-w-3xl!',
+					viewTemplate: 'max-w-3xl!',
 				}}
 			/>
 		</DataTableProvider>

@@ -1,14 +1,18 @@
 import { useStore } from 'zustand/react';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
+import { formatDate } from '@/lib/utils/date';
 import { parseJson } from '@/lib/utils/string';
-import {formatDate} from "@/lib/utils/date";
 
 export function ViewLogData() {
 	const { modelStore } = useDataTable<'log_data'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	if (!actionEntry) {
-		return <div className="text-center p-6">No log entry selected.</div>;
+		return (
+			<div className="min-h-48 flex items-center justify-center">
+				No entry selected.
+			</div>
+		);
 	}
 
 	const {

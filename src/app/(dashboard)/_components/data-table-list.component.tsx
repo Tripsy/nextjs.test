@@ -18,8 +18,8 @@ import {
 	type DataTablePropsType,
 	getDataSourceConfig,
 } from '@/config/data-source';
+import { cfg } from '@/config/settings';
 import { getMomentInstanceFromDate } from '@/lib/utils/date';
-import {cfg} from "@/config/settings";
 
 type SelectionChangeEvent<T> = {
 	originalEvent: React.SyntheticEvent;

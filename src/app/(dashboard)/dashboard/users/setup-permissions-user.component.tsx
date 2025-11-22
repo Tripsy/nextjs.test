@@ -15,10 +15,11 @@ import {
 } from '@/lib/services/users.service';
 
 export function SetupPermissionsUser() {
-	const { modelStore } = useDataTable<'users'>();
 	const { showToast } = useToast();
 
+	const { modelStore } = useDataTable<'users'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
+
 	const user_id = actionEntry?.id;
 
 	const [permissions, setPermissions] = useState<PermissionModel[]>([]);
@@ -211,11 +212,17 @@ export function SetupPermissionsUser() {
 	);
 
 	if (loading) {
-		return <Loading />;
+		return (
+			<Loading className="min-h-64 flex items-center justify-center" />
+		);
 	}
 
 	if (!permissions.length) {
-		return <div className="text-center p-6">No permissions defined.</div>;
+		return (
+			<div className="min-h-48 flex items-center justify-center">
+				No permissions defined.
+			</div>
+		);
 	}
 
 	return (

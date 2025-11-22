@@ -6,7 +6,7 @@ import {
 	deleteMailQueue,
 	findMailQueue,
 } from '@/lib/services/mail-queue.service';
-import {formatDate} from "@/lib/utils/date";
+import { formatDate } from '@/lib/utils/date';
 
 export type DataTableMailQueueFiltersType = {
 	status: DataTableFilterMetaData;
@@ -20,7 +20,7 @@ export type DataTableMailQueueFiltersType = {
 function displayActionEntriesMailQueue(entries: MailQueueModel[]) {
 	return entries.map((entry) => ({
 		id: entry.id,
-		label: formatDate(entry.sent_at) || ''
+		label: formatDate(entry.sent_at) || '',
 	}));
 }
 
@@ -50,8 +50,8 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 			DataTableValue<'mail_queue'>(entry, column, {
 				customValue: entry.template?.label || 'n/a',
 				action: {
-					name: 'view',
-					source: 'template',
+					name: 'viewTemplate',
+					source: 'mail_queue',
 				},
 			}),
 	},
@@ -125,9 +125,6 @@ export const DataSourceConfigMailQueue = {
 			permission: 'mail_queue.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 		viewTemplate: {
 			type: 'view' as const,
@@ -135,9 +132,6 @@ export const DataSourceConfigMailQueue = {
 			permission: 'template.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
-			button: {
-				className: 'btn btn-action-view',
-			},
 		},
 	},
 };

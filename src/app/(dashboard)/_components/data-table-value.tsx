@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import React, { type JSX, useMemo } from 'react';
+import { type JSX, useMemo } from 'react';
 import { Icons } from '@/app/_components/icon.component';
 import { useTranslation } from '@/app/_hooks';
 import type {
@@ -52,7 +52,7 @@ export const statusList = {
 		label: 'Sent',
 		class: 'badge badge-success h-8',
 		icon: <Icons.Status.Sent />,
-	}
+	},
 };
 
 export const DisplayDeleted = ({
@@ -147,7 +147,9 @@ export const DataTableValue = <K extends keyof DataSourceType>(
 	if (options.customValue) {
 		outputValue = options.customValue;
 	} else {
-		const entryValue: string | object = entry[column.field] as string | object;
+		const entryValue: string | object = entry[column.field] as
+			| string
+			| object;
 
 		if (entryValue == null) {
 			return '-';
@@ -177,7 +179,10 @@ export const DataTableValue = <K extends keyof DataSourceType>(
 		outputValue = <DisplayStatus status={status} />;
 	} else if (options.markDeleted && 'deleted_at' in entry) {
 		outputValue = (
-			<DisplayDeleted value={outputValue} isDeleted={!!entry?.deleted_at} />
+			<DisplayDeleted
+				value={outputValue}
+				isDeleted={!!entry?.deleted_at}
+			/>
 		);
 	}
 

@@ -162,7 +162,7 @@ export const DataSourceConfigPermissions = {
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
-			entryCustomCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
 			function: deletePermissions,
 			button: {
 				className: 'btn btn-action-delete',
@@ -173,7 +173,7 @@ export const DataSourceConfigPermissions = {
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
-			entryCustomCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted
 			function: restorePermissions,
 			button: {
 				className: 'btn btn-action-restore',

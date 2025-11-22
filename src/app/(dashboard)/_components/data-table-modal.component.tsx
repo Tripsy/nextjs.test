@@ -36,7 +36,6 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	const actionName = useStore(modelStore, (state) => state.actionName);
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 	const closeOut = useStore(modelStore, (state) => state.closeOut);
-
 	const actions = getDataSourceConfig(dataSource, 'actions');
 
 	if (!actions) {
@@ -44,7 +43,8 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	}
 
 	const actionMode = actionName ? actions[actionName]?.mode : null;
-	const actionType = (actionName && actions[actionName]?.type) || (actionName || 'undefined');
+	const actionType =
+		(actionName && actions[actionName]?.type) || actionName || 'undefined';
 
 	useEffect(() => {
 		if (
@@ -77,16 +77,13 @@ export function DataTableModal<K extends keyof DataSourceType>({
 		return null;
 	}
 
-	console.log(actionMode);
-	console.log(actionType);
-
 	// Dynamically compute modal class
 	const modalClassComputed = clsx(
 		defaultModalClass,
 		modalClass?.[actionName], // Per-action override
 	);
 
-	const ActionButtonIcon = getActionIcon(actionName);
+	const ActionButtonIcon = getActionIcon(actionType);
 
 	const ModalComponent = modals?.[actionName] ?? null;
 

@@ -1,10 +1,11 @@
 type LoadingProps = {
 	text?: string;
+	className?: string;
 };
 
-export function Loading({ text = 'Loading...' }: LoadingProps) {
+export function Loading({ text = 'Loading...', className }: LoadingProps) {
 	return (
-		<div>
+		<div className={className}>
 			<span className="loading loading-ring loading-xl mr-2"></span>
 			<span>{text}</span>
 		</div>

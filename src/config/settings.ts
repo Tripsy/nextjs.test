@@ -17,7 +17,8 @@ const settingsConfig: { [key: string]: ObjectValue } = {
 		name: process.env.NEXT_PUBLIC_FRONTEND_APP_NAME,
 		rootPath: process.env.ROOT_PATH || '/var/www/html',
 		srcPath: process.env.SRC_PATH || '/var/www/html/src',
-		defaultDateFormat: process.env.NEXT_PUBLIC_DEFAULT_DATE_FORMAT || 'YYYY-MM-DD',
+		defaultDateFormat:
+			process.env.NEXT_PUBLIC_DEFAULT_DATE_FORMAT || 'YYYY-MM-DD',
 	},
 	security: {
 		allowedOrigins: process.env.ALLOWED_ORIGINS?.split(',').map((v) =>

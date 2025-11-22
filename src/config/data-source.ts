@@ -10,6 +10,10 @@ import {
 	type DataSourceLogDataType,
 } from '@/app/(dashboard)/dashboard/log-data/log-data.definition';
 import {
+	DataSourceConfigMailQueue,
+	type DataSourceMailQueueType,
+} from '@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition';
+import {
 	DataSourceConfigPermissions,
 	type DataSourcePermissionsType,
 } from '@/app/(dashboard)/dashboard/permissions/permissions.definition';
@@ -23,10 +27,6 @@ import {
 } from '@/app/(dashboard)/dashboard/users/users.definition';
 import type { FormSituationType } from '@/lib/types';
 import type { ResponseFetch } from '@/lib/utils/api';
-import {
-	DataSourceConfigMailQueue,
-	DataSourceMailQueueType
-} from "@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition";
 
 export type DataSourceType = {
 	cron_history: DataSourceCronHistoryType;
@@ -37,6 +37,7 @@ export type DataSourceType = {
 	users: DataSourceUsersType;
 };
 
+export type AnyDataSourceModel = DataSourceModel<keyof DataSourceType>;
 export type DataSourceModel<K extends keyof DataSourceType> =
 	DataSourceType[K]['model'];
 export type DataSourceFormValues<K extends keyof DataSourceType> =
@@ -120,10 +121,10 @@ export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
 	mode: 'form' | 'action' | 'other';
 	permission: string;
 	allowedEntries: 'free' | 'single' | 'multiple';
-	entryCustomCheck?: (entry: DataSourceModel<K>) => boolean;
+	customEntryCheck?: (entry: DataSourceModel<K>) => boolean;
 	position: 'left' | 'right' | 'hidden';
 	function?: F;
-	button: {
+	button?: {
 		className: string;
 	};
 };

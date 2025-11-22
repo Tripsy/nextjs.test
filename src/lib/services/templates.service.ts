@@ -1,5 +1,6 @@
 import type {
 	CreateFunctionType,
+	DataSourceModel,
 	DataSourceType,
 	DeleteFunctionType,
 	FindFunctionParamsType,
@@ -60,4 +61,11 @@ export const restoreTemplate = async (
 	return await new ApiRequest().doFetch(`/templates/${id}/restore`, {
 		method: 'PATCH',
 	});
+};
+
+export const getTemplate = async (id: number) => {
+	const response: ResponseFetch<DataSourceModel<'templates'>> =
+		await new ApiRequest().doFetch(`/templates/${id}`);
+
+	return getResponseData(response);
 };

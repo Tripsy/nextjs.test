@@ -54,14 +54,14 @@ export function DataTableActions() {
 			entries: DataSourceModel<K>[],
 			permission: string,
 			allowedEntries: 'free' | 'single' | 'multiple',
-			entryCustomCheck?: (entry: unknown) => boolean,
+			customEntryCheck?: (entry: DataSourceModel<K>) => boolean,
 		) => {
 			if (allowedEntries === 'single') {
 				if (entries.length !== 1) {
 					return false;
 				}
 
-				if (entryCustomCheck && !entryCustomCheck(entries[0])) {
+				if (customEntryCheck && !customEntryCheck(entries[0])) {
 					return false;
 				}
 			}
@@ -81,14 +81,14 @@ export function DataTableActions() {
 			actionName: ActionKey,
 			permission: string,
 			allowedEntries: 'free' | 'single' | 'multiple',
-			entryCustomCheck?: (entry: unknown) => boolean,
+			customEntryCheck?: (entry: DataSourceModel<K>) => boolean,
 		) => {
 			if (
 				!allowAction(
 					entries,
 					permission,
 					allowedEntries,
-					entryCustomCheck,
+					customEntryCheck,
 				)
 			) {
 				setError('Operation not allowed');
@@ -133,7 +133,7 @@ export function DataTableActions() {
 				return null;
 			}
 
-			const customCheck = actionProps.entryCustomCheck as
+			const customCheck = actionProps.customEntryCheck as
 				| ((entry: unknown) => boolean)
 				| undefined;
 
@@ -173,12 +173,11 @@ export function DataTableActions() {
 			event: CustomEvent<{
 				source: string;
 				actionName: string;
-				entry: unknown;
+				entry: DataSourceModel<K>;
 			}>,
 		) => {
 			const actionName = event.detail.actionName;
 			const actionProps = actions?.[actionName];
-			const eventEntry = event.detail.entry as DataSourceModel<K>;
 
 			if (!actionProps) {
 				setError(
@@ -188,12 +187,12 @@ export function DataTableActions() {
 				return;
 			}
 
-			const customCheck = actionProps.entryCustomCheck as
+			const customCheck = actionProps.customEntryCheck as
 				| ((entry: unknown) => boolean)
 				| undefined;
 
 			handleClick(
-				[eventEntry],
+				[event.detail.entry],
 				actionName,
 				actionProps.permission,
 				actionProps.allowedEntries,
