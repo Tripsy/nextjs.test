@@ -6,9 +6,7 @@ export type PasswordRecoverFormFieldsType = {
 	email: string;
 };
 
-export type PasswordRecoverSituationType =
-	| FormSituationType
-	| 'csrf_error';
+export type PasswordRecoverSituationType = FormSituationType | 'csrf_error';
 
 export type PasswordRecoverStateType = {
 	values: PasswordRecoverFormFieldsType;
@@ -26,9 +24,7 @@ export const PasswordRecoverState: PasswordRecoverStateType = {
 	situation: null,
 };
 
-const translations = await translateBatch([
-	'login.validation.email'
-]);
+const translations = await translateBatch(['login.validation.email']);
 
 export const PasswordRecoverSchema = z.object({
 	email: z

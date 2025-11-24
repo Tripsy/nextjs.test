@@ -11,9 +11,11 @@ import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { passwordRecoverAccount } from '@/lib/services/account.service';
 
-export function passwordRecoverFormValues(formData: FormData): PasswordRecoverFormFieldsType {
+export function passwordRecoverFormValues(
+	formData: FormData,
+): PasswordRecoverFormFieldsType {
 	return {
-		email: formData.get('email') as string
+		email: formData.get('email') as string,
 	};
 }
 
@@ -109,7 +111,9 @@ export async function passwordRecoverAction(
 					situation = 'success'; // Already logged in
 					break;
 				case 400:
-					message = await translate('password_recover.message.not_active');
+					message = await translate(
+						'password_recover.message.not_active',
+					);
 					break;
 			}
 		}
@@ -117,7 +121,8 @@ export async function passwordRecoverAction(
 		return {
 			...result,
 			message:
-				message || (await translate('password_recover.message.could_not_login')),
+				message ||
+				(await translate('password_recover.message.could_not_login')),
 			situation: situation,
 			body: responseBody,
 		};

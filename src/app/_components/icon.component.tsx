@@ -17,7 +17,8 @@ import {
 	faLock,
 	faMagnifyingGlass,
 	faMoon,
-	faPenToSquare, faPlay,
+	faPenToSquare,
+	faPlay,
 	faPlugCircleXmark,
 	faPlus,
 	faRotateLeft,
@@ -29,7 +30,6 @@ import {
 	faTrashCan,
 	faTriangleExclamation,
 	faUser,
-	faUserCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import {
 	FontAwesomeIcon,

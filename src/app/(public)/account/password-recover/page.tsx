@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
+import ProtectedRoute from '@/app/_components/protected-route.component';
 import PasswordRecover from '@/app/(public)/account/password-recover/password-recover.component';
 import { translate } from '@/config/lang';
+import { RouteAuth } from '@/config/routes';
 import { cfg } from '@/config/settings';
-import ProtectedRoute from "@/app/_components/protected-route.component";
-import {RouteAuth} from "@/config/routes";
 
 export async function generateMetadata(): Promise<Metadata> {
 	return {

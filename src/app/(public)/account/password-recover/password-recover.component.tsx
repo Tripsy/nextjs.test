@@ -4,9 +4,7 @@ import Link from 'next/link';
 // import { useRouter } from 'next/navigation';
 import { useActionState } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
-import {
-	FormElementEmail
-} from '@/app/_components/form/form-element.component';
+import { FormElementEmail } from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
@@ -23,13 +21,15 @@ import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 
 export default function PasswordRecover() {
-	const [state, action, pending] = useActionState(passwordRecoverAction, PasswordRecoverState);
+	const [state, action, pending] = useActionState(
+		passwordRecoverAction,
+		PasswordRecoverState,
+	);
 
 	// const router = useRouter();
 
-	const [formValues, setFormValues] = useFormValues<PasswordRecoverFormFieldsType>(
-		state.values,
-	);
+	const [formValues, setFormValues] =
+		useFormValues<PasswordRecoverFormFieldsType>(state.values);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
 		useFormValidation({
