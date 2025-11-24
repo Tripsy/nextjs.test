@@ -290,7 +290,7 @@ async function fetchAuthModel(token: string): Promise<AuthModel> {
 	}
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
 	const ctx = new MiddlewareContext(req);
 
 	// Skip middleware for Server Actions
