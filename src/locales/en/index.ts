@@ -7,6 +7,7 @@ import log_data from '@/locales/en/log_data.json';
 import login from '@/locales/en/login.json';
 import logout from '@/locales/en/logout.json';
 import mail_queue from '@/locales/en/mail_queue.json';
+import password_recover from '@/locales/en/password_recover.json';
 import permissions from '@/locales/en/permissions.json';
 import register from '@/locales/en/register.json';
 import templates from '@/locales/en/templates.json';
@@ -22,6 +23,7 @@ const en = {
 	login,
 	logout,
 	mail_queue,
+	password_recover,
 	permissions,
 	register,
 	templates,

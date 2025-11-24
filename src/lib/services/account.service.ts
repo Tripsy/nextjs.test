@@ -42,3 +42,14 @@ export async function logoutAccount(): Promise<ResponseFetch<null>> {
 		method: 'DELETE',
 	});
 }
+
+export async function passwordRecoverAccount(
+	params: LoginFormFieldsType,
+): Promise<
+	ResponseFetch<{ token: string } | { authValidTokens: AuthTokenListType }>
+> {
+	return await new ApiRequest().doFetch('/account/login', {
+		method: 'POST',
+		body: JSON.stringify(params),
+	});
+}

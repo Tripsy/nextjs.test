@@ -17,7 +17,7 @@ import {
 	faLock,
 	faMagnifyingGlass,
 	faMoon,
-	faPenToSquare,
+	faPenToSquare, faPlay,
 	faPlugCircleXmark,
 	faPlus,
 	faRotateLeft,
@@ -80,8 +80,8 @@ export const Icons = {
 	Login: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faArrowRightToBracket} {...props} />
 	),
-	Register: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faUserCheck} {...props} />
+	Go: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faPlay} {...props} />
 	),
 	Error: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faCircleExclamation} {...props} />

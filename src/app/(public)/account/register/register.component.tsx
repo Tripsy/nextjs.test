@@ -255,7 +255,7 @@ export default function Register() {
 						</span>
 					) : (
 						<span className="flex items-center gap-2">
-							<Icons.Register />
+							<Icons.Go />
 							Create account
 						</span>
 					)}

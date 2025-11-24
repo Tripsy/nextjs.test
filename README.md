@@ -1,14 +1,11 @@
 # TODO
 
-1. action view template on mail queue
-1. filter by to on mail-queue:  QueryFailedError: operator does not exist: json ~~ unknown  ..postgresql LIKE issue
-1. mail-queue
-2. recover password & other account pages
-3. learn about react-dev-tools & recap NextJs documentation
-4. Replace all console.error with logging
-5. Add section "documentation"
-6. More language vars 
-7. middleware.ts - for production ready it will need some revision -> security headers
+1. recover password & other account pages
+2. learn about react-dev-tools & recap NextJs documentation
+3. Replace all console.error with logging
+4. Add section "documentation"
+5. More language vars 
+6. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 
