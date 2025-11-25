@@ -177,17 +177,30 @@ export default function Login() {
 			)}
 
 			<FormPart className="text-center">
-				<div>
-					<span className="text-sm text-gray-500 dark:text-base-content">
-						Not registered yet?{' '}
-					</span>
-					<Link
-						href={Routes.get('register')}
-						className="link link-info link-hover text-sm"
-					>
-						Create an account
-					</Link>
-				</div>
+				<>
+					<div className="mb-2">
+						<span className="text-sm text-gray-500 dark:text-base-content">
+							Not registered yet?{' '}
+						</span>
+						<Link
+							href={Routes.get('register')}
+							className="link link-info link-hover text-sm"
+						>
+							Create an account
+						</Link>
+					</div>
+					<div>
+						<span className="text-sm text-gray-500 dark:text-base-content">
+							Forgot your password?{' '}
+						</span>
+						<Link
+							href={Routes.get('password-recover')}
+							className="link link-info link-hover text-sm"
+						>
+							Reset it here
+						</Link>
+					</div>
+				</>
 			</FormPart>
 		</form>
 	);

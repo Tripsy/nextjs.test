@@ -1,4 +1,3 @@
-import { createAuth } from '@/actions/auth.actions';
 import { isValidCsrfToken } from '@/actions/csrf.action';
 import {
 	type PasswordRecoverFormFieldsType,
@@ -59,62 +58,30 @@ export async function passwordRecoverAction(
 	try {
 		const fetchResponse = await passwordRecoverAccount(validated.data);
 
-		if (
-			fetchResponse?.success &&
-			fetchResponse.data &&
-			'token' in fetchResponse.data
-		) {
-			const authResponse = await createAuth(fetchResponse.data.token);
-
-			if (authResponse?.success) {
-				return {
-					...result,
-					message: authResponse?.message || null,
-					situation: 'success',
-				};
-			} else {
-				return {
-					...result,
-					message: authResponse?.message || null,
-					situation: 'error',
-				};
-			}
-		} else {
-			return {
-				...result,
-				message: fetchResponse?.message || null,
-				situation: 'error',
-			};
-		}
+		return {
+			...result,
+			errors: {},
+			message: fetchResponse?.message || null,
+			situation: fetchResponse?.success ? 'success' : 'error',
+		};
 	} catch (error: unknown) {
 		let message: string = '';
 		let situation: PasswordRecoverSituationType = 'error';
-		let responseBody: { authValidTokens: AuthTokenListType } | undefined;
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
-				case 429:
+				case 425:
 					message = await translate(
-						'password_recover.message.too_many_login_attempts',
+						'password_recover.message.recovery_attempts_exceeded',
 					);
 					break;
-				case 403:
-					message = await translate(
-						'password_recover.message.max_active_sessions',
-					);
-					situation = 'max_active_sessions';
-					responseBody = error.body?.data as {
-						authValidTokens: AuthTokenListType;
-					};
-					break;
-				case 406:
-					situation = 'success'; // Already logged in
-					break;
-				case 400:
+				case 404:
 					message = await translate(
 						'password_recover.message.not_active',
 					);
 					break;
+				default:
+					message = error.message;
 			}
 		}
 
@@ -122,9 +89,8 @@ export async function passwordRecoverAction(
 			...result,
 			message:
 				message ||
-				(await translate('password_recover.message.could_not_login')),
+				(await translate('password_recover.message.failed')),
 			situation: situation,
-			body: responseBody,
 		};
 	}
 }

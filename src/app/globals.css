@@ -101,6 +101,10 @@
 		@apply hover:text-white hover:bg-warning rounded;
 	}
 
+	.btn-info {
+		@apply text-white opacity-80 hover:opacity-100;
+	}
+
 	/* Badges */
 
 	.badge-neutral {

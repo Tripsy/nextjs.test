@@ -166,7 +166,8 @@ Routes.group('account')
 	.add('login', '/account/login')
 	.add('logout', '/account/logout', { auth: RouteAuth.AUTHENTICATED })
 	.add('register', '/account/register')
-	.add('password-recover', '/account/password-recover');
+	.add('password-recover', '/account/password-recover')
+	.add('password-recover-change', 'account/password-recover-change/:token');
 
 // Dashboard
 Routes.group('dashboard')

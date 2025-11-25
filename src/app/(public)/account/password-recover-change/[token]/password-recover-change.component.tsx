@@ -1,37 +1,50 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useActionState } from 'react';
+import React, {useActionState, useState} from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
-import { FormElementEmail } from '@/app/_components/form/form-element.component';
+import {
+	FormElementPassword,
+	FormElementPasswordConfirm
+} from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
 import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
 import {
-	passwordRecoverAction,
-	passwordRecoverValidate,
-} from '@/app/(public)/account/password-recover/password-recover.action';
+	passwordRecoverChangeAction,
+	passwordRecoverChangeValidate,
+} from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.action';
 import {
-	type PasswordRecoverFormFieldsType,
-	PasswordRecoverState,
-} from '@/app/(public)/account/password-recover/password-recover.definition';
+	type PasswordRecoverChangeFormFieldsType,
+	PasswordRecoverChangeState,
+} from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
+import {useParams} from "next/navigation";
 
-export default function PasswordRecover() {
+export default function PasswordRecoverChange() {
+	const params = useParams<{ token: string }>();
+
+	const token = params.token;
+
 	const [state, action, pending] = useActionState(
-		passwordRecoverAction,
-		PasswordRecoverState,
+		passwordRecoverChangeAction,
+		{
+			...PasswordRecoverChangeState,
+			token: token
+		}
 	);
 
+	const [showPassword, setShowPassword] = useState(false);
+
 	const [formValues, setFormValues] =
-		useFormValues<PasswordRecoverFormFieldsType>(state.values);
+		useFormValues<PasswordRecoverChangeFormFieldsType>(state.values);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
 		useFormValidation({
 			formValues: formValues,
-			validate: passwordRecoverValidate,
+			validate: passwordRecoverChangeValidate,
 			debounceDelay: 800,
 		});
 
@@ -40,10 +53,10 @@ export default function PasswordRecover() {
 		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name as keyof PasswordRecoverFormFieldsType);
+		markFieldAsTouched(name as keyof PasswordRecoverChangeFormFieldsType);
 	};
 
-	const elementIds = useElementIds(['email']);
+	const elementIds = useElementIds(['password', 'password_confirm']);
 
 	if (state?.situation === 'csrf_error') {
 		return (
@@ -58,18 +71,19 @@ export default function PasswordRecover() {
 			<div className="form-section">
 				<h1>Recover Password</h1>
 				<div className="text-sm">
-					<Icons.Success className="text-success" /> Please check your email and follow instructions to complete password recovery.
+					<Icons.Success className="text-success" /> Your password has been updated successfully.
 				</div>
 				<p className="mt-2 text-center">
-					<span className="text-sm text-gray-500 dark:text-base-content">
-						Meanwhile you can go back to {' '}
-						<Link
-							href={Routes.get('home')}
-							className="link link-info link-hover text-sm"
-						>
-							home page
-						</Link>
-					</span>
+				<span className="text-sm text-gray-500 dark:text-base-content">
+					You can now go to the{' '}
+					<Link
+						href={Routes.get('login')}
+						className="link link-info link-hover text-sm"
+					>
+						login page
+					</Link>{' '}
+					and sign in with your new password.
+				</span>
 				</p>
 			</div>
 		);
@@ -86,15 +100,26 @@ export default function PasswordRecover() {
 			<h1>Recover Password</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
-				<span>Restore your access and continue using your account securely.</span>
+				<span>Use the form below to set up a new password for your account.</span>
 			</FormPart>
 
-			<FormElementEmail
-				id={elementIds.email}
-				value={formValues.email ?? ''}
+			<FormElementPassword
+				id={elementIds.password}
+				value={formValues.password ?? ''}
 				disabled={pending}
 				handleChange={handleChange}
-				error={errors.email}
+				error={errors.password}
+				showPassword={showPassword}
+				setShowPassword={setShowPassword}
+			/>
+
+			<FormElementPasswordConfirm
+				id={elementIds.passwordConfirm}
+				value={formValues.password_confirm ?? ''}
+				disabled={pending}
+				handleChange={handleChange}
+				error={errors.password_confirm}
+				showPassword={showPassword}
 			/>
 
 			<FormPart>
@@ -114,12 +139,12 @@ export default function PasswordRecover() {
 					) : submitted && Object.keys(errors).length > 0 ? (
 						<span className="flex items-center gap-2">
 							<Icons.Error className="w-4 h-4 animate-pulse" />
-							Recover password
+							Update password
 						</span>
 					) : (
 						<span className="flex items-center gap-2">
 							<Icons.Go />
-							Recover password
+							Update password
 						</span>
 					)}
 				</button>
@@ -132,20 +157,6 @@ export default function PasswordRecover() {
 					</div>
 				</FormError>
 			)}
-
-			<FormPart className="text-center">
-				<div>
-					<span className="text-sm text-gray-500 dark:text-base-content">
-						Not registered yet?{' '}
-					</span>
-					<Link
-						href={Routes.get('register')}
-						className="link link-info link-hover text-sm"
-					>
-						Create an account
-					</Link>
-				</div>
-			</FormPart>
 		</form>
 	);
 }
