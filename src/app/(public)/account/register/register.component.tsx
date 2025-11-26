@@ -99,7 +99,7 @@ export default function Register() {
 
 				<p className="mt-2 text-center">
 					<span className="text-sm text-gray-500 dark:text-base-content">
-						Meanwhile you can go back to {' '}
+						Meanwhile you can go back to{' '}
 						<Link
 							href={Routes.get('home')}
 							className="link link-info link-hover text-sm"

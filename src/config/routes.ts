@@ -168,8 +168,10 @@ Routes.group('account')
 	.add('register', '/account/register')
 	.add('password-recover', '/account/password-recover')
 	.add('password-recover-change', '/account/password-recover-change/:token')
-	.add('email-confirm', '/account/email-confirm/:token', { auth: RouteAuth.PUBLIC })
-	.add('email-confirm-resend', '/account/email-confirm-resend')
+	.add('email-confirm', '/account/email-confirm/:token', {
+		auth: RouteAuth.PUBLIC,
+	})
+	.add('email-confirm-send', '/account/email-confirm-send')
 	.add('account', '/account/my', { auth: RouteAuth.AUTHENTICATED });
 
 // Dashboard

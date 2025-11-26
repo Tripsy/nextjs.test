@@ -2,13 +2,12 @@ import type {
 	AuthTokenListType,
 	LoginFormFieldsType,
 } from '@/app/(public)/account/login/login.definition';
+import type { PasswordRecoverFormFieldsType } from '@/app/(public)/account/password-recover/password-recover.definition';
+import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
 import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
 import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
-import {PasswordRecoverFormFieldsType} from "@/app/(public)/account/password-recover/password-recover.definition";
-import {
-	PasswordRecoverChangeFormFieldsType
-} from "@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition";
+import {EmailConfirmSendFormFieldsType} from "@/app/(public)/account/email-confirm-send/email-confirm-send.definition";
 
 export async function registerAccount(
 	params: RegisterFormFieldsType,
@@ -49,9 +48,7 @@ export async function logoutAccount(): Promise<ResponseFetch<null>> {
 
 export async function passwordRecoverAccount(
 	params: PasswordRecoverFormFieldsType,
-): Promise<
-	ResponseFetch<null>
-> {
+): Promise<ResponseFetch<null>> {
 	return await new ApiRequest().doFetch('/account/password-recover', {
 		method: 'POST',
 		body: JSON.stringify(params),
@@ -61,21 +58,29 @@ export async function passwordRecoverAccount(
 export async function passwordRecoverChangeAccount(
 	token: string,
 	params: PasswordRecoverChangeFormFieldsType,
-): Promise<
-	ResponseFetch<null>
-> {
-	return await new ApiRequest().doFetch(`/account/password-recover-change/${token}`, {
-		method: 'POST',
-		body: JSON.stringify(params),
-	});
+): Promise<ResponseFetch<null>> {
+	return await new ApiRequest().doFetch(
+		`/account/password-recover-change/${token}`,
+		{
+			method: 'POST',
+			body: JSON.stringify(params),
+		},
+	);
 }
 
 export async function emailConfirmAccount(
-	token: string
-): Promise<
-	ResponseFetch<null>
-> {
+	token: string,
+): Promise<ResponseFetch<null>> {
 	return await new ApiRequest().doFetch(`/account/email-confirm/${token}`, {
-		method: 'POST'
+		method: 'POST',
+	});
+}
+
+export async function emailConfirmSendAccount(
+	params: EmailConfirmSendFormFieldsType,
+): Promise<ResponseFetch<null>> {
+	return await new ApiRequest().doFetch('/account/email-confirm-send', {
+		method: 'POST',
+		body: JSON.stringify(params),
 	});
 }

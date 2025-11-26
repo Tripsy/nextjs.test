@@ -3,7 +3,7 @@
 		"title": "Login | {{app_name}}"
 	},
 	"validation": {
-		"email": "Please enter a valid email address",
+		"email_invalid": "Please enter a valid email address",
 		"password": "Please enter your password"
 	},
 	"message": {

@@ -1,35 +1,35 @@
 import { isValidCsrfToken } from '@/actions/csrf.action';
 import {
-	type PasswordRecoverFormFieldsType,
-	PasswordRecoverSchema,
-	type PasswordRecoverSituationType,
-	type PasswordRecoverStateType,
-} from '@/app/(public)/account/password-recover/password-recover.definition';
+	type EmailConfirmSendFormFieldsType,
+	EmailConfirmSendSchema,
+	type EmailConfirmSendSituationType,
+	type EmailConfirmSendStateType,
+} from '@/app/(public)/account/email-confirm-send/email-confirm-send.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
-import { passwordRecoverAccount } from '@/lib/services/account.service';
+import { emailConfirmSendAccount } from '@/lib/services/account.service';
 
-export function passwordRecoverFormValues(
+export function emailConfirmSendFormValues(
 	formData: FormData,
-): PasswordRecoverFormFieldsType {
+): EmailConfirmSendFormFieldsType {
 	return {
 		email: formData.get('email') as string,
 	};
 }
 
-export function passwordRecoverValidate(values: PasswordRecoverFormFieldsType) {
-	return PasswordRecoverSchema.safeParse(values);
+export function emailConfirmSendValidate(values: EmailConfirmSendFormFieldsType) {
+	return EmailConfirmSendSchema.safeParse(values);
 }
 
-export async function passwordRecoverAction(
-	state: PasswordRecoverStateType,
+export async function emailConfirmSendAction(
+	state: EmailConfirmSendStateType,
 	formData: FormData,
-): Promise<PasswordRecoverStateType> {
-	const values = passwordRecoverFormValues(formData);
-	const validated = passwordRecoverValidate(values);
+): Promise<EmailConfirmSendStateType> {
+	const values = emailConfirmSendFormValues(formData);
+	const validated = emailConfirmSendValidate(values);
 
-	const result: PasswordRecoverStateType = {
+	const result: EmailConfirmSendStateType = {
 		...state, // Spread existing state
 		values, // Override with new values
 		message: null,
@@ -56,7 +56,7 @@ export async function passwordRecoverAction(
 	}
 
 	try {
-		const fetchResponse = await passwordRecoverAccount(validated.data);
+		const fetchResponse = await emailConfirmSendAccount(validated.data);
 
 		return {
 			...result,
@@ -66,18 +66,18 @@ export async function passwordRecoverAction(
 		};
 	} catch (error: unknown) {
 		let message: string = '';
-		const situation: PasswordRecoverSituationType = 'error';
+		const situation: EmailConfirmSendSituationType = 'error';
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
-				case 425:
+				case 403:
 					message = await translate(
-						'password_recover.message.recovery_attempts_exceeded',
+						'email_confirm_send.message.not_allowed',
 					);
 					break;
 				case 404:
 					message = await translate(
-						'password_recover.message.not_active',
+						'email_confirm_send.message.not_active',
 					);
 					break;
 				default:
@@ -88,7 +88,7 @@ export async function passwordRecoverAction(
 		return {
 			...result,
 			message:
-				message || (await translate('password_recover.message.failed')),
+				message || (await translate('email_confirm_send.message.failed')),
 			situation: situation,
 		};
 	}

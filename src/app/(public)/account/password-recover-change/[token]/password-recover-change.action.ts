@@ -7,8 +7,8 @@ import {
 } from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
+import { ApiError } from '@/lib/exceptions/api.error';
 import { passwordRecoverChangeAccount } from '@/lib/services/account.service';
-import {ApiError} from "@/lib/exceptions/api.error";
 
 export function passwordRecoverChangeFormValues(
 	formData: FormData,
@@ -19,7 +19,9 @@ export function passwordRecoverChangeFormValues(
 	};
 }
 
-export function passwordRecoverChangeValidate(values: PasswordRecoverChangeFormFieldsType) {
+export function passwordRecoverChangeValidate(
+	values: PasswordRecoverChangeFormFieldsType,
+) {
 	return PasswordRecoverChangeSchema.safeParse(values);
 }
 
@@ -57,7 +59,10 @@ export async function passwordRecoverChangeAction(
 	}
 
 	try {
-		const fetchResponse = await passwordRecoverChangeAccount(result.token, validated.data);
+		const fetchResponse = await passwordRecoverChangeAccount(
+			result.token,
+			validated.data,
+		);
 
 		return {
 			...result,
@@ -67,7 +72,7 @@ export async function passwordRecoverChangeAction(
 		};
 	} catch (error: unknown) {
 		let message: string = '';
-		let situation: PasswordRecoverChangeSituationType = 'error';
+		const situation: PasswordRecoverChangeSituationType = 'error';
 
 		if (error instanceof ApiError) {
 			message = error.message;

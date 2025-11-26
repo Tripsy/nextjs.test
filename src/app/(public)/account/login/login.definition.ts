@@ -39,7 +39,7 @@ export type AuthTokenType = {
 export type AuthTokenListType = AuthTokenType[];
 
 const translations = await translateBatch([
-	'login.validation.email',
+	'login.validation.email_invalid',
 	'login.validation.password',
 ]);
 
@@ -47,7 +47,7 @@ export const LoginSchema = z.object({
 	email: z
 		.string()
 		.trim()
-		.email({ message: translations['login.validation.email'] }),
+		.email({ message: translations['login.validation.email_invalid'] }),
 	password: z
 		.string({ message: translations['login.validation.password'] })
 		.trim()

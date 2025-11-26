@@ -1,6 +1,6 @@
 # TODO
 
-1. email-confirm-resend
+1. email-confirm-resend >> implement to login and register flows
 2. account/my > passwordUpdate & emailUpdate
 3. learn about react-dev-tools & recap NextJs documentation
 4. Replace all console.error with logging

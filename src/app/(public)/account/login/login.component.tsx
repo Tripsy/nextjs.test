@@ -177,7 +177,7 @@ export default function Login() {
 			)}
 
 			<FormPart className="text-center">
-				<>
+				<div>
 					<div className="mb-2">
 						<span className="text-sm text-gray-500 dark:text-base-content">
 							Not registered yet?{' '}
@@ -200,7 +200,7 @@ export default function Login() {
 							Reset it here
 						</Link>
 					</div>
-				</>
+				</div>
 			</FormPart>
 		</form>
 	);

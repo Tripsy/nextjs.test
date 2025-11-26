@@ -3,6 +3,7 @@ import auth from '@/locales/en/auth.json';
 import cron_history from '@/locales/en/cron_history.json';
 import dashboard from '@/locales/en/dashboard.json';
 import email_confirm from '@/locales/en/email_confirm.json';
+import email_confirm_send from '@/locales/en/email_confirm_send.json';
 import error from '@/locales/en/error.json';
 import log_data from '@/locales/en/log_data.json';
 import login from '@/locales/en/login.json';
@@ -21,6 +22,7 @@ const en = {
 	cron_history,
 	dashboard,
 	email_confirm,
+	email_confirm_send,
 	error,
 	log_data,
 	login,

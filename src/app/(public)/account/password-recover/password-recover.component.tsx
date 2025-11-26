@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useActionState } from 'react';
+import { useActionState } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
 import { FormElementEmail } from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
@@ -58,11 +58,12 @@ export default function PasswordRecover() {
 			<div className="form-section">
 				<h1>Recover Password</h1>
 				<div className="text-sm">
-					<Icons.Success className="text-success" /> Please check your email and follow instructions to complete password recovery.
+					<Icons.Success className="text-success" /> Please check your
+					email and follow instructions to complete password recovery.
 				</div>
 				<p className="mt-2 text-center">
 					<span className="text-sm text-gray-500 dark:text-base-content">
-						Meanwhile you can go back to {' '}
+						Meanwhile you can go back to{' '}
 						<Link
 							href={Routes.get('home')}
 							className="link link-info link-hover text-sm"
@@ -86,7 +87,10 @@ export default function PasswordRecover() {
 			<h1>Recover Password</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
-				<span>Restore your access and continue using your account securely.</span>
+				<span>
+					Restore your access and continue using your account
+					securely.
+				</span>
 			</FormPart>
 
 			<FormElementEmail

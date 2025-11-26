@@ -1,15 +1,11 @@
 import type { Metadata } from 'next';
-import {
-	ApiRequest,
-	type ResponseFetch,
-} from '@/lib/utils/api';
-import React from "react";
-import {translate} from "@/config/lang";
-import {cfg} from "@/config/settings";
-import Link from "next/link";
-import Routes from "@/config/routes";
-import {ApiError} from "@/lib/exceptions/api.error";
-import {Icons} from "@/app/_components/icon.component";
+import Link from 'next/link';
+import { Icons } from '@/app/_components/icon.component';
+import { translate } from '@/config/lang';
+import Routes from '@/config/routes';
+import { cfg } from '@/config/settings';
+import { ApiError } from '@/lib/exceptions/api.error';
+import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
 
 interface Props {
 	params: Promise<{
@@ -32,7 +28,7 @@ export default async function Page(props: Props) {
 	const resolvedParams = await params;
 	const token = resolvedParams.token;
 
-	let message;
+	let message: string;
 	let success = false;
 
 	try {
@@ -45,7 +41,9 @@ export default async function Page(props: Props) {
 				});
 
 		if (fetchResponse?.success === false) {
-			message = fetchResponse?.message || await translate('email_confirm.message.failed');
+			message =
+				fetchResponse?.message ||
+				(await translate('email_confirm.message.failed'));
 		} else {
 			success = true;
 			message = await translate('email_confirm.message.success');
@@ -65,7 +63,11 @@ export default async function Page(props: Props) {
 					<h1>Email Confirmation</h1>
 					<div className="text-sm">
 						<div className="flex items-center gap-2">
-							{success ? ( <Icons.Success className="text-success" />) : ( <Icons.Error className="text-error" />)}
+							{success ? (
+								<Icons.Success className="text-success" />
+							) : (
+								<Icons.Error className="text-error" />
+							)}
 							{message}
 						</div>
 					</div>
@@ -74,34 +76,35 @@ export default async function Page(props: Props) {
 				{success ? (
 					<p className="mt-4 text-center">
 						<span className="text-sm text-gray-500 dark:text-base-content">
-							What's next? Check {' '}
+							What's next? Check{' '}
 							<Link
 								href={Routes.get('account')}
 								className="link link-info link-hover text-sm"
 							>
 								your account
-							</Link> or navigate to{' '}
+							</Link>{' '}
+							or navigate to{' '}
 							<Link
 								href={Routes.get('home')}
 								className="link link-info link-hover text-sm"
 							>
-									home page
-								</Link>
+								home page
+							</Link>
 						</span>
 					</p>
 				) : (
 					<p className="mt-4 text-center">
 						<span className="text-sm text-gray-500 dark:text-base-content">
-							What now? You can register for a {' '}
+							What now? You can register for a{' '}
 							<Link
 								href={Routes.get('register')}
 								className="link link-info link-hover text-sm"
 							>
 								new account
 							</Link>{' '}
-							or request {' '}
+							or request{' '}
 							<Link
-								href={Routes.get('email-confirm-resend')}
+								href={Routes.get('email-confirm-send')}
 								className="link link-info link-hover text-sm"
 							>
 								another confirmation link
