@@ -69,3 +69,13 @@ export async function passwordRecoverChangeAccount(
 		body: JSON.stringify(params),
 	});
 }
+
+export async function emailConfirmAccount(
+	token: string
+): Promise<
+	ResponseFetch<null>
+> {
+	return await new ApiRequest().doFetch(`/account/email-confirm/${token}`, {
+		method: 'POST'
+	});
+}

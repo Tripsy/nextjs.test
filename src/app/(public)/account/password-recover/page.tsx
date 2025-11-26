@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		title: await translate('password_recover.meta.title', {
 			app_name: cfg('app.name') as string,
 		}),
+		robots: 'noindex, nofollow',
 	};
 }
 

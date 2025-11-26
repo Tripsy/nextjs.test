@@ -1,0 +1,9 @@
+{
+	"meta": {
+		"title": "Email confirmation | {{app_name}}"
+	},
+	"message": {
+		"success": "Success! Your email has been confirmed.",
+		"failed": "Email confirmation procedure didn't complete successfully."
+	}
+}

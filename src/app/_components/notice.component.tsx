@@ -55,7 +55,7 @@ export function Notice({
 
 function NoticeSuccess({ title, message, children }: NoticeTypeProps) {
 	return (
-		<div className="shadow-lg rounded-t-lg rounded-b-none">
+		<div className="shadow-lg rounded-t-lg rounded-b-none m-8">
 			<div className="alert alert-success text-white font-bold rounded-t-lg rounded-b-none">
 				{title ?? 'Success'}
 			</div>
@@ -73,7 +73,7 @@ function NoticeSuccess({ title, message, children }: NoticeTypeProps) {
 
 function NoticeError({ title, message, children }: NoticeTypeProps) {
 	return (
-		<div className="shadow-lg rounded-t-lg rounded-b-none">
+		<div className="shadow-lg rounded-t-lg rounded-b-none m-8">
 			<div className="alert alert-error text-white font-bold rounded-t-lg rounded-b-none">
 				{title ?? 'Error'}
 			</div>
@@ -91,7 +91,7 @@ function NoticeError({ title, message, children }: NoticeTypeProps) {
 
 function NoticeWarning({ title, message, children }: NoticeTypeProps) {
 	return (
-		<div className="shadow-lg rounded-t-lg rounded-b-none">
+		<div className="shadow-lg rounded-t-lg rounded-b-none m-8">
 			<div className="alert alert-warning text-white font-bold rounded-t-lg rounded-b-none">
 				{title ?? 'Warning'}
 			</div>
@@ -109,7 +109,7 @@ function NoticeWarning({ title, message, children }: NoticeTypeProps) {
 
 function NoticeInfo({ title, message, children }: NoticeTypeProps) {
 	return (
-		<div className="shadow-lg rounded-t-lg rounded-b-none">
+		<div className="shadow-lg rounded-t-lg rounded-b-none m-8">
 			<div className="alert alert-info text-white font-bold rounded-t-lg rounded-b-none">
 				{title ?? 'Info'}
 			</div>
@@ -127,7 +127,7 @@ function NoticeInfo({ title, message, children }: NoticeTypeProps) {
 
 function NoticeLoading({ title, message, children }: NoticeTypeProps) {
 	return (
-		<div className="shadow-lg rounded-t-lg rounded-b-none">
+		<div className="shadow-lg rounded-t-lg rounded-b-none m-8">
 			<div className="alert alert-info text-white font-bold rounded-t-lg rounded-b-none">
 				{title ?? 'Info'}
 			</div>

@@ -1,0 +1,115 @@
+import type { Metadata } from 'next';
+import {
+	ApiRequest,
+	type ResponseFetch,
+} from '@/lib/utils/api';
+import React from "react";
+import {translate} from "@/config/lang";
+import {cfg} from "@/config/settings";
+import Link from "next/link";
+import Routes from "@/config/routes";
+import {ApiError} from "@/lib/exceptions/api.error";
+import {Icons} from "@/app/_components/icon.component";
+
+interface Props {
+	params: Promise<{
+		token: string;
+	}>;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('email_confirm.meta.title', {
+			app_name: cfg('app.name') as string,
+		}),
+		robots: 'noindex, nofollow',
+	};
+}
+
+export default async function Page(props: Props) {
+	const { params } = props;
+
+	const resolvedParams = await params;
+	const token = resolvedParams.token;
+
+	let message;
+	let success = false;
+
+	try {
+		const fetchResponse: ResponseFetch<null> | undefined =
+			await new ApiRequest()
+				.setRequestMode('remote-api')
+				.doFetch(`/account/email-confirm/${token}`, {
+					method: 'POST',
+					next: { revalidate: 3600 },
+				});
+
+		if (fetchResponse?.success === false) {
+			message = fetchResponse?.message || await translate('email_confirm.message.failed');
+		} else {
+			success = true;
+			message = await translate('email_confirm.message.success');
+		}
+	} catch (error: unknown) {
+		if (error instanceof ApiError) {
+			message = error.message;
+		} else {
+			message = await translate('email_confirm.message.failed');
+		}
+	}
+
+	return (
+		<section className="fit-container">
+			<div className="standard-box p-4 sm:p-8 shadow-md md:w-[24rem]">
+				<div className="form-section">
+					<h1>Email Confirmation</h1>
+					<div className="text-sm">
+						<div className="flex items-center gap-2">
+							{success ? ( <Icons.Success className="text-success" />) : ( <Icons.Error className="text-error" />)}
+							{message}
+						</div>
+					</div>
+				</div>
+
+				{success ? (
+					<p className="mt-4 text-center">
+						<span className="text-sm text-gray-500 dark:text-base-content">
+							What's next? Check {' '}
+							<Link
+								href={Routes.get('account')}
+								className="link link-info link-hover text-sm"
+							>
+								your account
+							</Link> or navigate to{' '}
+							<Link
+								href={Routes.get('home')}
+								className="link link-info link-hover text-sm"
+							>
+									home page
+								</Link>
+						</span>
+					</p>
+				) : (
+					<p className="mt-4 text-center">
+						<span className="text-sm text-gray-500 dark:text-base-content">
+							What now? You can register for a {' '}
+							<Link
+								href={Routes.get('register')}
+								className="link link-info link-hover text-sm"
+							>
+								new account
+							</Link>{' '}
+							or request {' '}
+							<Link
+								href={Routes.get('email-confirm-resend')}
+								className="link link-info link-hover text-sm"
+							>
+								another confirmation link
+							</Link>
+						</span>
+					</p>
+				)}
+			</div>
+		</section>
+	);
+}
