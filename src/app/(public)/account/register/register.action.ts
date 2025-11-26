@@ -75,13 +75,14 @@ export async function registerAction(
 		};
 	} catch (error: unknown) {
 		let message: string = '';
-		const situation: RegisterSituationType = 'error';
+		let situation: RegisterSituationType = 'error';
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
 				case 409:
+					situation = 'pending_account';
 					message = await translate(
-						'register.validation.email_already_used',
+						'register.message.pending_account',
 					);
 					break;
 			}

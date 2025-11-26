@@ -10,7 +10,8 @@ export type LoginFormFieldsType = {
 export type LoginSituationType =
 	| FormSituationType
 	| 'csrf_error'
-	| 'max_active_sessions';
+	| 'max_active_sessions'
+	| 'pending_account';
 
 export type LoginStateType = {
 	values: LoginFormFieldsType;

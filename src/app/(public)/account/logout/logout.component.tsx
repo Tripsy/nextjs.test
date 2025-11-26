@@ -36,9 +36,10 @@ export default function Logout() {
 	}, [setAuth, setAuthStatus, state?.situation]);
 
 	return (
-		<>
-			<h1 className="mb-8 text-xl font-semibold text-center">Logout</h1>
-			<div className="mb-8 text-sm text-center md:max-w-xs">
+		<div className="form-section">
+			<h1>Logout</h1>
+
+			<div className="text-sm text-center md:max-w-xs">
 				{state.situation === null && (
 					<div>
 						<Icons.Loading className="animate-spin" /> Your session
@@ -79,6 +80,6 @@ export default function Logout() {
 					</div>
 				)}
 			</div>
-		</>
+		</div>
 	);
 }

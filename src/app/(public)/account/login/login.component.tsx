@@ -89,8 +89,36 @@ export default function Login() {
 
 	if (state?.situation === 'csrf_error') {
 		return (
-			<div className="text-error">
-				<Icons.Error /> {state.message}
+			<div className="form-section">
+				<h1>Sign In</h1>
+
+				<div className="text-sm text-error">
+					<Icons.Error /> {state.message}
+				</div>
+			</div>
+		);
+	}
+
+	if (state?.situation === 'pending_account') {
+		return (
+			<div className="form-section">
+				<h1>Sign In</h1>
+
+				<div className="text-sm text-error">
+					<Icons.Error /> {state.message}
+				</div>
+
+				<div className="text-center mt-2">
+					<span className="text-sm text-gray-500 dark:text-base-content">
+						Have you confirmed your email? If you’ve lost the instructions, you can resend the{' '}
+					</span>
+					<Link
+						href={Routes.get('email-confirm-send')}
+						className="link link-info link-hover text-sm"
+					>
+						confirmation email
+					</Link>
+				</div>
 			</div>
 		);
 	}
@@ -206,13 +234,13 @@ export default function Login() {
 	);
 }
 
-function AuthTokenList({
+const AuthTokenList = ({
 	status,
 	tokens,
 }: {
 	status: { message: string; error: boolean };
 	tokens: AuthTokenListType | [];
-}) {
+})=> {
 	const [displayStatus, setDisplayStatus] = useState({ ...status });
 	const [selectedToken, setSelectedToken] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);

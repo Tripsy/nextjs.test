@@ -1,12 +1,11 @@
 # TODO
 
-1. email-confirm-resend >> implement to login and register flows
-2. account/my > passwordUpdate & emailUpdate
-3. learn about react-dev-tools & recap NextJs documentation
-4. Replace all console.error with logging
-5. Add section "documentation"
-6. More language vars 
-7. middleware.ts - for production ready it will need some revision -> security headers
+1. account/my > passwordUpdate & emailUpdate
+2. learn about react-dev-tools & recap NextJs documentation
+3. Replace all console.error with logging
+4. Add section "documentation"
+5. More language vars 
+6. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 

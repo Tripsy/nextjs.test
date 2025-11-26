@@ -79,6 +79,28 @@ export default function Register() {
 		);
 	}
 
+	if (state?.situation === 'pending_account') {
+		return (
+			<div>
+				<div className="text-sm text-error">
+					<Icons.Error/> {state.message}
+				</div>
+
+				<div className="text-center mt-2">
+					<span className="text-sm text-gray-500 dark:text-base-content">
+						Have you confirmed your email? If you’ve lost the instructions, you can resend the{' '}
+					</span>
+					<Link
+						href={Routes.get('email-confirm-send')}
+						className="link link-info link-hover text-sm"
+					>
+						confirmation email
+					</Link>
+				</div>
+			</div>
+		);
+	}
+
 	if (state?.situation === 'success') {
 		return (
 			<div className="form-section">

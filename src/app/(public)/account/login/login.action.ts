@@ -93,10 +93,9 @@ export async function loginAction(
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
-				case 429:
-					message = await translate(
-						'login.message.too_many_login_attempts',
-					);
+
+				case 400:
+					message = await translate('login.message.not_active');
 					break;
 				case 403:
 					message = await translate(
@@ -110,8 +109,16 @@ export async function loginAction(
 				case 406:
 					situation = 'success'; // Already logged in
 					break;
-				case 400:
-					message = await translate('login.message.not_active');
+				case 409:
+					message = await translate(
+						'login.message.pending_account',
+					);
+					situation = 'pending_account';
+					break;
+				case 429:
+					message = await translate(
+						'login.message.too_many_login_attempts',
+					);
 					break;
 			}
 		}

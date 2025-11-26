@@ -60,8 +60,12 @@ export default function PasswordRecoverChange() {
 
 	if (state?.situation === 'csrf_error') {
 		return (
-			<div className="text-error">
-				<Icons.Error /> {state.message}
+			<div className="form-section">
+				<h1>Recover Password</h1>
+
+				<div className="text-sm text-error">
+					<Icons.Error /> {state.message}
+				</div>
 			</div>
 		);
 	}
@@ -70,10 +74,12 @@ export default function PasswordRecoverChange() {
 		return (
 			<div className="form-section">
 				<h1>Recover Password</h1>
+
 				<div className="text-sm">
 					<Icons.Success className="text-success" /> Your password has
 					been updated successfully.
 				</div>
+
 				<p className="mt-2 text-center">
 					<span className="text-sm text-gray-500 dark:text-base-content">
 						You can now go to the{' '}
