@@ -268,7 +268,7 @@ async function fetchAuthModel(token: string): Promise<AuthModel> {
 	try {
 		const fetchResponse: ResponseFetch<AuthModel> = await new ApiRequest()
 			.setRequestMode('remote-api')
-			.doFetch('/account/details', {
+			.doFetch('/account/me', {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,

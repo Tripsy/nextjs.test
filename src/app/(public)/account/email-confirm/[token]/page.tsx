@@ -60,7 +60,7 @@ export default async function Page(props: Props) {
 		<section className="fit-container">
 			<div className="standard-box p-4 sm:p-8 shadow-md md:w-[24rem]">
 				<div className="form-section">
-					<h1>Email Confirmation</h1>
+					<h1 className="text-center">Email Confirmation</h1>
 
 					<div className="text-sm">
 						<div className="flex items-center gap-2">

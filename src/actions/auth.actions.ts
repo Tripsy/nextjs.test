@@ -61,7 +61,7 @@ export async function getAuth(): Promise<ResponseFetch<AuthModel>> {
 		const fetchResponse: ResponseFetch<AuthModel> | undefined =
 			await new ApiRequest()
 				.setRequestMode('remote-api')
-				.doFetch('/account/details', {
+				.doFetch('/account/me', {
 					method: 'GET',
 					headers: {
 						Authorization: `Bearer ${sessionToken.value}`,

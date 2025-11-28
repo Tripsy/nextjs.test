@@ -1,5 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
+import { translate } from '@/config/lang';
 import Routes from '@/config/routes';
+import { cfg } from '@/config/settings';
+
+export async function generateMetadata(): Promise<Metadata> {
+	return {
+		title: await translate('home.meta.title', {
+			app_name: cfg('app.name') as string,
+		}),
+	};
+}
 
 export default function Page() {
 	return (

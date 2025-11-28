@@ -48,7 +48,7 @@ export default function PasswordRecover() {
 	if (state?.situation === 'csrf_error') {
 		return (
 			<div className="form-section">
-				<h1>Recover Password</h1>
+				<h1 className="text-center">Recover Password</h1>
 
 				<div className="text-sm text-error">
 					<Icons.Error /> {state.message}
@@ -60,7 +60,7 @@ export default function PasswordRecover() {
 	if (state?.situation === 'success') {
 		return (
 			<div className="form-section">
-				<h1>Recover Password</h1>
+				<h1 className="text-center">Recover Password</h1>
 
 				<div className="text-sm">
 					<Icons.Success className="text-success" /> Please check your
@@ -90,7 +90,7 @@ export default function PasswordRecover() {
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
-			<h1>Recover Password</h1>
+			<h1 className="text-center">Recover Password</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>

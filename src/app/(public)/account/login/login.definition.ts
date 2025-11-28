@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { translateBatch } from '@/config/lang';
+import type { AuthTokenListType } from '@/lib/services/account.service';
 import type { FormSituationType } from '@/lib/types';
 
 export type LoginFormFieldsType = {
@@ -30,14 +31,6 @@ export const LoginState: LoginStateType = {
 	message: null,
 	situation: null,
 };
-
-export type AuthTokenType = {
-	ident: string;
-	label: string;
-	used_at: string; // ISO date string
-};
-
-export type AuthTokenListType = AuthTokenType[];
 
 const translations = await translateBatch([
 	'login.validation.email_invalid',

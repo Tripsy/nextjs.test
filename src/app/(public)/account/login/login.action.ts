@@ -1,7 +1,6 @@
 import { createAuth } from '@/actions/auth.actions';
 import { isValidCsrfToken } from '@/actions/csrf.action';
 import {
-	type AuthTokenListType,
 	type LoginFormFieldsType,
 	LoginSchema,
 	type LoginSituationType,
@@ -10,7 +9,10 @@ import {
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
-import { loginAccount } from '@/lib/services/account.service';
+import {
+	type AuthTokenListType,
+	loginAccount,
+} from '@/lib/services/account.service';
 
 export function loginFormValues(formData: FormData): LoginFormFieldsType {
 	return {
@@ -93,7 +95,6 @@ export async function loginAction(
 
 		if (error instanceof ApiError) {
 			switch (error.status) {
-
 				case 400:
 					message = await translate('login.message.not_active');
 					break;
@@ -110,9 +111,7 @@ export async function loginAction(
 					situation = 'success'; // Already logged in
 					break;
 				case 409:
-					message = await translate(
-						'login.message.pending_account',
-					);
+					message = await translate('login.message.pending_account');
 					situation = 'pending_account';
 					break;
 				case 429:

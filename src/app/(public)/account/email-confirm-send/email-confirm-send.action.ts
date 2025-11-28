@@ -18,7 +18,9 @@ export function emailConfirmSendFormValues(
 	};
 }
 
-export function emailConfirmSendValidate(values: EmailConfirmSendFormFieldsType) {
+export function emailConfirmSendValidate(
+	values: EmailConfirmSendFormFieldsType,
+) {
 	return EmailConfirmSendSchema.safeParse(values);
 }
 
@@ -88,7 +90,8 @@ export async function emailConfirmSendAction(
 		return {
 			...result,
 			message:
-				message || (await translate('email_confirm_send.message.failed')),
+				message ||
+				(await translate('email_confirm_send.message.failed')),
 			situation: situation,
 		};
 	}

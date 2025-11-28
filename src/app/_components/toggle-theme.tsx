@@ -11,14 +11,14 @@ export function ToggleTheme() {
 	};
 
 	return (
-		<label className="relative inline-flex items-center cursor-pointer mr-5">
+		<label className="relative inline-flex items-center cursor-pointer mr-4">
 			<input
 				type="checkbox"
 				className="sr-only"
 				checked={theme === 'dark'}
 				onChange={handleToggle}
 			/>
-			<div className="relative w-10 h-10">
+			<div className="relative w-4">
 				<div
 					className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
 						theme === 'dark' ? 'rotate-0' : 'rotate-180'

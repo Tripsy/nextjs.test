@@ -1,13 +1,10 @@
-import type {
-	AuthTokenListType,
-	LoginFormFieldsType,
-} from '@/app/(public)/account/login/login.definition';
+import type { EmailConfirmSendFormFieldsType } from '@/app/(public)/account/email-confirm-send/email-confirm-send.definition';
+import type { LoginFormFieldsType } from '@/app/(public)/account/login/login.definition';
 import type { PasswordRecoverFormFieldsType } from '@/app/(public)/account/password-recover/password-recover.definition';
 import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
 import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
 import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
-import {EmailConfirmSendFormFieldsType} from "@/app/(public)/account/email-confirm-send/email-confirm-send.definition";
 
 export async function registerAccount(
 	params: RegisterFormFieldsType,
@@ -83,4 +80,30 @@ export async function emailConfirmSendAccount(
 		method: 'POST',
 		body: JSON.stringify(params),
 	});
+}
+
+export type AuthTokenType = {
+	ident: string;
+	label: string;
+	used_at: Date;
+	used_now: boolean; // true - if is a match for current session
+};
+
+export type AuthTokenListType = AuthTokenType[];
+
+export async function getSessions(): Promise<AuthTokenListType | []> {
+	try {
+		const fetchResponse: ResponseFetch<AuthTokenListType> =
+			await new ApiRequest().doFetch('/account/me/sessions', {
+				method: 'GET',
+			});
+
+		if (fetchResponse?.success) {
+			return fetchResponse.data || [];
+		}
+	} catch (error: unknown) {
+		console.error(error);
+	}
+
+	return [];
 }

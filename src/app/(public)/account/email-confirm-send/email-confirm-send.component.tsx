@@ -47,8 +47,12 @@ export default function EmailConfirmSend() {
 
 	if (state?.situation === 'csrf_error') {
 		return (
-			<div className="text-error">
-				<Icons.Error /> {state.message}
+			<div className="form-section">
+				<h1 className="text-center">Email Confirmation Send</h1>
+
+				<div className="text-sm text-error">
+					<Icons.Error /> {state.message}
+				</div>
 			</div>
 		);
 	}
@@ -56,11 +60,14 @@ export default function EmailConfirmSend() {
 	if (state?.situation === 'success') {
 		return (
 			<div className="form-section">
-				<h1>Email Confirmation Send</h1>
+				<h1 className="text-center">Email Confirmation Send</h1>
+
 				<div className="text-sm">
 					<Icons.Success className="text-success" /> Please check your
-					email and follow instructions to complete the confirmation process.
+					email and follow instructions to complete the confirmation
+					process.
 				</div>
+
 				<p className="mt-2 text-center">
 					<span className="text-sm text-gray-500 dark:text-base-content">
 						Meanwhile you can go back to{' '}
@@ -84,11 +91,12 @@ export default function EmailConfirmSend() {
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
-			<h1>Email Confirmation Send</h1>
+			<h1 className="text-center">Email Confirmation Send</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>
-					Use the form below to re-send the confirmation email to the email address you used to register.
+					Use the form below to re-send the confirmation email to the
+					email address you used to register.
 				</span>
 			</FormPart>
 

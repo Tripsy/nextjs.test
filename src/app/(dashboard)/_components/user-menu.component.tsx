@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { Icons } from '@/app/_components/icon.component';
 import { useAuth } from '@/app/_providers/auth.provider';
 import Routes from '@/config/routes';
-import { getNameInitials } from '@/lib/utils/string';
+import { UserRoleEnum } from '@/lib/entities/user.model';
 
 export function UserMenu() {
 	const { auth, authStatus } = useAuth();
@@ -15,24 +16,49 @@ export function UserMenu() {
 	}
 
 	return (
-		<div className="dropdown dropdown-end">
+		<div className="dropdown dropdown-end dropdown-hover">
 			<button type="button">
-				<div className="rounded-full shadow-md bg-gray-100 p-1 cursor-pointer font-bold dark:text-black">
-					{getNameInitials(auth?.name)}
-				</div>
+				<Icons.User className="w-5 h-5 cursor-pointer" />
 			</button>
-			<ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-				<li>
-					<Link href="#" prefetch={false}>
-						Settings
-					</Link>
-				</li>
-				<li>
-					<Link href={Routes.get('logout')} prefetch={false}>
-						Logout
-					</Link>
-				</li>
-			</ul>
+			{authStatus === 'unauthenticated' && (
+				<ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-36 p-2 shadow-sm">
+					<li>
+						<Link href={Routes.get('login')} title="Sign in">
+							Login
+						</Link>
+					</li>
+					<li>
+						<Link
+							href={Routes.get('register')}
+							title="Create account"
+						>
+							Register
+						</Link>
+					</li>
+				</ul>
+			)}
+			{authStatus === 'authenticated' && (
+				<ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-36 p-2 shadow-sm">
+					<li>
+						<Link href={Routes.get('account-me')}>My account</Link>
+					</li>
+					{auth?.role &&
+						[UserRoleEnum.ADMIN, UserRoleEnum.OPERATOR].includes(
+							auth.role,
+						) && (
+							<li>
+								<Link href={Routes.get('dashboard')}>
+									Dashboard
+								</Link>
+							</li>
+						)}
+					<li>
+						<Link href={Routes.get('logout')} prefetch={false}>
+							Logout
+						</Link>
+					</li>
+				</ul>
+			)}
 		</div>
 	);
 }

@@ -73,22 +73,29 @@ export default function Register() {
 
 	if (state?.situation === 'csrf_error') {
 		return (
-			<div className="text-error">
-				<Icons.Error /> {state.message}
+			<div className="form-section">
+				<h1 className="text-center">Create Account</h1>
+
+				<div className="text-sm text-error">
+					<Icons.Error /> {state.message}
+				</div>
 			</div>
 		);
 	}
 
 	if (state?.situation === 'pending_account') {
 		return (
-			<div>
+			<div className="form-section">
+				<h1 className="text-center">Create Account</h1>
+
 				<div className="text-sm text-error">
-					<Icons.Error/> {state.message}
+					<Icons.Error /> {state.message}
 				</div>
 
 				<div className="text-center mt-2">
 					<span className="text-sm text-gray-500 dark:text-base-content">
-						Have you confirmed your email? If you’ve lost the instructions, you can resend the{' '}
+						Have you confirmed your email? If you’ve lost the
+						instructions, you can resend the{' '}
 					</span>
 					<Link
 						href={Routes.get('email-confirm-send')}
@@ -104,7 +111,8 @@ export default function Register() {
 	if (state?.situation === 'success') {
 		return (
 			<div className="form-section">
-				<h1>Account Created</h1>
+				<h1 className="text-center">Create Account</h1>
+
 				<div className="text-sm">
 					<p>
 						We&apos;ve sent a verification email to{' '}
@@ -142,7 +150,7 @@ export default function Register() {
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
-			<h1>Create Account</h1>
+			<h1 className="text-center">Create Account</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<>

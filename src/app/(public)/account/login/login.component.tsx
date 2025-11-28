@@ -11,24 +11,33 @@ import {
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
-import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
+import {
+	useElementIds,
+	useFormValidation,
+	useFormValues,
+	useTranslation,
+} from '@/app/_hooks';
 import { useAuth } from '@/app/_providers/auth.provider';
+import { useToast } from '@/app/_providers/toast.provider';
 import {
 	loginAction,
 	loginValidate,
 } from '@/app/(public)/account/login/login.action';
 import {
-	type AuthTokenListType,
-	type AuthTokenType,
 	type LoginFormFieldsType,
 	LoginState,
 } from '@/app/(public)/account/login/login.definition';
 import Routes, { isExcludedRoute } from '@/config/routes';
 import { cfg } from '@/config/settings';
-import { removeTokenAccount } from '@/lib/services/account.service';
+import {
+	type AuthTokenListType,
+	type AuthTokenType,
+	removeTokenAccount,
+} from '@/lib/services/account.service';
 import { formatDate } from '@/lib/utils/date';
 
 export default function Login() {
+	const { showToast } = useToast();
 	const [state, action, pending] = useActionState(loginAction, LoginState);
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -46,6 +55,16 @@ export default function Login() {
 			validate: loginValidate,
 			debounceDelay: 800,
 		});
+
+	const translationsKeys = useMemo(
+		() => [
+			'login.message.session_destroy_success',
+			'login.message.session_destroy_error',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const handleChange = (
 		name: string,
@@ -90,7 +109,7 @@ export default function Login() {
 	if (state?.situation === 'csrf_error') {
 		return (
 			<div className="form-section">
-				<h1>Sign In</h1>
+				<h1 className="text-center">Sign In</h1>
 
 				<div className="text-sm text-error">
 					<Icons.Error /> {state.message}
@@ -102,7 +121,7 @@ export default function Login() {
 	if (state?.situation === 'pending_account') {
 		return (
 			<div className="form-section">
-				<h1>Sign In</h1>
+				<h1 className="text-center">Sign In</h1>
 
 				<div className="text-sm text-error">
 					<Icons.Error /> {state.message}
@@ -110,7 +129,8 @@ export default function Login() {
 
 				<div className="text-center mt-2">
 					<span className="text-sm text-gray-500 dark:text-base-content">
-						Have you confirmed your email? If you’ve lost the instructions, you can resend the{' '}
+						Have you confirmed your email? If you’ve lost the
+						instructions, you can resend the{' '}
 					</span>
 					<Link
 						href={Routes.get('email-confirm-send')}
@@ -131,7 +151,7 @@ export default function Login() {
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
-			<h1>Sign In</h1>
+			<h1 className="text-center">Sign In</h1>
 
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>Secure login. Resume your personalized experience.</span>
@@ -194,13 +214,24 @@ export default function Login() {
 
 			{state?.situation === 'max_active_sessions' && state.message && (
 				<FormPart>
-					<AuthTokenList
-						tokens={state.body?.authValidTokens || []}
-						status={{
-							message: state.message,
-							error: true,
-						}}
-					/>
+					<div className="space-y-4">
+						<div className="text-error text-sm">
+							<Icons.Error /> {state.message}
+						</div>
+
+						<AuthTokenList
+							tokens={state.body?.authValidTokens || []}
+							callbackAction={(success, message) => {
+								showToast({
+									severity: success ? 'success' : 'error',
+									summary: success ? 'Success' : 'Error',
+									detail: translations[
+										`login.message.${message}`
+									],
+								});
+							}}
+						/>
+					</div>
 				</FormPart>
 			)}
 
@@ -234,14 +265,13 @@ export default function Login() {
 	);
 }
 
-const AuthTokenList = ({
-	status,
+export const AuthTokenList = ({
+	callbackAction,
 	tokens,
 }: {
-	status: { message: string; error: boolean };
+	callbackAction: (success: boolean, message: string) => void;
 	tokens: AuthTokenListType | [];
-})=> {
-	const [displayStatus, setDisplayStatus] = useState({ ...status });
+}) => {
 	const [selectedToken, setSelectedToken] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [tokenList, setTokenList] = useState<AuthTokenListType>([
@@ -251,10 +281,6 @@ const AuthTokenList = ({
 	useEffect(() => {
 		setTokenList([...tokens]);
 	}, [tokens]);
-
-	useEffect(() => {
-		setDisplayStatus(status);
-	}, [status]);
 
 	const handleConfirmDestroy = async () => {
 		if (!selectedToken) {
@@ -266,20 +292,13 @@ const AuthTokenList = ({
 
 			await removeTokenAccount(selectedToken);
 
-			setDisplayStatus({
-				message:
-					'Session destroyed successfully. You can retry logging in',
-				error: false,
-			});
+			callbackAction(true, 'session_destroy_success');
 
 			setTokenList((prev) =>
 				prev.filter((token) => token.ident !== selectedToken),
 			);
 		} catch {
-			setDisplayStatus({
-				message: 'Error deleting session',
-				error: true,
-			});
+			callbackAction(false, 'session_destroy_error');
 		} finally {
 			setLoading(false);
 			setSelectedToken(null);
@@ -293,73 +312,64 @@ const AuthTokenList = ({
 
 	return (
 		<>
-			{displayStatus.error && displayStatus.message && (
-				<FormError>
-					<div>
-						<Icons.Error /> {displayStatus.message}
-					</div>
-				</FormError>
-			)}
-
-			{!displayStatus.error && displayStatus.message && (
-				<FormError className="text-info">
-					<div>
-						<Icons.Ok /> {displayStatus.message}
-					</div>
-				</FormError>
-			)}
-
-			<div className="space-y-4">
-				{tokenList.map((token: AuthTokenType) => (
-					<div
-						key={token.ident}
-						className="p-4 border border-line rounded shadow-sm"
-					>
+			{tokenList.map((token: AuthTokenType) => (
+				<div key={token.ident} className="card bg-base-100 shadow-xl">
+					<div className="card-body">
 						<div className="text-sm">{token.label}</div>
 						<div className="text-xs mt-1">
-							Last used: {formatDate(token.used_at)}
+							Last used: {formatDate(token.used_at, 'date-time')}
 						</div>
-						<button
-							type="button"
-							className="mt-2 btn btn-neutral hover:text-white hover:bg-error border-none w-full"
-							onClick={() => setSelectedToken(token.ident)}
-						>
-							<Icons.Action.Destroy /> Destroy Session
-						</button>
+						<div className="card-actions">
+							{token.used_now ? (
+								<div className="mt-2 btn btn-success btn-sm border-none cursor-default">
+									<Icons.Status.Active /> Active Session
+								</div>
+							) : (
+								<button
+									type="button"
+									className="mt-2 btn btn-neutral btn-sm border-none hover:bg-error"
+									onClick={() =>
+										setSelectedToken(token.ident)
+									}
+								>
+									<Icons.Action.Destroy /> Destroy Session
+								</button>
+							)}
+						</div>
 					</div>
-				))}
+				</div>
+			))}
 
-				{selectedToken && (
-					<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-						<div className="bg-base-200 p-4 md:p-8 rounded-md shadow-xl max-w-sm w-full">
-							<p className="text-sm semi-bold">
-								Are you sure you want to destroy the session?
-							</p>
-							<p className="font-mono text-xs break-words mt-2">
-								{selectedTokenData?.label}
-							</p>
-							<div className="flex justify-end gap-2 mt-4">
-								<button
-									type="button"
-									className="btn btn-neutral"
-									onClick={() => setSelectedToken(null)}
-									disabled={loading}
-								>
-									Cancel
-								</button>
-								<button
-									type="button"
-									className="btn btn-success"
-									onClick={handleConfirmDestroy}
-									disabled={loading}
-								>
-									{loading ? 'Deleting...' : 'Confirm'}
-								</button>
-							</div>
+			{selectedToken && (
+				<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+					<div className="bg-base-200 p-4 md:p-8 rounded-md shadow-xl max-w-sm w-full">
+						<p className="text-sm semi-bold">
+							Are you sure you want to destroy the session?
+						</p>
+						<p className="font-mono text-xs break-words mt-2">
+							{selectedTokenData?.label}
+						</p>
+						<div className="flex justify-end gap-2 mt-4">
+							<button
+								type="button"
+								className="btn btn-neutral"
+								onClick={() => setSelectedToken(null)}
+								disabled={loading}
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								className="btn btn-success"
+								onClick={handleConfirmDestroy}
+								disabled={loading}
+							>
+								{loading ? 'Deleting...' : 'Confirm'}
+							</button>
 						</div>
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 		</>
 	);
-}
+};

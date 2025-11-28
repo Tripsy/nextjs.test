@@ -4,6 +4,7 @@ import {
 	faArrowsRotate,
 	faBan,
 	faBars,
+	faCalendar,
 	faCircleCheck,
 	faCircleExclamation,
 	faCircleInfo,
@@ -13,6 +14,7 @@ import {
 	faEnvelopeCircleCheck,
 	faEye,
 	faEyeSlash,
+	faFileContract,
 	faKey,
 	faLock,
 	faMagnifyingGlass,
@@ -23,6 +25,7 @@ import {
 	faPlus,
 	faRotateLeft,
 	faScrewdriverWrench,
+	faShield,
 	faSpinner,
 	faSun,
 	faTag,
@@ -109,6 +112,18 @@ export const Icons = {
 	),
 	Tag: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faTag} {...props} />
+	),
+	Calendar: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faCalendar} {...props} />
+	),
+	Settings: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faScrewdriverWrench} {...props} />
+	),
+	Security: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faShield} {...props} />
+	),
+	Session: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faFileContract} {...props} />
 	),
 	Status: {
 		Active: (props: Partial<FontAwesomeIconProps>) => (

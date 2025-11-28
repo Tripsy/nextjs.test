@@ -1,3 +1,5 @@
+import account_edit from '@/locales/en/account_edit.json';
+import account_me from '@/locales/en/account_me.json';
 import app from '@/locales/en/app.json';
 import auth from '@/locales/en/auth.json';
 import cron_history from '@/locales/en/cron_history.json';
@@ -5,6 +7,7 @@ import dashboard from '@/locales/en/dashboard.json';
 import email_confirm from '@/locales/en/email_confirm.json';
 import email_confirm_send from '@/locales/en/email_confirm_send.json';
 import error from '@/locales/en/error.json';
+import home from '@/locales/en/home.json';
 import log_data from '@/locales/en/log_data.json';
 import login from '@/locales/en/login.json';
 import logout from '@/locales/en/logout.json';
@@ -17,6 +20,8 @@ import templates from '@/locales/en/templates.json';
 import users from '@/locales/en/users.json';
 
 const en = {
+	account_edit,
+	account_me,
 	app,
 	auth,
 	cron_history,
@@ -24,6 +29,7 @@ const en = {
 	email_confirm,
 	email_confirm_send,
 	error,
+	home,
 	log_data,
 	login,
 	logout,

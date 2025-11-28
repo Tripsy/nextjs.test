@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { Footer } from '@/app/_components/layout-default.component';
 import { ToggleTheme } from '@/app/_components/toggle-theme';
+import { UserMenu } from '@/app/(dashboard)/_components/user-menu.component';
 import Routes from '@/config/routes';
 
 function Header() {
@@ -21,6 +22,7 @@ function Header() {
 				</div>
 				<div className="flex items-center">
 					<ToggleTheme />
+					<UserMenu />
 				</div>
 			</div>
 		</header>

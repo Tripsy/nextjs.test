@@ -215,6 +215,20 @@ export function formatDate(
 			return date.format('DD-MM-YYYY, hh:mm A');
 		default:
 			if (format) {
+				// const replacements: Record<string, string> = {
+				// 	'M': date.format('MMMM'),    // Full month name (November)
+				// 	'm': date.format('MMM'),     // Short month name (Nov)
+				// 	'D': date.format('D'),       // Day of month (1-31)
+				// 	'DD': date.format('DD'),     // Day of month with leading zero (01-31)
+				// 	'Y': date.format('YYYY'),    // Full year (2025)
+				// 	'YY': date.format('YY'),     // Short year (25)
+				// };
+				//
+				// // Replace custom tokens with moment.js formatting
+				// return format.replace(/(M+|m+|D+|Y+)/g, (match) => {
+				// 	return replacements[match] || date.format(match);
+				// });
+
 				return date.format(format);
 			}
 

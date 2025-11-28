@@ -29,8 +29,7 @@ const translations = await translateBatch([
 ]);
 
 export const EmailConfirmSendSchema = z.object({
-	email: z
-		.string()
-		.trim()
-		.email({ message: translations['email_confirm_send.validation.email_invalid'] }),
+	email: z.string().trim().email({
+		message: translations['email_confirm_send.validation.email_invalid'],
+	}),
 });

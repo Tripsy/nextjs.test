@@ -16,6 +16,8 @@ export type UserModel<D = Date | string> = {
 	id: number;
 	name: string;
 	email: string;
+	email_verified_at: D;
+	password_updated_at: D;
 	status: UserStatusEnum;
 	language: LanguageEnum;
 	role: UserRoleEnum;

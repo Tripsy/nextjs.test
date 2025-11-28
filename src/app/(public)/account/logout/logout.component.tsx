@@ -37,7 +37,7 @@ export default function Logout() {
 
 	return (
 		<div className="form-section">
-			<h1>Logout</h1>
+			<h1 className="text-center">Logout</h1>
 
 			<div className="text-sm text-center md:max-w-xs">
 				{state.situation === null && (

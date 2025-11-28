@@ -172,7 +172,17 @@ Routes.group('account')
 		auth: RouteAuth.PUBLIC,
 	})
 	.add('email-confirm-send', '/account/email-confirm-send')
-	.add('account', '/account/my', { auth: RouteAuth.AUTHENTICATED });
+	.add('account-me', '/account/me', { auth: RouteAuth.AUTHENTICATED })
+	.add('account-edit', '/account/edit', { auth: RouteAuth.AUTHENTICATED })
+	.add('password-update', '/account/password-update', {
+		auth: RouteAuth.AUTHENTICATED,
+	})
+	.add('email-update', '/account/email-update', {
+		auth: RouteAuth.AUTHENTICATED,
+	})
+	.add('account-delete', '/account/delete', {
+		auth: RouteAuth.AUTHENTICATED,
+	});
 
 // Dashboard
 Routes.group('dashboard')
