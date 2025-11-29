@@ -16,7 +16,7 @@ import {
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
-export default function Me() {
+export default function AccountMe() {
 	const { auth, authStatus } = useAuth();
 	const { showToast } = useToast();
 	const [sessions, setSessions] = useState<AuthTokenListType>([]);

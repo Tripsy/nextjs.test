@@ -1,3 +1,4 @@
+import type { AccountEditFormFieldsType } from '@/app/(public)/account/edit/account-edit.definition';
 import type { EmailConfirmSendFormFieldsType } from '@/app/(public)/account/email-confirm-send/email-confirm-send.definition';
 import type { LoginFormFieldsType } from '@/app/(public)/account/login/login.definition';
 import type { PasswordRecoverFormFieldsType } from '@/app/(public)/account/password-recover/password-recover.definition';
@@ -106,4 +107,13 @@ export async function getSessions(): Promise<AuthTokenListType | []> {
 	}
 
 	return [];
+}
+
+export async function editAccount(
+	params: AccountEditFormFieldsType,
+): Promise<ResponseFetch<null>> {
+	return await new ApiRequest().doFetch('/account/me/edit', {
+		method: 'POST',
+		body: JSON.stringify(params),
+	});
 }
