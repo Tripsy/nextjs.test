@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { HandleChangeType } from '@/app/_components/form/form-element.component';
 import type { ValidationReturnType } from '@/app/_hooks';
 import {
 	DataSourceConfigCronHistory,
@@ -141,7 +140,10 @@ export type FormManageType<K extends keyof DataSourceType> = {
 	actionName: 'create' | 'update';
 	formValues: DataSourceFormValues<K>;
 	errors: Partial<Record<keyof DataSourceFormValues<K>, string[]>>;
-	handleChange: HandleChangeType;
+	handleChange: (
+		field: string,
+		value: string | boolean | number | Date,
+	) => void;
 	pending: boolean;
 };
 

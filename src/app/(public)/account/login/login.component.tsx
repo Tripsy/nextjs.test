@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useMemo, useState } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
 import {
-	FormElementEmail,
-	FormElementPassword,
+	FormComponentEmail,
+	FormComponentPassword,
+	FormComponentSubmit,
 } from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
@@ -44,6 +45,7 @@ export default function Login() {
 	const { refreshAuth } = useAuth();
 
 	const router = useRouter();
+	const searchParams = useSearchParams();
 
 	const [formValues, setFormValues] = useFormValues<LoginFormFieldsType>(
 		state.values,
@@ -81,9 +83,7 @@ export default function Login() {
 			})();
 
 			// Get the original destination from query params
-			const fromParam = new URLSearchParams(window.location.search).get(
-				'from',
-			);
+			const fromParam = searchParams.get('from');
 
 			let redirectUrl = Routes.get('home');
 
@@ -102,7 +102,7 @@ export default function Login() {
 
 			router.replace(redirectUrl);
 		}
-	}, [state?.situation, router, refreshAuth]);
+	}, [state?.situation, router, refreshAuth, searchParams.get]);
 
 	const elementIds = useElementIds(['email', 'password']);
 
@@ -150,60 +150,34 @@ export default function Login() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
-
 			<h1 className="text-center">Sign In</h1>
-
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>Secure login. Resume your personalized experience.</span>
 			</FormPart>
-
-			<FormElementEmail
+			<FormComponentEmail
 				id={elementIds.email}
-				value={formValues.email ?? ''}
+				fieldValue={formValues.email ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('email', e.target.value)}
 				error={errors.email}
 			/>
-
-			<FormElementPassword
-				autoComplete="current-password"
+			<FormComponentPassword
 				id={elementIds.password}
-				value={formValues.password ?? ''}
+				fieldValue={formValues.password ?? ''}
+				autoComplete="current-password"
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('password', e.target.value)}
 				error={errors.password}
 				showPassword={showPassword}
 				setShowPassword={setShowPassword}
 			/>
-
-			<FormPart>
-				<button
-					type="submit"
-					className="btn btn-info w-full"
-					disabled={
-						pending || (submitted && Object.keys(errors).length > 0)
-					}
-					aria-busy={pending}
-				>
-					{pending ? (
-						<span className="flex items-center gap-2">
-							<Icons.Loading className="w-4 h-4 animate-spin" />
-							Please wait...
-						</span>
-					) : submitted && Object.keys(errors).length > 0 ? (
-						<span className="flex items-center gap-2">
-							<Icons.Error className="w-4 h-4 animate-pulse" />
-							Login
-						</span>
-					) : (
-						<span className="flex items-center gap-2">
-							<Icons.Login />
-							Login
-						</span>
-					)}
-				</button>
-			</FormPart>
-
+			<FormComponentSubmit
+				pending={pending}
+				submitted={submitted}
+				errors={errors}
+				buttonLabel="Login"
+				buttonIcon={<Icons.Login />}
+			/>
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
@@ -211,7 +185,6 @@ export default function Login() {
 					</div>
 				</FormError>
 			)}
-
 			{state?.situation === 'max_active_sessions' && state.message && (
 				<FormPart>
 					<div className="space-y-4">
@@ -234,7 +207,6 @@ export default function Login() {
 					</div>
 				</FormPart>
 			)}
-
 			<FormPart className="text-center">
 				<div>
 					<div className="mb-2">

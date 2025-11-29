@@ -5,8 +5,8 @@ import { useParams } from 'next/navigation';
 import { useActionState, useState } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
 import {
-	FormElementPassword,
-	FormElementPasswordConfirm,
+	FormComponentPassword,
+	FormComponentSubmit,
 } from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
@@ -103,63 +103,42 @@ export default function PasswordRecoverChange() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
-
 			<h1 className="text-center">Recover Password</h1>
-
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>
 					Use the form below to set up a new password for your
 					account.
 				</span>
 			</FormPart>
-
-			<FormElementPassword
+			<FormComponentPassword
 				id={elementIds.password}
-				value={formValues.password ?? ''}
+				fieldValue={formValues.password ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('password', e.target.value)}
 				error={errors.password}
 				showPassword={showPassword}
 				setShowPassword={setShowPassword}
 			/>
-
-			<FormElementPasswordConfirm
+			<FormComponentPassword
+				labelText="Confirm Password"
 				id={elementIds.passwordConfirm}
-				value={formValues.password_confirm ?? ''}
+				fieldName="password_confirm"
+				fieldValue={formValues.password_confirm ?? ''}
+				placeholderText="Password confirmation"
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) =>
+					handleChange('password_confirm', e.target.value)
+				}
 				error={errors.password_confirm}
 				showPassword={showPassword}
 			/>
-
-			<FormPart>
-				<button
-					type="submit"
-					className="btn btn-info w-full"
-					disabled={
-						pending || (submitted && Object.keys(errors).length > 0)
-					}
-					aria-busy={pending}
-				>
-					{pending ? (
-						<span className="flex items-center gap-2">
-							<Icons.Loading className="w-4 h-4 animate-spin" />
-							Please wait...
-						</span>
-					) : submitted && Object.keys(errors).length > 0 ? (
-						<span className="flex items-center gap-2">
-							<Icons.Error className="w-4 h-4 animate-pulse" />
-							Update password
-						</span>
-					) : (
-						<span className="flex items-center gap-2">
-							<Icons.Go />
-							Update password
-						</span>
-					)}
-				</button>
-			</FormPart>
-
+			<FormComponentSubmit
+				pending={pending}
+				submitted={submitted}
+				errors={errors}
+				buttonLabel="Set password"
+				buttonIcon={<Icons.Go />}
+			/>
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>

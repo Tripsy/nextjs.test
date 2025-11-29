@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import type { Nullable } from 'primereact/ts-helpers';
 import {
 	FormElement,
-	type SelectOptionsType,
+	type OptionsType,
 } from '@/app/_components/form/form-element.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
@@ -27,7 +27,7 @@ type HandleSelectChangeType<K extends keyof DataSourceType> = <
 	value: string,
 ) => void;
 
-export function FormFiltersSelect<K extends keyof DataSourceType, V>({
+export function FormFiltersSelect<K extends keyof DataSourceType>({
 	labelText,
 	fieldName,
 	fieldValue,
@@ -37,7 +37,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType, V>({
 	labelText: string;
 	fieldName: string;
 	fieldValue: string | number;
-	selectOptions: SelectOptionsType<V>;
+	selectOptions: OptionsType;
 	handleSelectChange: HandleSelectChangeType<K>;
 }) {
 	const elementKey = `search-${fieldName}`;

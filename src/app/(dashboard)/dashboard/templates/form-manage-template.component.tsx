@@ -1,9 +1,12 @@
-import { Dropdown } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { FormElement } from '@/app/_components/form/form-element.component';
+import {
+	FormComponentInput,
+	FormComponentSelect,
+	FormElement,
+} from '@/app/_components/form/form-element.component';
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
@@ -70,96 +73,43 @@ export function FormManageTemplate({
 			</FormPart>
 
 			<div className="flex flex-wrap gap-4">
-				<FormPart>
-					<FormElement
-						labelText="Language"
-						labelFor={elementIds.language}
-					>
-						<div>
-							<input
-								type="hidden"
-								name="language"
-								value={formValues.language}
-							/>
-							<Dropdown
-								inputId={elementIds.language}
-								className="p-inputtext-sm"
-								panelStyle={{ fontSize: '0.875rem' }}
-								disabled={pending}
-								value={formValues.language}
-								options={languages}
-								onChange={(e) =>
-									handleChange('language', e.target.value)
-								}
-							/>
-							<FormElementError messages={errors.language} />
-						</div>
-					</FormElement>
-				</FormPart>
+				<FormComponentSelect
+					labelText="Language"
+					id={elementIds.language}
+					fieldName="language"
+					fieldValue={formValues.language}
+					options={languages}
+					disabled={pending}
+					onChange={(e) => handleChange('language', e.target.value)}
+					error={errors.language}
+				/>
 
-				<FormPart>
-					<FormElement labelText="Type" labelFor={elementIds.type}>
-						<div>
-							<input
-								type="hidden"
-								name="type"
-								value={formValues.type}
-							/>
-							<Dropdown
-								inputId={elementIds.type}
-								className="p-inputtext-sm"
-								panelStyle={{ fontSize: '0.875rem' }}
-								disabled={pending}
-								value={formValues.type}
-								options={types}
-								onChange={(e) =>
-									handleChange('type', e.target.value)
-								}
-							/>
-							<FormElementError messages={errors.type} />
-						</div>
-					</FormElement>
-				</FormPart>
+				<FormComponentSelect
+					labelText="Type"
+					id={elementIds.type}
+					fieldName="type"
+					fieldValue={formValues.type}
+					options={types}
+					disabled={pending}
+					onChange={(e) => handleChange('type', e.target.value)}
+					error={errors.type}
+				/>
 			</div>
 
 			{formValues.type === TemplateTypeEnum.EMAIL && (
 				<>
-					<FormPart>
-						<FormElement
-							labelText="Email - Subject"
-							labelFor={`${elementIds.content}-subject`}
-						>
-							<div>
-								<InputText
-									className="p-inputtext-sm w-full"
-									id={`${elementIds.content}-subject`}
-									name="content[subject]"
-									placeholder="eg: Recover password"
-									disabled={pending}
-									invalid={
-										!!getNestedError(
-											errors,
-											'content.subject',
-										)
-									}
-									value={formValues.content.subject ?? ''}
-									onChange={(e) =>
-										handleChange(
-											'content.subject',
-											e.target.value,
-										)
-									}
-								/>
-								<FormElementError
-									messages={getNestedError(
-										errors,
-										'content.subject',
-									)}
-								/>
-							</div>
-						</FormElement>
-					</FormPart>
-
+					<FormComponentInput
+						labelText="Email - Subject"
+						id={`${elementIds.content}-subject`}
+						fieldName="content[subject]"
+						fieldValue={formValues.content.subject ?? ''}
+						placeholderText="eg: Recover password"
+						disabled={pending}
+						onChange={(e) =>
+							handleChange('content.subject', e.target.value)
+						}
+						error={getNestedError(errors, 'content.subject')}
+					/>
 					<FormPart>
 						<FormElement
 							labelText="Email - Content"
@@ -187,81 +137,35 @@ export function FormManageTemplate({
 							</div>
 						</FormElement>
 					</FormPart>
-
-					<FormPart>
-						<FormElement
-							labelText="Email - Layout"
-							labelFor={`${elementIds.content}-layout`}
-						>
-							<div>
-								<input
-									type="hidden"
-									name="content[layout]"
-									value={formValues.content.layout}
-								/>
-								<Dropdown
-									inputId={`${elementIds.content}-layout`}
-									className="p-inputtext-sm"
-									panelStyle={{ fontSize: '0.875rem' }}
-									disabled={pending}
-									value={formValues.content.layout}
-									options={emailLayouts}
-									onChange={(e) =>
-										handleChange(
-											'content.layout',
-											e.target.value,
-										)
-									}
-								/>
-								<FormElementError
-									messages={getNestedError(
-										errors,
-										'content.layout',
-									)}
-								/>
-							</div>
-						</FormElement>
-					</FormPart>
+					<FormComponentSelect
+						labelText="Email - Layout"
+						id={`${elementIds.content}-layout`}
+						fieldName="content[layout]"
+						fieldValue={formValues.content.layout}
+						options={emailLayouts}
+						disabled={pending}
+						onChange={(e) =>
+							handleChange('content.layout', e.target.value)
+						}
+						error={getNestedError(errors, 'content.layout')}
+					/>
 				</>
 			)}
 
 			{formValues.type === TemplateTypeEnum.PAGE && (
 				<>
-					<FormPart>
-						<FormElement
-							labelText="Page - Title"
-							labelFor={`${elementIds.content}-title`}
-						>
-							<div>
-								<InputText
-									className="p-inputtext-sm w-full"
-									id={`${elementIds.content}-title`}
-									name="content[title]"
-									placeholder="eg: Terms & conditions"
-									disabled={pending}
-									invalid={
-										!!getNestedError(
-											errors,
-											'content.title',
-										)
-									}
-									value={formValues.content.title ?? ''}
-									onChange={(e) =>
-										handleChange(
-											'content.title',
-											e.target.value,
-										)
-									}
-								/>
-								<FormElementError
-									messages={getNestedError(
-										errors,
-										'content.title',
-									)}
-								/>
-							</div>
-						</FormElement>
-					</FormPart>
+					<FormComponentInput
+						labelText="Page - Title"
+						id={`${elementIds.content}-title`}
+						fieldName="content[title]"
+						fieldValue={formValues.content.title ?? ''}
+						placeholderText="eg: Terms & conditions"
+						disabled={pending}
+						onChange={(e) =>
+							handleChange('content.title', e.target.value)
+						}
+						error={getNestedError(errors, 'content.title')}
+					/>
 
 					<FormPart>
 						<FormElement
@@ -291,40 +195,18 @@ export function FormManageTemplate({
 						</FormElement>
 					</FormPart>
 
-					<FormPart>
-						<FormElement
-							labelText="Page - Layout"
-							labelFor={`${elementIds.content}-layout`}
-						>
-							<div>
-								<input
-									type="hidden"
-									name="content[layout]"
-									value={formValues.content.layout}
-								/>
-								<Dropdown
-									inputId={`${elementIds.content}-layout`}
-									className="p-inputtext-sm"
-									panelStyle={{ fontSize: '0.875rem' }}
-									disabled={pending}
-									value={formValues.content.layout}
-									options={emailLayouts}
-									onChange={(e) =>
-										handleChange(
-											'content.layout',
-											e.target.value,
-										)
-									}
-								/>
-								<FormElementError
-									messages={getNestedError(
-										errors,
-										'content.layout',
-									)}
-								/>
-							</div>
-						</FormElement>
-					</FormPart>
+					<FormComponentSelect
+						labelText="Page - Layout"
+						id={`${elementIds.content}-layout`}
+						fieldName="content[layout]"
+						fieldValue={formValues.content.layout}
+						options={emailLayouts}
+						disabled={pending}
+						onChange={(e) =>
+							handleChange('content.layout', e.target.value)
+						}
+						error={getNestedError(errors, 'content.layout')}
+					/>
 				</>
 			)}
 		</>

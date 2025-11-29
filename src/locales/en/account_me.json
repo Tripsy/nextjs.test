@@ -4,6 +4,9 @@
 	},
 	"message": {
 		"session_destroy_success": "Session destroyed with success",
-		"session_destroy_error": "Error destroying session"
+		"session_destroy_error": "Error destroying session",
+		"edit_success": "Account details updated successfully!",
+		"email_update_success": "Email updated successfully!",
+		"password_change_success": "Password changed successfully!"
 	}
 }

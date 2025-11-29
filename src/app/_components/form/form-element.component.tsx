@@ -1,21 +1,13 @@
 import clsx from 'clsx';
+import { Dropdown, type DropdownChangeEvent } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
+import type React from 'react';
 import type { JSX } from 'react';
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
-
-export type SelectOptionsType<V> = {
-	label: string;
-	value: V;
-}[];
-
-export type HandleChangeType = (
-	field: string,
-	value: string | boolean | number | Date,
-) => void;
 
 export const FormElement = ({
 	children,
@@ -39,23 +31,195 @@ export const FormElement = ({
 	</div>
 );
 
-export const FormElementName = ({
-	labelText = 'Name',
-	placeholderText = 'eg: John Doe',
-	id,
-	value,
-	disabled,
-	handleChange,
-	error,
-}: {
-	labelText?: string;
-	placeholderText?: string;
-	id: string;
+export type OptionsType = {
+	label: string;
 	value: string;
+}[];
+
+export type OnChangeType = (
+	e:
+		| DropdownChangeEvent
+		| React.ChangeEvent<
+				HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+		  >,
+) => void;
+
+export type FormComponentProps = {
+	labelText?: string;
+	id: string;
+	fieldName: string;
+	fieldValue: string;
+	className?: string;
+	placeholderText?: string;
 	disabled: boolean;
-	handleChange: HandleChangeType;
+	autoComplete?: 'current-password' | 'new-password' | 'name' | 'email';
+	onChange: OnChangeType;
 	error?: string[];
+};
+
+export const FormComponentSelect = ({
+	labelText,
+	id,
+	fieldName,
+	fieldValue,
+	className = 'p-inputtext-sm',
+	panelStyle = { fontSize: '0.875rem' },
+	disabled,
+	onChange,
+	error,
+	options,
+}: FormComponentProps & {
+	panelStyle?: React.CSSProperties;
+	options: OptionsType;
 }) => (
+	<FormPart>
+		<FormElement labelText={labelText} labelFor={id}>
+			<div>
+				<input type="hidden" name={fieldName} value={fieldValue} />
+				<Dropdown
+					inputId={id}
+					className={className}
+					panelStyle={panelStyle}
+					disabled={disabled}
+					value={fieldValue}
+					options={options}
+					onChange={onChange}
+				/>
+				<FormElementError messages={error} />
+			</div>
+		</FormElement>
+	</FormPart>
+);
+
+export const FormComponentRadio = ({
+	labelText,
+	id,
+	fieldName,
+	fieldValue,
+	disabled,
+	onChange,
+	error,
+	options,
+}: FormComponentProps & {
+	options: OptionsType;
+}) => (
+	<FormPart>
+		<FormElement labelText={labelText}>
+			<div>
+				<div className="flex flex-wrap gap-4">
+					{options.map(({ label, value }) => (
+						<div key={value} className="flex items-center gap-1.5">
+							<input
+								type="radio"
+								id={`${id}-${value}`}
+								name={fieldName}
+								value={value}
+								className={clsx('radio', {
+									'radio-error': error,
+									'radio-info': !error,
+								})}
+								disabled={disabled}
+								checked={fieldValue === value}
+								onChange={onChange}
+							/>
+							<label
+								htmlFor={`${id}-${value}`}
+								className="text-sm font-normal cursor-pointer"
+							>
+								{label}
+							</label>
+						</div>
+					))}
+				</div>
+				<FormElementError messages={error} />
+			</div>
+		</FormElement>
+	</FormPart>
+);
+
+export const FormComponentInput = ({
+	labelText,
+	id,
+	fieldName,
+	fieldValue,
+	className = 'p-inputtext-sm w-full',
+	placeholderText,
+	disabled,
+	autoComplete,
+	onChange,
+	error,
+}: FormComponentProps) => (
+	<FormPart>
+		<FormElement labelText={labelText} labelFor={id}>
+			<div>
+				<InputText
+					id={id}
+					name={fieldName}
+					value={fieldValue}
+					className={className}
+					placeholder={placeholderText}
+					autoComplete={autoComplete}
+					disabled={disabled}
+					invalid={!!error}
+					onChange={onChange}
+				/>
+				<FormElementError messages={error} />
+			</div>
+		</FormElement>
+	</FormPart>
+);
+
+export const FormComponentSubmit = ({
+	pending,
+	submitted,
+	errors,
+	buttonLabel,
+	buttonIcon,
+}: {
+	pending: boolean;
+	submitted: boolean;
+	errors: Record<string, string[]>;
+	buttonLabel: string;
+	buttonIcon?: React.JSX.Element;
+}) => (
+	<FormPart>
+		<button
+			type="submit"
+			className="btn btn-info w-full"
+			disabled={pending || (submitted && Object.keys(errors).length > 0)}
+			aria-busy={pending}
+		>
+			{pending ? (
+				<span className="flex items-center gap-2">
+					<Icons.Loading className="w-4 h-4 animate-spin" />
+					Please wait...
+				</span>
+			) : submitted && Object.keys(errors).length > 0 ? (
+				<span className="flex items-center gap-2">
+					<Icons.Error className="w-4 h-4 animate-pulse" />
+					{buttonLabel}
+				</span>
+			) : (
+				<span className="flex items-center gap-2">
+					{buttonIcon} {buttonLabel}
+				</span>
+			)}
+		</button>
+	</FormPart>
+);
+
+export const FormComponentName = ({
+	labelText = 'Name',
+	id,
+	fieldName = 'name',
+	fieldValue,
+	className = 'p-inputtext-sm w-full',
+	placeholderText = 'eg: John Doe',
+	autoComplete = 'name',
+	disabled,
+	onChange,
+	error,
+}: Omit<FormComponentProps, 'fieldName'> & { fieldName?: string }) => (
 	<FormPart>
 		<FormElement labelText={labelText} labelFor={id}>
 			<div>
@@ -64,15 +228,15 @@ export const FormElementName = ({
 						<Icons.User className="opacity-60" />
 					</InputIcon>
 					<InputText
-						className="p-inputtext-sm w-full"
+						className={className}
 						id={id}
-						name="name"
+						name={fieldName}
 						placeholder={placeholderText}
-						autoComplete={'name'}
+						autoComplete={autoComplete}
 						disabled={disabled}
 						invalid={!!error}
-						value={value}
-						onChange={(e) => handleChange('name', e.target.value)}
+						value={fieldValue}
+						onChange={onChange}
 					/>
 				</IconField>
 				<FormElementError messages={error} />
@@ -81,23 +245,18 @@ export const FormElementName = ({
 	</FormPart>
 );
 
-export const FormElementEmail = ({
+export const FormComponentEmail = ({
 	labelText = 'Email Address',
-	placeholderText = 'eg: example@domain.com',
 	id,
-	value,
+	fieldName = 'email',
+	fieldValue,
+	className = 'p-inputtext-sm w-full',
+	placeholderText = 'eg: example@domain.com',
+	autoComplete = 'email',
 	disabled,
-	handleChange,
+	onChange,
 	error,
-}: {
-	labelText?: string;
-	placeholderText?: string;
-	id: string;
-	value: string;
-	disabled: boolean;
-	handleChange: HandleChangeType;
-	error?: string[];
-}) => (
+}: Omit<FormComponentProps, 'fieldName'> & { fieldName?: string }) => (
 	<FormPart>
 		<FormElement labelText={labelText} labelFor={id}>
 			<div>
@@ -106,15 +265,15 @@ export const FormElementEmail = ({
 						<Icons.Email className="opacity-60" />
 					</InputIcon>
 					<InputText
-						className="p-inputtext-sm w-full"
+						className={className}
 						id={id}
-						name="email"
+						name={fieldName}
 						placeholder={placeholderText}
-						autoComplete={'email'}
+						autoComplete={autoComplete}
 						disabled={disabled}
 						invalid={!!error}
-						value={value}
-						onChange={(e) => handleChange('email', e.target.value)}
+						value={fieldValue}
+						onChange={onChange}
 					/>
 				</IconField>
 				<FormElementError messages={error} />
@@ -123,28 +282,24 @@ export const FormElementEmail = ({
 	</FormPart>
 );
 
-export const FormElementPassword = ({
+export const FormComponentPassword = ({
 	labelText = 'Password',
+	id,
+	fieldName = 'password',
+	fieldValue,
+	className = 'p-inputtext-sm w-full !pr-10',
 	placeholderText = 'Password',
 	autoComplete = 'new-password',
-	id,
-	value,
 	disabled,
-	handleChange,
+	onChange,
 	error,
 	showPassword,
 	setShowPassword,
-}: {
-	labelText?: string;
-	placeholderText?: string;
+}: Omit<FormComponentProps, 'fieldName' | 'autoComplete'> & {
+	fieldName?: string;
 	autoComplete?: 'current-password' | 'new-password';
-	id: string;
-	value: string;
-	disabled: boolean;
-	handleChange: HandleChangeType;
-	error?: string[];
 	showPassword: boolean;
-	setShowPassword: (showPassword: boolean) => void;
+	setShowPassword?: (showPassword: boolean) => void;
 }) => (
 	<FormPart>
 		<FormElement labelText={labelText} labelFor={id}>
@@ -155,85 +310,34 @@ export const FormElementPassword = ({
 							<Icons.Password className="opacity-60" />
 						</InputIcon>
 						<InputText
-							className="p-inputtext-sm w-full !pr-10"
+							className={className}
 							id={id}
-							name="password"
+							name={fieldName}
 							type={showPassword ? 'text' : 'password'}
 							placeholder={placeholderText}
 							autoComplete={autoComplete}
 							disabled={disabled}
 							invalid={!!error}
-							value={value}
-							onChange={(e) =>
-								handleChange('password', e.target.value)
-							}
+							value={fieldValue}
+							onChange={onChange}
 						/>
 					</IconField>
-					<button
-						type="button"
-						className="absolute right-3 top-3 focus:outline-none hover:opacity-100 transition-opacity"
-						onClick={() => setShowPassword(!showPassword)}
-						aria-label={
-							showPassword ? 'Hide password' : 'Show password'
-						}
-					>
-						{showPassword ? (
-							<Icons.Obscured className="opacity-60 hover:opacity-100 w-4 h-4" />
-						) : (
-							<Icons.Visible className="opacity-60 hover:opacity-100 w-4 h-4" />
-						)}
-					</button>
-				</div>
-				<FormElementError messages={error} />
-			</div>
-		</FormElement>
-	</FormPart>
-);
-
-export const FormElementPasswordConfirm = ({
-	labelText = 'Confirm Password',
-	placeholderText = 'Password confirmation',
-	autoComplete = 'new-password',
-	id,
-	value,
-	disabled,
-	handleChange,
-	error,
-	showPassword,
-}: {
-	labelText?: string;
-	placeholderText?: string;
-	autoComplete?: 'current-password' | 'new-password';
-	id: string;
-	value: string;
-	disabled: boolean;
-	handleChange: HandleChangeType;
-	error?: string[];
-	showPassword: boolean;
-}) => (
-	<FormPart>
-		<FormElement labelText={labelText} labelFor={id}>
-			<div>
-				<div className="relative">
-					<IconField iconPosition="left">
-						<InputIcon className="flex items-center">
-							<Icons.Password className="opacity-60" />
-						</InputIcon>
-						<InputText
-							className="p-inputtext-sm w-full !pr-10"
-							id={id}
-							name="password_confirm"
-							type={showPassword ? 'text' : 'password'}
-							placeholder={placeholderText}
-							autoComplete={autoComplete}
-							disabled={disabled}
-							invalid={!!error}
-							value={value}
-							onChange={(e) =>
-								handleChange('password_confirm', e.target.value)
+					{setShowPassword && (
+						<button
+							type="button"
+							className="absolute right-3 top-3 focus:outline-none hover:opacity-100 transition-opacity"
+							onClick={() => setShowPassword(!showPassword)}
+							aria-label={
+								showPassword ? 'Hide password' : 'Show password'
 							}
-						/>
-					</IconField>
+						>
+							{showPassword ? (
+								<Icons.Obscured className="opacity-60 hover:opacity-100 w-4 h-4" />
+							) : (
+								<Icons.Visible className="opacity-60 hover:opacity-100 w-4 h-4" />
+							)}
+						</button>
+					)}
 				</div>
 				<FormElementError messages={error} />
 			</div>

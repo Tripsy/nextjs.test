@@ -1,6 +1,6 @@
 # TODO
 
-1. passwordUpdate & emailUpdate & editAccount & deleteAccount
+1. passwordUpdate & emailUpdate & deleteAccount
 2. learn about react-dev-tools & recap NextJs documentation
 3. Replace all console.error with logging
 4. Add section "documentation"

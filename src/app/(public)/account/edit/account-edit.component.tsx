@@ -1,17 +1,15 @@
 'use client';
 
-import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useActionState, useEffect } from 'react';
+import { useActionState, useEffect } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
 import {
-	FormElement,
-	FormElementName,
+	FormComponentName,
+	FormComponentRadio,
+	FormComponentSubmit,
 } from '@/app/_components/form/form-element.component';
-import { FormElementError as RawFormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormError } from '@/app/_components/form/form-error.component';
-import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
 import { Loading } from '@/app/_components/loading.component';
 import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
@@ -28,8 +26,6 @@ import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/enums';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
-
-const FormElementError = React.memo(RawFormElementError);
 
 const languages = Object.values(LanguageEnum).map((language) => ({
 	label: capitalizeFirstLetter(language),
@@ -80,7 +76,7 @@ export default function AccountEdit() {
 				await refreshAuth();
 			})();
 
-			router.replace(Routes.get('account-me'));
+			router.replace(`${Routes.get('account-me')}?from=edit`);
 		}
 	}, [state?.situation, router, refreshAuth]);
 
@@ -130,86 +126,32 @@ export default function AccountEdit() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
-
 			<h1 className="text-center">My Account - Edit</h1>
-
-			<FormElementName
+			<FormComponentName
 				id={elementIds.name}
-				value={formValues.name ?? ''}
+				fieldValue={formValues.name ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('name', e.target.value)}
 				error={errors.name}
 			/>
+			<FormComponentRadio
+				labelText="Language"
+				id={elementIds.language}
+				fieldName="language"
+				fieldValue={formValues.language}
+				options={languages}
+				disabled={pending}
+				onChange={(e) => handleChange('language', e.target.value)}
+				error={errors.language}
+			/>
 
-			<FormPart>
-				<FormElement labelText="Language">
-					<div>
-						<div className="flex flex-wrap gap-4">
-							{languages.map(({ label, value }) => (
-								<div
-									key={value}
-									className="flex items-center gap-2"
-								>
-									<input
-										type="radio"
-										id={`${elementIds.language}-${value}`}
-										name="language"
-										value={value}
-										className={clsx('radio', {
-											'radio-error': errors.language,
-											'radio-info': !errors.language,
-										})}
-										disabled={pending}
-										checked={formValues.language === value}
-										onChange={(e) =>
-											handleChange(
-												'language',
-												e.target.value,
-											)
-										}
-									/>
-									<label
-										htmlFor={`${elementIds.language}-${value}`}
-										className="text-sm font-normal cursor-pointer"
-									>
-										{label}
-									</label>
-								</div>
-							))}
-						</div>
-						<FormElementError messages={errors.language} />
-					</div>
-				</FormElement>
-			</FormPart>
-
-			<FormPart>
-				<button
-					type="submit"
-					className="btn btn-info w-full"
-					disabled={
-						pending || (submitted && Object.keys(errors).length > 0)
-					}
-					aria-busy={pending}
-				>
-					{pending ? (
-						<span className="flex items-center gap-2">
-							<Icons.Loading className="w-4 h-4 animate-spin" />
-							Please wait...
-						</span>
-					) : submitted && Object.keys(errors).length > 0 ? (
-						<span className="flex items-center gap-2">
-							<Icons.Error className="w-4 h-4 animate-pulse" />
-							Save
-						</span>
-					) : (
-						<span className="flex items-center gap-2">
-							<Icons.Go />
-							Save
-						</span>
-					)}
-				</button>
-			</FormPart>
-
+			<FormComponentSubmit
+				pending={pending}
+				submitted={submitted}
+				errors={errors}
+				buttonLabel="Save"
+				buttonIcon={<Icons.Go />}
+			/>
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>

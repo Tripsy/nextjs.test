@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Icons } from '@/app/_components/icon.component';
 import { Loading } from '@/app/_components/loading.component';
@@ -25,11 +26,15 @@ export default function AccountMe() {
 		() => [
 			'account_me.message.session_destroy_success',
 			'account_me.message.session_destroy_error',
+			'account_me.message.edit_success',
+			'account_me.message.email_update_success',
+			'account_me.message.password_change_success',
 		],
 		[],
 	);
 
-	const { translations } = useTranslation(translationsKeys);
+	const { translations, isTranslationLoading } =
+		useTranslation(translationsKeys);
 
 	useEffect(() => {
 		if (authStatus === 'authenticated') {
@@ -38,6 +43,52 @@ export default function AccountMe() {
 			})();
 		}
 	}, [authStatus]);
+
+	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	useEffect(() => {
+		const fromParam = searchParams.get('from');
+
+		if (fromParam && !isTranslationLoading) {
+			switch (fromParam) {
+				case 'edit':
+					showToast({
+						severity: 'success',
+						summary: 'Success',
+						detail: translations['account_me.message.edit_success'],
+					});
+					break;
+				case 'emailUpdate':
+					showToast({
+						severity: 'success',
+						summary: 'Success',
+						detail: translations[
+							'account_me.message.email_update_success'
+						],
+					});
+					break;
+				case 'passwordChange':
+					showToast({
+						severity: 'success',
+						summary: 'Success',
+						detail: translations[
+							'account_me.message.password_change_success'
+						],
+					});
+					break;
+			}
+
+			const newUrl = Routes.get('account-me');
+			router.replace(newUrl, { scroll: false });
+		}
+	}, [
+		searchParams.get,
+		showToast,
+		isTranslationLoading,
+		translations,
+		router,
+	]);
 
 	if (authStatus === 'loading') {
 		return <Loading />;

@@ -2,7 +2,6 @@ import { isValidCsrfToken } from '@/actions/csrf.action';
 import {
 	type AccountEditFormFieldsType,
 	AccountEditSchema,
-	type AccountEditSituationType,
 	type AccountEditStateType,
 } from '@/app/(public)/account/edit/account-edit.definition';
 import { translate } from '@/config/lang';
@@ -71,25 +70,11 @@ export async function accountEditAction(
 			situation: fetchResponse?.success ? 'success' : 'error',
 		};
 	} catch {
-		const message: string = '';
-		const situation: AccountEditSituationType = 'error';
-
-		// if (error instanceof ApiError) {
-		// 	switch (error.status) {
-		// 		case 409:
-		// 			situation = 'pending_account';
-		// 			message = await translate(
-		// 				'account_edit.message.pending_account',
-		// 			);
-		// 			break;
-		// 	}
-		// }
-
 		return {
 			...result,
 			errors: {},
-			message: message || (await translate('error.form')),
-			situation: situation,
+			message: await translate('error.form'),
+			situation: 'error',
 		};
 	}
 }

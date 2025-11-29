@@ -1,15 +1,11 @@
-import clsx from 'clsx';
-import { Dropdown } from 'primereact/dropdown';
 import { useState } from 'react';
 import {
-	FormElement,
-	FormElementEmail,
-	FormElementName,
-	FormElementPassword,
-	FormElementPasswordConfirm,
+	FormComponentEmail,
+	FormComponentName,
+	FormComponentPassword,
+	FormComponentRadio,
+	FormComponentSelect,
 } from '@/app/_components/form/form-element.component';
-import { FormElementError } from '@/app/_components/form/form-element-error.component';
-import { FormPart } from '@/app/_components/form/form-part.component';
 import { useElementIds } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
 import { UserRoleEnum } from '@/lib/entities/user.model';
@@ -46,108 +42,71 @@ export function FormManageUser({
 
 	return (
 		<>
-			<FormElementName
+			<FormComponentName
 				id={elementIds.name}
-				value={formValues.name ?? ''}
+				fieldValue={formValues.name ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('name', e.target.value)}
 				error={errors.name}
 			/>
 
-			<FormElementEmail
+			<FormComponentEmail
 				id={elementIds.email}
-				value={formValues.email ?? ''}
+				fieldValue={formValues.email ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('email', e.target.value)}
 				error={errors.email}
 			/>
 
-			<FormElementPassword
+			<FormComponentPassword
 				labelText={
 					actionName === 'create' ? 'New Password' : 'Password'
 				}
 				id={elementIds.password}
-				value={formValues.password ?? ''}
+				fieldName="password"
+				fieldValue={formValues.password ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('password', e.target.value)}
 				error={errors.password}
 				showPassword={showPassword}
 				setShowPassword={setShowPassword}
 			/>
 
-			<FormElementPasswordConfirm
+			<FormComponentPassword
+				labelText="Confirm Password"
 				id={elementIds.passwordConfirm}
-				value={formValues.password_confirm ?? ''}
+				fieldName="password_confirm"
+				fieldValue={formValues.password_confirm ?? ''}
+				placeholderText="Password confirmation"
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) =>
+					handleChange('password_confirm', e.target.value)
+				}
 				error={errors.password_confirm}
 				showPassword={showPassword}
 			/>
 
-			<FormPart>
-				<FormElement
-					labelText="Language"
-					labelFor={elementIds.language}
-				>
-					<div>
-						<input
-							type="hidden"
-							name="language"
-							value={formValues.language}
-						/>
-						<Dropdown
-							inputId={elementIds.language}
-							className="p-inputtext-sm"
-							panelStyle={{ fontSize: '0.875rem' }}
-							disabled={pending}
-							value={formValues.language}
-							options={languages}
-							onChange={(e) =>
-								handleChange('language', e.target.value)
-							}
-						/>
-						<FormElementError messages={errors.language} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormComponentSelect
+				labelText="Language"
+				id={elementIds.language}
+				fieldName="language"
+				fieldValue={formValues.language}
+				options={languages}
+				disabled={pending}
+				onChange={(e) => handleChange('language', e.target.value)}
+				error={errors.language}
+			/>
 
-			<FormPart>
-				<FormElement labelText="Role">
-					<div>
-						<div className="flex flex-wrap gap-4">
-							{roles.map(({ label, value }) => (
-								<div
-									key={value}
-									className="flex items-center gap-1.5"
-								>
-									<input
-										type="radio"
-										id={`${elementIds.role}-${value}`}
-										name="role"
-										value={value}
-										className={clsx('radio', {
-											'radio-error': errors.role,
-											'radio-info': !errors.role,
-										})}
-										disabled={pending}
-										checked={formValues.role === value}
-										onChange={(e) =>
-											handleChange('role', e.target.value)
-										}
-									/>
-									<label
-										htmlFor={`${elementIds.role}-${value}`}
-										className="text-sm font-normal cursor-pointer"
-									>
-										{label}
-									</label>
-								</div>
-							))}
-						</div>
-						<FormElementError messages={errors.role} />
-					</div>
-				</FormElement>
-			</FormPart>
+			<FormComponentRadio
+				labelText="Role"
+				id={elementIds.role}
+				fieldName="role"
+				fieldValue={formValues.role}
+				options={roles}
+				disabled={pending}
+				onChange={(e) => handleChange('role', e.target.value)}
+				error={errors.role}
+			/>
 		</>
 	);
 }

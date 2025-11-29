@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useActionState } from 'react';
 import { FormCsrf } from '@/app/_components/form/form-csrf';
-import { FormElementEmail } from '@/app/_components/form/form-element.component';
+import {
+	FormComponentEmail,
+	FormComponentSubmit,
+} from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
@@ -89,52 +92,27 @@ export default function PasswordRecover() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
-
 			<h1 className="text-center">Recover Password</h1>
-
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>
 					Restore your access and continue using your account
 					securely.
 				</span>
 			</FormPart>
-
-			<FormElementEmail
+			<FormComponentEmail
 				id={elementIds.email}
-				value={formValues.email ?? ''}
+				fieldValue={formValues.email ?? ''}
 				disabled={pending}
-				handleChange={handleChange}
+				onChange={(e) => handleChange('email', e.target.value)}
 				error={errors.email}
 			/>
-
-			<FormPart>
-				<button
-					type="submit"
-					className="btn btn-info w-full"
-					disabled={
-						pending || (submitted && Object.keys(errors).length > 0)
-					}
-					aria-busy={pending}
-				>
-					{pending ? (
-						<span className="flex items-center gap-2">
-							<Icons.Loading className="w-4 h-4 animate-spin" />
-							Please wait...
-						</span>
-					) : submitted && Object.keys(errors).length > 0 ? (
-						<span className="flex items-center gap-2">
-							<Icons.Error className="w-4 h-4 animate-pulse" />
-							Recover password
-						</span>
-					) : (
-						<span className="flex items-center gap-2">
-							<Icons.Go />
-							Recover password
-						</span>
-					)}
-				</button>
-			</FormPart>
-
+			<FormComponentSubmit
+				pending={pending}
+				submitted={submitted}
+				errors={errors}
+				buttonLabel="Recover password"
+				buttonIcon={<Icons.Go />}
+			/>
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
@@ -142,7 +120,6 @@ export default function PasswordRecover() {
 					</div>
 				</FormError>
 			)}
-
 			<FormPart className="text-center">
 				<div>
 					<span className="text-sm text-gray-500 dark:text-base-content">
