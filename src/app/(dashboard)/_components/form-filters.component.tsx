@@ -91,7 +91,7 @@ export function FormFiltersSearch({
 			>
 				<IconField iconPosition="left">
 					<InputIcon className="flex items-center">
-						<Icons.Search className="w-4 h-4" />
+						<Icons.Search />
 					</InputIcon>
 					<InputText
 						className="p-inputtext-sm"
@@ -229,7 +229,7 @@ export function FormFiltersReset({ source }: { source: string }) {
 						onClick={() => handleReset(source)}
 						title="Reset filters"
 					>
-						<Icons.Action.Reset className="w-4 h-4" />
+						<Icons.Action.Reset />
 						Reset
 					</button>
 				</div>

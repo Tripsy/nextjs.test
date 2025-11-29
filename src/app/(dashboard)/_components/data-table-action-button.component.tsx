@@ -38,7 +38,7 @@ export function DataTableActionButton({
 		>
 			{disabled ? (
 				<>
-					<Icons.Loading className="w-4 h-4 animate-spin" />
+					<Icons.Loading className="animate-spin" />
 					Please wait...
 				</>
 			) : (

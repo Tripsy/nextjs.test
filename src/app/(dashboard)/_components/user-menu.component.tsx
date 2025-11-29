@@ -10,15 +10,13 @@ export function UserMenu() {
 	const { auth, authStatus } = useAuth();
 
 	if (authStatus === 'loading') {
-		return (
-			<div className="w-8 h-8 animate-pulse rounded-full bg-gray-300" />
-		);
+		return <div className="animate-pulse rounded-full bg-gray-300" />;
 	}
 
 	return (
 		<div className="dropdown dropdown-end dropdown-hover">
 			<button type="button">
-				<Icons.User className="w-5 h-5 cursor-pointer" />
+				<Icons.User className="cursor-pointer" />
 			</button>
 			{authStatus === 'unauthenticated' && (
 				<ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-36 p-2 shadow-sm">

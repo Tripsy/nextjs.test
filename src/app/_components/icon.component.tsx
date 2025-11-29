@@ -41,7 +41,7 @@ import {
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 export function AwesomeIcon({
-	className = 'w-5 h-5',
+	className = 'fa-md', // ex: fa-lg, fa-2xl, fa-sm
 	...props
 }: FontAwesomeIconProps) {
 	return <FontAwesomeIcon className={className} {...props} />;

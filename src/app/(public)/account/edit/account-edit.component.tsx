@@ -145,13 +145,23 @@ export default function AccountEdit() {
 				error={errors.language}
 			/>
 
-			<FormComponentSubmit
-				pending={pending}
-				submitted={submitted}
-				errors={errors}
-				buttonLabel="Save"
-				buttonIcon={<Icons.Go />}
-			/>
+			<div className="flex justify-end gap-2">
+				<a
+					href={Routes.get('account-me')}
+					className="btn btn-action-cancel"
+					title="Cancel & Go back to my account"
+				>
+					Cancel
+				</a>
+				<FormComponentSubmit
+					pending={pending}
+					submitted={submitted}
+					errors={errors}
+					buttonLabel="Save"
+					buttonIcon={<Icons.Go />}
+				/>
+			</div>
+
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>

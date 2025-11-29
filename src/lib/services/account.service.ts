@@ -3,6 +3,7 @@ import type { EmailConfirmSendFormFieldsType } from '@/app/(public)/account/emai
 import type { LoginFormFieldsType } from '@/app/(public)/account/login/login.definition';
 import type { PasswordRecoverFormFieldsType } from '@/app/(public)/account/password-recover/password-recover.definition';
 import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
+import type { PasswordUpdateFormFieldsType } from '@/app/(public)/account/password-update/password-update.definition';
 import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
 import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
@@ -113,6 +114,15 @@ export async function editAccount(
 	params: AccountEditFormFieldsType,
 ): Promise<ResponseFetch<null>> {
 	return await new ApiRequest().doFetch('/account/me/edit', {
+		method: 'POST',
+		body: JSON.stringify(params),
+	});
+}
+
+export async function passwordUpdateAccount(
+	params: PasswordUpdateFormFieldsType,
+): Promise<ResponseFetch<{ token: string }>> {
+	return await new ApiRequest().doFetch('/account/password-update', {
 		method: 'POST',
 		body: JSON.stringify(params),
 	});

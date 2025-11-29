@@ -56,7 +56,7 @@ export default function PasswordRecoverChange() {
 		markFieldAsTouched(name as keyof PasswordRecoverChangeFormFieldsType);
 	};
 
-	const elementIds = useElementIds(['password', 'password_confirm']);
+	const elementIds = useElementIds(['password', 'passwordConfirm']);
 
 	if (state?.situation === 'csrf_error') {
 		return (
@@ -103,13 +103,16 @@ export default function PasswordRecoverChange() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
+
 			<h1 className="text-center">Recover Password</h1>
+
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>
 					Use the form below to set up a new password for your
 					account.
 				</span>
 			</FormPart>
+
 			<FormComponentPassword
 				id={elementIds.password}
 				fieldValue={formValues.password ?? ''}
@@ -119,6 +122,7 @@ export default function PasswordRecoverChange() {
 				showPassword={showPassword}
 				setShowPassword={setShowPassword}
 			/>
+
 			<FormComponentPassword
 				labelText="Confirm Password"
 				id={elementIds.passwordConfirm}
@@ -132,6 +136,7 @@ export default function PasswordRecoverChange() {
 				error={errors.password_confirm}
 				showPassword={showPassword}
 			/>
+
 			<FormComponentSubmit
 				pending={pending}
 				submitted={submitted}
@@ -139,6 +144,7 @@ export default function PasswordRecoverChange() {
 				buttonLabel="Set password"
 				buttonIcon={<Icons.Go />}
 			/>
+
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>

@@ -191,12 +191,12 @@ export const FormComponentSubmit = ({
 		>
 			{pending ? (
 				<span className="flex items-center gap-2">
-					<Icons.Loading className="w-4 h-4 animate-spin" />
+					<Icons.Loading className="animate-spin" />
 					Please wait...
 				</span>
 			) : submitted && Object.keys(errors).length > 0 ? (
 				<span className="flex items-center gap-2">
-					<Icons.Error className="w-4 h-4 animate-pulse" />
+					<Icons.Error className="animate-pulse" />
 					{buttonLabel}
 				</span>
 			) : (

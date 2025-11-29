@@ -214,12 +214,12 @@ export function FormManage<K extends keyof DataSourceType>({
 					>
 						{pending ? (
 							<span className="flex items-center gap-2">
-								<Icons.Loading className="w-4 h-4 animate-spin" />
+								<Icons.Loading className="animate-spin" />
 								Saving...
 							</span>
 						) : submitted && Object.keys(errors).length > 0 ? (
 							<span className="flex items-center gap-2">
-								<Icons.Error className="w-4 h-4 animate-pulse" />
+								<Icons.Error className="animate-pulse" />
 								{translations[actionLabelKey]}
 							</span>
 						) : (

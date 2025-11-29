@@ -1,5 +1,7 @@
 import account_edit from '@/locales/en/account_edit.json';
+import account_email_update from '@/locales/en/account_email_update.json';
 import account_me from '@/locales/en/account_me.json';
+import account_password_update from '@/locales/en/account_password_update.json';
 import app from '@/locales/en/app.json';
 import auth from '@/locales/en/auth.json';
 import cron_history from '@/locales/en/cron_history.json';
@@ -21,7 +23,9 @@ import users from '@/locales/en/users.json';
 
 const en = {
 	account_edit,
+	account_email_update,
 	account_me,
+	account_password_update,
 	app,
 	auth,
 	cron_history,

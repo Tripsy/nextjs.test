@@ -26,9 +26,9 @@ export default function AccountMe() {
 		() => [
 			'account_me.message.session_destroy_success',
 			'account_me.message.session_destroy_error',
-			'account_me.message.edit_success',
-			'account_me.message.email_update_success',
-			'account_me.message.password_change_success',
+			'account_edit.message.success',
+			'account_email_update.message.success',
+			'account_password_update.message.success',
 		],
 		[],
 	);
@@ -56,7 +56,7 @@ export default function AccountMe() {
 					showToast({
 						severity: 'success',
 						summary: 'Success',
-						detail: translations['account_me.message.edit_success'],
+						detail: translations['account_edit.message.success'],
 					});
 					break;
 				case 'emailUpdate':
@@ -64,16 +64,16 @@ export default function AccountMe() {
 						severity: 'success',
 						summary: 'Success',
 						detail: translations[
-							'account_me.message.email_update_success'
+							'account_email_update.message.success'
 						],
 					});
 					break;
-				case 'passwordChange':
+				case 'passwordUpdate':
 					showToast({
 						severity: 'success',
 						summary: 'Success',
 						detail: translations[
-							'account_me.message.password_change_success'
+							'account_password_update.message.success'
 						],
 					});
 					break;
@@ -126,7 +126,7 @@ export default function AccountMe() {
 					title="Edit my account"
 					className="btn btn-success btn-sm"
 				>
-					<Icons.Action.Update className="w-4 h-4" />
+					<Icons.Action.Update />
 					Edit
 				</Link>
 			</div>
@@ -135,7 +135,7 @@ export default function AccountMe() {
 			<div className="card bg-base-100 shadow-xl">
 				<div className="card-body">
 					<h2 className="card-title">
-						<Icons.User className="w-5 h-5" />
+						<Icons.User />
 						Personal Information
 					</h2>
 
@@ -157,12 +157,12 @@ export default function AccountMe() {
 								<p className="text-lg">{auth.email}</p>
 								{auth.email_verified_at ? (
 									<span className="badge badge-success badge-sm mt-1">
-										<Icons.Ok className="w-3 h-3" />
+										<Icons.Ok />
 										Verified
 									</span>
 								) : (
 									<span className="badge badge-warning badge-sm mt-1">
-										<Icons.Warning className="w-3 h-3" />
+										<Icons.Warning />
 										Not Verified
 									</span>
 								)}
@@ -172,7 +172,7 @@ export default function AccountMe() {
 								className="btn btn-outline btn-sm"
 								title="Update email address"
 							>
-								<Icons.Action.Update className="w-4 h-4" />
+								<Icons.Action.Update />
 								Change
 							</Link>
 						</div>
@@ -206,7 +206,7 @@ export default function AccountMe() {
 			<div className="card bg-base-100 shadow-xl">
 				<div className="card-body">
 					<h2 className="card-title">
-						<Icons.Security className="w-5 h-5" />
+						<Icons.Security />
 						Security & Account
 					</h2>
 
@@ -230,7 +230,7 @@ export default function AccountMe() {
 								className="btn btn-outline btn-sm"
 								title="Update password"
 							>
-								<Icons.Password className="w-4 h-4" />
+								<Icons.Password />
 								Change
 							</Link>
 						</div>
@@ -242,7 +242,7 @@ export default function AccountMe() {
 							href={Routes.get('account-delete')}
 							className="btn btn-error btn-sm"
 						>
-							<Icons.Action.Delete className="w-4 h-4" />
+							<Icons.Action.Delete />
 							Delete Account
 						</Link>
 					</div>
@@ -253,7 +253,7 @@ export default function AccountMe() {
 			<div className="card bg-base-200">
 				<div className="card-body">
 					<h2 className="card-title">
-						<Icons.Session className="w-5 h-5" />
+						<Icons.Session />
 						Sessions
 					</h2>
 

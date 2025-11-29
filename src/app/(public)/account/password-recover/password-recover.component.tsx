@@ -92,13 +92,16 @@ export default function PasswordRecover() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
+
 			<h1 className="text-center">Recover Password</h1>
+
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>
 					Restore your access and continue using your account
 					securely.
 				</span>
 			</FormPart>
+
 			<FormComponentEmail
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
@@ -106,6 +109,7 @@ export default function PasswordRecover() {
 				onChange={(e) => handleChange('email', e.target.value)}
 				error={errors.email}
 			/>
+
 			<FormComponentSubmit
 				pending={pending}
 				submitted={submitted}
@@ -113,6 +117,7 @@ export default function PasswordRecover() {
 				buttonLabel="Recover password"
 				buttonIcon={<Icons.Go />}
 			/>
+
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
@@ -120,6 +125,7 @@ export default function PasswordRecover() {
 					</div>
 				</FormError>
 			)}
+
 			<FormPart className="text-center">
 				<div>
 					<span className="text-sm text-gray-500 dark:text-base-content">
