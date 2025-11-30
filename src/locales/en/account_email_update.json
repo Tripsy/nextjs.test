@@ -1,0 +1,11 @@
+{
+	"meta": {
+		"title": "My account - Email update | {{app_name}}"
+	},
+	"validation": {
+		"email_invalid": "Please enter a valid email address"
+	},
+	"message": {
+		"success": "Email update request processed with success. Check your email for confirmation."
+	}
+}

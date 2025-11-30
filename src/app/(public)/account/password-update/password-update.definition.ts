@@ -1,0 +1,122 @@
+import { z } from 'zod';
+import { translateBatch } from '@/config/lang';
+import { cfg } from '@/config/settings';
+import type { FormSituationType } from '@/lib/types';
+
+export type PasswordUpdateFormFieldsType = {
+	password_current: string;
+	password_new: string;
+	password_confirm: string;
+};
+
+export type PasswordUpdateSituationType = FormSituationType | 'csrf_error';
+
+export type PasswordUpdateStateType = {
+	values: PasswordUpdateFormFieldsType;
+	errors: Partial<Record<keyof PasswordUpdateFormFieldsType, string[]>>;
+	message: string | null;
+	situation: PasswordUpdateSituationType;
+};
+
+export const PasswordUpdateState: PasswordUpdateStateType = {
+	values: {
+		password_current: '',
+		password_new: '',
+		password_confirm: '',
+	},
+	errors: {},
+	message: null,
+	situation: null,
+};
+
+const translations = await translateBatch([
+	'account_password_update.validation.password_current_invalid',
+	'account_password_update.validation.password_new_invalid',
+	{
+		key: 'account_password_update.validation.password_new_min',
+		vars: {
+			min: cfg('user.passwordMinLength') as string,
+		},
+	},
+	'account_password_update.validation.password_new_condition_capital_letter',
+	'account_password_update.validation.password_new_condition_number',
+	'account_password_update.validation.password_new_condition_special_character',
+	'account_password_update.validation.password_confirm_required',
+	'account_password_update.validation.password_confirm_mismatch',
+]);
+
+export const PasswordUpdateSchema = z
+	.object({
+		password_current: z
+			.string({
+				message:
+					translations[
+						'account_password_update.validation.password_current_invalid'
+					],
+			})
+			.trim()
+			.nonempty({
+				message:
+					translations[
+						'account_password_update.validation.password_current_invalid'
+					],
+			}),
+		password_new: z
+			.string({
+				message:
+					translations[
+						'account_password_update.validation.password_new_invalid'
+					],
+			})
+			.trim()
+			.min(cfg('user.passwordMinLength') as number, {
+				message:
+					translations[
+						'account_password_update.validation.password_new_min'
+					],
+			})
+			.refine((value) => /[A-Z]/.test(value), {
+				message:
+					translations[
+						'account_password_update.validation.password_new_condition_capital_letter'
+					],
+			})
+			.refine((value) => /[0-9]/.test(value), {
+				message:
+					translations[
+						'account_password_update.validation.password_new_condition_number'
+					],
+			})
+			.refine((value) => /[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]/.test(value), {
+				message:
+					translations[
+						'account_password_update.validation.password_new_condition_special_character'
+					],
+			}),
+		password_confirm: z
+			.string({
+				message:
+					translations[
+						'account_password_update.validation.password_confirm_required'
+					],
+			})
+			.trim()
+			.nonempty({
+				message:
+					translations[
+						'account_password_update.validation.password_confirm_required'
+					],
+			}),
+	})
+	.superRefine(({ password_new, password_confirm }, ctx) => {
+		if (password_new !== password_confirm) {
+			ctx.addIssue({
+				path: ['password_confirm'],
+				message:
+					translations[
+						'account_password_update.validation.password_confirm_mismatch'
+					],
+				code: z.ZodIssueCode.custom,
+			});
+		}
+	});
