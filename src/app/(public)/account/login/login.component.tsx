@@ -150,10 +150,13 @@ export default function Login() {
 			className="form-section"
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
+
 			<h1 className="text-center">Sign In</h1>
+
 			<FormPart className="text-sm text-center md:max-w-xs">
 				<span>Secure login. Resume your personalized experience.</span>
 			</FormPart>
+
 			<FormComponentEmail
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
@@ -161,6 +164,7 @@ export default function Login() {
 				onChange={(e) => handleChange('email', e.target.value)}
 				error={errors.email}
 			/>
+
 			<FormComponentPassword
 				id={elementIds.password}
 				fieldValue={formValues.password ?? ''}
@@ -171,6 +175,7 @@ export default function Login() {
 				showPassword={showPassword}
 				setShowPassword={setShowPassword}
 			/>
+
 			<FormComponentSubmit
 				pending={pending}
 				submitted={submitted}
@@ -178,6 +183,7 @@ export default function Login() {
 				buttonLabel="Login"
 				buttonIcon={<Icons.Login />}
 			/>
+
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
@@ -185,6 +191,7 @@ export default function Login() {
 					</div>
 				</FormError>
 			)}
+
 			{state?.situation === 'max_active_sessions' && state.message && (
 				<FormPart>
 					<div className="space-y-4">
@@ -207,6 +214,7 @@ export default function Login() {
 					</div>
 				</FormPart>
 			)}
+
 			<FormPart className="text-center">
 				<div>
 					<div className="mb-2">

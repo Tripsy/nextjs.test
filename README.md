@@ -1,6 +1,6 @@
 # TODO
 
-1. emailUpdate & deleteAccount
+1. & deleteAccount
 2. handle TODO's (especially related to permissions)
 3. learn about react-dev-tools & recap NextJs documentation
 4. Replace all console.error with logging

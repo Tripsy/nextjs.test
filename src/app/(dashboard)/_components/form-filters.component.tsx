@@ -222,7 +222,7 @@ export function FormFiltersReset({ source }: { source: string }) {
 		<FormPart>
 			<div className="flex flex-col justify-center h-full">
 				<div>&nbsp;</div>
-				<div className="flex items-center gap-2">
+				<div className="flex items-center">
 					<button
 						type="reset"
 						className="btn btn-warning rounded"

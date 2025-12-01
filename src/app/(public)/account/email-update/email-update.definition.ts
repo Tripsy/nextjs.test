@@ -1,0 +1,35 @@
+import { z } from 'zod';
+import { translateBatch } from '@/config/lang';
+import type { FormSituationType } from '@/lib/types';
+
+export type EmailUpdateFormFieldsType = {
+	email_new: string;
+};
+
+export type EmailUpdateSituationType = FormSituationType | 'csrf_error';
+
+export type EmailUpdateStateType = {
+	values: EmailUpdateFormFieldsType;
+	errors: Partial<Record<keyof EmailUpdateFormFieldsType, string[]>>;
+	message: string | null;
+	situation: EmailUpdateSituationType;
+};
+
+export const EmailUpdateState: EmailUpdateStateType = {
+	values: {
+		email_new: '',
+	},
+	errors: {},
+	message: null,
+	situation: null,
+};
+
+const translations = await translateBatch([
+	'account_email_update.validation.email_invalid',
+]);
+
+export const EmailUpdateSchema = z.object({
+	email_new: z.string().trim().email({
+		message: translations['account_email_update.validation.email_invalid'],
+	}),
+});

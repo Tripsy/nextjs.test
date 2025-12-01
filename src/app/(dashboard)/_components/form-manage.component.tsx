@@ -213,17 +213,17 @@ export function FormManage<K extends keyof DataSourceType>({
 						aria-busy={pending}
 					>
 						{pending ? (
-							<span className="flex items-center gap-2">
+							<span className="flex items-center gap-1.5">
 								<Icons.Loading className="animate-spin" />
 								Saving...
 							</span>
 						) : submitted && Object.keys(errors).length > 0 ? (
-							<span className="flex items-center gap-2">
+							<span className="flex items-center gap-1.5">
 								<Icons.Error className="animate-pulse" />
 								{translations[actionLabelKey]}
 							</span>
 						) : (
-							<span className="flex items-center gap-2">
+							<span className="flex items-center gap-1.5">
 								<ActionButtonIcon />
 								{translations[actionLabelKey]}
 							</span>

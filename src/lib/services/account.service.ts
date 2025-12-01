@@ -1,5 +1,6 @@
 import type { AccountEditFormFieldsType } from '@/app/(public)/account/edit/account-edit.definition';
 import type { EmailConfirmSendFormFieldsType } from '@/app/(public)/account/email-confirm-send/email-confirm-send.definition';
+import type { EmailUpdateFormFieldsType } from '@/app/(public)/account/email-update/email-update.definition';
 import type { LoginFormFieldsType } from '@/app/(public)/account/login/login.definition';
 import type { PasswordRecoverFormFieldsType } from '@/app/(public)/account/password-recover/password-recover.definition';
 import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account/password-recover-change/[token]/password-recover-change.definition';
@@ -67,14 +68,6 @@ export async function passwordRecoverChangeAccount(
 	);
 }
 
-export async function emailConfirmAccount(
-	token: string,
-): Promise<ResponseFetch<null>> {
-	return await new ApiRequest().doFetch(`/account/email-confirm/${token}`, {
-		method: 'POST',
-	});
-}
-
 export async function emailConfirmSendAccount(
 	params: EmailConfirmSendFormFieldsType,
 ): Promise<ResponseFetch<null>> {
@@ -123,6 +116,15 @@ export async function passwordUpdateAccount(
 	params: PasswordUpdateFormFieldsType,
 ): Promise<ResponseFetch<{ token: string }>> {
 	return await new ApiRequest().doFetch('/account/password-update', {
+		method: 'POST',
+		body: JSON.stringify(params),
+	});
+}
+
+export async function emailUpdateAccount(
+	params: EmailUpdateFormFieldsType,
+): Promise<ResponseFetch<null>> {
+	return await new ApiRequest().doFetch('/account/email-update', {
 		method: 'POST',
 		body: JSON.stringify(params),
 	});

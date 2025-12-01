@@ -63,7 +63,7 @@ export default async function Page(props: Props) {
 					<h1 className="text-center">Email Confirmation</h1>
 
 					<div className="text-sm">
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-1">
 							{success ? (
 								<Icons.Success className="text-success" />
 							) : (
@@ -79,7 +79,7 @@ export default async function Page(props: Props) {
 						<span className="text-sm text-gray-500 dark:text-base-content">
 							What's next? Check{' '}
 							<Link
-								href={Routes.get('account')}
+								href={Routes.get('account-me')}
 								className="link link-info link-hover text-sm"
 							>
 								your account

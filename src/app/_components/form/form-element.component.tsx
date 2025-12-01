@@ -190,17 +190,17 @@ export const FormComponentSubmit = ({
 			aria-busy={pending}
 		>
 			{pending ? (
-				<span className="flex items-center gap-2">
+				<span className="flex items-center gap-1.5">
 					<Icons.Loading className="animate-spin" />
 					Please wait...
 				</span>
 			) : submitted && Object.keys(errors).length > 0 ? (
-				<span className="flex items-center gap-2">
+				<span className="flex items-center gap-1.5">
 					<Icons.Error className="animate-pulse" />
 					{buttonLabel}
 				</span>
 			) : (
-				<span className="flex items-center gap-2">
+				<span className="flex items-center gap-1.5">
 					{buttonIcon} {buttonLabel}
 				</span>
 			)}
