@@ -17,7 +17,7 @@ import {
 	TemplateLayoutEmailEnum,
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import { getNestedError } from '@/lib/utils/form';
 import { capitalizeFirstLetter, toKebabCase } from '@/lib/utils/string';
 

@@ -12,7 +12,7 @@ import {
 	type TemplateModel,
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import {
 	createTemplate,
 	deleteTemplate,

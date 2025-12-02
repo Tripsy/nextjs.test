@@ -1,4 +1,4 @@
-import type { LanguageEnum } from '@/lib/enums';
+import type { LanguageEnum } from '@/lib/entities/user.model';
 
 export enum TemplateTypeEnum {
 	PAGE = 'page',

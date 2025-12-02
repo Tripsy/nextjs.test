@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { translateBatch } from '@/config/lang';
 import { cfg } from '@/config/settings';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import type { FormSituationType } from '@/lib/types';
 
 export type RegisterFormFieldsType = {

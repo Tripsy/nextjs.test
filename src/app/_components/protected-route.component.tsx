@@ -55,7 +55,11 @@ export default function ProtectedRoute({
 	}, [authStatus, pathname, routeAuth, router]);
 
 	const translationsKeys = useMemo(
-		() => ['auth.message.already_logged_in', 'auth.message.unauthorized'],
+		() => [
+			'app.text.loading',
+			'auth.message.already_logged_in',
+			'auth.message.unauthorized',
+		],
 		[],
 	);
 
@@ -79,7 +83,7 @@ export default function ProtectedRoute({
 
 	// Loading
 	if (isTranslationLoading) {
-		return <Loading text="Loading..." />;
+		return <Loading text={translations['app.text.loading']} />;
 	}
 
 	// Is a public route so return content
@@ -89,7 +93,7 @@ export default function ProtectedRoute({
 
 	// Loading
 	if (authStatus === 'loading') {
-		return <Loading text="Loading..." />;
+		return <Loading text={translations['app.text.loading']} />;
 	}
 
 	if (

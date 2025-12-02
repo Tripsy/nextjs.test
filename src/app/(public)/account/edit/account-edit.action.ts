@@ -6,7 +6,7 @@ import {
 } from '@/app/(public)/account/edit/account-edit.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import { editAccount } from '@/lib/services/account.service';
 
 export function accountEditFormValues(

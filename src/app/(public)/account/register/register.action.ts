@@ -7,7 +7,7 @@ import {
 } from '@/app/(public)/account/register/register.definition';
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import { ApiError } from '@/lib/exceptions/api.error';
 import { registerAccount } from '@/lib/services/account.service';
 

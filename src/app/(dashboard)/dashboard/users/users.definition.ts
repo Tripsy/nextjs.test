@@ -9,11 +9,11 @@ import type {
 import { translateBatch } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import {
+	LanguageEnum,
 	type UserModel,
 	UserRoleEnum,
 	UserStatusEnum,
 } from '@/lib/entities/user.model';
-import { LanguageEnum } from '@/lib/enums';
 import {
 	createUser,
 	deleteUser,

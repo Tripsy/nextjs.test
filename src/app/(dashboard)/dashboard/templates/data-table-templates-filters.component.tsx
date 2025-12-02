@@ -13,7 +13,7 @@ import {
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableTemplatesFiltersType } from '@/app/(dashboard)/dashboard/templates/templates.definition';
 import { TemplateTypeEnum } from '@/lib/entities/template.model';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import { createFilterHandlers } from '@/lib/utils/data-table';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 

@@ -8,8 +8,7 @@ import {
 } from '@/app/_components/form/form-element.component';
 import { useElementIds, useTranslation } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
-import { UserRoleEnum } from '@/lib/entities/user.model';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum, UserRoleEnum } from '@/lib/entities/user.model';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((v) => ({

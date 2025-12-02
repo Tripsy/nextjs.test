@@ -1,5 +1,3 @@
-import type { LanguageEnum } from '@/lib/enums';
-
 export enum UserRoleEnum {
 	ADMIN = 'admin',
 	MEMBER = 'member',
@@ -10,6 +8,11 @@ export enum UserStatusEnum {
 	ACTIVE = 'active',
 	INACTIVE = 'inactive',
 	PENDING = 'pending',
+}
+
+export enum LanguageEnum {
+	EN = 'en',
+	RO = 'ro',
 }
 
 export type UserModel<D = Date | string> = {

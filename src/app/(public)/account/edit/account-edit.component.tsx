@@ -24,7 +24,7 @@ import {
 } from '@/app/(public)/account/edit/account-edit.definition';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
-import { LanguageEnum } from '@/lib/enums';
+import { LanguageEnum } from '@/lib/entities/user.model';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 const languages = Object.values(LanguageEnum).map((language) => ({
