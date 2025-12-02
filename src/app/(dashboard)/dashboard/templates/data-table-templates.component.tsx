@@ -1,8 +1,8 @@
 'use client';
 
-import type { JSX } from 'react';
+import { type JSX, useMemo } from 'react';
 import { Loading } from '@/app/_components/loading.component';
-import { useMounted } from '@/app/_hooks';
+import { useMounted, useTranslation } from '@/app/_hooks';
 import { DataTableActions } from '@/app/(dashboard)/_components/data-table-actions.component';
 import DataTableList from '@/app/(dashboard)/_components/data-table-list.component';
 import { DataTableModal } from '@/app/(dashboard)/_components/data-table-modal.component';
@@ -15,10 +15,13 @@ import { ViewTemplate } from '@/app/(dashboard)/dashboard/templates/view-templat
 const modelStore = createModelStore('templates');
 
 export const DataTableTemplates = (): JSX.Element => {
+	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+
+	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();
 
 	if (!isMounted) {
-		return <Loading />;
+		return <Loading text={translations['app.text.loading']} />;
 	}
 
 	return (

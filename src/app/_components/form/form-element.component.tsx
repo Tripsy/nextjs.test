@@ -7,10 +7,11 @@ import { Dropdown, type DropdownChangeEvent } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
-import type { JSX } from 'react';
+import { type JSX, useMemo } from 'react';
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
+import { useTranslation } from '@/app/_hooks';
 
 export const FormElement = ({
 	children,
@@ -48,7 +49,7 @@ export type OnChangeType = (
 ) => void;
 
 export type FormComponentProps = {
-	labelText?: string;
+	labelText: string;
 	id: string;
 	fieldName: string;
 	fieldValue: string;
@@ -223,35 +224,43 @@ export const FormComponentSubmit = ({
 	errors: Record<string, string[]>;
 	buttonLabel: string;
 	buttonIcon?: React.JSX.Element;
-}) => (
-	<FormPart>
-		<button
-			type="submit"
-			className="btn btn-info w-full"
-			disabled={pending || (submitted && Object.keys(errors).length > 0)}
-			aria-busy={pending}
-		>
-			{pending ? (
-				<span className="flex items-center gap-1.5">
-					<Icons.Loading className="animate-spin" />
-					Please wait...
-				</span>
-			) : submitted && Object.keys(errors).length > 0 ? (
-				<span className="flex items-center gap-1.5">
-					<Icons.Status.Error className="animate-pulse" />
-					{buttonLabel}
-				</span>
-			) : (
-				<span className="flex items-center gap-1.5">
-					{buttonIcon} {buttonLabel}
-				</span>
-			)}
-		</button>
-	</FormPart>
-);
+}) => {
+	const translationsKeys = useMemo(() => ['app.text.please_wait'], []);
+
+	const { translations } = useTranslation(translationsKeys);
+
+	return (
+		<FormPart>
+			<button
+				type="submit"
+				className="btn btn-info w-full"
+				disabled={
+					pending || (submitted && Object.keys(errors).length > 0)
+				}
+				aria-busy={pending}
+			>
+				{pending ? (
+					<span className="flex items-center gap-1.5">
+						<Icons.Loading className="animate-spin" />
+						{translations['app.text.please_wait']}
+					</span>
+				) : submitted && Object.keys(errors).length > 0 ? (
+					<span className="flex items-center gap-1.5">
+						<Icons.Status.Error className="animate-pulse" />
+						{buttonLabel}
+					</span>
+				) : (
+					<span className="flex items-center gap-1.5">
+						{buttonIcon} {buttonLabel}
+					</span>
+				)}
+			</button>
+		</FormPart>
+	);
+};
 
 export const FormComponentName = ({
-	labelText = 'Name',
+	labelText,
 	id,
 	fieldName = 'name',
 	fieldValue,
@@ -288,7 +297,7 @@ export const FormComponentName = ({
 );
 
 export const FormComponentEmail = ({
-	labelText = 'Email Address',
+	labelText,
 	id,
 	fieldName = 'email',
 	fieldValue,

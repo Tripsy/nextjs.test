@@ -68,7 +68,7 @@ export default function PasswordUpdate() {
 	]);
 
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (!auth) {

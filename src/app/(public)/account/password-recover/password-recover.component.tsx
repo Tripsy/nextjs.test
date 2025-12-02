@@ -104,6 +104,7 @@ export default function PasswordRecover() {
 			</FormPart>
 
 			<FormComponentEmail
+				labelText="Email Address"
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
 				disabled={pending}

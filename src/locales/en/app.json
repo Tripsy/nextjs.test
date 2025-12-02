@@ -17,6 +17,7 @@
 	"text": {
 		"error_title": "Error",
 		"success_title": "Success",
+		"loading": "Loading...",
 		"please_wait": "Please wait...",
 		"saving": "Saving..."
 	},

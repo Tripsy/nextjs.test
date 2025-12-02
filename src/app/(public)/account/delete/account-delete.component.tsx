@@ -67,7 +67,7 @@ export default function AccountDelete() {
 	const elementIds = useElementIds(['passwordCurrent']);
 
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (!auth) {

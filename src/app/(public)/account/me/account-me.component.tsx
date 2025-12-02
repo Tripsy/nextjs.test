@@ -91,7 +91,7 @@ export default function AccountMe() {
 	]);
 
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (!auth) {

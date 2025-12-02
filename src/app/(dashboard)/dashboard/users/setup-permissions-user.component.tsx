@@ -18,6 +18,7 @@ import {
 export function SetupPermissionsUser() {
 	const translationsKeys = useMemo(
 		() => [
+			'app.text.loading',
 			'app.text.error_title',
 			'app.text.success_title',
 			'users.validation.no_permissions_defined',
@@ -225,7 +226,10 @@ export function SetupPermissionsUser() {
 
 	if (loading) {
 		return (
-			<Loading className="min-h-64 flex items-center justify-center" />
+			<Loading
+				text={translations['app.text.loading']}
+				className="min-h-64 flex items-center justify-center"
+			/>
 		);
 	}
 

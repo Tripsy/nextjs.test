@@ -158,6 +158,7 @@ export default function Login() {
 			</FormPart>
 
 			<FormComponentEmail
+				labelText="Email Address"
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
 				disabled={pending}
@@ -166,6 +167,7 @@ export default function Login() {
 			/>
 
 			<FormComponentPassword
+				labelText="Password"
 				id={elementIds.password}
 				fieldValue={formValues.password ?? ''}
 				autoComplete="current-password"

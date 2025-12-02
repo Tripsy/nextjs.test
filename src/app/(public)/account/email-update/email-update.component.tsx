@@ -63,7 +63,7 @@ export default function EmailUpdate() {
 	const elementIds = useElementIds(['emailNew']);
 
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (!auth) {

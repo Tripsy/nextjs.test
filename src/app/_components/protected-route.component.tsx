@@ -79,7 +79,7 @@ export default function ProtectedRoute({
 
 	// Loading
 	if (isTranslationLoading) {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	// Is a public route so return content
@@ -89,7 +89,7 @@ export default function ProtectedRoute({
 
 	// Loading
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (

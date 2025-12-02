@@ -114,6 +114,7 @@ export default function PasswordRecoverChange() {
 			</FormPart>
 
 			<FormComponentPassword
+				labelText="Password"
 				id={elementIds.password}
 				fieldValue={formValues.password ?? ''}
 				disabled={pending}

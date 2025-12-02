@@ -15,7 +15,11 @@ export function ViewMailQueueTemplate() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => ['app.text.error_title', 'dashboard.text.no_entry_selected'],
+		() => [
+			'app.text.loading',
+			'app.text.error_title',
+			'dashboard.text.no_entry_selected',
+		],
 		[],
 	);
 
@@ -62,7 +66,10 @@ export function ViewMailQueueTemplate() {
 
 	if (loading) {
 		return (
-			<Loading className="min-h-64 flex items-center justify-center" />
+			<Loading
+				text={translations['app.text.loading']}
+				className="min-h-64 flex items-center justify-center"
+			/>
 		);
 	}
 

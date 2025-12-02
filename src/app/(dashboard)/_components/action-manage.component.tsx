@@ -65,6 +65,7 @@ export function ActionManage() {
 		() => [
 			confirmTextKey,
 			'app.error.form',
+			'app.text.loading',
 			'dashboard.text.selected_entries_one',
 			'dashboard.text.selected_entries_many',
 		],
@@ -79,7 +80,7 @@ export function ActionManage() {
 	}
 
 	if (isTranslationLoading) {
-		return <Loading />;
+		return <Loading text={translations['app.text.loading']} />;
 	}
 
 	const actions = getDataSourceConfig(dataSource, 'actions');

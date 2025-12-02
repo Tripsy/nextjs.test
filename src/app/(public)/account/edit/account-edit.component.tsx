@@ -83,7 +83,7 @@ export default function AccountEdit() {
 	const elementIds = useElementIds(['name', 'language']);
 
 	if (authStatus === 'loading') {
-		return <Loading />;
+		return <Loading text="Loading..." />;
 	}
 
 	if (!auth) {
@@ -128,6 +128,7 @@ export default function AccountEdit() {
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 			<h1 className="text-center">My Account - Edit</h1>
 			<FormComponentName
+				labelText="Name"
 				id={elementIds.name}
 				fieldValue={formValues.name ?? ''}
 				disabled={pending}

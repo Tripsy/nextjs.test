@@ -158,6 +158,7 @@ export default function Register() {
 				</>
 			</FormPart>
 			<FormComponentName
+				labelText="Name"
 				id={elementIds.name}
 				fieldValue={formValues.name ?? ''}
 				disabled={pending}
@@ -165,6 +166,7 @@ export default function Register() {
 				error={errors.name}
 			/>
 			<FormComponentEmail
+				labelText="Email Address"
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
 				disabled={pending}
@@ -172,6 +174,7 @@ export default function Register() {
 				error={errors.email}
 			/>
 			<FormComponentPassword
+				labelText="Password"
 				id={elementIds.password}
 				fieldValue={formValues.password ?? ''}
 				disabled={pending}
