@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
+import { useTranslation } from '@/app/_hooks';
 import { useAuth } from '@/app/_providers/auth.provider';
 import { useToast } from '@/app/_providers/toast.provider';
 import { DataTableActionButton } from '@/app/(dashboard)/_components/data-table-action-button.component';
@@ -49,6 +50,13 @@ export function DataTableActions() {
 		[dataSource],
 	);
 
+	const translationsKeys = useMemo(
+		() => ['app.error.operation_not_allowed', 'app.text.error_title'],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	const allowAction = useCallback(
 		<K extends keyof DataSourceType>(
 			entries: DataSourceModel<K>[],
@@ -91,7 +99,7 @@ export function DataTableActions() {
 					customEntryCheck,
 				)
 			) {
-				setError('Operation not allowed');
+				setError(translations['app.error.operation_not_allowed']);
 
 				return;
 			}
@@ -113,7 +121,14 @@ export function DataTableActions() {
 					break;
 			}
 		},
-		[allowAction, openAction, openCreate, openUpdate, setActionEntry],
+		[
+			allowAction,
+			openAction,
+			openCreate,
+			openUpdate,
+			setActionEntry,
+			translations,
+		],
 	);
 
 	const renderActions = (position: 'left' | 'right') => {
@@ -219,13 +234,13 @@ export function DataTableActions() {
 		if (error) {
 			showToast({
 				severity: 'error',
-				summary: 'Error',
+				summary: translations['app.text.error_title'],
 				detail: error,
 			});
 
 			setError(null);
 		}
-	}, [error, showToast]);
+	}, [error, showToast, translations]);
 
 	if (error) {
 		return;

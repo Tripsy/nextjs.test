@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import { useTranslation } from '@/app/_hooks';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { formatDate } from '@/lib/utils/date';
 import { parseJson } from '@/lib/utils/string';
@@ -7,10 +9,37 @@ export function ViewLogData() {
 	const { modelStore } = useDataTable<'log_data'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
+	const translationsKeys = useMemo(
+		() => [
+			'dashboard.text.no_entry_selected',
+			'log_data.view.section_details',
+			'log_data.view.label_id',
+			'log_data.view.label_pid',
+			'log_data.view.label_category',
+			'log_data.view.label_level',
+			'log_data.view.label_message',
+			'log_data.view.label_created_at',
+			'log_data.view.section_context',
+			'log_data.view.label_method',
+			'log_data.view.label_url',
+			'log_data.view.label_body',
+			'log_data.view.label_params',
+			'log_data.view.label_query',
+			'log_data.view.section_debug_stack',
+			'log_data.view.label_file',
+			'log_data.view.label_line',
+			'log_data.view.label_function',
+			'log_data.view.label_trace',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	if (!actionEntry) {
 		return (
 			<div className="min-h-48 flex items-center justify-center">
-				No entry selected.
+				{translations['dashboard.text.no_entry_selected']}
 			</div>
 		);
 	}
@@ -33,59 +62,84 @@ export function ViewLogData() {
 		<div className="space-y-6">
 			<div>
 				<h3 className="font-bold border-b border-line pb-2 mb-3">
-					Details
+					{translations['log_data.view.section_details']}
 				</h3>
 				<div className="ml-4 space-y-1">
-					<p>
-						<span className="font-semibold">ID:</span> {id}
-					</p>
-					<p>
-						<span className="font-semibold">PID:</span> {pid}
-					</p>
-					<p>
-						<span className="font-semibold">Category:</span>{' '}
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_id']}
+						</span>{' '}
+						{id}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_pid']}
+						</span>{' '}
+						{pid}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_category']}
+						</span>{' '}
 						{category}
-					</p>
-					<p>
-						<span className="font-semibold">Level:</span> {level}
-					</p>
-					<p>
-						<span className="font-semibold">Message:</span>{' '}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_level']}
+						</span>{' '}
+						{level}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_message']}
+						</span>{' '}
 						{message}
-					</p>
-					<p>
-						<span className="font-semibold">Created At:</span>{' '}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['cron_history.view.label_created_at']}
+						</span>{' '}
 						{formatDate(created_at, 'date-time')}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			{parsedContext?.request && (
 				<div>
 					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						Request Context
+						{translations['log_data.view.section_context']}
 					</h3>
 					<div className="ml-4 space-y-1">
-						<p>
-							<span className="font-semibold">Method:</span>{' '}
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_method']}
+							</span>{' '}
 							{parsedContext.request.method}
-						</p>
-						<p>
-							<span className="font-semibold">URL:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_url']}
+							</span>{' '}
 							{decodeURI(parsedContext.request.url)}
-						</p>
-						<p>
-							<span className="font-semibold">Body:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_body']}
+							</span>{' '}
 							{JSON.stringify(parsedContext.request.body)}
-						</p>
-						<p>
-							<span className="font-semibold">Params:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_params']}
+							</span>{' '}
 							{JSON.stringify(parsedContext.request.params)}
-						</p>
-						<p>
-							<span className="font-semibold">Query:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_query']}
+							</span>{' '}
 							{JSON.stringify(parsedContext.request.query)}
-						</p>
+						</div>
 					</div>
 				</div>
 			)}
@@ -93,24 +147,32 @@ export function ViewLogData() {
 			{parsedDebugStack && (
 				<div>
 					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						Debug Stack
+						{translations['log_data.view.section_debug_stack']}
 					</h3>
 					<div className="ml-4 space-y-1">
-						<p>
-							<span className="font-semibold">File:</span>{' '}
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_file']}
+							</span>{' '}
 							{parsedDebugStack.file}
-						</p>
-						<p>
-							<span className="font-semibold">Line:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_line']}
+							</span>{' '}
 							{parsedDebugStack.line}
-						</p>
-						<p>
-							<span className="font-semibold">Function:</span>{' '}
+						</div>
+						<div>
+							<span className="font-semibold">
+								{translations['log_data.view.label_function']}
+							</span>{' '}
 							{parsedDebugStack.function}
-						</p>
+						</div>
 						{parsedDebugStack.trace && (
 							<div>
-								<span className="font-semibold">Trace:</span>
+								<span className="font-semibold">
+									{translations['log_data.view.label_trace']}
+								</span>
 								<pre className="bg-gray-50 border rounded p-2 text-xs mt-1 overflow-x-auto">
 									{parsedDebugStack.trace.join('\n')}
 								</pre>

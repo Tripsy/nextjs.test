@@ -12,7 +12,7 @@ export function SideMenuToggle() {
 	};
 
 	return (
-		<label aria-label="Toggle Side Menu" className="swap swap-rotate pr-5">
+		<label className="swap swap-rotate pr-5">
 			<input
 				type="checkbox"
 				checked={status === 'closed'}

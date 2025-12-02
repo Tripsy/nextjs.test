@@ -129,8 +129,6 @@ export function ActionManage() {
 				detail: fetchResponse?.message || translations['error.form'],
 			});
 		} catch (error: unknown) {
-			console.error(error);
-
 			showToast({
 				severity: 'error',
 				summary: 'Error',
@@ -155,6 +153,7 @@ export function ActionManage() {
 	return (
 		<>
 			<p className="pb-4 font-semibold">
+				{/*TODO: translate*/}
 				{`${actionContentEntries.length} ${actionContentEntries.length === 1 ? 'entry' : 'entries'} selected`}
 			</p>
 			<ul className="pb-4 italic list-disc ml-4">

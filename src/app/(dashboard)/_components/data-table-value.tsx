@@ -12,6 +12,7 @@ import type {
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
+// TODO: translate
 export const statusList = {
 	active: {
 		label: 'Active',

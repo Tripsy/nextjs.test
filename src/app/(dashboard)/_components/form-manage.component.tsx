@@ -143,7 +143,12 @@ export function FormManage<K extends keyof DataSourceType>({
 	const successMessageKey = `${dataSource}.action.${actionName}.success`;
 
 	const translationsKeys = useMemo(
-		() => [successMessageKey, actionLabelKey],
+		() => [
+			successMessageKey,
+			actionLabelKey,
+			'app.text.success_title',
+			'app.text.saving',
+		],
 		[actionLabelKey, successMessageKey],
 	);
 
@@ -163,7 +168,7 @@ export function FormManage<K extends keyof DataSourceType>({
 
 			showToast({
 				severity: 'success',
-				summary: 'Success',
+				summary: translations['app.text.success_title'],
 				detail: translations[successMessageKey],
 			});
 
@@ -215,7 +220,7 @@ export function FormManage<K extends keyof DataSourceType>({
 						{pending ? (
 							<span className="flex items-center gap-1.5">
 								<Icons.Loading className="animate-spin" />
-								Saving...
+								{translations['app.text.saving']}
 							</span>
 						) : submitted && Object.keys(errors).length > 0 ? (
 							<span className="flex items-center gap-1.5">

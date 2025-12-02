@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { Loading } from '@/app/_components/loading.component';
+import { useTranslation } from '@/app/_hooks';
 import { useToast } from '@/app/_providers/toast.provider';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { TemplateDetails } from '@/app/(dashboard)/dashboard/templates/template-details.component';
@@ -12,6 +13,13 @@ export function ViewMailQueueTemplate() {
 
 	const { modelStore } = useDataTable<'mail_queue'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
+
+	const translationsKeys = useMemo(
+		() => ['app.text.error_title', 'dashboard.text.no_entry_selected'],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const [template, setTemplate] = useState<TemplateModel | undefined>(
 		undefined,
@@ -35,19 +43,19 @@ export function ViewMailQueueTemplate() {
 			} catch (error) {
 				showToast({
 					severity: 'error',
-					summary: 'Failed to load template details',
+					summary: translations['app.text.error_title'],
 					detail: (error as Error).message,
 				});
 			} finally {
 				setLoading(false);
 			}
 		})();
-	}, [actionEntry, showToast]);
+	}, [actionEntry, showToast, translations]);
 
 	if (!actionEntry) {
 		return (
 			<div className="min-h-48 flex items-center justify-center">
-				No entry selected.
+				{translations['dashboard.text.no_entry_selected']}
 			</div>
 		);
 	}

@@ -1,6 +1,7 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
+import { translateBatch } from '@/config/lang';
 import type { LogDataModel } from '@/lib/entities/log-data.model';
 import { deleteLogData, findLogData } from '@/lib/services/log-data.service';
 
@@ -11,6 +12,14 @@ export type DataTableLogDataFiltersType = {
 	create_date_start: DataTableFilterMetaData;
 	create_date_end: DataTableFilterMetaData;
 };
+
+const translations = await translateBatch([
+	'log_data.data_table.column_id',
+	'log_data.data_table.column_category',
+	'log_data.data_table.column_level',
+	'log_data.data_table.column_message',
+	'log_data.data_table.column_created_at',
+]);
 
 function displayActionEntriesLogData(entries: LogDataModel[]) {
 	return entries.map((entry) => ({ id: entry.id, label: entry.pid }));
@@ -24,7 +33,7 @@ export type DataSourceLogDataType = {
 const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 	{
 		field: 'id',
-		header: 'ID',
+		header: translations['log_data.data_table.column_id'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'log_data'>(entry, column, {
@@ -37,7 +46,7 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 	},
 	{
 		field: 'category',
-		header: 'Category',
+		header: translations['log_data.data_table.column_category'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'log_data'>(entry, column, {
@@ -46,17 +55,20 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 	},
 	{
 		field: 'level',
-		header: 'Level',
+		header: translations['log_data.data_table.column_level'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'log_data'>(entry, column, {
 				capitalize: true,
 			}),
 	},
-	{ field: 'message', header: 'Message' },
+	{
+		field: 'message',
+		header: translations['log_data.data_table.column_message'],
+	},
 	{
 		field: 'created_at',
-		header: 'Created At',
+		header: translations['log_data.data_table.column_created_at'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'log_data'>(entry, column, {

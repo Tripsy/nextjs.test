@@ -1,6 +1,7 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
+import { translateBatch } from '@/config/lang';
 import type { CronHistoryModel } from '@/lib/entities/cron-history.model';
 import {
 	deleteCronHistory,
@@ -14,6 +15,14 @@ export type DataTableCronHistoryFiltersType = {
 	start_date_end: DataTableFilterMetaData;
 };
 
+const translations = await translateBatch([
+	'cron_history.data_table.column_id',
+	'cron_history.data_table.column_label',
+	'cron_history.data_table.column_start_at',
+	'cron_history.data_table.column_status',
+	'cron_history.data_table.column_run_time',
+]);
+
 function displayActionEntriesCronHistory(entries: CronHistoryModel[]) {
 	return entries.map((entry) => ({ id: entry.id, label: entry.label }));
 }
@@ -26,7 +35,7 @@ export type DataSourceCronHistoryType = {
 const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 	{
 		field: 'id',
-		header: 'ID',
+		header: translations['cron_history.data_table.column_id'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'cron_history'>(entry, column, {
@@ -39,12 +48,12 @@ const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 	},
 	{
 		field: 'label',
-		header: 'Label',
+		header: translations['cron_history.data_table.column_label'],
 		sortable: true,
 	},
 	{
 		field: 'start_at',
-		header: 'Start At',
+		header: translations['cron_history.data_table.column_start_at'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'cron_history'>(entry, column, {
@@ -53,7 +62,7 @@ const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 	},
 	{
 		field: 'status',
-		header: 'Status',
+		header: translations['cron_history.data_table.column_status'],
 		body: (entry, column) =>
 			DataTableValue<'cron_history'>(entry, column, {
 				isStatus: true,
@@ -63,7 +72,10 @@ const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 			maxWidth: '6rem',
 		},
 	},
-	{ field: 'run_time', header: 'Run Time' },
+	{
+		field: 'run_time',
+		header: translations['cron_history.data_table_column_run_time'],
+	},
 ];
 
 const DataTableCronHistoryFilters: DataTableCronHistoryFiltersType = {

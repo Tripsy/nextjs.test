@@ -5,13 +5,18 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import type { Nullable } from 'primereact/ts-helpers';
+import { useMemo } from 'react';
 import {
 	FormElement,
 	type OptionsType,
 } from '@/app/_components/form/form-element.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
-import { useElementIds, type useSearchFilter } from '@/app/_hooks';
+import {
+	useElementIds,
+	type useSearchFilter,
+	useTranslation,
+} from '@/app/_hooks';
 import { handleReset } from '@/app/(dashboard)/_components/data-table-actions.component';
 import type {
 	DataSourceTableFilter,
@@ -43,6 +48,13 @@ export function FormFiltersSelect<K extends keyof DataSourceType>({
 	const elementKey = `search-${fieldName}`;
 	const elementIds = useElementIds([elementKey]);
 
+	const translationsKeys = useMemo(
+		() => ['dashboard.text.placeholder_select_default'],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	return (
 		<FormPart>
 			<FormElement
@@ -61,7 +73,11 @@ export function FormFiltersSelect<K extends keyof DataSourceType>({
 							e.value,
 						)
 					}
-					placeholder="-any-"
+					placeholder={
+						translations[
+							'dashboard.text.placeholder_select_default'
+						]
+					}
 					showClear
 				/>
 			</FormElement>
@@ -135,6 +151,16 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 	const elementEndKey = `search-${endDateField}`;
 	const elementIds = useElementIds([elementStartKey, elementEndKey]);
 
+	const translationsKeys = useMemo(
+		() => [
+			'dashboard.text.placeholder_start_date',
+			'dashboard.text.placeholder_end_date',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	return (
 		<FormPart>
 			<FormElement
@@ -153,7 +179,11 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 								'dateAfter',
 							)
 						}
-						placeholder="Start Date"
+						placeholder={
+							translations[
+								'dashboard.text.placeholder_start_date'
+							]
+						}
 						showIcon
 						maxDate={getValidDate(endDateValue)}
 					/>
@@ -168,7 +198,9 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 								'dateBefore',
 							)
 						}
-						placeholder="End Date"
+						placeholder={
+							translations['dashboard.text.placeholder_end_date']
+						}
 						showIcon
 						minDate={getValidDate(startDateValue)}
 					/>
@@ -190,6 +222,13 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 }) {
 	const elementIds = useElementIds(['searchIsDeleted']);
 
+	const translationsKeys = useMemo(
+		() => ['dashboard.text.label_checkbox_show_deleted'],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	return (
 		<FormPart>
 			<div className="flex flex-col justify-center h-full">
@@ -209,7 +248,11 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 						htmlFor={elementIds.searchIsDeleted}
 						className="text-sm whitespace-nowrap"
 					>
-						Show Deleted
+						{
+							translations[
+								'dashboard.text.label_checkbox_show_deleted'
+							]
+						}
 					</label>
 				</div>
 			</div>
@@ -218,6 +261,10 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 }
 
 export function FormFiltersReset({ source }: { source: string }) {
+	const translationsKeys = useMemo(() => ['dashboard.text.label_reset'], []);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	return (
 		<FormPart>
 			<div className="flex flex-col justify-center h-full">
@@ -230,7 +277,7 @@ export function FormFiltersReset({ source }: { source: string }) {
 						title="Reset filters"
 					>
 						<Icons.Action.Reset />
-						Reset
+						{translations['dashboard.text.label_reset']}
 					</button>
 				</div>
 			</div>

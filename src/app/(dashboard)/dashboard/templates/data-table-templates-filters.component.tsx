@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
-import { useSearchFilter } from '@/app/_hooks';
+import { useSearchFilter, useTranslation } from '@/app/_hooks';
 import {
 	FormFiltersReset,
 	FormFiltersSearch,
@@ -29,6 +29,17 @@ const types = Object.values(TemplateTypeEnum).map((v) => ({
 
 export const DataTableTemplatesFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'templates'>();
+
+	const translationsKeys = useMemo(
+		() => [
+			'templates.form_filters.label_global',
+			'templates.form_filters.label_language',
+			'templates.form_filters.label_type',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -87,13 +98,15 @@ export const DataTableTemplatesFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Label / Content"
+				labelText={translations['templates.form_filters.label_global']}
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Language"
+				labelText={
+					translations['templates.form_filters.label_language']
+				}
 				fieldName="language"
 				fieldValue={filters.language.value}
 				selectOptions={languages}
@@ -101,7 +114,7 @@ export const DataTableTemplatesFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersSelect
-				labelText="Type"
+				labelText={translations['templates.form_filters.label_type']}
 				fieldName="type"
 				fieldValue={filters.type.value}
 				selectOptions={types}

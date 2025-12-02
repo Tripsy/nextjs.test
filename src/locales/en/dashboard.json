@@ -13,5 +13,16 @@
 		"logs": "System Logs",
 		"templates": "Templates",
 		"users": "Users"
+	},
+	"text": {
+		"showing_entries": "Showing {{first}} to {{last}} of {{total}} entries",
+		"no_entries": "No entries found",
+		"select_one": "Please select at least one entry",
+		"no_entry_selected": "No entry selected",
+		"placeholder_select_default": "Select...",
+		"placeholder_start_date": "Start Date",
+		"placeholder_end_date": "End Date",
+		"label_checkbox_show_deleted": "Show deleted",
+		"label_reset": "Reset"
 	}
 }

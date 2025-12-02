@@ -20,7 +20,7 @@ export function DataTableActionButton({
 	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
 
 	const translationsKeys = useMemo(
-		() => [actionTitleKey, actionLabelKey],
+		() => [actionTitleKey, actionLabelKey, 'app.text.please_wait'],
 		[actionLabelKey, actionTitleKey],
 	);
 
@@ -39,7 +39,7 @@ export function DataTableActionButton({
 			{disabled ? (
 				<>
 					<Icons.Loading className="animate-spin" />
-					Please wait...
+					{translations['app.text.please_wait']}
 				</>
 			) : (
 				<>

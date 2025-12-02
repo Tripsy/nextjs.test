@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
-import { useSearchFilter } from '@/app/_hooks';
+import { useSearchFilter, useTranslation } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
@@ -29,6 +29,18 @@ const roles = Object.values(UserRoleEnum).map((v) => ({
 
 export const DataTableUsersFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'users'>();
+
+	const translationsKeys = useMemo(
+		() => [
+			'users.form_filters.label_global',
+			'users.form_filters.label_status',
+			'users.form_filters.label_role',
+			'users.form_filters.label_create_date',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -91,13 +103,13 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Email / Name"
+				labelText={translations['users.form_filters.label_global']}
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Status"
+				labelText={translations['users.form_filters.label_status']}
 				fieldName="status"
 				fieldValue={filters.status.value}
 				selectOptions={statuses}
@@ -105,7 +117,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersSelect
-				labelText="Role"
+				labelText={translations['users.form_filters.label_role']}
 				fieldName="role"
 				fieldValue={filters.role.value}
 				selectOptions={roles}
@@ -113,7 +125,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersDateRange
-				labelText="Created Date"
+				labelText={translations['users.form_filters.label_create_date']}
 				startDateField="create_date_start"
 				startDateValue={filters.create_date_start?.value ?? ''}
 				endDateField="create_date_end"

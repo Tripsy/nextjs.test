@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
-import { useSearchFilter } from '@/app/_hooks';
+import { useSearchFilter, useTranslation } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
@@ -23,6 +23,19 @@ const statuses = Object.values(MailQueueStatusEnum).map((v) => ({
 
 export const DataTableMailQueueFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'mail_queue'>();
+
+	const translationsKeys = useMemo(
+		() => [
+			'mail_queue.form_filters.label_sent_date_start',
+			'mail_queue.form_filters.label_status',
+			'mail_queue.form_filters.label_template',
+			'mail_queue.form_filters.label_content',
+			'mail_queue.form_filters.label_to',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -107,7 +120,11 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersDateRange
-				labelText="Sent Date"
+				labelText={
+					translations[
+						'mail_queue.form_filters.label_sent_date_start'
+					]
+				}
 				startDateField="sent_date_start"
 				startDateValue={filters.sent_date_start?.value ?? ''}
 				endDateField="sent_date_end"
@@ -116,7 +133,7 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersSelect
-				labelText="Status"
+				labelText={translations['mail_queue.form_filters.label_status']}
 				fieldName="status"
 				fieldValue={filters.status.value}
 				selectOptions={statuses}
@@ -124,19 +141,23 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersSearch
-				labelText="Template"
+				labelText={
+					translations['mail_queue.form_filters.label_template']
+				}
 				fieldName="template"
 				search={searchTemplate}
 			/>
 
 			<FormFiltersSearch
-				labelText="Content"
+				labelText={
+					translations['mail_queue.form_filters.label_content']
+				}
 				fieldName="content"
 				search={searchContent}
 			/>
 
 			<FormFiltersSearch
-				labelText="To"
+				labelText={translations['mail_queue.form_filters.label_to']}
 				fieldName="to"
 				search={searchTo}
 			/>

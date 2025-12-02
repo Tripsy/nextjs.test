@@ -2,6 +2,7 @@ import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { useMemo } from 'react';
 import {
 	FormComponentInput,
 	FormComponentSelect,
@@ -10,7 +11,7 @@ import {
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
-import { useElementIds } from '@/app/_hooks';
+import { useElementIds, useTranslation } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
 import {
 	TemplateLayoutEmailEnum,
@@ -41,12 +42,34 @@ export function FormManageTemplate({
 	handleChange,
 	pending,
 }: FormManageType<'templates'>) {
+	const translationsKeys = useMemo(
+		() => [
+			'templates.form_manage.label_label',
+			'templates.form_manage.label_language',
+			'templates.form_manage.label_type',
+			'templates.form_manage.label_email_content_subject',
+			'templates.form_manage.label_email_content_html',
+			'templates.form_manage.label_email_content_layout',
+			'templates.form_manage.label_page_content_title',
+			'templates.form_manage.label_page_content_html',
+			'templates.form_manage.label_page_content_layout',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	const elementIds = useElementIds(['label', 'language', 'type', 'content']);
 
 	return (
 		<>
 			<FormPart>
-				<FormElement labelText="Label" labelFor={elementIds.label}>
+				<FormElement
+					labelText={
+						translations['templates.form_manage.label_label']
+					}
+					labelFor={elementIds.label}
+				>
 					<div>
 						<IconField iconPosition="left">
 							<InputIcon className="flex items-center">
@@ -74,7 +97,9 @@ export function FormManageTemplate({
 
 			<div className="flex flex-wrap gap-4">
 				<FormComponentSelect
-					labelText="Language"
+					labelText={
+						translations['templates.form_manage.label_language']
+					}
 					id={elementIds.language}
 					fieldName="language"
 					fieldValue={formValues.language}
@@ -85,7 +110,7 @@ export function FormManageTemplate({
 				/>
 
 				<FormComponentSelect
-					labelText="Type"
+					labelText={translations['templates.form_manage.label_type']}
 					id={elementIds.type}
 					fieldName="type"
 					fieldValue={formValues.type}
@@ -99,7 +124,11 @@ export function FormManageTemplate({
 			{formValues.type === TemplateTypeEnum.EMAIL && (
 				<>
 					<FormComponentInput
-						labelText="Email - Subject"
+						labelText={
+							translations[
+								'templates.form_manage.label_email_content_subject'
+							]
+						}
 						id={`${elementIds.content}-subject`}
 						fieldName="content[subject]"
 						fieldValue={formValues.content.subject ?? ''}
@@ -112,7 +141,11 @@ export function FormManageTemplate({
 					/>
 					<FormPart>
 						<FormElement
-							labelText="Email - Content"
+							labelText={
+								translations[
+									'templates.form_manage.label_email_content_html'
+								]
+							}
 							labelFor={`${elementIds.content}-html`}
 						>
 							<div>
@@ -138,7 +171,11 @@ export function FormManageTemplate({
 						</FormElement>
 					</FormPart>
 					<FormComponentSelect
-						labelText="Email - Layout"
+						labelText={
+							translations[
+								'templates.form_manage.label_email_content_layout'
+							]
+						}
 						id={`${elementIds.content}-layout`}
 						fieldName="content[layout]"
 						fieldValue={formValues.content.layout}
@@ -155,7 +192,11 @@ export function FormManageTemplate({
 			{formValues.type === TemplateTypeEnum.PAGE && (
 				<>
 					<FormComponentInput
-						labelText="Page - Title"
+						labelText={
+							translations[
+								'templates.form_manage.label_page_content_title'
+							]
+						}
 						id={`${elementIds.content}-title`}
 						fieldName="content[title]"
 						fieldValue={formValues.content.title ?? ''}
@@ -169,7 +210,11 @@ export function FormManageTemplate({
 
 					<FormPart>
 						<FormElement
-							labelText="Page - Content"
+							labelText={
+								translations[
+									'templates.form_manage.label_page_content_html'
+								]
+							}
 							labelFor={`${elementIds.content}-html`}
 						>
 							<div>
@@ -196,7 +241,11 @@ export function FormManageTemplate({
 					</FormPart>
 
 					<FormComponentSelect
-						labelText="Page - Layout"
+						labelText={
+							translations[
+								'templates.form_manage.label_page_content_layout'
+							]
+						}
 						id={`${elementIds.content}-layout`}
 						fieldName="content[layout]"
 						fieldValue={formValues.content.layout}

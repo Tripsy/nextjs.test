@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
 	FormComponentEmail,
 	FormComponentName,
@@ -6,7 +6,7 @@ import {
 	FormComponentRadio,
 	FormComponentSelect,
 } from '@/app/_components/form/form-element.component';
-import { useElementIds } from '@/app/_hooks';
+import { useElementIds, useTranslation } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
 import { UserRoleEnum } from '@/lib/entities/user.model';
 import { LanguageEnum } from '@/lib/enums';
@@ -29,6 +29,21 @@ export function FormManageUser({
 	handleChange,
 	pending,
 }: FormManageType<'users'>) {
+	const translationsKeys = useMemo(
+		() => [
+			'users.form_manage.label_name',
+			'users.form_manage.label_email',
+			'users.form_manage.label_password_on_create',
+			'users.form_manage.label_password_on_update',
+			'users.form_manage.label_password_confirm',
+			'users.form_manage.label_language',
+			'users.form_manage.label_role',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	const [showPassword, setShowPassword] = useState(false);
 
 	const elementIds = useElementIds([
@@ -43,6 +58,7 @@ export function FormManageUser({
 	return (
 		<>
 			<FormComponentName
+				labelText={translations['users.form_manage.label_name']}
 				id={elementIds.name}
 				fieldValue={formValues.name ?? ''}
 				disabled={pending}
@@ -51,6 +67,7 @@ export function FormManageUser({
 			/>
 
 			<FormComponentEmail
+				labelText={translations['users.form_manage.label_email']}
 				id={elementIds.email}
 				fieldValue={formValues.email ?? ''}
 				disabled={pending}
@@ -60,7 +77,13 @@ export function FormManageUser({
 
 			<FormComponentPassword
 				labelText={
-					actionName === 'create' ? 'New Password' : 'Password'
+					actionName === 'create'
+						? translations[
+								'users.form_manage.label_password_on_create'
+							]
+						: translations[
+								'users.form_manage.label_password_on_update'
+							]
 				}
 				id={elementIds.password}
 				fieldName="password"
@@ -73,7 +96,9 @@ export function FormManageUser({
 			/>
 
 			<FormComponentPassword
-				labelText="Confirm Password"
+				labelText={
+					translations['users.form_manage.label_password_confirm']
+				}
 				id={elementIds.passwordConfirm}
 				fieldName="password_confirm"
 				fieldValue={formValues.password_confirm ?? ''}
@@ -87,7 +112,7 @@ export function FormManageUser({
 			/>
 
 			<FormComponentSelect
-				labelText="Language"
+				labelText={translations['users.form_manage.label_language']}
 				id={elementIds.language}
 				fieldName="language"
 				fieldValue={formValues.language}
@@ -98,7 +123,7 @@ export function FormManageUser({
 			/>
 
 			<FormComponentRadio
-				labelText="Role"
+				labelText={translations['users.form_manage.label_role']}
 				id={elementIds.role}
 				fieldName="role"
 				fieldValue={formValues.role}

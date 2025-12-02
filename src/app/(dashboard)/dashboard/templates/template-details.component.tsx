@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from '@/app/_hooks';
 import type { TemplateModel } from '@/lib/entities/template.model';
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter, parseJson } from '@/lib/utils/string';
@@ -7,10 +9,29 @@ export function TemplateDetails({
 }: {
 	entry: TemplateModel | undefined;
 }) {
+	const translationsKeys = useMemo(
+		() => [
+			'dashboard.text.no_entry_selected',
+			'templates.view.section_details',
+			'templates.view.label_id',
+			'templates.view.label_label',
+			'templates.view.label_language',
+			'templates.view.label_type',
+			'templates.view.section_timestamps',
+			'templates.view.label_created_at',
+			'templates.view.label_updated_at',
+			'templates.view.label_deleted_at',
+			'templates.view.section_content',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	if (!entry) {
 		return (
 			<div className="min-h-48 flex items-center justify-center">
-				Template details are missing.
+				{translations['dashboard.text.no_entry_selected']}
 			</div>
 		);
 	}
@@ -32,46 +53,66 @@ export function TemplateDetails({
 		<div className="space-y-6">
 			<div>
 				<h3 className="font-bold border-b border-line pb-2 mb-3">
-					Details
+					{translations['templates.view.section_details']}
 				</h3>
 				<div className="ml-4 space-y-1 text-sm">
-					<p>
-						<span className="font-semibold">ID:</span> {id}
-					</p>
-					<p>
-						<span className="font-semibold">Label:</span> {label}
-					</p>
-					<p>
-						<span className="font-semibold">Language:</span>{' '}
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_id']}
+						</span>{' '}
+						{id}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_label']}
+						</span>{' '}
+						{label}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_language']}
+						</span>{' '}
 						{language}
-					</p>
-					<p>
-						<span className="font-semibold">Type:</span>{' '}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_type']}
+						</span>{' '}
 						{capitalizeFirstLetter(type)}
-					</p>
+					</div>
 				</div>
 			</div>
 
 			<div>
 				<h3 className="font-bold border-b border-line pb-2 mb-3">
-					Timestamps
+					{translations['templates.view.section_timestamps']}
 				</h3>
 				<div className="ml-4 space-y-1 text-sm">
-					<p>
-						<span className="font-semibold">Created At:</span>{' '}
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_created_at']}
+						</span>{' '}
 						{formatDate(created_at, 'date-time')}
-					</p>
-					<p>
-						<span className="font-semibold">Updated At:</span>{' '}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['templates.view.label_updated_at']}
+						</span>{' '}
 						{formatDate(updated_at, 'date-time')}
-					</p>
+					</div>
 					{deleted_at && (
-						<p>
-							<span className="font-semibold">Deleted At:</span>{' '}
+						<div>
+							<span className="font-semibold">
+								{
+									translations[
+										'templates.view.label_deleted_at'
+									]
+								}
+							</span>{' '}
 							<span className="text-red-500">
 								{formatDate(deleted_at, 'date-time')}
 							</span>
-						</p>
+						</div>
 					)}
 				</div>
 			</div>
@@ -79,7 +120,7 @@ export function TemplateDetails({
 			{parsedContent && (
 				<div>
 					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						Content
+						{translations['templates.view.section_content']}
 					</h3>
 					<div className="ml-4 space-y-1">
 						{Object.entries(parsedContent).map(([key, value]) => (

@@ -15,7 +15,8 @@
 		"password_confirm_mismatch": "Passwords do not match",
 		"language_invalid": "Select a valid language",
 		"role_invalid": "Select a valid role",
-		"email_already_used": "This email address is already registered"
+		"email_already_used": "This email address is already registered",
+		"no_permissions_defined": "No permissions defined"
 	},
 	"action": {
 		"create": {
@@ -61,5 +62,54 @@
 			"title": "User details",
 			"label": "View details"
 		}
+	},
+	"text": {
+		"menu_link_login_anchor": "Login",
+		"menu_link_login_title": "Sign in",
+		"menu_link_register_anchor": "Register",
+		"menu_link_register_title": "Create account",
+		"menu_link_logout_anchor": "Logout",
+		"menu_link_logout_title": "Sign out",
+		"menu_link_account_me_anchor": "My account",
+		"menu_link_account_me_title": "My account",
+		"menu_link_dashboard_anchor": "Dashboard",
+		"menu_link_dashboard_title": "Go to administration"
+	},
+	"data_table": {
+		"column_id": "ID",
+		"column_name": "Name",
+		"column_email": "Email",
+		"column_role": "Role",
+		"column_status": "Status",
+		"column_created_at": "Registered At"
+	},
+	"form_filters": {
+		"label_global": "ID / Email / Name",
+		"label_status": "Status",
+		"label_role": "Role",
+		"label_create_date": "Register Date"
+	},
+	"form_manage": {
+		"label_name": "Name",
+		"label_email": "Email",
+		"label_password_on_create": "New Password",
+		"label_password_on_update": "Password",
+		"label_password_confirm": "Confirm Password",
+		"label_language": "Language",
+		"label_role": "Role"
+	},
+	"view": {
+		"section_details": "Details",
+		"label_id": "ID:",
+		"label_name": "Name:",
+		"label_email": "Email:",
+		"label_language": "Language:",
+		"section_info": "Account Info",
+		"label_role": "Role:",
+		"label_status": "Status:",
+		"label_deleted_at": "Deleted At:",
+		"section_timestamps": "Timestamps",
+		"label_created_at": "Created At:",
+		"label_updated_at": "Updated At:"
 	}
 }

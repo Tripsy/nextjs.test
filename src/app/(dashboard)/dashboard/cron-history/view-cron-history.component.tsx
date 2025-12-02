@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useStore } from 'zustand/react';
+import { useTranslation } from '@/app/_hooks';
 import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import { formatDate } from '@/lib/utils/date';
@@ -8,10 +10,27 @@ export function ViewCronHistory() {
 	const { modelStore } = useDataTable<'cron_history'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
+	const translationsKeys = useMemo(
+		() => [
+			'dashboard.text.no_entry_selected',
+			'cron_history.view.section_details',
+			'cron_history.view.label_id',
+			'cron_history.view.label_label',
+			'cron_history.view.label_start_at',
+			'cron_history.view.label_end_at',
+			'cron_history.view.label_status',
+			'cron_history.view.label_run_time',
+			'cron_history.view.section_content',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	if (!actionEntry) {
 		return (
 			<div className="min-h-48 flex items-center justify-center">
-				No entry selected.
+				{translations['dashboard.text.no_entry_selected']}
 			</div>
 		);
 	}
@@ -25,31 +44,45 @@ export function ViewCronHistory() {
 		<div className="space-y-6">
 			<div>
 				<h3 className="font-bold border-b border-line pb-2 mb-3">
-					Details
+					{translations['cron_history.view.section_details']}
 				</h3>
 				<div className="ml-4 space-y-1">
 					<div>
-						<span className="font-semibold">ID:</span> {id}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_id']}
+						</span>{' '}
+						{id}
 					</div>
 					<div>
-						<span className="font-semibold">Label:</span> {label}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_label']}
+						</span>{' '}
+						{label}
 					</div>
 					<div>
-						<span className="font-semibold">Start At:</span>{' '}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_start_at']}
+						</span>{' '}
 						{formatDate(start_at, 'date-time')}
 					</div>
 					<div>
-						<span className="font-semibold">End At:</span>{' '}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_end_at']}
+						</span>{' '}
 						{formatDate(end_at, 'date-time') || 'n/a'}
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="font-semibold">Status:</span>{' '}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_status']}
+						</span>{' '}
 						<div className="max-w-[240px]">
 							<DisplayStatus status={status} />
 						</div>
 					</div>
 					<div>
-						<span className="font-semibold">Run Time:</span>{' '}
+						<span className="font-semibold">
+							{translations['cron_history.view.label_run_time']}
+						</span>{' '}
 						{run_time} second(s)
 					</div>
 				</div>
@@ -58,7 +91,7 @@ export function ViewCronHistory() {
 			{parsedContent && (
 				<div>
 					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						Content
+						{translations['cron_history.view.section_content']}
 					</h3>
 					<div className="ml-4 space-y-1">
 						{Object.entries(parsedContent).map(([key, value]) => (

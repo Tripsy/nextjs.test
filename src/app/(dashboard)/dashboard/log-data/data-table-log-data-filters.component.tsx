@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
-import { useSearchFilter } from '@/app/_hooks';
+import { useSearchFilter, useTranslation } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
@@ -28,6 +28,18 @@ const logCategories = Object.values(LogCategoryEnum).map((v) => ({
 
 export const DataTableLogDataFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'log_data'>();
+
+	const translationsKeys = useMemo(
+		() => [
+			'log_data.form_filters.label_global',
+			'log_data.form_filters.label_category',
+			'log_data.form_filters.label_level',
+			'log_data.form_filters.label_created_at',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -91,13 +103,13 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Pid / Message / Context"
+				labelText={translations['log_data.form_filters.label_global']}
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Category"
+				labelText={translations['log_data.form_filters.label_category']}
 				fieldName="category"
 				fieldValue={filters.category.value}
 				selectOptions={logCategories}
@@ -105,7 +117,7 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersSelect
-				labelText="Level"
+				labelText={translations['log_data.form_filters.label_level']}
 				fieldName="level"
 				fieldValue={filters.level.value}
 				selectOptions={logLevels}
@@ -113,7 +125,9 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersDateRange
-				labelText="Created Date"
+				labelText={
+					translations['log_data.form_filters.label_created_at']
+				}
 				startDateField="create_date_start"
 				startDateValue={filters.create_date_start?.value ?? ''}
 				endDateField="create_date_end"

@@ -11,6 +11,7 @@ import type { PaginatorCurrentPageReportOptions } from 'primereact/paginator';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
+import { useTranslation } from '@/app/_hooks';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import {
 	type DataSourceModel,
@@ -20,18 +21,41 @@ import {
 } from '@/config/data-source';
 import { cfg } from '@/config/settings';
 import { getMomentInstanceFromDate } from '@/lib/utils/date';
+import { replaceVars } from '@/lib/utils/string';
 
 type SelectionChangeEvent<T> = {
 	originalEvent: React.SyntheticEvent;
 	value: T[];
 };
 
-const CurrentPageReport = (options: PaginatorCurrentPageReportOptions) => (
-	<div className="data-table-paginator-showing">
-		Showing {options.first} to {options.last} of {options.totalRecords}{' '}
-		entries
-	</div>
-);
+const CurrentPageReport = (options: PaginatorCurrentPageReportOptions) => {
+	const translationsKeys = useMemo(
+		() => ['dashboard.text.showing_entries'],
+		[],
+	);
+
+	const { translations, isTranslationLoading } =
+		useTranslation(translationsKeys);
+
+	if (isTranslationLoading) {
+		return (
+			<div className="data-table-paginator-showing">
+				Showing {options.first} to {options.last} of{' '}
+				{options.totalRecords} entries
+			</div>
+		);
+	}
+
+	return (
+		<div className="data-table-paginator-showing">
+			{replaceVars(translations['dashboard.text.showing_entries'], {
+				first: options.first.toString(),
+				last: options.last.toString(),
+				total: options.totalRecords.toString(),
+			})}
+		</div>
+	);
+};
 
 export default function DataTableList<K extends keyof DataSourceType>(
 	props: DataTablePropsType,
@@ -61,6 +85,10 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 	const [data, setData] = useState<DataSourceModel<K>[]>([]);
 	const [totalRecords, setTotalRecords] = useState(0);
+
+	const translationsKeys = useMemo(() => ['dashboard.text.no_entries'], []);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset to first page when filters change
 	useEffect(() => {
@@ -283,7 +311,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 	return (
 		<DataTable
-			emptyMessage="No entries found."
+			emptyMessage={translations['dashboard.text.no_entries']}
 			value={data}
 			lazy
 			dataKey={props.dataKey}

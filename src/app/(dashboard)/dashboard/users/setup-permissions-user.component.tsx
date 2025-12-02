@@ -4,6 +4,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from 'zustand/react';
 import { Loading } from '@/app/_components/loading.component';
+import { useTranslation } from '@/app/_hooks';
 import { useToast } from '@/app/_providers/toast.provider';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { PermissionModel } from '@/lib/entities/permission.model';
@@ -15,6 +16,17 @@ import {
 } from '@/lib/services/users.service';
 
 export function SetupPermissionsUser() {
+	const translationsKeys = useMemo(
+		() => [
+			'app.text.error_title',
+			'app.text.success_title',
+			'users.validation.no_permissions_defined',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	const { showToast } = useToast();
 
 	const { modelStore } = useDataTable<'users'>();
@@ -73,7 +85,7 @@ export function SetupPermissionsUser() {
 
 					showToast({
 						severity: 'error',
-						summary: 'Error',
+						summary: translations['app.text.error_title'],
 						detail: (error as Error).message,
 					});
 				}
@@ -87,7 +99,7 @@ export function SetupPermissionsUser() {
 		return () => {
 			abortController.abort();
 		};
-	}, [user_id, showToast]);
+	}, [user_id, showToast, translations]);
 
 	// Group by entity
 	const listPermissions = useMemo(() => {
@@ -128,7 +140,7 @@ export function SetupPermissionsUser() {
 
 					showToast({
 						severity: 'success',
-						summary: 'Permissions added',
+						summary: translations['app.text.success_title'],
 						detail: `All '${entity}' permissions granted`,
 					});
 				} else {
@@ -140,7 +152,7 @@ export function SetupPermissionsUser() {
 
 					showToast({
 						severity: 'info',
-						summary: 'Permissions removed',
+						summary: translations['app.text.success_title'],
 						detail: `All '${entity}' permissions revoked`,
 					});
 				}
@@ -154,12 +166,12 @@ export function SetupPermissionsUser() {
 
 				showToast({
 					severity: 'error',
-					summary: 'Operation failed',
+					summary: translations['app.text.error_title'],
 					detail: (err as Error).message,
 				});
 			}
 		},
-		[user_id, listPermissions, showToast],
+		[user_id, listPermissions, showToast, translations],
 	);
 
 	// Toggle a single permission
@@ -181,7 +193,7 @@ export function SetupPermissionsUser() {
 
 					showToast({
 						severity: 'success',
-						summary: 'Permission added',
+						summary: translations['app.text.success_title'],
 						detail: `'${label}' granted`,
 					});
 				} else {
@@ -189,7 +201,7 @@ export function SetupPermissionsUser() {
 
 					showToast({
 						severity: 'info',
-						summary: 'Permission removed',
+						summary: translations['app.text.success_title'],
 						detail: `'${label}' revoked`,
 					});
 				}
@@ -203,12 +215,12 @@ export function SetupPermissionsUser() {
 
 				showToast({
 					severity: 'error',
-					summary: 'Operation failed',
+					summary: translations['app.text.error_title'],
 					detail: (err as Error).message,
 				});
 			}
 		},
-		[user_id, showToast],
+		[user_id, showToast, translations],
 	);
 
 	if (loading) {
@@ -220,7 +232,7 @@ export function SetupPermissionsUser() {
 	if (!permissions.length) {
 		return (
 			<div className="min-h-48 flex items-center justify-center">
-				No permissions defined.
+				{translations['users.validation.no_permissions_defined']}
 			</div>
 		);
 	}

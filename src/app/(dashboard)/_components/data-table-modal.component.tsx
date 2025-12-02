@@ -46,6 +46,19 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	const actionType =
 		(actionName && actions[actionName]?.type) || actionName || 'undefined';
 
+	const actionTitleKey = `${dataSource}.action.${actionName}.title`;
+
+	const translationsKeys = useMemo(
+		() => [
+			actionTitleKey,
+			'app.text.error_title',
+			'dashboard.text.select_one',
+		],
+		[actionTitleKey],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	useEffect(() => {
 		if (
 			isOpen &&
@@ -55,23 +68,17 @@ export function DataTableModal<K extends keyof DataSourceType>({
 		) {
 			showToast({
 				severity: 'error',
-				summary: 'Error',
-				detail: 'Please select at least one entry',
+				summary: translations['app.text.error_title'],
+				detail: translations['dashboard.text.select_one'],
 			});
 
 			return;
 		}
-	}, [actionEntry, actionName, actionType, isOpen, showToast]);
+	}, [actionEntry, actionName, actionType, isOpen, showToast, translations]);
 
 	const handleClose = () => {
 		closeOut();
 	};
-
-	const actionTitleKey = `${dataSource}.action.${actionName}.title`;
-
-	const translationsKeys = useMemo(() => [actionTitleKey], [actionTitleKey]);
-
-	const { translations } = useTranslation(translationsKeys);
 
 	if (!isOpen || !actionName) {
 		return null;

@@ -1,6 +1,7 @@
 import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
+import { translateBatch } from '@/config/lang';
 import type { MailQueueModel } from '@/lib/entities/mail-queue.model';
 import {
 	deleteMailQueue,
@@ -17,6 +18,14 @@ export type DataTableMailQueueFiltersType = {
 	sent_date_end: DataTableFilterMetaData;
 };
 
+const translations = await translateBatch([
+	'mail_queue.data_table.column_id',
+	'mail_queue.data_table.column_template',
+	'mail_queue.data_table.column_to',
+	'mail_queue.data_table.column_status',
+	'mail_queue.data_table.column_sent_at',
+]);
+
 function displayActionEntriesMailQueue(entries: MailQueueModel[]) {
 	return entries.map((entry) => ({
 		id: entry.id,
@@ -32,7 +41,7 @@ export type DataSourceMailQueueType = {
 const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	{
 		field: 'id',
-		header: 'ID',
+		header: translations['mail_queue.data_table.column_id'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'mail_queue'>(entry, column, {
@@ -45,7 +54,7 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	},
 	{
 		field: 'template',
-		header: 'Template',
+		header: translations['mail_queue.data_table.column_template'],
 		body: (entry, column) =>
 			DataTableValue<'mail_queue'>(entry, column, {
 				customValue: entry.template?.label || 'n/a',
@@ -57,7 +66,7 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	},
 	{
 		field: 'to',
-		header: 'To',
+		header: translations['mail_queue.data_table.column_to'],
 		body: (entry, column) =>
 			DataTableValue<'mail_queue'>(entry, column, {
 				customValue: entry.to.address,
@@ -65,7 +74,7 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	},
 	{
 		field: 'status',
-		header: 'Status',
+		header: translations['mail_queue.data_table.column_status'],
 		body: (entry, column) =>
 			DataTableValue<'mail_queue'>(entry, column, {
 				isStatus: true,
@@ -77,7 +86,7 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	},
 	{
 		field: 'sent_at',
-		header: 'Sent At',
+		header: translations['mail_queue.data_table.column_sent_at'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'mail_queue'>(entry, column, {

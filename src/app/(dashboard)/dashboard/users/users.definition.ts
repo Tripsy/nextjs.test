@@ -61,6 +61,12 @@ const translations = await translateBatch([
 	'users.validation.password_condition_special_character',
 	'users.validation.password_confirm_required',
 	'users.validation.password_confirm_mismatch',
+	'users.data_table.column_id',
+	'users.data_table.column_name',
+	'users.data_table.column_email',
+	'users.data_table.column_role',
+	'users.data_table.column_status',
+	'users.data_table.column_created_at',
 ]);
 
 const ValidateSchemaBaseUsers = z.object({
@@ -252,7 +258,7 @@ export type DataSourceUsersType = {
 const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	{
 		field: 'id',
-		header: 'ID',
+		header: translations['users.data_table.column_id'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'users'>(entry, column, {
@@ -263,11 +269,18 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 				},
 			}),
 	},
-	{ field: 'name', header: 'Name', sortable: true },
-	{ field: 'email', header: 'Email' },
+	{
+		field: 'name',
+		header: translations['users.data_table.column_name'],
+		sortable: true,
+	},
+	{
+		field: 'email',
+		header: translations['users.data_table.column_email'],
+	},
 	{
 		field: 'role',
-		header: 'Role',
+		header: translations['users.data_table.column_role'],
 		body: (entry, column) =>
 			DataTableValue<'users'>(entry, column, {
 				capitalize: true,
@@ -283,7 +296,7 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	},
 	{
 		field: 'status',
-		header: 'Status',
+		header: translations['users.data_table.column_status'],
 		body: (entry, column) =>
 			DataTableValue<'users'>(entry, column, {
 				isStatus: true,
@@ -306,7 +319,7 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	},
 	{
 		field: 'created_at',
-		header: 'Created At',
+		header: translations['users.data_table.column_created_at'],
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'users'>(entry, column, {

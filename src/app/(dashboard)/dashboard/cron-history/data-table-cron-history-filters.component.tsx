@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from 'zustand/react';
-import { useSearchFilter } from '@/app/_hooks';
+import { useSearchFilter, useTranslation } from '@/app/_hooks';
 import {
 	FormFiltersDateRange,
 	FormFiltersReset,
@@ -23,6 +23,17 @@ const statuses = Object.values(CronHistoryStatusEnum).map((v) => ({
 
 export const DataTableCronHistoryFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'cron_history'>();
+
+	const translationsKeys = useMemo(
+		() => [
+			'cron_history.form_filters.label_global',
+			'cron_history.form_filters.label_status',
+			'cron_history.form_filters.label_start_date',
+		],
+		[],
+	);
+
+	const { translations } = useTranslation(translationsKeys);
 
 	const filters = useStore(modelStore, (state) => state.tableState.filters);
 	const updateTableState = useStore(
@@ -86,13 +97,17 @@ export const DataTableCronHistoryFilters = (): React.JSX.Element => {
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText="ID / Label / Content"
+				labelText={
+					translations['cron_history.form_filters.label_global']
+				}
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText="Status"
+				labelText={
+					translations['cron_history.form_filters.label_status']
+				}
 				fieldName="status"
 				fieldValue={filters.status.value}
 				selectOptions={statuses}
@@ -100,7 +115,9 @@ export const DataTableCronHistoryFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersDateRange
-				labelText="Start Date"
+				labelText={
+					translations['cron_history.form_filters.label_start_date']
+				}
 				startDateField="start_date_start"
 				startDateValue={filters.start_date_start?.value ?? ''}
 				endDateField="start_date_end"
