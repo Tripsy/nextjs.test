@@ -42,7 +42,7 @@ export async function accountDeleteAction(
 	if (!(await isValidCsrfToken(csrfToken))) {
 		return {
 			...result,
-			message: await translate('error.csrf'),
+			message: await translate('app.error.csrf'),
 			situation: 'csrf_error',
 		};
 	}
@@ -81,7 +81,7 @@ export async function accountDeleteAction(
 		return {
 			...result,
 			errors: {},
-			message: message || (await translate('error.form')),
+			message: message || (await translate('app.error.form')),
 			situation: situation,
 		};
 	}

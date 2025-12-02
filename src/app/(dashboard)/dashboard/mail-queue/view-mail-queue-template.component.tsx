@@ -38,8 +38,6 @@ export function ViewMailQueueTemplate() {
 					summary: 'Failed to load template details',
 					detail: (error as Error).message,
 				});
-
-				console.error('Error fetching template:', error);
 			} finally {
 				setLoading(false);
 			}

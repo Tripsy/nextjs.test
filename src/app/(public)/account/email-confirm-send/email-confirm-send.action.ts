@@ -44,7 +44,7 @@ export async function emailConfirmSendAction(
 	if (!(await isValidCsrfToken(csrfToken))) {
 		return {
 			...result,
-			message: await translate('error.csrf'),
+			message: await translate('app.error.csrf'),
 			situation: 'csrf_error',
 		};
 	}

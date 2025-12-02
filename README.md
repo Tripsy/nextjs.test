@@ -1,14 +1,12 @@
 # TODO
 
-1. handle TODO's (especially related to permissions)
-2. Replace all console.error with logging
-3. Add section "documentation"
-4. More language vars 
-5. middleware.ts - for production ready it will need some revision -> security headers
+1. Replace all console.error with logging
+2. More language vars 
+3. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 
-1. dashboard - add history to keep track of last 10 pages
+1. Add section "documentation"
 2. login with google / facebook
 3. For template section 
    - would be a nice idea to keep track of the last changes (maybe add a new column - prev version id and a button to restore to that version)

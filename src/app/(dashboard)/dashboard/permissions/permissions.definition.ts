@@ -6,11 +6,7 @@ import type {
 	FormStateType,
 } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
-import {
-	PermissionEntitiesEnum,
-	type PermissionModel,
-	PermissionOperationEnum,
-} from '@/lib/entities/permission.model';
+import type { PermissionModel } from '@/lib/entities/permission.model';
 import {
 	createPermissions,
 	deletePermissions,
@@ -30,10 +26,10 @@ const translations = await translateBatch([
 ]);
 
 const ValidateSchemaBasePermissions = z.object({
-	entity: z.nativeEnum(PermissionEntitiesEnum, {
+	entity: z.string().trim().nonempty({
 		message: translations['permissions.validation.entity_invalid'],
 	}),
-	operation: z.nativeEnum(PermissionOperationEnum, {
+	operation: z.string().trim().nonempty({
 		message: translations['permissions.validation.operation_invalid'],
 	}),
 });
@@ -47,21 +43,9 @@ function validateFormPermissions(
 function getFormValuesPermissions(
 	formData: FormData,
 ): DataSourceType['permissions']['formValues'] {
-	const entity = formData.get('entity');
-	const validEntities = Object.values(PermissionEntitiesEnum);
-
-	const operation = formData.get('operation');
-	const validOperations = Object.values(PermissionOperationEnum);
-
 	return {
-		entity: validEntities.includes(entity as PermissionEntitiesEnum)
-			? (entity as PermissionEntitiesEnum)
-			: PermissionEntitiesEnum.USERS,
-		operation: validOperations.includes(
-			operation as PermissionOperationEnum,
-		)
-			? (operation as PermissionOperationEnum)
-			: PermissionOperationEnum.CREATE,
+		entity: formData.get('entity') as string,
+		operation: formData.get('operation') as string,
 	};
 }
 
@@ -92,8 +76,8 @@ export type DataSourcePermissionsType = {
 	model: PermissionModel;
 	formState: FormStateType<'permissions'>;
 	formValues: {
-		entity: PermissionEntitiesEnum;
-		operation: PermissionOperationEnum;
+		entity: string;
+		operation: string;
 	};
 };
 
@@ -122,8 +106,8 @@ export const DataSourceConfigPermissions = {
 		dataSource: 'permissions' as const,
 		id: undefined,
 		values: {
-			entity: PermissionEntitiesEnum.USERS,
-			operation: PermissionOperationEnum.CREATE,
+			entity: '',
+			operation: '',
 		},
 		errors: {},
 		message: null,

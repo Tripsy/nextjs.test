@@ -1,19 +1,15 @@
-export enum PermissionOperationEnum { // TODO should I replace this? make them suggestions and update the manage part
-	CREATE = 'create',
-	UPDATE = 'update',
-	READ = 'read',
-	FIND = 'find',
-	DELETE = 'delete',
-}
-
-export enum PermissionEntitiesEnum { // TODO should I replace this?
-	USERS = 'user',
-	PERMISSIONS = 'permission',
-}
+export const PermissionEntitiesSuggestions = ['user', 'permission'];
+export const PermissionOperationSuggestions = [
+	'create',
+	'update',
+	'read',
+	'find',
+	'delete',
+];
 
 export type PermissionModel<D = Date | string> = {
 	id: number;
-	entity: PermissionEntitiesEnum;
-	operation: PermissionOperationEnum;
+	entity: string;
+	operation: string;
 	deleted_at: D | undefined;
 };

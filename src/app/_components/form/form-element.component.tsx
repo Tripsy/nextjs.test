@@ -1,9 +1,12 @@
 import clsx from 'clsx';
+import {
+	AutoComplete,
+	type AutoCompleteCompleteEvent,
+} from 'primereact/autocomplete';
 import { Dropdown, type DropdownChangeEvent } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
-import type React from 'react';
 import type { JSX } from 'react';
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
@@ -168,6 +171,45 @@ export const FormComponentInput = ({
 		</FormElement>
 	</FormPart>
 );
+
+export const FormComponentAutoComplete = ({
+	labelText,
+	id,
+	fieldName,
+	fieldValue,
+	className = 'p-inputtext-sm w-full',
+	placeholderText,
+	disabled,
+	onChange,
+	error,
+	suggestions = [],
+	completeMethod,
+}: FormComponentProps & {
+	suggestions: string[];
+	completeMethod: (event: AutoCompleteCompleteEvent) => void;
+}) => {
+	return (
+		<FormPart>
+			<FormElement labelText={labelText} labelFor={id}>
+				<div>
+					<AutoComplete
+						id={id}
+						name={fieldName}
+						value={fieldValue}
+						suggestions={suggestions}
+						completeMethod={completeMethod}
+						onChange={onChange}
+						className={className}
+						placeholder={placeholderText}
+						disabled={disabled}
+						dropdown
+					/>
+					<FormElementError messages={error} />
+				</div>
+			</FormElement>
+		</FormPart>
+	);
+};
 
 export const FormComponentSubmit = ({
 	pending,

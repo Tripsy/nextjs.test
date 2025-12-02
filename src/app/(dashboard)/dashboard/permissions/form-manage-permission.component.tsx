@@ -1,21 +1,11 @@
-import { FormComponentSelect } from '@/app/_components/form/form-element.component';
+import { FormComponentAutoComplete } from '@/app/_components/form/form-element.component';
 import { useElementIds } from '@/app/_hooks';
+import { useAutocomplete } from '@/app/_hooks/use-autocomplete';
 import type { FormManageType } from '@/config/data-source';
 import {
-	PermissionEntitiesEnum,
-	PermissionOperationEnum,
+	PermissionEntitiesSuggestions,
+	PermissionOperationSuggestions,
 } from '@/lib/entities/permission.model';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
-
-const entities = Object.values(PermissionEntitiesEnum).map((v) => ({
-	label: capitalizeFirstLetter(v),
-	value: v,
-}));
-
-const operations = Object.values(PermissionOperationEnum).map((v) => ({
-	label: v,
-	value: v,
-}));
 
 export function FormManagePermission({
 	formValues,
@@ -23,30 +13,45 @@ export function FormManagePermission({
 	handleChange,
 	pending,
 }: FormManageType<'permissions'>) {
+	const entityAutocomplete = useAutocomplete(PermissionEntitiesSuggestions, {
+		filterMode: 'includes',
+		caseSensitive: false,
+	});
+
+	const operationAutocomplete = useAutocomplete(
+		PermissionOperationSuggestions,
+		{
+			filterMode: 'includes',
+			caseSensitive: false,
+		},
+	);
+
 	const elementIds = useElementIds(['entity', 'operation']);
 
 	return (
 		<>
-			<FormComponentSelect
+			<FormComponentAutoComplete
 				labelText="Entity"
 				id={elementIds.entity}
 				fieldName="entity"
 				fieldValue={formValues.entity}
-				options={entities}
 				disabled={pending}
 				onChange={(e) => handleChange('entity', e.target.value)}
 				error={errors.entity}
+				suggestions={entityAutocomplete.suggestions}
+				completeMethod={entityAutocomplete.completeMethod}
 			/>
 
-			<FormComponentSelect
+			<FormComponentAutoComplete
 				labelText="Operation"
 				id={elementIds.operation}
 				fieldName="operation"
 				fieldValue={formValues.operation}
-				options={operations}
 				disabled={pending}
 				onChange={(e) => handleChange('operation', e.target.value)}
 				error={errors.operation}
+				suggestions={operationAutocomplete.suggestions}
+				completeMethod={operationAutocomplete.completeMethod}
 			/>
 		</>
 	);

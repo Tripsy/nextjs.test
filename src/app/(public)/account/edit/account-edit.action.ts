@@ -47,7 +47,7 @@ export async function accountEditAction(
 	if (!(await isValidCsrfToken(csrfToken))) {
 		return {
 			...result,
-			message: await translate('error.csrf'),
+			message: await translate('app.error.csrf'),
 			situation: 'csrf_error',
 		};
 	}
@@ -73,7 +73,7 @@ export async function accountEditAction(
 		return {
 			...result,
 			errors: {},
-			message: await translate('error.form'),
+			message: await translate('app.error.form'),
 			situation: 'error',
 		};
 	}

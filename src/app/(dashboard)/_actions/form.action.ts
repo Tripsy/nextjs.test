@@ -105,7 +105,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			return {
 				...state,
 				situation: 'error',
-				message: await translate('error.validation'),
+				message: await translate('app.error.validation'),
 			};
 		}
 
@@ -122,7 +122,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			return {
 				...result,
 				situation: 'error',
-				message: await translate('error.validation'),
+				message: await translate('app.error.validation'),
 				errors,
 			};
 		}
@@ -142,7 +142,7 @@ export async function formAction<K extends keyof DataSourceType>(
 		const message =
 			error instanceof ValueError || error instanceof ApiError
 				? error.message
-				: await translate('error.form');
+				: await translate('app.error.form');
 
 		return {
 			...state,
