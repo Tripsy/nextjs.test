@@ -112,7 +112,7 @@ export default function Login() {
 				<h1 className="text-center">Sign In</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -124,7 +124,7 @@ export default function Login() {
 				<h1 className="text-center">Sign In</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 
 				<div className="text-center mt-2">
@@ -181,13 +181,13 @@ export default function Login() {
 				submitted={submitted}
 				errors={errors}
 				buttonLabel="Login"
-				buttonIcon={<Icons.Login />}
+				buttonIcon={<Icons.Action.Login />}
 			/>
 
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}
@@ -196,7 +196,7 @@ export default function Login() {
 				<FormPart>
 					<div className="space-y-4">
 						<div className="text-error text-sm">
-							<Icons.Error /> {state.message}
+							<Icons.Status.Error /> {state.message}
 						</div>
 
 						<AuthTokenList

@@ -1,4 +1,16 @@
 {
 	"name": "{{app_name}}",
-	"description": "{{app_name}}"
+	"description": "{{app_name}}",
+	"error": {
+		"generic": "Something went wrong",
+		"csrf": "Error occurred while processing your request. Please reload page and try again.",
+		"form": "Something went wrong while processing your request.",
+		"validation": "Form validation failed.",
+		"undefined_route": "The page you are looking for doesn't exist or has been moved.",
+		"unauthorized": "Access denied. Please check your permissions",
+		"already_logged_in": "You're already signed in"
+	},
+	"info": {
+		"account_delete": "Hey ..I don't know your name anymore! Thank you for being with us for a while. Your account has been marked for deletion. All data associated with your account will be removed from our database within 5–30 days. You’re always welcome to create a new account anytime."
+	}
 }

@@ -99,7 +99,7 @@ export default function AccountMe() {
 			<div>
 				<h1 className="text-center">Not Authenticated</h1>
 				<div className="text-sm">
-					<Icons.Error className="text-error mr-1" />
+					<Icons.Status.Error className="text-error mr-1" />
 					Please{' '}
 					<Link
 						href={Routes.get('login')}
@@ -135,7 +135,7 @@ export default function AccountMe() {
 			<div className="card bg-base-100 shadow-xl">
 				<div className="card-body">
 					<h2 className="card-title">
-						<Icons.User />
+						<Icons.Entity.User />
 						Personal Information
 					</h2>
 
@@ -157,14 +157,22 @@ export default function AccountMe() {
 								<p className="text-lg">{auth.email}</p>
 								{auth.email_verified_at ? (
 									<span className="badge badge-success badge-sm mt-1">
-										<Icons.Ok />
+										<Icons.Status.Ok />
 										Verified
 									</span>
 								) : (
 									<span className="badge badge-warning badge-sm mt-1">
-										<Icons.Warning />
+										<Icons.Status.Warning />
 										Not Verified
 									</span>
+									// <a
+									// 	className="badge badge-warning badge-sm mt-1"
+									// 	href={Routes.get('email-confirm-send')}
+									// 	title="Re-send email verification"
+									// >
+									// 	<Icons.Status.Warning />
+									// 	Not Verified
+									// </a>
 								)}
 							</div>
 							<Link

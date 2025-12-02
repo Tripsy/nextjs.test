@@ -71,35 +71,11 @@ export const Icons = {
 	Loading: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faSpinner} {...props} />
 	),
-	User: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faUser} {...props} />
-	),
 	Email: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faEnvelope} {...props} />
 	),
 	Password: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faKey} {...props} />
-	),
-	Login: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faArrowRightToBracket} {...props} />
-	),
-	Go: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faPlay} {...props} />
-	),
-	Error: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faCircleExclamation} {...props} />
-	),
-	Warning: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faTriangleExclamation} {...props} />
-	),
-	Info: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faCircleInfo} {...props} />
-	),
-	Ok: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faThumbsUp} {...props} />
-	),
-	Success: (props: Partial<FontAwesomeIconProps>) => (
-		<AwesomeIcon icon={faCircleCheck} {...props} />
 	),
 	Search: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faMagnifyingGlass} {...props} />
@@ -124,6 +100,9 @@ export const Icons = {
 	),
 	Session: (props: Partial<FontAwesomeIconProps>) => (
 		<AwesomeIcon icon={faFileContract} {...props} />
+	),
+	Info: (props: Partial<FontAwesomeIconProps>) => (
+		<AwesomeIcon icon={faCircleInfo} {...props} />
 	),
 	Status: {
 		Active: (props: Partial<FontAwesomeIconProps>) => (
@@ -150,8 +129,17 @@ export const Icons = {
 		Sent: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faEnvelopeCircleCheck} {...props} />
 		),
+		Success: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faCircleCheck} {...props} />
+		),
 	},
 	Action: {
+		Login: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faArrowRightToBracket} {...props} />
+		),
+		Go: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faPlay} {...props} />
+		),
 		Create: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faPlus} {...props} />
 		),
@@ -184,6 +172,11 @@ export const Icons = {
 		),
 		View: (props: Partial<FontAwesomeIconProps>) => (
 			<AwesomeIcon icon={faEye} {...props} />
+		),
+	},
+	Entity: {
+		User: (props: Partial<FontAwesomeIconProps>) => (
+			<AwesomeIcon icon={faUser} {...props} />
 		),
 	},
 };

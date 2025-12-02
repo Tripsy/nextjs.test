@@ -14,14 +14,14 @@ export default function Page() {
 	const type = params.type;
 	const r = searchParams.get('r') || 'generic';
 
-	const messageKey = `${type}.${r}`;
+	const messageKey = `app.${type}.${r}`;
 
 	const translationsKeys = useMemo(() => [messageKey], [messageKey]);
 
 	const { translations } = useTranslation(translationsKeys);
 
 	return (
-		<div className="fit-container min-w-[22rem]">
+		<div className="fit-container max-w-[32rem]">
 			<Notice type={type} message={translations[messageKey]} />
 		</div>
 	);

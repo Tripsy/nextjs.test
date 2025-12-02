@@ -50,7 +50,7 @@ export default function Logout() {
 				{state?.situation === 'success' && state.message && (
 					<>
 						<div className="text-success">
-							<Icons.Success /> {state.message}
+							<Icons.Status.Success /> {state.message}
 						</div>
 
 						<p className="mt-8 text-center">
@@ -76,7 +76,7 @@ export default function Logout() {
 
 				{state?.situation === 'error' && state.message && (
 					<div className="text-error">
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				)}
 			</div>

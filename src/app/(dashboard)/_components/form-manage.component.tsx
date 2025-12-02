@@ -219,7 +219,7 @@ export function FormManage<K extends keyof DataSourceType>({
 							</span>
 						) : submitted && Object.keys(errors).length > 0 ? (
 							<span className="flex items-center gap-1.5">
-								<Icons.Error className="animate-pulse" />
+								<Icons.Status.Error className="animate-pulse" />
 								{translations[actionLabelKey]}
 							</span>
 						) : (
@@ -235,7 +235,7 @@ export function FormManage<K extends keyof DataSourceType>({
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}

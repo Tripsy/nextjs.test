@@ -62,7 +62,7 @@ function NoticeSuccess({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-success rounded-none">
 				<div>
 					<span>
-						<Icons.Success /> {message}
+						<Icons.Status.Success /> {message}
 					</span>
 					{children}
 				</div>
@@ -80,7 +80,8 @@ function NoticeError({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-error rounded-none">
 				<div>
 					<span>
-						<Icons.Error /> {message ?? 'Something went wrong!'}
+						<Icons.Status.Error />{' '}
+						{message ?? 'Something went wrong!'}
 					</span>
 					{children}
 				</div>
@@ -98,7 +99,7 @@ function NoticeWarning({ title, message, children }: NoticeTypeProps) {
 			<div className="alert alert-soft alert-warning rounded-none">
 				<div>
 					<span>
-						<Icons.Warning /> {message}
+						<Icons.Status.Warning /> {message}
 					</span>
 					{children}
 				</div>

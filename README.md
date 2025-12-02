@@ -1,12 +1,10 @@
 # TODO
 
-1. & deleteAccount
-2. handle TODO's (especially related to permissions)
-3. learn about react-dev-tools & recap NextJs documentation
-4. Replace all console.error with logging
-5. Add section "documentation"
-6. More language vars 
-7. middleware.ts - for production ready it will need some revision -> security headers
+1. handle TODO's (especially related to permissions)
+2. Replace all console.error with logging
+3. Add section "documentation"
+4. More language vars 
+5. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 

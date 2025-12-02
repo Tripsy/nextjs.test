@@ -196,7 +196,7 @@ export const FormComponentSubmit = ({
 				</span>
 			) : submitted && Object.keys(errors).length > 0 ? (
 				<span className="flex items-center gap-1.5">
-					<Icons.Error className="animate-pulse" />
+					<Icons.Status.Error className="animate-pulse" />
 					{buttonLabel}
 				</span>
 			) : (
@@ -225,7 +225,7 @@ export const FormComponentName = ({
 			<div>
 				<IconField iconPosition="left">
 					<InputIcon className="flex items-center">
-						<Icons.User className="opacity-60" />
+						<Icons.Entity.User className="opacity-60" />
 					</InputIcon>
 					<InputText
 						className={className}

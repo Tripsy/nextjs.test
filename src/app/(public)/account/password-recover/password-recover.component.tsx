@@ -54,7 +54,7 @@ export default function PasswordRecover() {
 				<h1 className="text-center">Recover Password</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -66,8 +66,9 @@ export default function PasswordRecover() {
 				<h1 className="text-center">Recover Password</h1>
 
 				<div className="text-sm">
-					<Icons.Success className="text-success" /> Please check your
-					email and follow instructions to complete password recovery.
+					<Icons.Status.Success className="text-success" /> Please
+					check your email and follow instructions to complete
+					password recovery.
 				</div>
 
 				<p className="mt-2 text-center">
@@ -115,13 +116,13 @@ export default function PasswordRecover() {
 				submitted={submitted}
 				errors={errors}
 				buttonLabel="Recover password"
-				buttonIcon={<Icons.Go />}
+				buttonIcon={<Icons.Action.Go />}
 			/>
 
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}

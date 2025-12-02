@@ -71,7 +71,7 @@ export default function EmailUpdate() {
 			<div>
 				<h1 className="text-center">Not Authenticated</h1>
 				<div className="text-sm">
-					<Icons.Error className="text-error mr-1" />
+					<Icons.Status.Error className="text-error mr-1" />
 					Please{' '}
 					<Link
 						href={Routes.get('login')}
@@ -93,7 +93,7 @@ export default function EmailUpdate() {
 				<h1 className="text-center">My Account - Email update</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -140,14 +140,14 @@ export default function EmailUpdate() {
 					submitted={submitted}
 					errors={errors}
 					buttonLabel="Update"
-					buttonIcon={<Icons.Go />}
+					buttonIcon={<Icons.Action.Go />}
 				/>
 			</div>
 
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}

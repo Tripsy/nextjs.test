@@ -1,3 +1,4 @@
+import type { AccountDeleteFormFieldsType } from '@/app/(public)/account/delete/account-delete.definition';
 import type { AccountEditFormFieldsType } from '@/app/(public)/account/edit/account-edit.definition';
 import type { EmailConfirmSendFormFieldsType } from '@/app/(public)/account/email-confirm-send/email-confirm-send.definition';
 import type { EmailUpdateFormFieldsType } from '@/app/(public)/account/email-update/email-update.definition';
@@ -126,6 +127,15 @@ export async function emailUpdateAccount(
 ): Promise<ResponseFetch<null>> {
 	return await new ApiRequest().doFetch('/account/email-update', {
 		method: 'POST',
+		body: JSON.stringify(params),
+	});
+}
+
+export async function deleteAccount(
+	params: AccountDeleteFormFieldsType,
+): Promise<ResponseFetch<{ token: string }>> {
+	return await new ApiRequest().doFetch('/account/me/delete', {
+		method: 'DELETE',
 		body: JSON.stringify(params),
 	});
 }

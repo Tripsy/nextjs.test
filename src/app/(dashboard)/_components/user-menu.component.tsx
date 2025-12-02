@@ -16,7 +16,7 @@ export function UserMenu() {
 	return (
 		<div className="dropdown dropdown-end dropdown-hover">
 			<button type="button">
-				<Icons.User className="cursor-pointer" />
+				<Icons.Entity.User className="cursor-pointer" />
 			</button>
 			{authStatus === 'unauthenticated' && (
 				<ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-36 p-2 shadow-sm">

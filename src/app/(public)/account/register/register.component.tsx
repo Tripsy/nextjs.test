@@ -78,7 +78,7 @@ export default function Register() {
 				<h1 className="text-center">Create Account</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -90,7 +90,7 @@ export default function Register() {
 				<h1 className="text-center">Create Account</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 
 				<div className="text-center mt-2">
@@ -248,12 +248,12 @@ export default function Register() {
 				submitted={submitted}
 				errors={errors}
 				buttonLabel="Create account"
-				buttonIcon={<Icons.Go />}
+				buttonIcon={<Icons.Action.Go />}
 			/>
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}

@@ -220,6 +220,9 @@ export function isExcludedRoute(pathname: string) {
 		Routes.get('logout'),
 		Routes.get('register'),
 		Routes.get('password-recover'),
+		Routes.get('password-recover-change'),
+		Routes.get('email-confirm'),
+		Routes.get('email-confirm-send'),
 	];
 
 	return excludeRoutes.includes(pathname);

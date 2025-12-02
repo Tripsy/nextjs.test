@@ -9,38 +9,39 @@ import {
 	FormComponentSubmit,
 } from '@/app/_components/form/form-element.component';
 import { FormError } from '@/app/_components/form/form-error.component';
+import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';
 import { Loading } from '@/app/_components/loading.component';
 import { useElementIds, useFormValidation, useFormValues } from '@/app/_hooks';
 import { useAuth } from '@/app/_providers/auth.provider';
 import {
-	passwordUpdateAction,
-	passwordUpdateValidate,
-} from '@/app/(public)/account/password-update/password-update.action';
+	accountDeleteAction,
+	accountDeleteValidate,
+} from '@/app/(public)/account/delete/account-delete.action';
 import {
-	type PasswordUpdateFormFieldsType,
-	PasswordUpdateState,
-} from '@/app/(public)/account/password-update/password-update.definition';
+	type AccountDeleteFormFieldsType,
+	AccountDeleteState,
+} from '@/app/(public)/account/delete/account-delete.definition';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 
-export default function PasswordUpdate() {
+export default function AccountDelete() {
 	const { auth, authStatus } = useAuth();
 
 	const [state, action, pending] = useActionState(
-		passwordUpdateAction,
-		PasswordUpdateState,
+		accountDeleteAction,
+		AccountDeleteState,
 	);
 
 	const [showPassword, setShowPassword] = useState(false);
 
 	const [formValues, setFormValues] =
-		useFormValues<PasswordUpdateFormFieldsType>(state.values);
+		useFormValues<AccountDeleteFormFieldsType>(state.values);
 
 	const { errors, submitted, setSubmitted, markFieldAsTouched } =
 		useFormValidation({
 			formValues: formValues,
-			validate: passwordUpdateValidate,
+			validate: accountDeleteValidate,
 			debounceDelay: 800,
 		});
 
@@ -49,23 +50,21 @@ export default function PasswordUpdate() {
 		value: string | boolean | number | Date,
 	) => {
 		setFormValues((prev) => ({ ...prev, [name]: value }));
-		markFieldAsTouched(name as keyof PasswordUpdateFormFieldsType);
+		markFieldAsTouched(name as keyof AccountDeleteFormFieldsType);
 	};
 
 	const router = useRouter();
 
-	// Refresh auth & redirect to `/account/me`
+	// Refresh auth & redirect to `/status/error`
 	useEffect(() => {
 		if (state?.situation === 'success' && router) {
-			router.replace(`${Routes.get('account-me')}?from=passwordUpdate`);
+			router.replace(
+				`${Routes.get('status', { type: 'error' })}?r=account_delete`,
+			);
 		}
 	}, [state?.situation, router]);
 
-	const elementIds = useElementIds([
-		'passwordCurrent',
-		'passwordNew',
-		'passwordConfirm',
-	]);
+	const elementIds = useElementIds(['passwordCurrent']);
 
 	if (authStatus === 'loading') {
 		return <Loading />;
@@ -95,7 +94,7 @@ export default function PasswordUpdate() {
 	if (state?.situation === 'csrf_error') {
 		return (
 			<div className="form-section">
-				<h1 className="text-center">My Account - Password update</h1>
+				<h1 className="text-center">My Account - Delete request</h1>
 
 				<div className="text-sm text-error">
 					<Icons.Status.Error /> {state.message}
@@ -112,7 +111,19 @@ export default function PasswordUpdate() {
 		>
 			<FormCsrf inputName={cfg('csrf.inputName') as string} />
 
-			<h1 className="text-center">My Account - Password update</h1>
+			<h1 className="text-center">My Account - Delete request</h1>
+
+			<FormPart className="text-sm">
+				<span>
+					<Icons.Status.Warning className="mr-1 text-warning" />
+					Using the form below will start the process of deleting your
+					account, which may take between 5–30 days.{' '}
+					<strong>
+						Please note that you will lose access to your account
+						immediately.
+					</strong>
+				</span>
+			</FormPart>
 
 			<FormComponentPassword
 				labelText="Current Password"
@@ -130,32 +141,6 @@ export default function PasswordUpdate() {
 				setShowPassword={setShowPassword}
 			/>
 
-			<FormComponentPassword
-				labelText="New Password"
-				id={elementIds.passwordNew}
-				fieldName="password_new"
-				fieldValue={formValues.password_new ?? ''}
-				placeholderText="New password"
-				disabled={pending}
-				onChange={(e) => handleChange('password_new', e.target.value)}
-				error={errors.password_new}
-				showPassword={showPassword}
-			/>
-
-			<FormComponentPassword
-				labelText="Confirm Password"
-				id={elementIds.passwordConfirm}
-				fieldName="password_confirm"
-				fieldValue={formValues.password_confirm ?? ''}
-				placeholderText="Password confirmation"
-				disabled={pending}
-				onChange={(e) =>
-					handleChange('password_confirm', e.target.value)
-				}
-				error={errors.password_confirm}
-				showPassword={showPassword}
-			/>
-
 			<div className="flex justify-end gap-2">
 				<a
 					href={Routes.get('account-me')}
@@ -168,8 +153,8 @@ export default function PasswordUpdate() {
 					pending={pending}
 					submitted={submitted}
 					errors={errors}
-					buttonLabel="Update password"
-					buttonIcon={<Icons.Action.Go />}
+					buttonLabel="Delete account"
+					buttonIcon={<Icons.Action.Destroy />}
 				/>
 			</div>
 

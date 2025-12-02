@@ -91,7 +91,7 @@ export default function AccountEdit() {
 			<div>
 				<h1 className="text-center">Not Authenticated</h1>
 				<div className="text-sm">
-					<Icons.Error className="text-error mr-1" />
+					<Icons.Status.Error className="text-error mr-1" />
 					Please{' '}
 					<Link
 						href={Routes.get('login')}
@@ -113,7 +113,7 @@ export default function AccountEdit() {
 				<h1 className="text-center">My Account - Edit</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -158,14 +158,14 @@ export default function AccountEdit() {
 					submitted={submitted}
 					errors={errors}
 					buttonLabel="Save"
-					buttonIcon={<Icons.Go />}
+					buttonIcon={<Icons.Action.Go />}
 				/>
 			</div>
 
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}

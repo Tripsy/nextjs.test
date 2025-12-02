@@ -65,9 +65,9 @@ export default async function Page(props: Props) {
 					<div className="text-sm">
 						<div className="flex items-center gap-1">
 							{success ? (
-								<Icons.Success className="text-success" />
+								<Icons.Status.Success className="text-success" />
 							) : (
-								<Icons.Error className="text-error" />
+								<Icons.Status.Error className="text-error" />
 							)}
 							{message}
 						</div>

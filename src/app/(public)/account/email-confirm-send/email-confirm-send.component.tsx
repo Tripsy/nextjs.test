@@ -54,7 +54,7 @@ export default function EmailConfirmSend() {
 				<h1 className="text-center">Email Confirmation Send</h1>
 
 				<div className="text-sm text-error">
-					<Icons.Error /> {state.message}
+					<Icons.Status.Error /> {state.message}
 				</div>
 			</div>
 		);
@@ -66,9 +66,9 @@ export default function EmailConfirmSend() {
 				<h1 className="text-center">Email Confirmation Send</h1>
 
 				<div className="text-sm">
-					<Icons.Success className="text-success" /> Please check your
-					email and follow instructions to complete the confirmation
-					process.
+					<Icons.Status.Success className="text-success" /> Please
+					check your email and follow instructions to complete the
+					confirmation process.
 				</div>
 
 				<p className="mt-2 text-center">
@@ -116,13 +116,13 @@ export default function EmailConfirmSend() {
 				submitted={submitted}
 				errors={errors}
 				buttonLabel="Get confirmation"
-				buttonIcon={<Icons.Go />}
+				buttonIcon={<Icons.Action.Go />}
 			/>
 
 			{state?.situation === 'error' && state.message && (
 				<FormError>
 					<div>
-						<Icons.Error /> {state.message}
+						<Icons.Status.Error /> {state.message}
 					</div>
 				</FormError>
 			)}
