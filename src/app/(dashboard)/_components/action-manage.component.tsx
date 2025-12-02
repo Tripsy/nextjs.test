@@ -14,6 +14,7 @@ import {
 } from '@/config/data-source';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
+import { replaceVars } from '@/lib/utils/string';
 
 function displayActionEntries<K extends keyof DataSourceType>(
 	dataSource: K,
@@ -61,7 +62,12 @@ export function ActionManage() {
 	const confirmTextKey = `${dataSource}.action.${actionName}.confirmText`;
 
 	const translationsKeys = useMemo(
-		() => [confirmTextKey, 'app.error.form'],
+		() => [
+			confirmTextKey,
+			'app.error.form',
+			'dashboard.text.selected_entries_one',
+			'dashboard.text.selected_entries_many',
+		],
 		[confirmTextKey],
 	);
 
@@ -153,8 +159,14 @@ export function ActionManage() {
 	return (
 		<>
 			<p className="pb-4 font-semibold">
-				{/*TODO: translate*/}
-				{`${actionContentEntries.length} ${actionContentEntries.length === 1 ? 'entry' : 'entries'} selected`}
+				{replaceVars(
+					actionContentEntries.length === 1
+						? translations['dashboard.text.selected_entries_one']
+						: translations['dashboard.text.selected_entries_many'],
+					{
+						count: actionContentEntries.length.toString(),
+					},
+				)}
 			</p>
 			<ul className="pb-4 italic list-disc ml-4">
 				{actionContentEntries.map((entry) => (

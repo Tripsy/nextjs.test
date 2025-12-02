@@ -12,45 +12,36 @@ import type {
 import { formatDate } from '@/lib/utils/date';
 import { capitalizeFirstLetter } from '@/lib/utils/string';
 
-// TODO: translate
 export const statusList = {
 	active: {
-		label: 'Active',
 		class: 'badge badge-success h-8',
 		icon: <Icons.Status.Active />,
 	},
 	pending: {
-		label: 'Pending',
 		class: 'badge badge-warning h-8',
 		icon: <Icons.Status.Pending />,
 	},
 	inactive: {
-		label: 'Inactive',
 		class: 'badge badge-error h-8',
 		icon: <Icons.Status.Inactive />,
 	},
 	deleted: {
-		label: 'Deleted',
 		class: 'badge badge-neutral h-8',
 		icon: <Icons.Status.Deleted />,
 	},
 	ok: {
-		label: 'Ok',
 		class: 'badge badge-success h-8',
 		icon: <Icons.Status.Ok />,
 	},
 	error: {
-		label: 'Error',
 		class: 'badge badge-error h-8',
 		icon: <Icons.Status.Error />,
 	},
 	warning: {
-		label: 'Warning',
 		class: 'badge badge-warning h-8',
 		icon: <Icons.Status.Warning />,
 	},
 	sent: {
-		label: 'Sent',
 		class: 'badge badge-success h-8',
 		icon: <Icons.Status.Sent />,
 	},
@@ -69,12 +60,16 @@ export const DisplayDeleted = ({
 export const DisplayStatus = ({ status }: { status: string }) => {
 	const statusProps = statusList[status as keyof typeof statusList];
 
+	const translationsKeys = useMemo(() => [`app.status.${status}`], [status]);
+
+	const { translations } = useTranslation(translationsKeys);
+
 	return (
 		<div
 			className={`${statusProps.class} w-full text-white dark:text-black opacity-70 hover:opacity-100`}
 		>
 			{statusProps.icon}
-			{statusProps.label}
+			{translations[`app.status.${status}`]}
 		</div>
 	);
 };

@@ -19,5 +19,15 @@
 		"success_title": "Success",
 		"please_wait": "Please wait...",
 		"saving": "Saving..."
+	},
+	"status": {
+		"active": "Active",
+		"pending": "Pending",
+		"inactive": "Inactive",
+		"deleted": "Deleted",
+		"ok": "Ok",
+		"error": "Error",
+		"warning": "Warning",
+		"sent": "Sent"
 	}
 }
