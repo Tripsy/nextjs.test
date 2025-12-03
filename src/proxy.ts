@@ -27,7 +27,11 @@ class MiddlewareContext {
 	}
 
 	success() {
+		// MIME sniffing protection
 		this.res.headers.set('X-Content-Type-Options', 'nosniff');
+
+		// Clickjacking protection
+		this.res.headers.set('X-Frame-Options', 'DENY');
 
 		// Determine language; add it to headers; create cookie
 		this.setupLanguage();

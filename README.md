@@ -1,8 +1,6 @@
 # TODO
 
 1. Replace all console.error with logging
-2. More language vars 
-3. middleware.ts - for production ready it will need some revision -> security headers
 
 # IDEAS
 
