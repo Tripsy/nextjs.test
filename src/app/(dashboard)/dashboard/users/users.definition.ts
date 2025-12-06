@@ -11,6 +11,7 @@ import { cfg } from '@/config/settings';
 import {
 	LanguageEnum,
 	type UserModel,
+	UserOperatorTypeEnum,
 	UserRoleEnum,
 	UserStatusEnum,
 } from '@/lib/entities/user.model';
@@ -61,6 +62,7 @@ const translations = await translateBatch([
 	'users.validation.password_condition_special_character',
 	'users.validation.password_confirm_required',
 	'users.validation.password_confirm_mismatch',
+	'users.validation.operator_type_invalid',
 	'users.data_table.column_id',
 	'users.data_table.column_name',
 	'users.data_table.column_email',
@@ -69,23 +71,30 @@ const translations = await translateBatch([
 	'users.data_table.column_created_at',
 ]);
 
-const ValidateSchemaBaseUsers = z.object({
-	name: z
-		.string({ message: translations['users.validation.name_invalid'] })
-		.trim()
-		.min(cfg('user.nameMinLength') as number, {
-			message: translations['users.validation.name_min'],
+const ValidateSchemaBaseUsers = z
+	.object({
+		name: z
+			.string({ message: translations['users.validation.name_invalid'] })
+			.trim()
+			.min(cfg('user.nameMinLength') as number, {
+				message: translations['users.validation.name_min'],
+			}),
+		email: z.string().trim().email({
+			message: translations['users.validation.email_invalid'],
 		}),
-	email: z.string().trim().email({
-		message: translations['users.validation.email_invalid'],
-	}),
-	language: z.nativeEnum(LanguageEnum, {
-		message: translations['users.validation.language_invalid'],
-	}),
-	role: z.nativeEnum(UserRoleEnum, {
-		message: translations['users.validation.role_invalid'],
-	}),
-});
+		language: z.nativeEnum(LanguageEnum, {
+			message: translations['users.validation.language_invalid'],
+		}),
+		role: z.nativeEnum(UserRoleEnum, {
+			message: translations['users.validation.role_invalid'],
+		}),
+		operator_type: z
+			.nativeEnum(UserOperatorTypeEnum, {
+				message: translations['users.validation.operator_type_invalid'],
+			})
+			.nullable()
+			.optional(),
+	});
 
 const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	password: z
@@ -117,12 +126,22 @@ const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 		.nonempty({
 			message: translations['users.validation.password_confirm_required'],
 		}),
-}).superRefine(({ password, password_confirm }, ctx) => {
+})
+.superRefine(({ password, password_confirm }, ctx) => {
 	if (password !== password_confirm) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			path: ['password_confirm'],
 			message: translations['users.validation.password_confirm_mismatch'],
+		});
+	}
+})
+.superRefine(({ role, operator_type }, ctx) => {
+	if (role === UserRoleEnum.OPERATOR && !operator_type) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			path: ['operator_type'],
+			message: translations['users.validation.operator_type_invalid'],
 		});
 	}
 });
@@ -166,7 +185,8 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 			.trim()
 			.optional(),
 	),
-}).superRefine(({ password, password_confirm }, ctx) => {
+})
+.superRefine(({ password, password_confirm }, ctx) => {
 	if (password || password_confirm) {
 		if (!password_confirm) {
 			ctx.addIssue({
@@ -183,6 +203,15 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 					translations['users.validation.password_confirm_mismatch'],
 			});
 		}
+	}
+})
+.superRefine(({ role, operator_type }, ctx) => {
+	if (role === UserRoleEnum.OPERATOR && !operator_type) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			path: ['operator_type'],
+			message: translations['users.validation.operator_type_invalid'],
+		});
 	}
 });
 
@@ -206,6 +235,9 @@ function getFormValuesUsers(
 	const role = formData.get('role');
 	const validRoles = Object.values(UserRoleEnum);
 
+	const operator_type = formData.get('operator_type');
+	const validOperatorTypes = Object.values(UserOperatorTypeEnum);
+
 	return {
 		name: formData.get('name') as string,
 		email: formData.get('email') as string,
@@ -217,6 +249,11 @@ function getFormValuesUsers(
 		role: validRoles.includes(role as UserRoleEnum)
 			? (role as UserRoleEnum)
 			: UserRoleEnum.MEMBER,
+		operator_type:
+			operator_type &&
+			validOperatorTypes.includes(operator_type as UserOperatorTypeEnum)
+				? (operator_type as UserOperatorTypeEnum)
+				: null,
 	};
 }
 
@@ -233,6 +270,7 @@ function syncFormStateUsers(
 			email: model.email,
 			language: model.language,
 			role: model.role,
+			operator_type: model.operator_type,
 		},
 	};
 }
@@ -252,6 +290,7 @@ export type DataSourceUsersType = {
 		password_confirm?: string;
 		language: LanguageEnum;
 		role: UserRoleEnum;
+		operator_type: UserOperatorTypeEnum | null;
 	};
 };
 
@@ -357,6 +396,7 @@ export const DataSourceConfigUsers = {
 			password_confirm: '',
 			language: LanguageEnum.EN,
 			role: UserRoleEnum.MEMBER,
+			operator_type: null,
 		},
 		errors: {},
 		message: null,

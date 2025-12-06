@@ -68,6 +68,7 @@ export const FormComponentSelect = ({
 	fieldValue,
 	className = 'p-inputtext-sm',
 	panelStyle = { fontSize: '0.875rem' },
+	placeholderText = '-select-',
 	disabled,
 	onChange,
 	error,
@@ -84,6 +85,7 @@ export const FormComponentSelect = ({
 					inputId={id}
 					className={className}
 					panelStyle={panelStyle}
+					placeholder={placeholderText}
 					disabled={disabled}
 					value={fieldValue}
 					options={options}

@@ -4,6 +4,13 @@ export function capitalizeFirstLetter(str: string): string {
 	return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }
 
+export function formatEnumLabel(value: string): string {
+	return value
+		.split('_')
+		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+		.join(' ');
+}
+
 export function toKebabCase(str: string): string {
 	return str
 		.toLowerCase()

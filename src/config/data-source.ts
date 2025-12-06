@@ -142,7 +142,7 @@ export type FormManageType<K extends keyof DataSourceType> = {
 	errors: Partial<Record<keyof DataSourceFormValues<K>, string[]>>;
 	handleChange: (
 		field: string,
-		value: string | boolean | number | Date,
+		value: string | boolean | number | Date | null,
 	) => void;
 	pending: boolean;
 };

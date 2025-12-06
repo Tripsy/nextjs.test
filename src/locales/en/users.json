@@ -15,6 +15,7 @@
 		"password_confirm_mismatch": "Passwords do not match",
 		"language_invalid": "Select a valid language",
 		"role_invalid": "Select a valid role",
+		"operator_type_invalid": "Select a valid operator type",
 		"email_already_used": "This email address is already registered",
 		"no_permissions_defined": "No permissions defined"
 	},
@@ -96,7 +97,8 @@
 		"label_password_on_update": "Password",
 		"label_password_confirm": "Confirm Password",
 		"label_language": "Language",
-		"label_role": "Role"
+		"label_role": "Role",
+		"label_operator_type": "Operator Type"
 	},
 	"view": {
 		"section_details": "Details",

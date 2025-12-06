@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { useTranslation } from '@/app/_hooks';
 import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import type { UserModel } from '@/lib/entities/user.model';
+import { UserRoleEnum } from '@/lib/entities/user.model';
 import { formatDate } from '@/lib/utils/date';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import {capitalizeFirstLetter, formatEnumLabel} from '@/lib/utils/string';
 
 export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 	const translationsKeys = useMemo(
@@ -42,6 +43,7 @@ export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 		role,
 		status,
 		language,
+		operator_type,
 		created_at,
 		updated_at,
 		deleted_at,
@@ -91,6 +93,11 @@ export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 							{translations['users.view.label_role']}
 						</span>{' '}
 						{capitalizeFirstLetter(role)}
+						{role === UserRoleEnum.OPERATOR && operator_type && (
+							<span>
+								/ {formatEnumLabel(operator_type)}
+							</span>
+						)}
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="font-semibold">

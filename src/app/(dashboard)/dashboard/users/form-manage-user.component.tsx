@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
 	FormComponentEmail,
 	FormComponentName,
@@ -8,8 +8,12 @@ import {
 } from '@/app/_components/form/form-element.component';
 import { useElementIds, useTranslation } from '@/app/_hooks';
 import type { FormManageType } from '@/config/data-source';
-import { LanguageEnum, UserRoleEnum } from '@/lib/entities/user.model';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import {
+	LanguageEnum,
+	UserOperatorTypeEnum,
+	UserRoleEnum,
+} from '@/lib/entities/user.model';
+import {capitalizeFirstLetter, formatEnumLabel} from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
@@ -18,6 +22,11 @@ const roles = Object.values(UserRoleEnum).map((v) => ({
 
 const languages = Object.values(LanguageEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
+	value: v,
+}));
+
+const operatorTypes = Object.values(UserOperatorTypeEnum).map((v) => ({
+	label: formatEnumLabel(v),
 	value: v,
 }));
 
@@ -37,6 +46,7 @@ export function FormManageUser({
 			'users.form_manage.label_password_confirm',
 			'users.form_manage.label_language',
 			'users.form_manage.label_role',
+			'users.form_manage.label_operator_type',
 		],
 		[],
 	);
@@ -45,6 +55,24 @@ export function FormManageUser({
 
 	const [showPassword, setShowPassword] = useState(false);
 
+	const prevRoleRef = useRef(formValues.role);
+
+	// Clear operator_type when role changes away from OPERATOR
+	useEffect(() => {
+		const prevRole = prevRoleRef.current;
+		const currentRole = formValues.role;
+
+		if (
+			prevRole === UserRoleEnum.OPERATOR &&
+			currentRole !== UserRoleEnum.OPERATOR &&
+			formValues.operator_type
+		) {
+			handleChange('operator_type', null);
+		}
+
+		prevRoleRef.current = currentRole;
+	}, [formValues.role, formValues.operator_type, handleChange]);
+
 	const elementIds = useElementIds([
 		'name',
 		'email',
@@ -52,6 +80,7 @@ export function FormManageUser({
 		'passwordConfirm',
 		'language',
 		'role',
+		'operatorType',
 	]);
 
 	return (
@@ -131,6 +160,23 @@ export function FormManageUser({
 				onChange={(e) => handleChange('role', e.target.value)}
 				error={errors.role}
 			/>
+
+			{formValues.role === UserRoleEnum.OPERATOR && (
+				<FormComponentSelect
+					labelText={
+						translations['users.form_manage.label_operator_type']
+					}
+					id={elementIds.operatorType}
+					fieldName="operator_type"
+					fieldValue={formValues.operator_type ?? ''}
+					options={operatorTypes}
+					disabled={pending}
+					onChange={(e) =>
+						handleChange('operator_type', e.target.value)
+					}
+					error={errors.operator_type}
+				/>
+			)}
 		</>
 	);
 }

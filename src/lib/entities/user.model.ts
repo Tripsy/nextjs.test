@@ -15,6 +15,12 @@ export enum LanguageEnum {
 	RO = 'ro',
 }
 
+export enum UserOperatorTypeEnum {
+	SELLER = 'seller',
+	PRODUCT_MANAGER = 'product_manager',
+	CONTENT_EDITOR = 'content_editor',
+}
+
 export type UserModel<D = Date | string> = {
 	id: number;
 	name: string;
@@ -24,6 +30,7 @@ export type UserModel<D = Date | string> = {
 	status: UserStatusEnum;
 	language: LanguageEnum;
 	role: UserRoleEnum;
+	operator_type: UserOperatorTypeEnum | null;
 	created_at: D;
 	updated_at: D;
 	deleted_at: D;
