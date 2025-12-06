@@ -13,7 +13,7 @@ import {
 	UserOperatorTypeEnum,
 	UserRoleEnum,
 } from '@/lib/entities/user.model';
-import {capitalizeFirstLetter, formatEnumLabel} from '@/lib/utils/string';
+import { capitalizeFirstLetter, formatEnumLabel } from '@/lib/utils/string';
 
 const roles = Object.values(UserRoleEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

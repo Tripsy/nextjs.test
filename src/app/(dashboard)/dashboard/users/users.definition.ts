@@ -71,30 +71,29 @@ const translations = await translateBatch([
 	'users.data_table.column_created_at',
 ]);
 
-const ValidateSchemaBaseUsers = z
-	.object({
-		name: z
-			.string({ message: translations['users.validation.name_invalid'] })
-			.trim()
-			.min(cfg('user.nameMinLength') as number, {
-				message: translations['users.validation.name_min'],
-			}),
-		email: z.string().trim().email({
-			message: translations['users.validation.email_invalid'],
+const ValidateSchemaBaseUsers = z.object({
+	name: z
+		.string({ message: translations['users.validation.name_invalid'] })
+		.trim()
+		.min(cfg('user.nameMinLength') as number, {
+			message: translations['users.validation.name_min'],
 		}),
-		language: z.nativeEnum(LanguageEnum, {
-			message: translations['users.validation.language_invalid'],
-		}),
-		role: z.nativeEnum(UserRoleEnum, {
-			message: translations['users.validation.role_invalid'],
-		}),
-		operator_type: z
-			.nativeEnum(UserOperatorTypeEnum, {
-				message: translations['users.validation.operator_type_invalid'],
-			})
-			.nullable()
-			.optional(),
-	});
+	email: z.string().trim().email({
+		message: translations['users.validation.email_invalid'],
+	}),
+	language: z.nativeEnum(LanguageEnum, {
+		message: translations['users.validation.language_invalid'],
+	}),
+	role: z.nativeEnum(UserRoleEnum, {
+		message: translations['users.validation.role_invalid'],
+	}),
+	operator_type: z
+		.nativeEnum(UserOperatorTypeEnum, {
+			message: translations['users.validation.operator_type_invalid'],
+		})
+		.nullable()
+		.optional(),
+});
 
 const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	password: z
@@ -127,24 +126,25 @@ const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 			message: translations['users.validation.password_confirm_required'],
 		}),
 })
-.superRefine(({ password, password_confirm }, ctx) => {
-	if (password !== password_confirm) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			path: ['password_confirm'],
-			message: translations['users.validation.password_confirm_mismatch'],
-		});
-	}
-})
-.superRefine(({ role, operator_type }, ctx) => {
-	if (role === UserRoleEnum.OPERATOR && !operator_type) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			path: ['operator_type'],
-			message: translations['users.validation.operator_type_invalid'],
-		});
-	}
-});
+	.superRefine(({ password, password_confirm }, ctx) => {
+		if (password !== password_confirm) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ['password_confirm'],
+				message:
+					translations['users.validation.password_confirm_mismatch'],
+			});
+		}
+	})
+	.superRefine(({ role, operator_type }, ctx) => {
+		if (role === UserRoleEnum.OPERATOR && !operator_type) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ['operator_type'],
+				message: translations['users.validation.operator_type_invalid'],
+			});
+		}
+	});
 
 const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 	password: z.preprocess(
@@ -186,34 +186,38 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 			.optional(),
 	),
 })
-.superRefine(({ password, password_confirm }, ctx) => {
-	if (password || password_confirm) {
-		if (!password_confirm) {
+	.superRefine(({ password, password_confirm }, ctx) => {
+		if (password || password_confirm) {
+			if (!password_confirm) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['password_confirm'],
+					message:
+						translations[
+							'users.validation.password_confirm_required'
+						],
+				});
+			} else if (password !== password_confirm) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['password_confirm'],
+					message:
+						translations[
+							'users.validation.password_confirm_mismatch'
+						],
+				});
+			}
+		}
+	})
+	.superRefine(({ role, operator_type }, ctx) => {
+		if (role === UserRoleEnum.OPERATOR && !operator_type) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
-				path: ['password_confirm'],
-				message:
-					translations['users.validation.password_confirm_required'],
-			});
-		} else if (password !== password_confirm) {
-			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
-				path: ['password_confirm'],
-				message:
-					translations['users.validation.password_confirm_mismatch'],
+				path: ['operator_type'],
+				message: translations['users.validation.operator_type_invalid'],
 			});
 		}
-	}
-})
-.superRefine(({ role, operator_type }, ctx) => {
-	if (role === UserRoleEnum.OPERATOR && !operator_type) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
-			path: ['operator_type'],
-			message: translations['users.validation.operator_type_invalid'],
-		});
-	}
-});
+	});
 
 function validateFormUsers(
 	values: DataSourceType['users']['formValues'],

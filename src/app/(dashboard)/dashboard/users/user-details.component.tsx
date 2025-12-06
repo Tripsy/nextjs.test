@@ -4,7 +4,7 @@ import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import type { UserModel } from '@/lib/entities/user.model';
 import { UserRoleEnum } from '@/lib/entities/user.model';
 import { formatDate } from '@/lib/utils/date';
-import {capitalizeFirstLetter, formatEnumLabel} from '@/lib/utils/string';
+import { capitalizeFirstLetter, formatEnumLabel } from '@/lib/utils/string';
 
 export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 	const translationsKeys = useMemo(
@@ -94,9 +94,7 @@ export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 						</span>{' '}
 						{capitalizeFirstLetter(role)}
 						{role === UserRoleEnum.OPERATOR && operator_type && (
-							<span>
-								/ {formatEnumLabel(operator_type)}
-							</span>
+							<span>/ {formatEnumLabel(operator_type)}</span>
 						)}
 					</div>
 					<div className="flex items-center gap-2">
