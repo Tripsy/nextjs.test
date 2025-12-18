@@ -91,8 +91,7 @@ const ValidateSchemaBaseUsers = z.object({
 		.nativeEnum(UserOperatorTypeEnum, {
 			message: translations['users.validation.operator_type_invalid'],
 		})
-		.nullable()
-		.optional(),
+		.nullable(),
 });
 
 const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({

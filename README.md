@@ -1,6 +1,11 @@
 # TODO
 
 1. Replace all console.error with logging
+2. New entities
+   - carrier
+   - client
+   - discount  
+   - place
 
 # IDEAS
 

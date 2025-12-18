@@ -15,6 +15,7 @@ export function ViewLogData() {
 			'log_data.view.section_details',
 			'log_data.view.label_id',
 			'log_data.view.label_pid',
+			'log_data.view.label_request_id',
 			'log_data.view.label_category',
 			'log_data.view.label_level',
 			'log_data.view.label_message',
@@ -47,6 +48,7 @@ export function ViewLogData() {
 	const {
 		id,
 		pid,
+		request_id,
 		category,
 		level,
 		message,
@@ -76,6 +78,12 @@ export function ViewLogData() {
 							{translations['log_data.view.label_pid']}
 						</span>{' '}
 						{pid}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_data.view.label_request_id']}
+						</span>{' '}
+						{request_id}
 					</div>
 					<div>
 						<span className="font-semibold">

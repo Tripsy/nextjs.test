@@ -1,4 +1,8 @@
-export const PermissionEntitiesSuggestions = ['user', 'permission'];
+export const PermissionEntitiesSuggestions = [
+	'user',
+	'permission'
+];
+
 export const PermissionOperationSuggestions = [
 	'create',
 	'update',

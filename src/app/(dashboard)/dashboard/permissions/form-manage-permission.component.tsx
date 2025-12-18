@@ -24,10 +24,13 @@ export function FormManagePermission({
 
 	const { translations } = useTranslation(translationsKeys);
 
-	const entityAutocomplete = useAutocomplete(PermissionEntitiesSuggestions, {
-		filterMode: 'includes',
-		caseSensitive: false,
-	});
+	const entityAutocomplete = useAutocomplete(
+		PermissionEntitiesSuggestions,
+		{
+			filterMode: 'includes',
+			caseSensitive: false,
+		}
+	);
 
 	const operationAutocomplete = useAutocomplete(
 		PermissionOperationSuggestions,

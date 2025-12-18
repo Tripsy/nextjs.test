@@ -36,7 +36,6 @@ export type DataSourceType = {
 	users: DataSourceUsersType;
 };
 
-export type AnyDataSourceModel = DataSourceModel<keyof DataSourceType>;
 export type DataSourceModel<K extends keyof DataSourceType> =
 	DataSourceType[K]['model'];
 export type DataSourceFormValues<K extends keyof DataSourceType> =
@@ -106,7 +105,7 @@ export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
 
 /**
  * `type` type of action (view, create, update, delete)
- * `permission` required to perform action (e.g. user.create)
+ * `permission` required to perform action (e.g.: `user.create`)
  * `allowedEntries`
  *      free ~ not dependent on selected entries,
  *      single ~ only one entry allowed,

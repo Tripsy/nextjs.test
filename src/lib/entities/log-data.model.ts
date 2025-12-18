@@ -18,6 +18,7 @@ export enum LogCategoryEnum {
 export type LogDataModel<D = Date | string> = {
 	id: number;
 	pid: string;
+	request_id: string | null;
 	category: LogCategoryEnum;
 	level: LogLevelEnum;
 	message: string;
