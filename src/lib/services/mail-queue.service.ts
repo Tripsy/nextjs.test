@@ -6,10 +6,10 @@ import type {
 } from '@/config/data-source';
 import {
 	ApiRequest,
+	buildQueryString,
 	getResponseData,
 	type ResponseFetch,
-} from '@/lib/utils/api';
-import { buildQueryString } from '@/lib/utils/string';
+} from '@/lib/helpers';
 
 export const findMailQueue: FindFunctionType<'mail_queue'> = async (
 	params: FindFunctionParamsType,

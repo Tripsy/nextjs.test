@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	themes:
 		light --default,
 		dark --prefersdark;
@@ -15,11 +14,8 @@
 }
 
 @plugin "daisyui/theme" {
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	name: "light";
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	default: true;
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	prefersdark: false;
 	color-scheme: light;
 	--color-base-100: rgb(255, 255, 255);
@@ -54,11 +50,8 @@
 }
 
 @plugin "daisyui/theme" {
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	name: "dark";
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	default: false;
-	/*biome-ignore lint/correctness/noUnknownProperty: Unknown property is not allowed*/
 	prefersdark: false;
 	color-scheme: dark;
 	--color-line: oklab(0.97807 -0.00659901 -0.0282392 / 0.2);

@@ -13,8 +13,8 @@ import {
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableCronHistoryFiltersType } from '@/app/(dashboard)/dashboard/cron-history/cron-history.definition';
 import { CronHistoryStatusEnum } from '@/lib/entities/cron-history.model';
-import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { createFilterHandlers } from '@/lib/helpers/data-table';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 const statuses = Object.values(CronHistoryStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

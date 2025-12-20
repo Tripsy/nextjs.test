@@ -38,7 +38,7 @@ import {
 	FontAwesomeIcon,
 	type FontAwesomeIconProps,
 } from '@fortawesome/react-fontawesome';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 export function AwesomeIcon({
 	className = 'fa-md', // ex: fa-lg, fa-2xl, fa-sm

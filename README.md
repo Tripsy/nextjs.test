@@ -9,9 +9,12 @@
 
 # IDEAS
 
-1. Add section "documentation"
-2. login with google / facebook
-3. For template section 
+1. Refactor validation
+2. Revise i8next
+3. Log history
+4. Add section "documentation"
+5. login with google / facebook
+6. For template section 
    - would be a nice idea to keep track of the last changes (maybe add a new column - prev version id and a button to restore to that version)
    - view presentation could be enhanced
 

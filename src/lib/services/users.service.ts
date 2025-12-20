@@ -10,10 +10,10 @@ import type {
 import type { UserPermissionModel } from '@/lib/entities/user-permission.model';
 import {
 	ApiRequest,
+	buildQueryString,
 	getResponseData,
 	type ResponseFetch,
-} from '@/lib/utils/api';
-import { buildQueryString } from '@/lib/utils/string';
+} from '@/lib/helpers';
 
 export const findUsers: FindFunctionType<'users'> = async (
 	params: FindFunctionParamsType,

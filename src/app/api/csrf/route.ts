@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { v4 as uuid } from 'uuid';
 import { cfg } from '@/config/settings';
-import type { ResponseFetch } from '@/lib/utils/api';
-import { getTrackedCookie, getTrackedCookieName } from '@/lib/utils/session';
-import { randomString } from '@/lib/utils/string';
+import {
+	getTrackedCookie,
+	getTrackedCookieName,
+	type ResponseFetch,
+} from '@/lib/helpers';
 
 type NextResponseCsrf = NextResponse<
 	ResponseFetch<{
@@ -16,7 +19,7 @@ export async function GET(): Promise<NextResponseCsrf> {
 	const csrfToken = await getTrackedCookie(cookieName);
 
 	if (!csrfToken.value) {
-		csrfToken.value = randomString();
+		csrfToken.value = uuid();
 	}
 
 	const response: NextResponseCsrf = NextResponse.json(

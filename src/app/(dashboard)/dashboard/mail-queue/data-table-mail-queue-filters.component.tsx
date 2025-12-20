@@ -13,8 +13,8 @@ import {
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableMailQueueFiltersType } from '@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition';
 import { MailQueueStatusEnum } from '@/lib/entities/mail-queue.model';
-import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { createFilterHandlers } from '@/lib/helpers/data-table';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 const statuses = Object.values(MailQueueStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

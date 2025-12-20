@@ -3,7 +3,7 @@ import { useStore } from 'zustand/react';
 import { useTranslation } from '@/app/_hooks';
 import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import { formatDate } from '@/lib/utils/date';
+import { formatDate } from '@/lib/helpers/date';
 
 export function ViewMailQueue() {
 	const { modelStore } = useDataTable<'mail_queue'>();

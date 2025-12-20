@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ApiRequest } from '@/lib/utils/api';
+import { ApiRequest } from '@/lib/helpers/api';
 
 async function fetchCsrfToken() {
 	try {

@@ -20,8 +20,8 @@ import {
 	getDataSourceConfig,
 } from '@/config/data-source';
 import { cfg } from '@/config/settings';
-import { getMomentInstanceFromDate } from '@/lib/utils/date';
-import { replaceVars } from '@/lib/utils/string';
+import { getMomentInstanceFromDate } from '@/lib/helpers/date';
+import { replaceVars } from '@/lib/helpers/string';
 
 type SelectionChangeEvent<T> = {
 	originalEvent: React.SyntheticEvent;

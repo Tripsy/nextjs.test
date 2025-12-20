@@ -9,8 +9,8 @@ import {
 	ApiRequest,
 	getResponseData,
 	type ResponseFetch,
-} from '@/lib/utils/api';
-import { formatDate } from '@/lib/utils/date';
+} from '@/lib/helpers/api';
+import { formatDate } from '@/lib/helpers/date';
 
 interface Props {
 	params: Promise<{

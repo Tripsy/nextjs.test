@@ -6,15 +6,13 @@ import { type AuthModel, prepareAuthModel } from '@/lib/entities/auth.model';
 import { ApiError } from '@/lib/exceptions/api.error';
 import {
 	ApiRequest,
-	getResponseData,
-	type ResponseFetch,
-} from '@/lib/utils/api';
-import {
+	apiHeaders,
 	deleteCookie,
+	getResponseData,
 	getTrackedCookie,
+	type ResponseFetch,
 	setupTrackedCookie,
-} from '@/lib/utils/session';
-import { apiHeaders } from '@/lib/utils/system';
+} from '@/lib/helpers';
 
 export async function createAuth(
 	sessionToken: string,

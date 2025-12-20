@@ -1,7 +1,7 @@
 'use server';
 
 import { cfg } from '@/config/settings';
-import { getCookie } from '@/lib/utils/session';
+import { getCookie } from '@/lib/helpers';
 
 export async function isValidCsrfToken(inputValue: string) {
 	if (!inputValue) {

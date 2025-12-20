@@ -5,8 +5,8 @@ import type {
 } from '@/app/(public)/account/logout/logout.definition';
 import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
+import type { ResponseFetch } from '@/lib/helpers/api';
 import { logoutAccount } from '@/lib/services/account.service';
-import type { ResponseFetch } from '@/lib/utils/api';
 
 export async function logoutAction(): Promise<LogoutState> {
 	try {

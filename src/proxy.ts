@@ -9,13 +9,12 @@ import {
 } from '@/lib/entities/auth.model';
 import {
 	ApiRequest,
+	apiHeaders,
 	getResponseData,
+	getTrackedCookie,
+	getTrackedCookieName,
 	type ResponseFetch,
-} from '@/lib/utils/api';
-import { getTrackedCookie, getTrackedCookieName } from '@/lib/utils/session';
-import { apiHeaders } from '@/lib/utils/system';
-
-// import {getRedisClient} from '@/config/init-redis.config';
+} from '@/lib/helpers';
 
 class MiddlewareContext {
 	req: NextRequest;
@@ -33,7 +32,7 @@ class MiddlewareContext {
 		// Clickjacking protection
 		this.res.headers.set('X-Frame-Options', 'DENY');
 
-		// Determine language; add it to headers; create cookie
+		// Determine language; add it to headers; create the cookie
 		this.setupLanguage();
 
 		return this.res;
@@ -51,7 +50,7 @@ class MiddlewareContext {
 		// Create the login URL
 		const loginUrl = new URL(Routes.get('login'), this.req.url);
 
-		// Add destination path as query parameter
+		// Set from query parameter as `destinationPath`
 		loginUrl.searchParams.set('from', encodeURIComponent(destinationPath));
 
 		return this.redirect(loginUrl);
@@ -69,7 +68,7 @@ class MiddlewareContext {
 	}
 
 	setupLanguage() {
-		// 1. Check query parameter first (highest priority)
+		// 1. Check query parameter first (the highest priority)
 		const url = new URL(this.req.url);
 		const queryLang = url.searchParams.get('lang');
 

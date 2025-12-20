@@ -3,8 +3,8 @@ import { useTranslation } from '@/app/_hooks';
 import { DisplayStatus } from '@/app/(dashboard)/_components/data-table-value';
 import type { UserModel } from '@/lib/entities/user.model';
 import { UserRoleEnum } from '@/lib/entities/user.model';
-import { formatDate } from '@/lib/utils/date';
-import { capitalizeFirstLetter, formatEnumLabel } from '@/lib/utils/string';
+import { formatDate } from '@/lib/helpers/date';
+import { capitalizeFirstLetter, formatEnumLabel } from '@/lib/helpers/string';
 
 export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 	const translationsKeys = useMemo(

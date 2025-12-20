@@ -14,8 +14,8 @@ import {
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableUsersFiltersType } from '@/app/(dashboard)/dashboard/users/users.definition';
 import { UserRoleEnum, UserStatusEnum } from '@/lib/entities/user.model';
-import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { createFilterHandlers } from '@/lib/helpers/data-table';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 const statuses = Object.values(UserStatusEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

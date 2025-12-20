@@ -18,8 +18,8 @@ import {
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/entities/user.model';
-import { getNestedError } from '@/lib/utils/form';
-import { capitalizeFirstLetter, toKebabCase } from '@/lib/utils/string';
+import { getNestedError } from '@/lib/helpers/form';
+import { capitalizeFirstLetter, toKebabCase } from '@/lib/helpers/string';
 
 const languages = Object.values(LanguageEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),

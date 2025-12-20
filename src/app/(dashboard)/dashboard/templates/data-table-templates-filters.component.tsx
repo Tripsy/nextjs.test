@@ -14,8 +14,8 @@ import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
 import type { DataTableTemplatesFiltersType } from '@/app/(dashboard)/dashboard/templates/templates.definition';
 import { TemplateTypeEnum } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/entities/user.model';
-import { createFilterHandlers } from '@/lib/utils/data-table';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { createFilterHandlers } from '@/lib/helpers/data-table';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 const languages = Object.values(LanguageEnum).map((language) => ({
 	label: capitalizeFirstLetter(language),

@@ -10,7 +10,7 @@ import {
 import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
-import { accumulateZodErrors } from '@/lib/utils/form';
+import { accumulateZodErrors } from '@/lib/helpers';
 
 export function getFormValues<K extends keyof DataSourceType>(
 	dataSource: K,
@@ -26,7 +26,7 @@ export function getFormValues<K extends keyof DataSourceType>(
 
 	const getFormValuesFunction = functions.getFormValues;
 
-	// Fighting with Typescript & Eslint
+	// Fighting with TypeScript & Eslint
 	if (!getFormValuesFunction) {
 		throw new ValueError(
 			`'getFormValues' function is not defined for ${dataSource}`,
@@ -51,7 +51,7 @@ export function handleValidate<K extends keyof DataSourceType>(
 
 	const validateFormFunction = functions.validateForm;
 
-	// Fighting with Typescript & Eslint
+	// Fighting with TypeScript & Eslint
 	if (!validateFormFunction) {
 		throw new ValueError(
 			`'validateForm' function is not defined for ${dataSource}`,
@@ -73,7 +73,7 @@ export async function formAction<K extends keyof DataSourceType>(
 				| UpdateFunctionType<K>
 				| undefined;
 
-			// Not all the entities have `update` function
+			// Not all the entities have an `update` function
 			if (!updateFunction) {
 				throw new ValueError(
 					`'update' function is not defined for ${state.dataSource}`,
@@ -87,7 +87,7 @@ export async function formAction<K extends keyof DataSourceType>(
 			| CreateFunctionType<K>
 			| undefined;
 
-		// Not all the entities have `create` function
+		// Not all the entities have a `create` function
 		if (!createFunction) {
 			throw new ValueError(
 				`'create' function is not defined for ${state.dataSource}`,

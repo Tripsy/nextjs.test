@@ -9,8 +9,8 @@ import type {
 	DataSourceType,
 	DataTableColumnType,
 } from '@/config/data-source';
-import { formatDate } from '@/lib/utils/date';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { formatDate } from '@/lib/helpers/date';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 export const statusList = {
 	active: {

@@ -8,7 +8,7 @@ import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account
 import type { PasswordUpdateFormFieldsType } from '@/app/(public)/account/password-update/password-update.definition';
 import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
-import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
+import { ApiRequest, type ResponseFetch } from '@/lib/helpers';
 
 export async function registerAccount(
 	params: RegisterFormFieldsType,
@@ -82,7 +82,7 @@ export type AuthTokenType = {
 	ident: string;
 	label: string;
 	used_at: Date;
-	used_now: boolean; // true - if is a match for current session
+	used_now: boolean; // true - if is a match for the current session
 };
 
 export type AuthTokenListType = AuthTokenType[];

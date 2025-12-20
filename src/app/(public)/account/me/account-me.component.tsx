@@ -10,12 +10,12 @@ import { useAuth } from '@/app/_providers/auth.provider';
 import { useToast } from '@/app/_providers/toast.provider';
 import { AuthTokenList } from '@/app/(public)/account/login/login.component';
 import Routes from '@/config/routes';
+import { formatDate } from '@/lib/helpers/date';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 import {
 	type AuthTokenListType,
 	getSessions,
 } from '@/lib/services/account.service';
-import { formatDate } from '@/lib/utils/date';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
 
 export default function AccountMe() {
 	const { auth, authStatus } = useAuth();

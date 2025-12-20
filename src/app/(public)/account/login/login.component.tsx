@@ -30,12 +30,12 @@ import {
 } from '@/app/(public)/account/login/login.definition';
 import Routes, { isExcludedRoute } from '@/config/routes';
 import { cfg } from '@/config/settings';
+import { formatDate } from '@/lib/helpers/date';
 import {
 	type AuthTokenListType,
 	type AuthTokenType,
 	removeTokenAccount,
 } from '@/lib/services/account.service';
-import { formatDate } from '@/lib/utils/date';
 
 export default function Login() {
 	const { showToast } = useToast();

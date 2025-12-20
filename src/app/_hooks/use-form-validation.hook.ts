@@ -1,10 +1,10 @@
 import isEqual from 'fast-deep-equal';
 import { useCallback, useRef, useState } from 'react';
-import type { SafeParseError, SafeParseSuccess } from 'zod';
+import type {ZodSafeParseError, ZodSafeParseSuccess} from 'zod';
 import { useDebouncedEffect } from '@/app/_hooks/use-debounced-effect.hook';
-import { accumulateZodErrors } from '@/lib/utils/form';
+import { accumulateZodErrors } from '@/lib/helpers';
 
-export type ValidationReturnType<K> = SafeParseSuccess<K> | SafeParseError<K>;
+export type ValidationReturnType<K> = ZodSafeParseSuccess<K> | ZodSafeParseError<K>;
 
 interface UseFormValidationProps<K> {
 	formValues: K;

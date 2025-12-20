@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useStore } from 'zustand/react';
 import { useTranslation } from '@/app/_hooks';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import { formatDate } from '@/lib/utils/date';
-import { parseJson } from '@/lib/utils/string';
+import { formatDate } from '@/lib/helpers/date';
+import { parseJson } from '@/lib/helpers/string';
 
 export function ViewLogData() {
 	const { modelStore } = useDataTable<'log_data'>();

@@ -22,8 +22,8 @@ import type {
 	DataSourceTableFilter,
 	DataSourceType,
 } from '@/config/data-source';
-import type { MatchModeType } from '@/lib/utils/data-table';
-import { getValidDate, stringToDate } from '@/lib/utils/date';
+import type { MatchModeType } from '@/lib/helpers/data-table';
+import { getValidDate, stringToDate } from '@/lib/helpers/date';
 
 type HandleSelectChangeType<K extends keyof DataSourceType> = <
 	F extends keyof DataSourceTableFilter<K>,

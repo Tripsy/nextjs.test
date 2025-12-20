@@ -5,7 +5,7 @@ import { translate } from '@/config/lang';
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
-import { ApiRequest, type ResponseFetch } from '@/lib/utils/api';
+import { ApiRequest, type ResponseFetch } from '@/lib/helpers/api';
 
 interface Props {
 	params: Promise<{

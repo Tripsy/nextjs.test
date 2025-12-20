@@ -1,5 +1,5 @@
 import { type UserModel, UserRoleEnum } from '@/lib/entities/user.model';
-import { normalizeDates } from '@/lib/utils/model';
+import { normalizeDates } from '@/lib/helpers';
 
 export type AuthModel =
 	| (UserModel<Date> & {

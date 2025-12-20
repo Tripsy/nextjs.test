@@ -26,7 +26,7 @@ import {
 	getDataSourceConfig,
 } from '@/config/data-source';
 import ValueError from '@/lib/exceptions/value.error';
-import { setObjectValue } from '@/lib/utils/string';
+import { setObjectValue } from '@/lib/helpers';
 
 export function FormManage<K extends keyof DataSourceType>({
 	children,

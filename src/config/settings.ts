@@ -2,7 +2,7 @@ import {
 	getObjectValue,
 	type ObjectValue,
 	setObjectValue,
-} from '@/lib/utils/string';
+} from '@/lib/helpers';
 
 const settingsConfig: { [key: string]: ObjectValue } = {
 	app: {

@@ -120,10 +120,8 @@ export const RegisterSchema = z
 		language: z.nativeEnum(LanguageEnum, {
 			message: translations['register.validation.language_invalid'],
 		}),
-		terms: z.literal(true, {
-			errorMap: () => ({
-				message: translations['register.validation.terms_required'],
-			}),
+		terms: z.literal(true).refine((val) => val === true, {
+			message: translations['register.validation.terms_required'],
 		}),
 	})
 	.superRefine(({ password, password_confirm }, ctx) => {

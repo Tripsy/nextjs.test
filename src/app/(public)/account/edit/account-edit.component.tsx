@@ -25,7 +25,7 @@ import {
 import Routes from '@/config/routes';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/entities/user.model';
-import { capitalizeFirstLetter } from '@/lib/utils/string';
+import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
 const languages = Object.values(LanguageEnum).map((language) => ({
 	label: capitalizeFirstLetter(language),
