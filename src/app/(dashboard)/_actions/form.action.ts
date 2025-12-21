@@ -10,7 +10,7 @@ import {
 import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import ValueError from '@/lib/exceptions/value.error';
-import { accumulateZodErrors } from '@/lib/helpers';
+import {accumulateZodErrors} from "@/lib/helpers/form";
 
 export function getFormValues<K extends keyof DataSourceType>(
 	dataSource: K,

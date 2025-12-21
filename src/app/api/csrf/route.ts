@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 import { cfg } from '@/config/settings';
-import {
-	getTrackedCookie,
-	getTrackedCookieName,
-	type ResponseFetch,
-} from '@/lib/helpers';
+import {ResponseFetch} from "@/lib/helpers/api";
+import {getTrackedCookie, getTrackedCookieName} from "@/lib/helpers/session";
 
 type NextResponseCsrf = NextResponse<
 	ResponseFetch<{

@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { cfg, isSupportedLanguage } from '@/config/settings';
-import type { ResponseFetch } from '@/lib/helpers';
+import {ResponseFetch} from "@/lib/helpers/api";
 
 type NextResponseLanguage = NextResponse<
 	ResponseFetch<{

@@ -4,12 +4,8 @@ import type {
 	FindFunctionResponseType,
 	FindFunctionType,
 } from '@/config/data-source';
-import {
-	ApiRequest,
-	buildQueryString,
-	getResponseData,
-	type ResponseFetch,
-} from '@/lib/helpers';
+import {buildQueryString} from "@/lib/helpers/string";
+import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
 
 export const findMailQueue: FindFunctionType<'mail_queue'> = async (
 	params: FindFunctionParamsType,

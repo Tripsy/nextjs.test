@@ -1,4 +1,4 @@
-import { clearAuth } from '@/actions/auth.actions';
+import { clearAuth } from '@/lib/actions/auth.actions';
 import type {
 	LogoutSituation,
 	LogoutState,

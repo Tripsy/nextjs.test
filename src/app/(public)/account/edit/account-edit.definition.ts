@@ -48,7 +48,7 @@ export const AccountEditSchema = z.object({
 		.min(cfg('user.nameMinLength') as number, {
 			message: translations['account_edit.validation.name_min'],
 		}),
-	language: z.nativeEnum(LanguageEnum, {
+	language: z.enum(LanguageEnum, {
 		message: translations['account_edit.validation.language_invalid'],
 	}),
 });

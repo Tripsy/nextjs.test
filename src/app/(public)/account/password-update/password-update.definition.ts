@@ -116,7 +116,7 @@ export const PasswordUpdateSchema = z
 					translations[
 						'account_password_update.validation.password_confirm_mismatch'
 					],
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 			});
 		}
 	});

@@ -9,7 +9,6 @@
 
 # IDEAS
 
-1. Refactor validation
 2. Revise i8next
 3. Log history
 4. Add section "documentation"

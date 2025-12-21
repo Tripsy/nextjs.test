@@ -29,7 +29,7 @@ const translations = await translateBatch([
 ]);
 
 export const PasswordRecoverSchema = z.object({
-	email: z.string().trim().email({
+	email: z.email({
 		message: translations['password_recover.validation.email_invalid'],
 	}),
 });

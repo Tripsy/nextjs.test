@@ -105,7 +105,7 @@ export const PasswordRecoverChangeSchema = z
 					translations[
 						'password_recover_change.validation.password_confirm_mismatch'
 					],
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 			});
 		}
 	});

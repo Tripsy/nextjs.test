@@ -29,7 +29,7 @@ const translations = await translateBatch([
 ]);
 
 export const EmailUpdateSchema = z.object({
-	email_new: z.string().trim().email({
+	email_new: z.email({
 		message: translations['account_email_update.validation.email_invalid'],
 	}),
 });

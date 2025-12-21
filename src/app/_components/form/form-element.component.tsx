@@ -7,7 +7,7 @@ import { Dropdown, type DropdownChangeEvent } from 'primereact/dropdown';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { InputText } from 'primereact/inputtext';
-import { type JSX, useMemo } from 'react';
+import React, { type JSX, useMemo } from 'react';
 import { FormElementError } from '@/app/_components/form/form-element-error.component';
 import { FormPart } from '@/app/_components/form/form-part.component';
 import { Icons } from '@/app/_components/icon.component';

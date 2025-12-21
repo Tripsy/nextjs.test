@@ -7,14 +7,9 @@ import {
 	hasPermission,
 	prepareAuthModel,
 } from '@/lib/entities/auth.model';
-import {
-	ApiRequest,
-	apiHeaders,
-	getResponseData,
-	getTrackedCookie,
-	getTrackedCookieName,
-	type ResponseFetch,
-} from '@/lib/helpers';
+import {getTrackedCookie, getTrackedCookieName} from "@/lib/helpers/session";
+import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
+import {apiHeaders} from "@/lib/helpers/system";
 
 class MiddlewareContext {
 	req: NextRequest;

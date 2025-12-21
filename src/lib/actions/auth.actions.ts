@@ -4,15 +4,9 @@ import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { type AuthModel, prepareAuthModel } from '@/lib/entities/auth.model';
 import { ApiError } from '@/lib/exceptions/api.error';
-import {
-	ApiRequest,
-	apiHeaders,
-	deleteCookie,
-	getResponseData,
-	getTrackedCookie,
-	type ResponseFetch,
-	setupTrackedCookie,
-} from '@/lib/helpers';
+import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
+import {deleteCookie, getTrackedCookie, setupTrackedCookie} from "@/lib/helpers/session";
+import {apiHeaders} from "@/lib/helpers/system";
 
 export async function createAuth(
 	sessionToken: string,

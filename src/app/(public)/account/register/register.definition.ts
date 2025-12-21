@@ -74,7 +74,7 @@ export const RegisterSchema = z
 			.min(cfg('user.nameMinLength') as number, {
 				message: translations['register.validation.name_min'],
 			}),
-		email: z.string().trim().email({
+		email: z.email({
 			message: translations['register.validation.email_invalid'],
 		}),
 		password: z
@@ -117,7 +117,7 @@ export const RegisterSchema = z
 						'register.validation.password_confirm_required'
 					],
 			}),
-		language: z.nativeEnum(LanguageEnum, {
+		language: z.enum(LanguageEnum, {
 			message: translations['register.validation.language_invalid'],
 		}),
 		terms: z.literal(true).refine((val) => val === true, {
@@ -132,7 +132,7 @@ export const RegisterSchema = z
 					translations[
 						'register.validation.password_confirm_mismatch'
 					],
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 			});
 		}
 	});

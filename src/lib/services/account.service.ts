@@ -8,7 +8,7 @@ import type { PasswordRecoverChangeFormFieldsType } from '@/app/(public)/account
 import type { PasswordUpdateFormFieldsType } from '@/app/(public)/account/password-update/password-update.definition';
 import type { RegisterFormFieldsType } from '@/app/(public)/account/register/register.definition';
 import type { UserModel } from '@/lib/entities/user.model';
-import { ApiRequest, type ResponseFetch } from '@/lib/helpers';
+import {ApiRequest, ResponseFetch} from "@/lib/helpers/api";
 
 export async function registerAccount(
 	params: RegisterFormFieldsType,

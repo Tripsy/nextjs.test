@@ -1,4 +1,4 @@
-import { isValidCsrfToken } from '@/actions/csrf.action';
+import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type AccountEditFormFieldsType,
 	AccountEditSchema,
@@ -8,6 +8,7 @@ import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/entities/user.model';
 import { editAccount } from '@/lib/services/account.service';
+import {accumulateZodErrors} from "@/lib/helpers/form";
 
 export function accountEditFormValues(
 	formData: FormData,
@@ -56,7 +57,9 @@ export async function accountEditAction(
 		return {
 			...result,
 			situation: 'error',
-			errors: validated.error.flatten().fieldErrors,
+			errors: accumulateZodErrors<AccountEditFormFieldsType>(
+				validated.error,
+			)
 		};
 	}
 

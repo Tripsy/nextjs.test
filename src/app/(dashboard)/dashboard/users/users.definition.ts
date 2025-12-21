@@ -78,17 +78,17 @@ const ValidateSchemaBaseUsers = z.object({
 		.min(cfg('user.nameMinLength') as number, {
 			message: translations['users.validation.name_min'],
 		}),
-	email: z.string().trim().email({
+	email: z.email({
 		message: translations['users.validation.email_invalid'],
 	}),
-	language: z.nativeEnum(LanguageEnum, {
+	language: z.enum(LanguageEnum, {
 		message: translations['users.validation.language_invalid'],
 	}),
-	role: z.nativeEnum(UserRoleEnum, {
+	role: z.enum(UserRoleEnum, {
 		message: translations['users.validation.role_invalid'],
 	}),
 	operator_type: z
-		.nativeEnum(UserOperatorTypeEnum, {
+		.enum(UserOperatorTypeEnum, {
 			message: translations['users.validation.operator_type_invalid'],
 		})
 		.nullable(),
@@ -128,7 +128,7 @@ const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	.superRefine(({ password, password_confirm }, ctx) => {
 		if (password !== password_confirm) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				path: ['password_confirm'],
 				message:
 					translations['users.validation.password_confirm_mismatch'],
@@ -138,7 +138,7 @@ const ValidateSchemaCreateUsers = ValidateSchemaBaseUsers.extend({
 	.superRefine(({ role, operator_type }, ctx) => {
 		if (role === UserRoleEnum.OPERATOR && !operator_type) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				path: ['operator_type'],
 				message: translations['users.validation.operator_type_invalid'],
 			});
@@ -189,7 +189,7 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 		if (password || password_confirm) {
 			if (!password_confirm) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: 'custom',
 					path: ['password_confirm'],
 					message:
 						translations[
@@ -198,7 +198,7 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 				});
 			} else if (password !== password_confirm) {
 				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: 'custom',
 					path: ['password_confirm'],
 					message:
 						translations[
@@ -211,7 +211,7 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 	.superRefine(({ role, operator_type }, ctx) => {
 		if (role === UserRoleEnum.OPERATOR && !operator_type) {
 			ctx.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: 'custom',
 				path: ['operator_type'],
 				message: translations['users.validation.operator_type_invalid'],
 			});
@@ -439,7 +439,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
-			customEntryCheck: (entry: UserModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: UserModel) => !entry.deleted_at, // Return true if the entry is not deleted
 			position: 'left' as const,
 			function: deleteUser,
 			button: {
@@ -480,7 +480,7 @@ export const DataSourceConfigUsers = {
 			mode: 'action' as const,
 			permission: 'user.delete',
 			allowedEntries: 'single' as const,
-			customEntryCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: UserModel) => !!entry.deleted_at, // Return true if the entry is deleted
 			position: 'left' as const,
 			function: restoreUser,
 			button: {

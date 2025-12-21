@@ -9,7 +9,7 @@ import {
 	useMemo,
 	useState,
 } from 'react';
-import { getAuth } from '@/actions/auth.actions';
+import { getAuth } from '@/lib/actions/auth.actions';
 import type { AuthModel } from '@/lib/entities/auth.model';
 import { ApiError } from '@/lib/exceptions/api.error';
 

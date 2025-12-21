@@ -13,7 +13,6 @@ import {
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/entities/user.model';
-import { parseJson, safeHtml } from '@/lib/helpers';
 import {
 	createTemplate,
 	deleteTemplate,
@@ -21,6 +20,8 @@ import {
 	restoreTemplate,
 	updateTemplate,
 } from '@/lib/services/templates.service';
+import {safeHtml} from "@/lib/helpers/form";
+import {parseJson} from "@/lib/helpers/string";
 
 export type DataTableTemplatesFiltersType = {
 	global: DataTableFilterMetaData;
@@ -50,10 +51,10 @@ const ValidateSchemaBaseTemplates = z.object({
 	label: z.string().nonempty({
 		message: translations['templates.validation.label_invalid'],
 	}),
-	language: z.nativeEnum(LanguageEnum, {
+	language: z.enum(LanguageEnum, {
 		message: translations['templates.validation.language_invalid'],
 	}),
-	type: z.nativeEnum(TemplateTypeEnum, {
+	type: z.enum(TemplateTypeEnum, {
 		message: translations['templates.validation.type_invalid'],
 	}),
 });

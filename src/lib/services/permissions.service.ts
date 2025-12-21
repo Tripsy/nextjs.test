@@ -7,12 +7,8 @@ import type {
 	FindFunctionType,
 	UpdateFunctionType,
 } from '@/config/data-source';
-import {
-	ApiRequest,
-	buildQueryString,
-	getResponseData,
-	type ResponseFetch,
-} from '@/lib/helpers';
+import {buildQueryString} from "@/lib/helpers/string";
+import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
 
 export const findPermissions: FindFunctionType<'permissions'> = async (
 	params: FindFunctionParamsType,
