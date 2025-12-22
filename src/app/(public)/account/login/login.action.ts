@@ -1,4 +1,4 @@
-import { createAuth } from '@/lib/actions/auth.action';
+import { createAuth } from '@/lib/services/auth.service';
 import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type LoginFormFieldsType,
