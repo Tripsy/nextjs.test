@@ -1,4 +1,3 @@
-import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type RegisterFormFieldsType,
 	RegisterSchema,
@@ -9,8 +8,9 @@ import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { LanguageEnum } from '@/lib/entities/user.model';
 import { ApiError } from '@/lib/exceptions/api.error';
+import { accumulateZodErrors } from '@/lib/helpers/form';
+import { isValidCsrfToken } from '@/lib/helpers/session';
 import { registerAccount } from '@/lib/services/account.service';
-import {accumulateZodErrors} from "@/lib/helpers/form";
 
 export function registerFormValues(formData: FormData): RegisterFormFieldsType {
 	const language = formData.get('language');
@@ -63,7 +63,7 @@ export async function registerAction(
 			situation: 'error',
 			errors: accumulateZodErrors<RegisterFormFieldsType>(
 				validated.error,
-			)
+			),
 		};
 	}
 

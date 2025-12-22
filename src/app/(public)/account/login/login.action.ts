@@ -1,5 +1,3 @@
-import { createAuth } from '@/lib/services/auth.service';
-import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type LoginFormFieldsType,
 	LoginSchema,
@@ -9,11 +7,13 @@ import {
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
+import { accumulateZodErrors } from '@/lib/helpers/form';
+import { isValidCsrfToken } from '@/lib/helpers/session';
 import {
 	type AuthTokenListType,
 	loginAccount,
 } from '@/lib/services/account.service';
-import {accumulateZodErrors} from "@/lib/helpers/form";
+import { createAuth } from '@/lib/services/auth.service';
 
 export function loginFormValues(formData: FormData): LoginFormFieldsType {
 	return {
@@ -55,9 +55,7 @@ export async function loginAction(
 		return {
 			...result,
 			situation: 'error',
-			errors: accumulateZodErrors<LoginFormFieldsType>(
-				validated.error,
-			)
+			errors: accumulateZodErrors<LoginFormFieldsType>(validated.error),
 		};
 	}
 

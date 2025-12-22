@@ -1,7 +1,7 @@
 import { cfg, isSupportedLanguage } from '@/config/settings';
-import {ApiRequest} from "@/lib/helpers/api";
-import {getObjectValue} from "@/lib/helpers/objects.helper";
-import {replaceVars} from "@/lib/helpers/string";
+import { ApiRequest } from '@/lib/helpers/api';
+import { getObjectValue } from '@/lib/helpers/objects.helper';
+import { replaceVars } from '@/lib/helpers/string';
 
 type TranslationValue = string | { [key: string]: TranslationValue };
 type TranslationResource = Record<string, TranslationValue>;

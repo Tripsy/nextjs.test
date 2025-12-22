@@ -1,4 +1,3 @@
-import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type EmailConfirmSendFormFieldsType,
 	EmailConfirmSendSchema,
@@ -8,8 +7,9 @@ import {
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
+import { accumulateZodErrors } from '@/lib/helpers/form';
+import { isValidCsrfToken } from '@/lib/helpers/session';
 import { emailConfirmSendAccount } from '@/lib/services/account.service';
-import {accumulateZodErrors} from "@/lib/helpers/form";
 
 export function emailConfirmSendFormValues(
 	formData: FormData,
@@ -56,7 +56,7 @@ export async function emailConfirmSendAction(
 			situation: 'error',
 			errors: accumulateZodErrors<EmailConfirmSendFormFieldsType>(
 				validated.error,
-			)
+			),
 		};
 	}
 

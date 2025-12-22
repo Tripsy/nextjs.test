@@ -1,4 +1,3 @@
-import { clearAuth } from '@/lib/services/auth.service';
 import type {
 	LogoutSituation,
 	LogoutState,
@@ -7,6 +6,7 @@ import { translate } from '@/config/lang';
 import { ApiError } from '@/lib/exceptions/api.error';
 import type { ResponseFetch } from '@/lib/helpers/api';
 import { logoutAccount } from '@/lib/services/account.service';
+import { clearAuth } from '@/lib/services/auth.service';
 
 export async function logoutAction(): Promise<LogoutState> {
 	try {

@@ -2,9 +2,9 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { cfg } from '@/config/settings';
-import {getCookie} from "@/lib/helpers/session";
-import {getRemoteApiUrl} from "@/lib/helpers/api";
-import {apiHeaders} from "@/lib/helpers/system";
+import { getRemoteApiUrl } from '@/lib/helpers/api';
+import { getCookie } from '@/lib/helpers/session';
+import { apiHeaders } from '@/lib/helpers/system';
 
 async function handler(request: NextRequest, path: string[]) {
 	const token = await getCookie(cfg('user.sessionToken') as string);

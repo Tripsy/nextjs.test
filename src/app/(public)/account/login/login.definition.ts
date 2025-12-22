@@ -38,8 +38,7 @@ const translations = await translateBatch([
 ]);
 
 export const LoginSchema = z.object({
-	email: z
-		.email({ message: translations['login.validation.email_invalid'] }),
+	email: z.email({ message: translations['login.validation.email_invalid'] }),
 	password: z
 		.string({ message: translations['login.validation.password'] })
 		.trim()

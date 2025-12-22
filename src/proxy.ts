@@ -7,9 +7,13 @@ import {
 	hasPermission,
 	prepareAuthModel,
 } from '@/lib/entities/auth.model';
-import {getTrackedCookie} from "@/lib/helpers/session";
-import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
-import {apiHeaders} from "@/lib/helpers/system";
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/helpers/api';
+import { getTrackedCookie } from '@/lib/helpers/session';
+import { apiHeaders } from '@/lib/helpers/system';
 
 class MiddlewareContext {
 	req: NextRequest;
@@ -205,13 +209,17 @@ class MiddlewareContext {
 
 			const cookieExpireValue = Date.now() + cookieMaxAge * 1000;
 
-			this.res.cookies.set(`${cookieName}-expiration`, String(cookieExpireValue), {
-				httpOnly: true,
-				secure: cfg('app.environment') === 'production',
-				path: '/',
-				sameSite: 'lax',
-				maxAge: cookieMaxAge,
-			});
+			this.res.cookies.set(
+				`${cookieName}-expiration`,
+				String(cookieExpireValue),
+				{
+					httpOnly: true,
+					secure: cfg('app.environment') === 'production',
+					path: '/',
+					sameSite: 'lax',
+					maxAge: cookieMaxAge,
+				},
+			);
 		}
 
 		return this.success();

@@ -8,8 +8,12 @@ import type {
 	FindFunctionType,
 	UpdateFunctionType,
 } from '@/config/data-source';
-import {buildQueryString} from "@/lib/helpers/string";
-import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/helpers/api';
+import { buildQueryString } from '@/lib/helpers/string';
 
 export const findTemplates: FindFunctionType<'templates'> = async (
 	params: FindFunctionParamsType,

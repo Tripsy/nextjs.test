@@ -1,5 +1,8 @@
-import {getObjectValue, ObjectValue, setObjectValue} from "@/lib/helpers/objects.helper";
-
+import {
+	getObjectValue,
+	type ObjectValue,
+	setObjectValue,
+} from '@/lib/helpers/objects.helper';
 
 const settingsConfig: { [key: string]: ObjectValue } = {
 	app: {

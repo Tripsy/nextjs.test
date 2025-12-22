@@ -24,8 +24,8 @@ import {
 	DataSourceConfigUsers,
 	type DataSourceUsersType,
 } from '@/app/(dashboard)/dashboard/users/users.definition';
+import type { ResponseFetch } from '@/lib/helpers/api';
 import type { FormSituationType } from '@/lib/types';
-import {ResponseFetch} from "@/lib/helpers/api";
 
 export type DataSourceType = {
 	cron_history: DataSourceCronHistoryType;

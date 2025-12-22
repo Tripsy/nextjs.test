@@ -1,4 +1,3 @@
-import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type AccountDeleteFormFieldsType,
 	AccountDeleteSchema,
@@ -8,8 +7,9 @@ import {
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
+import { accumulateZodErrors } from '@/lib/helpers/form';
+import { isValidCsrfToken } from '@/lib/helpers/session';
 import { deleteAccount } from '@/lib/services/account.service';
-import {accumulateZodErrors} from "@/lib/helpers/form";
 
 export function accountDeleteFormValues(
 	formData: FormData,
@@ -54,7 +54,7 @@ export async function accountDeleteAction(
 			situation: 'error',
 			errors: accumulateZodErrors<AccountDeleteFormFieldsType>(
 				validated.error,
-			)
+			),
 		};
 	}
 

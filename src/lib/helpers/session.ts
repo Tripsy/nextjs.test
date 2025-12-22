@@ -104,3 +104,13 @@ export async function setupTrackedCookie(
 		options,
 	);
 }
+
+export async function isValidCsrfToken(inputValue: string) {
+	if (!inputValue) {
+		return false;
+	}
+
+	const cookieValue = await getCookie(cfg('csrf.cookieName') as string);
+
+	return cookieValue === inputValue;
+}

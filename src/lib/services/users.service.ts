@@ -8,8 +8,12 @@ import type {
 	UpdateFunctionType,
 } from '@/config/data-source';
 import type { UserPermissionModel } from '@/lib/entities/user-permission.model';
-import {buildQueryString} from "@/lib/helpers/string";
-import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
+import {
+	ApiRequest,
+	getResponseData,
+	type ResponseFetch,
+} from '@/lib/helpers/api';
+import { buildQueryString } from '@/lib/helpers/string';
 
 export const findUsers: FindFunctionType<'users'> = async (
 	params: FindFunctionParamsType,

@@ -3,7 +3,7 @@ import type {
 	DataSourceTableFilter,
 	DataSourceType,
 } from '@/config/data-source';
-import {formatDate} from "@/lib/helpers/date";
+import { formatDate } from '@/lib/helpers/date';
 
 export type MatchModeType = 'contains' | 'equals' | 'dateAfter' | 'dateBefore';
 

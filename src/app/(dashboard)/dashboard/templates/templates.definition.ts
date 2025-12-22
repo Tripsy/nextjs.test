@@ -13,6 +13,8 @@ import {
 	TemplateTypeEnum,
 } from '@/lib/entities/template.model';
 import { LanguageEnum } from '@/lib/entities/user.model';
+import { safeHtml } from '@/lib/helpers/form';
+import { parseJson } from '@/lib/helpers/string';
 import {
 	createTemplate,
 	deleteTemplate,
@@ -20,8 +22,6 @@ import {
 	restoreTemplate,
 	updateTemplate,
 } from '@/lib/services/templates.service';
-import {safeHtml} from "@/lib/helpers/form";
-import {parseJson} from "@/lib/helpers/string";
 
 export type DataTableTemplatesFiltersType = {
 	global: DataTableFilterMetaData;

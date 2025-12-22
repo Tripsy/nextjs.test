@@ -1,5 +1,3 @@
-import { createAuth } from '@/lib/services/auth.service';
-import { isValidCsrfToken } from '@/lib/actions/csrf.action';
 import {
 	type PasswordUpdateFormFieldsType,
 	PasswordUpdateSchema,
@@ -9,8 +7,10 @@ import {
 import { translate } from '@/config/lang';
 import { cfg } from '@/config/settings';
 import { ApiError } from '@/lib/exceptions/api.error';
+import { accumulateZodErrors } from '@/lib/helpers/form';
+import { isValidCsrfToken } from '@/lib/helpers/session';
 import { passwordUpdateAccount } from '@/lib/services/account.service';
-import {accumulateZodErrors} from "@/lib/helpers/form";
+import { createAuth } from '@/lib/services/auth.service';
 
 export function passwordUpdateFormValues(
 	formData: FormData,
@@ -57,7 +57,7 @@ export async function passwordUpdateAction(
 			situation: 'error',
 			errors: accumulateZodErrors<PasswordUpdateFormFieldsType>(
 				validated.error,
-			)
+			),
 		};
 	}
 

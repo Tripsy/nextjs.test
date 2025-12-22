@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 import { cfg } from '@/config/settings';
-import {ResponseFetch} from "@/lib/helpers/api";
-import {getTrackedCookie} from "@/lib/helpers/session";
+import type { ResponseFetch } from '@/lib/helpers/api';
+import { getTrackedCookie } from '@/lib/helpers/session';
 
 type NextResponseCsrf = NextResponse<
 	ResponseFetch<{
@@ -55,13 +55,17 @@ export async function GET(): Promise<NextResponseCsrf> {
 
 		const cookieExpireValue = Date.now() + cookieMaxAge * 1000;
 
-		response.cookies.set(`${cookieName}-expiration`, String(cookieExpireValue), {
-			httpOnly: true,
-			secure: cfg('app.environment') === 'production',
-			path: '/',
-			sameSite: 'lax',
-			maxAge: cookieMaxAge,
-		});
+		response.cookies.set(
+			`${cookieName}-expiration`,
+			String(cookieExpireValue),
+			{
+				httpOnly: true,
+				secure: cfg('app.environment') === 'production',
+				path: '/',
+				sameSite: 'lax',
+				maxAge: cookieMaxAge,
+			},
+		);
 	}
 
 	return response;
