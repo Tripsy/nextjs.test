@@ -1,3 +1,5 @@
+'use server';
+
 import { cookies } from 'next/headers';
 import { cfg } from '@/config/settings';
 
@@ -50,10 +52,6 @@ export type TrackedCookie = {
 	action: 'set' | 'none';
 };
 
-export function getTrackedCookieName(name: string): string {
-	return `${name}-expiration`;
-}
-
 export async function getTrackedCookie(
 	name: string,
 	expireIn: number = 1200,
@@ -72,7 +70,7 @@ export async function getTrackedCookie(
 
 	output.value = cookieValue;
 
-	const cookieExpirationValue = await getCookie(getTrackedCookieName(name));
+	const cookieExpirationValue = await getCookie(`${name}-expiration`);
 	const expirationTime = cookieExpirationValue
 		? Number(cookieExpirationValue)
 		: 0;
@@ -101,7 +99,7 @@ export async function setupTrackedCookie(
 	const expirationTime = Date.now() + options.maxAge * 1000;
 
 	await setCookie(
-		getTrackedCookieName(cookie.name),
+		`${cookie.name}-expiration`,
 		expirationTime.toString(),
 		options,
 	);

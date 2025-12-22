@@ -7,7 +7,7 @@ import {
 	hasPermission,
 	prepareAuthModel,
 } from '@/lib/entities/auth.model';
-import {getTrackedCookie, getTrackedCookieName} from "@/lib/helpers/session";
+import {getTrackedCookie} from "@/lib/helpers/session";
 import {ApiRequest, getResponseData, ResponseFetch} from "@/lib/helpers/api";
 import {apiHeaders} from "@/lib/helpers/system";
 
@@ -205,17 +205,13 @@ class MiddlewareContext {
 
 			const cookieExpireValue = Date.now() + cookieMaxAge * 1000;
 
-			this.res.cookies.set(
-				getTrackedCookieName(cookieName),
-				String(cookieExpireValue),
-				{
-					httpOnly: true,
-					secure: cfg('app.environment') === 'production',
-					path: '/',
-					sameSite: 'lax',
-					maxAge: cookieMaxAge,
-				},
-			);
+			this.res.cookies.set(`${cookieName}-expiration`, String(cookieExpireValue), {
+				httpOnly: true,
+				secure: cfg('app.environment') === 'production',
+				path: '/',
+				sameSite: 'lax',
+				maxAge: cookieMaxAge,
+			});
 		}
 
 		return this.success();
