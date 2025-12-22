@@ -11,7 +11,6 @@ import {
 	FormFiltersSelect,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import type { DataTableCronHistoryFiltersType } from '@/app/(dashboard)/dashboard/cron-history/cron-history.definition';
 import { CronHistoryStatusEnum } from '@/lib/entities/cron-history.model';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
 import { capitalizeFirstLetter } from '@/lib/helpers/string';
@@ -42,7 +41,7 @@ export const DataTableCronHistoryFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableCronHistoryFiltersType>) => {
+		(newFilters: Partial<typeof DataTableCronHistoryFilters>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});

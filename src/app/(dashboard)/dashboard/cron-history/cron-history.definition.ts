@@ -1,4 +1,3 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
@@ -8,13 +7,6 @@ import {
 	findCronHistory,
 } from '@/lib/services/cron-history.service';
 
-export type DataTableCronHistoryFiltersType = {
-	global: DataTableFilterMetaData;
-	status: DataTableFilterMetaData;
-	start_date_start: DataTableFilterMetaData;
-	start_date_end: DataTableFilterMetaData;
-};
-
 const translations = await translateBatch([
 	'cron_history.data_table.column_id',
 	'cron_history.data_table.column_label',
@@ -22,15 +14,6 @@ const translations = await translateBatch([
 	'cron_history.data_table.column_status',
 	'cron_history.data_table.column_run_time',
 ]);
-
-function displayActionEntriesCronHistory(entries: CronHistoryModel[]) {
-	return entries.map((entry) => ({ id: entry.id, label: entry.label }));
-}
-
-export type DataSourceCronHistoryType = {
-	tableFilter: DataTableCronHistoryFiltersType;
-	model: CronHistoryModel;
-};
 
 const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 	{
@@ -78,11 +61,16 @@ const DataTableColumnsCronHistory: DataTableColumnType<CronHistoryModel>[] = [
 	},
 ];
 
-const DataTableCronHistoryFilters: DataTableCronHistoryFiltersType = {
+const DataTableCronHistoryFilters = {
 	global: { value: null, matchMode: 'contains' },
 	status: { value: null, matchMode: 'equals' },
 	start_date_start: { value: null, matchMode: 'equals' },
 	start_date_end: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourceCronHistoryType = {
+	tableFilter: typeof DataTableCronHistoryFilters;
+	model: CronHistoryModel;
 };
 
 export const DataSourceConfigCronHistory = {
@@ -97,7 +85,12 @@ export const DataSourceConfigCronHistory = {
 	dataTableColumns: DataTableColumnsCronHistory,
 	functions: {
 		find: findCronHistory,
-		displayActionEntries: displayActionEntriesCronHistory,
+		displayActionEntries: (entries: CronHistoryModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: entry.label,
+			}));
+		},
 	},
 	actions: {
 		delete: {

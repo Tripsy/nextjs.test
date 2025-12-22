@@ -1,0 +1,48 @@
+'use client';
+
+import { type JSX, useMemo } from 'react';
+import { Loading } from '@/app/_components/loading.component';
+import { useMounted, useTranslation } from '@/app/_hooks';
+import { DataTableActions } from '@/app/(dashboard)/_components/data-table-actions.component';
+import DataTableList from '@/app/(dashboard)/_components/data-table-list.component';
+import { DataTableModal } from '@/app/(dashboard)/_components/data-table-modal.component';
+import { DataTableProvider } from '@/app/(dashboard)/_providers/data-table-provider';
+import { createModelStore } from '@/app/(dashboard)/_stores/model.store';
+import { DataTableLogHistoryFilters } from '@/app/(dashboard)/dashboard/log-history/data-table-log-history-filters.component';
+import { ViewLogHistory } from '@/app/(dashboard)/dashboard/log-history/view-log-history.component';
+
+const modelStore = createModelStore('log_history');
+
+export const DataTableLogHistory = (): JSX.Element => {
+	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+
+	const { translations } = useTranslation(translationsKeys);
+	const isMounted = useMounted();
+
+	if (!isMounted) {
+		return <Loading text={translations['app.text.loading']} />;
+	}
+
+	return (
+		<DataTableProvider
+			dataSource="log_history"
+			selectionMode="multiple"
+			modelStore={modelStore}
+		>
+			<div className="standard-box p-4 shadow-md">
+				<DataTableLogHistoryFilters />
+				<DataTableActions />
+				<DataTableList dataKey="id" scrollHeight="400px" />
+			</div>
+
+			<DataTableModal<'log_history'>
+				modals={{
+					view: <ViewLogHistory />,
+				}}
+				modalClass={{
+					view: 'max-w-3xl!',
+				}}
+			/>
+		</DataTableProvider>
+	);
+};

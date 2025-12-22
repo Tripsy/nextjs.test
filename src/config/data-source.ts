@@ -1,5 +1,6 @@
 import type React from 'react';
 import type { ValidationReturnType } from '@/app/_hooks';
+// Data source imports
 import {
 	DataSourceConfigCronHistory,
 	type DataSourceCronHistoryType,
@@ -8,6 +9,10 @@ import {
 	DataSourceConfigLogData,
 	type DataSourceLogDataType,
 } from '@/app/(dashboard)/dashboard/log-data/log-data.definition';
+import {
+	DataSourceConfigLogHistory,
+	type DataSourceLogHistoryType,
+} from '@/app/(dashboard)/dashboard/log-history/log-history.definition';
 import {
 	DataSourceConfigMailQueue,
 	type DataSourceMailQueueType,
@@ -27,25 +32,42 @@ import {
 import type { ResponseFetch } from '@/lib/helpers/api';
 import type { FormSituationType } from '@/lib/types';
 
+// ============================================================================
+// Core Types
+// ============================================================================
+
 export type DataSourceType = {
 	cron_history: DataSourceCronHistoryType;
 	log_data: DataSourceLogDataType;
+	log_history: DataSourceLogHistoryType;
 	mail_queue: DataSourceMailQueueType;
 	permissions: DataSourcePermissionsType;
 	templates: DataSourceTemplatesType;
 	users: DataSourceUsersType;
 };
 
-export type DataSourceModel<K extends keyof DataSourceType> =
+export type DataSourceKey = keyof DataSourceType;
+
+// ============================================================================
+// Utility Types
+// ============================================================================
+
+export type DataSourceModel<K extends DataSourceKey> =
 	DataSourceType[K]['model'];
-export type DataSourceFormValues<K extends keyof DataSourceType> =
+
+export type DataSourceFormValues<K extends DataSourceKey> =
 	DataSourceType[K] extends { formValues: infer F }
 		? F extends Record<string, unknown>
 			? F
 			: Record<string, unknown>
 		: Record<string, unknown>;
-export type DataSourceTableFilter<K extends keyof DataSourceType> =
+
+export type DataSourceTableFilter<K extends DataSourceKey> =
 	DataSourceType[K]['tableFilter'];
+
+// ============================================================================
+// API Function Types
+// ============================================================================
 
 export type FindFunctionParamsType = {
 	order_by?: string;
@@ -55,7 +77,7 @@ export type FindFunctionParamsType = {
 	filter?: string;
 };
 
-export type FindFunctionResponseType<K extends keyof DataSourceType> = {
+export type FindFunctionResponseType<K extends DataSourceKey> = {
 	entries: DataSourceModel<K>[];
 	pagination: {
 		page: number;
@@ -64,15 +86,15 @@ export type FindFunctionResponseType<K extends keyof DataSourceType> = {
 	};
 };
 
-export type FindFunctionType<K extends keyof DataSourceType> = (
+export type FindFunctionType<K extends DataSourceKey> = (
 	params: FindFunctionParamsType,
 ) => Promise<FindFunctionResponseType<K> | undefined>;
 
-export type CreateFunctionType<K extends keyof DataSourceType> = (
+export type CreateFunctionType<K extends DataSourceKey> = (
 	data: DataSourceFormValues<K>,
 ) => Promise<ResponseFetch<Partial<DataSourceModel<K>>>>;
 
-export type UpdateFunctionType<K extends keyof DataSourceType> = (
+export type UpdateFunctionType<K extends DataSourceKey> = (
 	data: DataSourceFormValues<K>,
 	id: number,
 ) => Promise<ResponseFetch<Partial<DataSourceModel<K>>>>;
@@ -80,6 +102,10 @@ export type UpdateFunctionType<K extends keyof DataSourceType> = (
 export type DeleteFunctionType = (
 	ids: number[],
 ) => Promise<ResponseFetch<null>>;
+
+// ============================================================================
+// DataTable Types
+// ============================================================================
 
 export type DataTableStateType<Filter> = {
 	reloadTrigger: number; // Flag used to reload the data table entries
@@ -103,31 +129,34 @@ export type DataTableColumnType<Model> = {
 
 export type DataTableSelectionModeType = 'checkbox' | 'multiple' | null;
 
-/**
- * `type` type of action (view, create, update, delete)
- * `permission` required to perform action (e.g.: `user.create`)
- * `allowedEntries`
- *      free ~ not dependent on selected entries,
- *      single ~ only one entry allowed,
- *      multiple ~ multiple entries allowed
- * `position` where to display action button (left, right, hidden)
- * `function` function to perform action
- * `button` action button configuration
- */
-export type DataTableActionConfigType<F, K extends keyof DataSourceType> = {
-	type?: 'view' | 'create' | 'update' | 'delete';
-	mode: 'form' | 'action' | 'other';
+export type DataTablePropsType = {
+	dataKey: string;
+	scrollHeight?: string;
+};
+
+// ============================================================================
+// Action Types
+// ============================================================================
+
+export type DataTableActionType = 'view' | 'create' | 'update' | 'delete';
+export type DataTableActionMode = 'form' | 'action' | 'other';
+export type DataTableEntryRequirement = 'free' | 'single' | 'multiple';
+export type DataTableActionPosition = 'left' | 'right' | 'hidden';
+
+export type DataTableActionConfigType<F, K extends DataSourceKey> = {
+	type?: DataTableActionType;
+	mode: DataTableActionMode;
 	permission: string;
-	allowedEntries: 'free' | 'single' | 'multiple';
+	allowedEntries: DataTableEntryRequirement;
 	customEntryCheck?: (entry: DataSourceModel<K>) => boolean;
-	position: 'left' | 'right' | 'hidden';
+	position: DataTableActionPosition;
 	function?: F;
 	button?: {
 		className: string;
 	};
 };
 
-export type DataTableActionsType<K extends keyof DataSourceType> = {
+export type DataTableActionsType<K extends DataSourceKey> = {
 	[key: string]: DataTableActionConfigType<unknown, K>;
 } & {
 	create?: DataTableActionConfigType<CreateFunctionType<K>, K>;
@@ -135,7 +164,11 @@ export type DataTableActionsType<K extends keyof DataSourceType> = {
 	delete?: DataTableActionConfigType<DeleteFunctionType, K>;
 };
 
-export type FormManageType<K extends keyof DataSourceType> = {
+// ============================================================================
+// Form Types
+// ============================================================================
+
+export type FormManageType<K extends DataSourceKey> = {
 	actionName: 'create' | 'update';
 	formValues: DataSourceFormValues<K>;
 	errors: Partial<Record<keyof DataSourceFormValues<K>, string[]>>;
@@ -146,7 +179,7 @@ export type FormManageType<K extends keyof DataSourceType> = {
 	pending: boolean;
 };
 
-export type FormStateType<K extends keyof DataSourceType> = {
+export type FormStateType<K extends DataSourceKey> = {
 	dataSource: K;
 	id?: number;
 	values: DataSourceFormValues<K>;
@@ -156,14 +189,18 @@ export type FormStateType<K extends keyof DataSourceType> = {
 	resultData?: Partial<DataSourceModel<K>>;
 };
 
-export type ValidateFormFunctionType<K extends keyof DataSourceType> = (
+export type ValidateFormFunctionType<K extends DataSourceKey> = (
 	values: DataSourceFormValues<K>,
 	id?: number,
 ) => ValidationReturnType<DataSourceFormValues<K>>;
 
-export type DataSourceConfigType<K extends keyof DataSourceType> = {
+// ============================================================================
+// Configuration Types
+// ============================================================================
+
+export type DataSourceConfigType<K extends DataSourceKey> = {
 	dataTableState: DataTableStateType<DataSourceTableFilter<K>>;
-	dataTableColumns: DataTableColumnType<DataSourceModel<K>>[]; // Fixed this line
+	dataTableColumns: DataTableColumnType<DataSourceModel<K>>[];
 	formState?: FormStateType<K>;
 	functions: {
 		find: FindFunctionType<K>;
@@ -171,7 +208,7 @@ export type DataSourceConfigType<K extends keyof DataSourceType> = {
 		onRowUnselect?: (entry: DataSourceModel<K>) => void;
 		displayActionEntries?: (
 			entries: DataSourceModel<K>[],
-		) => { id: number; label: string }[];
+		) => Array<{ id: number; label: string }>;
 	} & (DataSourceFormValues<K> extends never
 		? object
 		: {
@@ -185,24 +222,28 @@ export type DataSourceConfigType<K extends keyof DataSourceType> = {
 	actions?: DataTableActionsType<K>;
 };
 
+// ============================================================================
+// Configuration Registry
+// ============================================================================
+
 export const DataSourceConfig: {
-	[K in keyof DataSourceType]: DataSourceConfigType<K>;
+	[K in DataSourceKey]: DataSourceConfigType<K>;
 } = {
 	cron_history: DataSourceConfigCronHistory,
 	log_data: DataSourceConfigLogData,
+	log_history: DataSourceConfigLogHistory,
 	mail_queue: DataSourceConfigMailQueue,
 	permissions: DataSourceConfigPermissions,
 	templates: DataSourceConfigTemplates,
 	users: DataSourceConfigUsers,
 };
 
-export type DataTablePropsType = {
-	dataKey: string;
-	scrollHeight?: string;
-};
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 export function getDataSourceConfig<
-	K extends keyof DataSourceType,
+	K extends DataSourceKey,
 	P extends keyof DataSourceConfigType<K>,
 >(dataSource: K, prop: P): DataSourceConfigType<K>[P] {
 	return DataSourceConfig[dataSource][prop];

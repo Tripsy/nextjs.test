@@ -1,4 +1,3 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
 import type {
 	DataSourceType,
@@ -14,11 +13,6 @@ import {
 	restorePermissions,
 	updatePermissions,
 } from '@/lib/services/permissions.service';
-
-export type DataTablePermissionsFiltersType = {
-	global: DataTableFilterMetaData;
-	is_deleted: DataTableFilterMetaData;
-};
 
 const translations = await translateBatch([
 	'permissions.validation.entity_invalid',
@@ -36,53 +30,6 @@ const ValidateSchemaBasePermissions = z.object({
 		message: translations['permissions.validation.operation_invalid'],
 	}),
 });
-
-function validateFormPermissions(
-	values: DataSourceType['permissions']['formValues'],
-) {
-	return ValidateSchemaBasePermissions.safeParse(values);
-}
-
-function getFormValuesPermissions(
-	formData: FormData,
-): DataSourceType['permissions']['formValues'] {
-	return {
-		entity: formData.get('entity') as string,
-		operation: formData.get('operation') as string,
-	};
-}
-
-function syncFormStatePermissions(
-	state: FormStateType<'permissions'>,
-	model: PermissionModel,
-): FormStateType<'permissions'> {
-	return {
-		...state,
-		id: model.id,
-		values: {
-			...state.values,
-			entity: model.entity,
-			operation: model.operation,
-		},
-	};
-}
-
-function displayActionEntriesPermissions(entries: PermissionModel[]) {
-	return entries.map((entry) => ({
-		id: entry.id,
-		label: `${entry.entity}.${entry.operation}`,
-	}));
-}
-
-export type DataSourcePermissionsType = {
-	tableFilter: DataTablePermissionsFiltersType;
-	model: PermissionModel;
-	formState: FormStateType<'permissions'>;
-	formValues: {
-		entity: string;
-		operation: string;
-	};
-};
 
 const DataTableColumnsPermissions: DataTableColumnType<PermissionModel>[] = [
 	{
@@ -102,9 +49,19 @@ const DataTableColumnsPermissions: DataTableColumnType<PermissionModel>[] = [
 	},
 ];
 
-const DataTablePermissionsFilters: DataTablePermissionsFiltersType = {
+const DataTablePermissionsFilters = {
 	global: { value: null, matchMode: 'contains' },
 	is_deleted: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourcePermissionsType = {
+	tableFilter: typeof DataTablePermissionsFilters;
+	model: PermissionModel;
+	formState: FormStateType<'permissions'>;
+	formValues: {
+		entity: string;
+		operation: string;
+	};
 };
 
 export const DataSourceConfigPermissions = {
@@ -130,10 +87,37 @@ export const DataSourceConfigPermissions = {
 	},
 	functions: {
 		find: findPermissions,
-		getFormValues: getFormValuesPermissions,
-		validateForm: validateFormPermissions,
-		syncFormState: syncFormStatePermissions,
-		displayActionEntries: displayActionEntriesPermissions,
+		getFormValues: (
+			formData: FormData,
+		): DataSourceType['permissions']['formValues'] => {
+			return {
+				entity: formData.get('entity') as string,
+				operation: formData.get('operation') as string,
+			};
+		},
+		validateForm: (values: DataSourceType['permissions']['formValues']) => {
+			return ValidateSchemaBasePermissions.safeParse(values);
+		},
+		syncFormState: (
+			state: FormStateType<'permissions'>,
+			model: PermissionModel,
+		): FormStateType<'permissions'> => {
+			return {
+				...state,
+				id: model.id,
+				values: {
+					...state.values,
+					entity: model.entity,
+					operation: model.operation,
+				},
+			};
+		},
+		displayActionEntries: (entries: PermissionModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: `${entry.entity}.${entry.operation}`,
+			}));
+		},
 	},
 	actions: {
 		create: {
@@ -161,7 +145,7 @@ export const DataSourceConfigPermissions = {
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
-			customEntryCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: PermissionModel) => !entry.deleted_at, // Return true if the entry is not deleted
 			function: deletePermissions,
 			button: {
 				className: 'btn btn-action-delete',
@@ -172,7 +156,7 @@ export const DataSourceConfigPermissions = {
 			permission: 'permission.delete',
 			allowedEntries: 'single' as const,
 			position: 'left' as const,
-			customEntryCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: PermissionModel) => !!entry.deleted_at, // Return true if the entry is deleted
 			function: restorePermissions,
 			button: {
 				className: 'btn btn-action-restore',

@@ -10,7 +10,6 @@ import {
 	FormFiltersShowDeleted,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import type { DataTablePermissionsFiltersType } from '@/app/(dashboard)/dashboard/permissions/permissions.definition';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
 
 export const DataTablePermissionsFilters = (): React.JSX.Element => {
@@ -30,7 +29,7 @@ export const DataTablePermissionsFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTablePermissionsFiltersType>) => {
+		(newFilters: Partial<typeof DataTablePermissionsFilters>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});
@@ -86,7 +85,7 @@ export const DataTablePermissionsFilters = (): React.JSX.Element => {
 			/>
 
 			<FormFiltersShowDeleted
-				is_deleted={filters.is_deleted?.value}
+				is_deleted={filters.is_deleted?.value || false}
 				handleCheckboxChange={handleCheckboxChange}
 			/>
 

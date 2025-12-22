@@ -9,32 +9,30 @@ import {
 	FormFiltersReset,
 	FormFiltersSearch,
 	FormFiltersSelect,
-	FormFiltersShowDeleted,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import { UserRoleEnum, UserStatusEnum } from '@/lib/entities/user.model';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
 import { capitalizeFirstLetter } from '@/lib/helpers/string';
 
-const statuses = Object.values(UserStatusEnum).map((v) => ({
+const logLevels = Object.values(LogLevelEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
 
-const roles = Object.values(UserRoleEnum).map((v) => ({
+const logCategories = Object.values(LogCategoryEnum).map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
 
-export const DataTableUsersFilters = (): React.JSX.Element => {
-	const { stateDefault, modelStore } = useDataTable<'users'>();
+export const DataTableLogHistoryFilters = (): React.JSX.Element => {
+	const { stateDefault, modelStore } = useDataTable<'log_history'>();
 
 	const translationsKeys = useMemo(
 		() => [
-			'users.form_filters.label_global',
-			'users.form_filters.label_status',
-			'users.form_filters.label_role',
-			'users.form_filters.label_create_date',
+			'log_history.form_filters.label_global',
+			'log_history.form_filters.label_category',
+			'log_history.form_filters.label_level',
+			'log_history.form_filters.label_created_at',
 		],
 		[],
 	);
@@ -48,7 +46,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<typeof DataTableUsersFilters>) => {
+		(newFilters: Partial<typeof DataTableLogHistoryFilters>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});
@@ -57,16 +55,12 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	);
 
 	const handlers = useMemo(
-		() => createFilterHandlers<'users'>(updateFilters),
+		() => createFilterHandlers<'log_history'>(updateFilters),
 		[updateFilters],
 	);
 
-	const {
-		handleInputChange,
-		handleSelectChange,
-		handleCheckboxChange,
-		handleDateChange,
-	} = handlers;
+	const { handleInputChange, handleSelectChange, handleDateChange } =
+		handlers;
 
 	const searchGlobal = useSearchFilter({
 		initialValue: filters.global?.value ?? '',
@@ -97,34 +91,45 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 				handleFilterReset as EventListener,
 			);
 		};
-	}, [searchGlobal, stateDefault.filters, updateTableState]);
+	}, [
+		searchGlobal,
+		searchGlobal.onReset,
+		stateDefault.filters,
+		updateTableState,
+	]);
 
 	return (
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
-				labelText={translations['users.form_filters.label_global']}
+				labelText={
+					translations['log_history.form_filters.label_global']
+				}
 				fieldName="global"
 				search={searchGlobal}
 			/>
 
 			<FormFiltersSelect
-				labelText={translations['users.form_filters.label_status']}
-				fieldName="status"
-				fieldValue={filters.status.value}
-				selectOptions={statuses}
+				labelText={
+					translations['log_history.form_filters.label_category']
+				}
+				fieldName="category"
+				fieldValue={filters.category.value}
+				selectOptions={logCategories}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersSelect
-				labelText={translations['users.form_filters.label_role']}
-				fieldName="role"
-				fieldValue={filters.role.value}
-				selectOptions={roles}
+				labelText={translations['log_history.form_filters.label_level']}
+				fieldName="level"
+				fieldValue={filters.level.value}
+				selectOptions={logLevels}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersDateRange
-				labelText={translations['users.form_filters.label_create_date']}
+				labelText={
+					translations['log_history.form_filters.label_created_at']
+				}
 				startDateField="create_date_start"
 				startDateValue={filters.create_date_start?.value ?? ''}
 				endDateField="create_date_end"
@@ -132,12 +137,7 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 				handleDateChange={handleDateChange}
 			/>
 
-			<FormFiltersShowDeleted
-				is_deleted={filters.is_deleted?.value || false}
-				handleCheckboxChange={handleCheckboxChange}
-			/>
-
-			<FormFiltersReset source="DataTableUsersFilters" />
+			<FormFiltersReset source="DataTableLogHistoryFilters" />
 		</div>
 	);
 };

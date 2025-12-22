@@ -1,4 +1,3 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type {
@@ -24,15 +23,6 @@ import {
 	restoreUser,
 	updateUser,
 } from '@/lib/services/users.service';
-
-export type DataTableUsersFiltersType = {
-	global: DataTableFilterMetaData;
-	role: DataTableFilterMetaData;
-	status: DataTableFilterMetaData;
-	create_date_start: DataTableFilterMetaData;
-	create_date_end: DataTableFilterMetaData;
-	is_deleted: DataTableFilterMetaData;
-};
 
 const translations = await translateBatch([
 	'users.validation.name_invalid',
@@ -218,17 +208,6 @@ const ValidateSchemaUpdateUsers = ValidateSchemaBaseUsers.extend({
 		}
 	});
 
-function validateFormUsers(
-	values: DataSourceType['users']['formValues'],
-	id?: number,
-) {
-	if (id) {
-		return ValidateSchemaUpdateUsers.safeParse(values);
-	}
-
-	return ValidateSchemaCreateUsers.safeParse(values);
-}
-
 function getFormValuesUsers(
 	formData: FormData,
 ): DataSourceType['users']['formValues'] {
@@ -259,43 +238,6 @@ function getFormValuesUsers(
 				: null,
 	};
 }
-
-function syncFormStateUsers(
-	state: FormStateType<'users'>,
-	model: UserModel,
-): FormStateType<'users'> {
-	return {
-		...state,
-		id: model.id,
-		values: {
-			...state.values,
-			name: model.name,
-			email: model.email,
-			language: model.language,
-			role: model.role,
-			operator_type: model.operator_type,
-		},
-	};
-}
-
-function displayActionEntriesUsers(entries: UserModel[]) {
-	return entries.map((entry) => ({ id: entry.id, label: entry.name }));
-}
-
-export type DataSourceUsersType = {
-	tableFilter: DataTableUsersFiltersType;
-	model: UserModel;
-	formState: FormStateType<'users'>;
-	formValues: {
-		name: string;
-		email: string;
-		password?: string;
-		password_confirm?: string;
-		language: LanguageEnum;
-		role: UserRoleEnum;
-		operator_type: UserOperatorTypeEnum | null;
-	};
-};
 
 const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	{
@@ -370,13 +312,28 @@ const DataTableColumnsUsers: DataTableColumnType<UserModel>[] = [
 	},
 ];
 
-const DataTableUsersFilters: DataTableUsersFiltersType = {
+const DataTableUsersFilters = {
 	global: { value: null, matchMode: 'contains' },
 	role: { value: null, matchMode: 'equals' },
 	status: { value: null, matchMode: 'equals' },
 	create_date_start: { value: null, matchMode: 'equals' },
 	create_date_end: { value: null, matchMode: 'equals' },
 	is_deleted: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourceUsersType = {
+	tableFilter: typeof DataTableUsersFilters;
+	model: UserModel;
+	formState: FormStateType<'users'>;
+	formValues: {
+		name: string;
+		email: string;
+		password?: string;
+		password_confirm?: string;
+		language: LanguageEnum;
+		role: UserRoleEnum;
+		operator_type: UserOperatorTypeEnum | null;
+	};
 };
 
 export const DataSourceConfigUsers = {
@@ -410,9 +367,39 @@ export const DataSourceConfigUsers = {
 		// onRowSelect: (entry: UserModel) => console.log('selected', entry),
 		// onRowUnselect: (entry: UserModel) => console.log('unselected', entry),
 		getFormValues: getFormValuesUsers,
-		validateForm: validateFormUsers,
-		syncFormState: syncFormStateUsers,
-		displayActionEntries: displayActionEntriesUsers,
+		validateForm: (
+			values: DataSourceType['users']['formValues'],
+			id?: number,
+		) => {
+			if (id) {
+				return ValidateSchemaUpdateUsers.safeParse(values);
+			}
+
+			return ValidateSchemaCreateUsers.safeParse(values);
+		},
+		syncFormState: (
+			state: FormStateType<'users'>,
+			model: UserModel,
+		): FormStateType<'users'> => {
+			return {
+				...state,
+				id: model.id,
+				values: {
+					...state.values,
+					name: model.name,
+					email: model.email,
+					language: model.language,
+					role: model.role,
+					operator_type: model.operator_type,
+				},
+			};
+		},
+		displayActionEntries: (entries: UserModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: entry.name,
+			}));
+		},
 	},
 	actions: {
 		create: {

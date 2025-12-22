@@ -1,4 +1,3 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
@@ -9,15 +8,6 @@ import {
 	findMailQueue,
 } from '@/lib/services/mail-queue.service';
 
-export type DataTableMailQueueFiltersType = {
-	status: DataTableFilterMetaData;
-	template: DataTableFilterMetaData;
-	content: DataTableFilterMetaData;
-	to: DataTableFilterMetaData;
-	sent_date_start: DataTableFilterMetaData;
-	sent_date_end: DataTableFilterMetaData;
-};
-
 const translations = await translateBatch([
 	'mail_queue.data_table.column_id',
 	'mail_queue.data_table.column_template',
@@ -25,18 +15,6 @@ const translations = await translateBatch([
 	'mail_queue.data_table.column_status',
 	'mail_queue.data_table.column_sent_at',
 ]);
-
-function displayActionEntriesMailQueue(entries: MailQueueModel[]) {
-	return entries.map((entry) => ({
-		id: entry.id,
-		label: formatDate(entry.sent_at) || '',
-	}));
-}
-
-export type DataSourceMailQueueType = {
-	tableFilter: DataTableMailQueueFiltersType;
-	model: MailQueueModel;
-};
 
 const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	{
@@ -95,13 +73,18 @@ const DataTableColumnsMailQueue: DataTableColumnType<MailQueueModel>[] = [
 	},
 ];
 
-const DataTableMailQueueFilters: DataTableMailQueueFiltersType = {
+const DataTableMailQueueFilters = {
 	status: { value: null, matchMode: 'equals' },
 	template: { value: null, matchMode: 'contains' },
 	content: { value: null, matchMode: 'contains' },
 	to: { value: null, matchMode: 'contains' },
 	sent_date_start: { value: null, matchMode: 'equals' },
 	sent_date_end: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourceMailQueueType = {
+	tableFilter: typeof DataTableMailQueueFilters;
+	model: MailQueueModel;
 };
 
 export const DataSourceConfigMailQueue = {
@@ -116,7 +99,12 @@ export const DataSourceConfigMailQueue = {
 	dataTableColumns: DataTableColumnsMailQueue,
 	functions: {
 		find: findMailQueue,
-		displayActionEntries: displayActionEntriesMailQueue,
+		displayActionEntries: (entries: MailQueueModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: formatDate(entry.sent_at) || '',
+			}));
+		},
 	},
 	actions: {
 		delete: {

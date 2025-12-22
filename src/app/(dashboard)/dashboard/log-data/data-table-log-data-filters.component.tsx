@@ -11,7 +11,6 @@ import {
 	FormFiltersSelect,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import type { DataTableLogDataFiltersType } from '@/app/(dashboard)/dashboard/log-data/log-data.definition';
 import { LogCategoryEnum, LogLevelEnum } from '@/lib/entities/log-data.model';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
 import { capitalizeFirstLetter } from '@/lib/helpers/string';
@@ -48,7 +47,7 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableLogDataFiltersType>) => {
+		(newFilters: Partial<typeof DataTableLogDataFilters>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});

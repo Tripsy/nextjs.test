@@ -13,3 +13,4 @@
 4. Add `cars.json` to `src/locales/[language]`
 5. Update `Routes.group('dashboard')` in `src/config/routes.ts`
 6. Create `lib/services/cars.service.ts` from `lib/services/users.service.ts`
+7. Update `src/app/(dashboard)/_components/side-menu.component.tsx`

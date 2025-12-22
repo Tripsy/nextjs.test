@@ -41,7 +41,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType>({
 }: {
 	labelText: string;
 	fieldName: string;
-	fieldValue: string | number;
+	fieldValue: string | number | null;
 	selectOptions: OptionsType;
 	handleSelectChange: HandleSelectChangeType<K>;
 }) {

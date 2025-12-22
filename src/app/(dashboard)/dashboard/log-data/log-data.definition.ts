@@ -1,17 +1,8 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
 import type { LogDataModel } from '@/lib/entities/log-data.model';
 import { deleteLogData, findLogData } from '@/lib/services/log-data.service';
-
-export type DataTableLogDataFiltersType = {
-	global: DataTableFilterMetaData;
-	level: DataTableFilterMetaData;
-	category: DataTableFilterMetaData;
-	create_date_start: DataTableFilterMetaData;
-	create_date_end: DataTableFilterMetaData;
-};
 
 const translations = await translateBatch([
 	'log_data.data_table.column_id',
@@ -20,15 +11,6 @@ const translations = await translateBatch([
 	'log_data.data_table.column_message',
 	'log_data.data_table.column_created_at',
 ]);
-
-function displayActionEntriesLogData(entries: LogDataModel[]) {
-	return entries.map((entry) => ({ id: entry.id, label: entry.pid }));
-}
-
-export type DataSourceLogDataType = {
-	tableFilter: DataTableLogDataFiltersType;
-	model: LogDataModel;
-};
 
 const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 	{
@@ -77,12 +59,17 @@ const DataTableColumnsLogData: DataTableColumnType<LogDataModel>[] = [
 	},
 ];
 
-const DataTableLogDataFilters: DataTableLogDataFiltersType = {
+const DataTableLogDataFilters = {
 	global: { value: null, matchMode: 'contains' },
 	level: { value: null, matchMode: 'equals' },
 	category: { value: null, matchMode: 'equals' },
 	create_date_start: { value: null, matchMode: 'equals' },
 	create_date_end: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourceLogDataType = {
+	tableFilter: typeof DataTableLogDataFilters;
+	model: LogDataModel;
 };
 
 export const DataSourceConfigLogData = {
@@ -97,7 +84,12 @@ export const DataSourceConfigLogData = {
 	dataTableColumns: DataTableColumnsLogData,
 	functions: {
 		find: findLogData,
-		displayActionEntries: displayActionEntriesLogData,
+		displayActionEntries: (entries: LogDataModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: entry.pid,
+			}));
+		},
 	},
 	actions: {
 		delete: {

@@ -1,4 +1,3 @@
-import type { DataTableFilterMetaData } from 'primereact/datatable';
 import { z } from 'zod';
 import type { ValidationReturnType } from '@/app/_hooks';
 import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
@@ -22,13 +21,6 @@ import {
 	restoreTemplate,
 	updateTemplate,
 } from '@/lib/services/templates.service';
-
-export type DataTableTemplatesFiltersType = {
-	global: DataTableFilterMetaData;
-	language: DataTableFilterMetaData;
-	type: DataTableFilterMetaData;
-	is_deleted: DataTableFilterMetaData;
-};
 
 const translations = await translateBatch([
 	'templates.validation.label_invalid',
@@ -113,13 +105,21 @@ export const ValidateSchemaTemplates = z.union([
 	ValidateSchemaPageTemplates,
 ]);
 
-function validateFormTemplates(
-	values: TemplateFormValues,
-): ValidationReturnType<TemplateFormValues> {
-	return ValidateSchemaTemplates.safeParse(
-		values,
-	) as ValidationReturnType<TemplateFormValues>;
-}
+type TemplateFormEmail = {
+	label: string;
+	language: LanguageEnum;
+	type: TemplateTypeEnum.EMAIL;
+	content: TemplateContentEmailType;
+};
+
+type TemplateFormPage = {
+	label: string;
+	language: LanguageEnum;
+	type: TemplateTypeEnum.PAGE;
+	content: TemplateContentPageType;
+};
+
+export type TemplateFormValues = TemplateFormEmail | TemplateFormPage;
 
 export function getFormValuesTemplates(formData: FormData): TemplateFormValues {
 	const language = formData.get('language');
@@ -128,7 +128,7 @@ export function getFormValuesTemplates(formData: FormData): TemplateFormValues {
 	const type = formData.get('type');
 	const validTypes = Object.values(TemplateTypeEnum);
 
-	// fallback-safe values
+	// Fallback-safe values
 	const selectedLanguage = validLanguages.includes(language as LanguageEnum)
 		? (language as LanguageEnum)
 		: LanguageEnum.EN;
@@ -167,53 +167,6 @@ export function getFormValuesTemplates(formData: FormData): TemplateFormValues {
 		},
 	};
 }
-
-function syncFormStateTemplates(
-	state: FormStateType<'templates'>,
-	model: TemplateModel,
-): FormStateType<'templates'> {
-	return {
-		...state,
-		id: model.id,
-		values: {
-			...state.values,
-			label: model.label,
-			language: model.language,
-			type: model.type,
-			content: parseJson(model.content),
-		},
-	};
-}
-
-function displayActionEntriesTemplates(entries: TemplateModel[]) {
-	return entries.map((entry) => ({
-		id: entry.id,
-		label: `(${entry.type}) ${entry.label}`,
-	}));
-}
-
-type TemplateFormEmail = {
-	label: string;
-	language: LanguageEnum;
-	type: TemplateTypeEnum.EMAIL;
-	content: TemplateContentEmailType;
-};
-
-type TemplateFormPage = {
-	label: string;
-	language: LanguageEnum;
-	type: TemplateTypeEnum.PAGE;
-	content: TemplateContentPageType;
-};
-
-export type TemplateFormValues = TemplateFormEmail | TemplateFormPage;
-
-export type DataSourceTemplatesType = {
-	tableFilter: DataTableTemplatesFiltersType;
-	model: TemplateModel;
-	formState: FormStateType<'templates'>;
-	formValues: TemplateFormValues;
-};
 
 const DataTableColumnsTemplates: DataTableColumnType<TemplateModel>[] = [
 	{
@@ -257,11 +210,18 @@ const DataTableColumnsTemplates: DataTableColumnType<TemplateModel>[] = [
 	},
 ];
 
-const DataTableTemplatesFilters: DataTableTemplatesFiltersType = {
+const DataTableTemplatesFilters = {
 	global: { value: null, matchMode: 'contains' },
 	language: { value: null, matchMode: 'equals' },
 	type: { value: null, matchMode: 'equals' },
 	is_deleted: { value: null, matchMode: 'equals' },
+};
+
+export type DataSourceTemplatesType = {
+	tableFilter: typeof DataTableTemplatesFilters;
+	model: TemplateModel;
+	formState: FormStateType<'templates'>;
+	formValues: TemplateFormValues;
 };
 
 export const DataSourceConfigTemplates = {
@@ -294,9 +254,35 @@ export const DataSourceConfigTemplates = {
 	functions: {
 		find: findTemplates,
 		getFormValues: getFormValuesTemplates,
-		validateForm: validateFormTemplates,
-		syncFormState: syncFormStateTemplates,
-		displayActionEntries: displayActionEntriesTemplates,
+		validateForm: (
+			values: TemplateFormValues,
+		): ValidationReturnType<TemplateFormValues> => {
+			return ValidateSchemaTemplates.safeParse(
+				values,
+			) as ValidationReturnType<TemplateFormValues>;
+		},
+		syncFormState: (
+			state: FormStateType<'templates'>,
+			model: TemplateModel,
+		): FormStateType<'templates'> => {
+			return {
+				...state,
+				id: model.id,
+				values: {
+					...state.values,
+					label: model.label,
+					language: model.language,
+					type: model.type,
+					content: parseJson(model.content),
+				},
+			};
+		},
+		displayActionEntries: (entries: TemplateModel[]) => {
+			return entries.map((entry) => ({
+				id: entry.id,
+				label: `(${entry.type}) ${entry.label}`,
+			}));
+		},
 	},
 	actions: {
 		create: {
@@ -323,7 +309,7 @@ export const DataSourceConfigTemplates = {
 			mode: 'action' as const,
 			permission: 'template.delete',
 			allowedEntries: 'single' as const,
-			customEntryCheck: (entry: TemplateModel) => !entry.deleted_at, // Return true if entry is not deleted
+			customEntryCheck: (entry: TemplateModel) => !entry.deleted_at, // Return true if the entry is not deleted
 			position: 'left' as const,
 			function: deleteTemplate,
 			button: {
@@ -334,7 +320,7 @@ export const DataSourceConfigTemplates = {
 			mode: 'action' as const,
 			permission: 'template.delete',
 			allowedEntries: 'single' as const,
-			customEntryCheck: (entry: TemplateModel) => !!entry.deleted_at, // Return true if entry is deleted
+			customEntryCheck: (entry: TemplateModel) => !!entry.deleted_at, // Return true if the entry is deleted
 			position: 'left' as const,
 			function: restoreTemplate,
 			button: {

@@ -11,7 +11,6 @@ import {
 	FormFiltersSelect,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import type { DataTableMailQueueFiltersType } from '@/app/(dashboard)/dashboard/mail-queue/mail-queue.definition';
 import { MailQueueStatusEnum } from '@/lib/entities/mail-queue.model';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
 import { capitalizeFirstLetter } from '@/lib/helpers/string';
@@ -44,7 +43,7 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 	);
 
 	const updateFilters = useCallback(
-		(newFilters: Partial<DataTableMailQueueFiltersType>) => {
+		(newFilters: Partial<typeof DataTableMailQueueFilters>) => {
 			updateTableState({
 				filters: { ...filters, ...newFilters },
 			});
