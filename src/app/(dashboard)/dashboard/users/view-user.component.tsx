@@ -11,7 +11,7 @@ export function ViewUser() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => ['dashboard.text.no_entry_selected'],
+		() => ['dashboard.text.no_entry_selected'] as const,
 		[],
 	);
 

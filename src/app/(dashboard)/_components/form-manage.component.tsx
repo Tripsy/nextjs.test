@@ -143,12 +143,13 @@ export function FormManage<K extends keyof DataSourceType>({
 	const successMessageKey = `${dataSource}.action.${actionName}.success`;
 
 	const translationsKeys = useMemo(
-		() => [
-			successMessageKey,
-			actionLabelKey,
-			'app.text.success_title',
-			'app.text.saving',
-		],
+		() =>
+			[
+				successMessageKey,
+				actionLabelKey,
+				'app.text.success_title',
+				'app.text.saving',
+			] as const,
 		[actionLabelKey, successMessageKey],
 	);
 

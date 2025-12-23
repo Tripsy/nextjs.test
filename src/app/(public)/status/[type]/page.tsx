@@ -16,7 +16,7 @@ export default function Page() {
 
 	const messageKey = `app.${type}.${r}`;
 
-	const translationsKeys = useMemo(() => [messageKey], [messageKey]);
+	const translationsKeys = useMemo(() => [messageKey] as const, [messageKey]);
 
 	const { translations } = useTranslation(translationsKeys);
 

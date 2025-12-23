@@ -101,18 +101,19 @@ export function SideMenu() {
 	const { auth } = useAuth();
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.labels.content',
-			'dashboard.labels.settings',
-			'dashboard.labels.logs',
-			'dashboard.labels.templates',
-			'dashboard.labels.log_data',
-			'dashboard.labels.log_history',
-			'dashboard.labels.cron_history',
-			'dashboard.labels.mail_queue',
-			'dashboard.labels.permissions',
-			'dashboard.labels.users',
-		],
+		() =>
+			[
+				'dashboard.labels.content',
+				'dashboard.labels.settings',
+				'dashboard.labels.logs',
+				'dashboard.labels.templates',
+				'dashboard.labels.log_data',
+				'dashboard.labels.log_history',
+				'dashboard.labels.cron_history',
+				'dashboard.labels.mail_queue',
+				'dashboard.labels.permissions',
+				'dashboard.labels.users',
+			] as const,
 		[],
 	);
 

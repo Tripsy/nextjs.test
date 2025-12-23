@@ -17,12 +17,13 @@ import {
 
 export function SetupPermissionsUser() {
 	const translationsKeys = useMemo(
-		() => [
-			'app.text.loading',
-			'app.text.error_title',
-			'app.text.success_title',
-			'users.validation.no_permissions_defined',
-		],
+		() =>
+			[
+				'app.text.loading',
+				'app.text.error_title',
+				'app.text.success_title',
+				'users.validation.no_permissions_defined',
+			] as const,
 		[],
 	);
 

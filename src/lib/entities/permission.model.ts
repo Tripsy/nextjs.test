@@ -1,4 +1,12 @@
-export const PermissionEntitiesSuggestions = ['user', 'permission'];
+export const PermissionEntitiesSuggestions = [
+	'cron_history',
+	'log_data',
+	'log_history',
+	'mail_queue',
+	'permission',
+	'template',
+	'user',
+];
 
 export const PermissionOperationSuggestions = [
 	'create',

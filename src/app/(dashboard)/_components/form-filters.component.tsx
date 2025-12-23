@@ -49,7 +49,7 @@ export function FormFiltersSelect<K extends keyof DataSourceType>({
 	const elementIds = useElementIds([elementKey]);
 
 	const translationsKeys = useMemo(
-		() => ['dashboard.text.placeholder_select_default'],
+		() => ['dashboard.text.placeholder_select_default'] as const,
 		[],
 	);
 
@@ -152,10 +152,11 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 	const elementIds = useElementIds([elementStartKey, elementEndKey]);
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.placeholder_start_date',
-			'dashboard.text.placeholder_end_date',
-		],
+		() =>
+			[
+				'dashboard.text.placeholder_start_date',
+				'dashboard.text.placeholder_end_date',
+			] as const,
 		[],
 	);
 
@@ -223,7 +224,7 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 	const elementIds = useElementIds(['searchIsDeleted']);
 
 	const translationsKeys = useMemo(
-		() => ['dashboard.text.label_checkbox_show_deleted'],
+		() => ['dashboard.text.label_checkbox_show_deleted'] as const,
 		[],
 	);
 
@@ -261,7 +262,10 @@ export function FormFiltersShowDeleted<K extends keyof DataSourceType>({
 }
 
 export function FormFiltersReset({ source }: { source: string }) {
-	const translationsKeys = useMemo(() => ['dashboard.text.label_reset'], []);
+	const translationsKeys = useMemo(
+		() => ['dashboard.text.label_reset'] as const,
+		[],
+	);
 
 	const { translations } = useTranslation(translationsKeys);
 

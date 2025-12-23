@@ -70,7 +70,7 @@ async function loadLanguageResource(
 
 /**
  * Utility function used to get the translated string from the resource.
- * Always returns `string` (Note: if returned object value is not string, it returns the key)
+ * Always returns `string` (Note: if the returned object value is not string, it returns the key)
  */
 export const getTranslatedString = (
 	resource: TranslationResource,

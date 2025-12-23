@@ -2,7 +2,7 @@ import { DataTableValue } from '@/app/(dashboard)/_components/data-table-value';
 import type { DataTableColumnType } from '@/config/data-source';
 import { translateBatch } from '@/config/lang';
 import type { LogHistoryModel } from '@/lib/entities/log-history.model';
-import { capitalizeFirstLetter } from '@/lib/helpers/string';
+import { toTitleCase } from '@/lib/helpers/string';
 import {
 	deleteLogHistory,
 	findLogHistory,
@@ -42,19 +42,19 @@ const DataTableColumnsLogHistory: DataTableColumnType<LogHistoryModel>[] = [
 		sortable: true,
 		body: (entry, column) =>
 			DataTableValue<'log_history'>(entry, column, {
-				capitalize: true,
+				customValue: toTitleCase(entry.entity),
 			}),
 	},
 	{
 		field: 'entity_id',
 		header: translations['log_history.data_table.column_entity_id'],
-		body: (entry, column) =>
-			DataTableValue<'log_history'>(entry, column, {
-				action: {
-					name: `view${capitalizeFirstLetter(entry.entity)}`,
-					source: 'log_history',
-				},
-			}),
+		// body: (entry, column) =>
+		// 	DataTableValue<'log_history'>(entry, column, {
+		// 		action: {
+		// 			name: `view${capitalizeFirstLetter(entry.entity)}`,
+		// 			source: 'log_history',
+		// 		},
+		// 	}),
 	},
 	{
 		field: 'action',
@@ -63,7 +63,7 @@ const DataTableColumnsLogHistory: DataTableColumnType<LogHistoryModel>[] = [
 	},
 	{
 		field: 'performed_by',
-		header: translations['mail_queue.data_table.column_performed_by'],
+		header: translations['log_history.data_table.column_performed_by'],
 		body: (entry, column) =>
 			DataTableValue<'log_history'>(entry, column, {
 				customValue: entry.auth_id
@@ -136,6 +136,13 @@ export const DataSourceConfigLogHistory = {
 		view: {
 			mode: 'other' as const,
 			permission: 'log_history.read',
+			allowedEntries: 'single' as const,
+			position: 'hidden' as const,
+		},
+		viewUser: {
+			type: 'view' as const,
+			mode: 'other' as const,
+			permission: 'user.read',
 			allowedEntries: 'single' as const,
 			position: 'hidden' as const,
 		},

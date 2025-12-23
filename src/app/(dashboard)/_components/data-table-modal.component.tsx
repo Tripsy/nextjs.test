@@ -49,11 +49,12 @@ export function DataTableModal<K extends keyof DataSourceType>({
 	const actionTitleKey = `${dataSource}.action.${actionName}.title`;
 
 	const translationsKeys = useMemo(
-		() => [
-			actionTitleKey,
-			'app.text.error_title',
-			'dashboard.text.select_one',
-		],
+		() =>
+			[
+				actionTitleKey,
+				'app.text.error_title',
+				'dashboard.text.select_one',
+			] as const,
 		[actionTitleKey],
 	);
 

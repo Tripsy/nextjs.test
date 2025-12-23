@@ -9,11 +9,59 @@ export function formatEnumLabel(value: string): string {
 		.join(' ');
 }
 
-export function toKebabCase(str: string): string {
+export function toKebabCase(
+	str: string,
+	options: {
+		preserveCase?: boolean;
+		preserveUnderscores?: boolean;
+	} = {},
+): string {
+	const { preserveCase = false, preserveUnderscores = true } = options;
+
+	let result = str;
+
+	// Convert to lowercase unless preserveCase is true
+	if (!preserveCase) {
+		result = result.toLowerCase();
+	}
+
+	// Handle camelCase/PascalCase
+	result = result.replace(/([a-z])([A-Z])/g, '$1-$2');
+
+	// Replace spaces and (optionally) underscores with hyphens
+	if (preserveUnderscores) {
+		result = result.replace(/\s+/g, '-');
+	} else {
+		result = result.replace(/[\s_]+/g, '-');
+	}
+
+	// Remove special characters but keep hyphens and alphanumeric
+	result = result.replace(/[^a-zA-Z0-9-]/g, '');
+
+	// Clean up multiple hyphens
+	result = result.replace(/-+/g, '-');
+
+	// Remove leading/trailing hyphens
+	result = result.replace(/^-+|-+$/g, '');
+
+	return result;
+}
+
+export function toTitleCase(str: string): string {
 	return str
-		.toLowerCase()
-		.replace(/\s+/g, '-')
-		.replace(/[^a-z0-9-]/g, '');
+		.replace(/[_-]/g, ' ')
+		.split(' ')
+		.map((word) => {
+			if (!word) {
+				return '';
+			}
+
+			// Capitalize the first letter, lowercase the rest
+			return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+		})
+		.join(' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 }
 
 export function formatCurrency(

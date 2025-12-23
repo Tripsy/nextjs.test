@@ -10,19 +10,20 @@ export function TemplateDetails({
 	entry: TemplateModel | undefined;
 }) {
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'templates.view.section_details',
-			'templates.view.label_id',
-			'templates.view.label_label',
-			'templates.view.label_language',
-			'templates.view.label_type',
-			'templates.view.section_timestamps',
-			'templates.view.label_created_at',
-			'templates.view.label_updated_at',
-			'templates.view.label_deleted_at',
-			'templates.view.section_content',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'templates.view.section_details',
+				'templates.view.label_id',
+				'templates.view.label_label',
+				'templates.view.label_language',
+				'templates.view.label_type',
+				'templates.view.section_timestamps',
+				'templates.view.label_created_at',
+				'templates.view.label_updated_at',
+				'templates.view.label_deleted_at',
+				'templates.view.section_content',
+			] as const,
 		[],
 	);
 

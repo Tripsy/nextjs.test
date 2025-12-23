@@ -10,26 +10,27 @@ export function ViewMailQueue() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'mail_queue.view.section_details',
-			'mail_queue.view.label_id',
-			'mail_queue.view.label_template',
-			'mail_queue.view.label_language',
-			'mail_queue.view.label_created_at',
-			'mail_queue.view.label_updated_at',
-			'mail_queue.view.section_status',
-			'mail_queue.view.label_status',
-			'mail_queue.view.label_error',
-			'mail_queue.view.label_sent_at',
-			'mail_queue.view.label_to',
-			'mail_queue.view.label_from',
-			'mail_queue.view.section_content',
-			'mail_queue.view.label_layout',
-			'mail_queue.view.label_subject',
-			'mail_queue.view.label_html',
-			'mail_queue.view.label_vars',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'mail_queue.view.section_details',
+				'mail_queue.view.label_id',
+				'mail_queue.view.label_template',
+				'mail_queue.view.label_language',
+				'mail_queue.view.label_created_at',
+				'mail_queue.view.label_updated_at',
+				'mail_queue.view.section_status',
+				'mail_queue.view.label_status',
+				'mail_queue.view.label_error',
+				'mail_queue.view.label_sent_at',
+				'mail_queue.view.label_to',
+				'mail_queue.view.label_from',
+				'mail_queue.view.section_content',
+				'mail_queue.view.label_layout',
+				'mail_queue.view.label_subject',
+				'mail_queue.view.label_html',
+				'mail_queue.view.label_vars',
+			] as const,
 		[],
 	);
 

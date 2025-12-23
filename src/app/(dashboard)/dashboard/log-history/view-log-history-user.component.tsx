@@ -4,14 +4,14 @@ import { Loading } from '@/app/_components/loading.component';
 import { useTranslation } from '@/app/_hooks';
 import { useToast } from '@/app/_providers/toast.provider';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
-import { TemplateDetails } from '@/app/(dashboard)/dashboard/templates/template-details.component';
-import type { TemplateModel } from '@/lib/entities/template.model';
-import { getTemplate } from '@/lib/services/templates.service';
+import { UserDetails } from '@/app/(dashboard)/dashboard/users/user-details.component';
+import type { UserModel } from '@/lib/entities/user.model';
+import { getUser } from '@/lib/services/users.service';
 
-export function ViewMailQueueTemplate() {
+export function ViewLogHistoryUser() {
 	const { showToast } = useToast();
 
-	const { modelStore } = useDataTable<'mail_queue'>();
+	const { modelStore } = useDataTable<'log_history'>();
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
@@ -26,7 +26,7 @@ export function ViewMailQueueTemplate() {
 
 	const { translations } = useTranslation(translationsKeys);
 
-	const [entry, setEntry] = useState<TemplateModel | undefined>(undefined);
+	const [entry, setEntry] = useState<UserModel | undefined>(undefined);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -35,14 +35,14 @@ export function ViewMailQueueTemplate() {
 		}
 
 		(async () => {
-			if (!actionEntry?.template?.id) {
+			if (!actionEntry?.auth_id) {
 				return;
 			}
 
 			try {
-				const template = await getTemplate(actionEntry.template.id);
+				const user = await getUser(actionEntry.auth_id);
 
-				setEntry(template);
+				setEntry(user);
 			} catch (error) {
 				showToast({
 					severity: 'error',
@@ -72,5 +72,5 @@ export function ViewMailQueueTemplate() {
 		);
 	}
 
-	return <TemplateDetails entry={entry} />;
+	return <UserDetails entry={entry} />;
 }

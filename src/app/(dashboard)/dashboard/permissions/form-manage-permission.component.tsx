@@ -15,10 +15,11 @@ export function FormManagePermission({
 	pending,
 }: FormManageType<'permissions'>) {
 	const translationsKeys = useMemo(
-		() => [
-			'permissions.form_manage.label_entity',
-			'permissions.form_manage.label_operation',
-		],
+		() =>
+			[
+				'permissions.form_manage.label_entity',
+				'permissions.form_manage.label_operation',
+			] as const,
 		[],
 	);
 

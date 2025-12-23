@@ -51,7 +51,11 @@ export function DataTableActions() {
 	);
 
 	const translationsKeys = useMemo(
-		() => ['app.error.operation_not_allowed', 'app.text.error_title'],
+		() =>
+			[
+				'app.error.operation_not_allowed',
+				'app.text.error_title',
+			] as const,
 		[],
 	);
 

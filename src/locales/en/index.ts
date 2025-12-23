@@ -11,6 +11,7 @@ import email_confirm from '@/locales/en/email_confirm.json';
 import email_confirm_send from '@/locales/en/email_confirm_send.json';
 import home from '@/locales/en/home.json';
 import log_data from '@/locales/en/log_data.json';
+import log_history from '@/locales/en/log_history.json';
 import login from '@/locales/en/login.json';
 import logout from '@/locales/en/logout.json';
 import mail_queue from '@/locales/en/mail_queue.json';
@@ -35,6 +36,7 @@ const en = {
 	email_confirm_send,
 	home,
 	log_data,
+	log_history,
 	login,
 	logout,
 	mail_queue,

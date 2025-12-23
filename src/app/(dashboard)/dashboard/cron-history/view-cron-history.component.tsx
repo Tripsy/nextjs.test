@@ -11,17 +11,18 @@ export function ViewCronHistory() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'cron_history.view.section_details',
-			'cron_history.view.label_id',
-			'cron_history.view.label_label',
-			'cron_history.view.label_start_at',
-			'cron_history.view.label_end_at',
-			'cron_history.view.label_status',
-			'cron_history.view.label_run_time',
-			'cron_history.view.section_content',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'cron_history.view.section_details',
+				'cron_history.view.label_id',
+				'cron_history.view.label_label',
+				'cron_history.view.label_start_at',
+				'cron_history.view.label_end_at',
+				'cron_history.view.label_status',
+				'cron_history.view.label_run_time',
+				'cron_history.view.section_content',
+			] as const,
 		[],
 	);
 

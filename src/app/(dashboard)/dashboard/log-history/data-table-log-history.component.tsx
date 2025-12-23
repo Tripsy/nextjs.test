@@ -10,11 +10,12 @@ import { DataTableProvider } from '@/app/(dashboard)/_providers/data-table-provi
 import { createModelStore } from '@/app/(dashboard)/_stores/model.store';
 import { DataTableLogHistoryFilters } from '@/app/(dashboard)/dashboard/log-history/data-table-log-history-filters.component';
 import { ViewLogHistory } from '@/app/(dashboard)/dashboard/log-history/view-log-history.component';
+import { ViewLogHistoryUser } from '@/app/(dashboard)/dashboard/log-history/view-log-history-user.component';
 
 const modelStore = createModelStore('log_history');
 
 export const DataTableLogHistory = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();
@@ -38,9 +39,11 @@ export const DataTableLogHistory = (): JSX.Element => {
 			<DataTableModal<'log_history'>
 				modals={{
 					view: <ViewLogHistory />,
+					viewUser: <ViewLogHistoryUser />,
 				}}
 				modalClass={{
 					view: 'max-w-3xl!',
+					viewUser: 'max-w-2xl!',
 				}}
 			/>
 		</DataTableProvider>

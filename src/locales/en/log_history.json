@@ -12,29 +12,40 @@
 		"view": {
 			"title": "Log details",
 			"label": "View"
+		},
+		"viewUser": {
+			"title": "User details",
+			"label": "View user"
 		}
 	},
 	"data_table": {
 		"column_id": "ID",
-		"column_category": "Category",
-		"column_level": "Level",
-		"column_message": "Message",
-		"column_created_at": "Created At"
+		"column_request_id": "Request ID",
+		"column_entity": "Entity",
+		"column_entity_id": "Entity ID",
+		"column_action": "Action",
+		"column_performed_by": "Performed By",
+		"column_recorded_at": "Recorded At"
 	},
 	"form_filters": {
-		"label_global": "ID / Pid / Message / Context",
-		"label_category": "Category",
-		"label_level": "Level",
-		"label_created_at": "Created At"
+		"label_request_id": "Request ID",
+		"label_entity": "Entity",
+		"label_entity_id": "Entity ID",
+		"label_action": "Action",
+		"label_source": "Source",
+		"label_recorded_at": "Recorded At"
 	},
 	"view": {
+		"section_info": "Info",
 		"section_details": "Details",
 		"label_id": "ID:",
-		"label_pid": "PID:",
 		"label_request_id": "Request ID:",
-		"label_category": "Category:",
-		"label_level": "Level:",
-		"label_message": "Message:",
-		"label_created_at": "Created At:"
+		"label_entity": "Entity:",
+		"label_entity_id": "Entity ID:",
+		"label_action": "Action:",
+		"label_auth_id": "Auth ID:",
+		"label_performed_by": "Performed By:",
+		"label_source": "Source:",
+		"label_recorded_at": "Recorded At:"
 	}
 }

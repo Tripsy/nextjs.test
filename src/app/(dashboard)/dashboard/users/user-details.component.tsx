@@ -8,21 +8,22 @@ import { capitalizeFirstLetter, formatEnumLabel } from '@/lib/helpers/string';
 
 export function UserDetails({ entry }: { entry: UserModel | undefined }) {
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'users.view.section_details',
-			'users.view.label_id',
-			'users.view.label_name',
-			'users.view.label_email',
-			'users.view.label_language',
-			'users.view.section_info',
-			'users.view.label_role',
-			'users.view.label_status',
-			'users.view.label_deleted_at',
-			'users.view.section_timestamps',
-			'users.view.label_created_at',
-			'users.view.label_updated_at',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'users.view.section_details',
+				'users.view.label_id',
+				'users.view.label_name',
+				'users.view.label_email',
+				'users.view.label_language',
+				'users.view.section_info',
+				'users.view.label_role',
+				'users.view.label_status',
+				'users.view.label_deleted_at',
+				'users.view.section_timestamps',
+				'users.view.label_created_at',
+				'users.view.label_updated_at',
+			] as const,
 		[],
 	);
 

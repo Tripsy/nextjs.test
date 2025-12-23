@@ -5,6 +5,9 @@ export enum LogHistorySource {
 	UNKNOWN = 'unknown',
 }
 
+export const LogHistoryEntities = ['permission', 'template', 'user'];
+export const LogHistoryActions = ['created', 'updated', 'deleted'];
+
 export type LogHistoryModel<D = Date | string> = {
 	id: number;
 

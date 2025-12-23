@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { translate } from '@/config/lang';
 
-export function useTranslation(keys: string[]) {
-	const [state, setState] = useState<{
-		translations: Record<string, string>;
-		isLoading: boolean;
-	}>({
-		translations: {},
-		isLoading: true,
-	});
+export function useTranslation<T extends readonly string[]>(keys: T) {
+	type TranslationMap = {
+		[K in T[number]]: string;
+	};
+
+	const [translations, setTranslations] = useState<TranslationMap>(
+		{} as TranslationMap,
+	);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		let isMounted = true;
 
-		// Use an immediately invoked async function
 		(async () => {
 			try {
 				const results = await Promise.all(
@@ -24,27 +24,18 @@ export function useTranslation(keys: string[]) {
 					return;
 				}
 
-				const translations = keys.reduce(
-					(acc, key, index) => {
-						acc[key] = results[index];
-						return acc;
-					},
-					{} as Record<string, string>,
-				);
+				const newTranslations = {} as TranslationMap;
 
-				setState({
-					translations: translations,
-					isLoading: false,
+				keys.forEach((key, index) => {
+					(newTranslations as Record<string, string>)[key] =
+						results[index];
 				});
+
+				setTranslations(newTranslations);
+				setIsLoading(false);
 			} catch (error) {
 				console.error('Failed to load translations:', error);
-
-				if (isMounted) {
-					setState((prev) => ({
-						...prev,
-						isLoading: false,
-					}));
-				}
+				if (isMounted) setIsLoading(false);
 			}
 		})();
 
@@ -54,7 +45,7 @@ export function useTranslation(keys: string[]) {
 	}, [keys]);
 
 	return {
-		translations: state.translations,
-		isTranslationLoading: state.isLoading,
+		translations,
+		isTranslationLoading: isLoading,
 	};
 }

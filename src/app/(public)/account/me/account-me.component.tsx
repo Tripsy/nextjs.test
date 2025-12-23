@@ -23,13 +23,14 @@ export default function AccountMe() {
 	const [sessions, setSessions] = useState<AuthTokenListType>([]);
 
 	const translationsKeys = useMemo(
-		() => [
-			'account_me.message.session_destroy_success',
-			'account_me.message.session_destroy_error',
-			'account_edit.message.success',
-			'account_email_update.message.success',
-			'account_password_update.message.success',
-		],
+		() =>
+			[
+				'account_me.message.session_destroy_success',
+				'account_me.message.session_destroy_error',
+				'account_edit.message.success',
+				'account_email_update.message.success',
+				'account_password_update.message.success',
+			] as const,
 		[],
 	);
 
@@ -272,9 +273,14 @@ export default function AccountMe() {
 								showToast({
 									severity: success ? 'success' : 'error',
 									summary: success ? 'Success' : 'Error',
-									detail: translations[
-										`account_me.message.${message}`
-									],
+									detail:
+										message === 'session_destroy_success'
+											? translations[
+													'account_me.message.session_destroy_success'
+												]
+											: translations[
+													'account_me.message.session_destroy_error'
+												],
 								});
 							}}
 						/>

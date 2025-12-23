@@ -11,15 +11,25 @@ import {
 	FormFiltersSelect,
 } from '@/app/(dashboard)/_components/form-filters.component';
 import { useDataTable } from '@/app/(dashboard)/_providers/data-table-provider';
+import {
+	LogHistoryActions,
+	LogHistoryEntities,
+	LogHistorySource,
+} from '@/lib/entities/log-history.model';
 import { createFilterHandlers } from '@/lib/helpers/data-table';
-import { capitalizeFirstLetter } from '@/lib/helpers/string';
+import { capitalizeFirstLetter, toTitleCase } from '@/lib/helpers/string';
 
-const logLevels = Object.values(LogLevelEnum).map((v) => ({
+const entities = LogHistoryEntities.map((v) => ({
+	label: toTitleCase(v),
+	value: v,
+}));
+
+const actions = LogHistoryActions.map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
 
-const logCategories = Object.values(LogCategoryEnum).map((v) => ({
+const sources = Object.values(LogHistorySource).map((v) => ({
 	label: capitalizeFirstLetter(v),
 	value: v,
 }));
@@ -28,12 +38,15 @@ export const DataTableLogHistoryFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'log_history'>();
 
 	const translationsKeys = useMemo(
-		() => [
-			'log_history.form_filters.label_global',
-			'log_history.form_filters.label_category',
-			'log_history.form_filters.label_level',
-			'log_history.form_filters.label_created_at',
-		],
+		() =>
+			[
+				'log_history.form_filters.label_request_id',
+				'log_history.form_filters.label_entity',
+				'log_history.form_filters.label_entity_id',
+				'log_history.form_filters.label_action',
+				'log_history.form_filters.label_source',
+				'log_history.form_filters.label_recorded_at',
+			] as const,
 		[],
 	);
 
@@ -62,12 +75,21 @@ export const DataTableLogHistoryFilters = (): React.JSX.Element => {
 	const { handleInputChange, handleSelectChange, handleDateChange } =
 		handlers;
 
-	const searchGlobal = useSearchFilter({
-		initialValue: filters.global?.value ?? '',
+	const searchRequestId = useSearchFilter({
+		initialValue: filters.request_id?.value ?? '',
 		debounceDelay: 1000,
-		minLength: 3,
+		minLength: 36,
 		onSearch: (value) => {
-			handleInputChange('global', value);
+			handleInputChange('request_id', value);
+		},
+	});
+
+	const searchEntityId = useSearchFilter({
+		initialValue: filters.entity_id?.value ?? '',
+		debounceDelay: 1000,
+		minLength: 2,
+		onSearch: (value) => {
+			handleInputChange('entity_id', value);
 		},
 	});
 
@@ -77,7 +99,8 @@ export const DataTableLogHistoryFilters = (): React.JSX.Element => {
 				filters: stateDefault.filters,
 			});
 
-			searchGlobal.onReset();
+			searchRequestId.onReset();
+			searchEntityId.onReset();
 		};
 
 		window.addEventListener(
@@ -92,8 +115,10 @@ export const DataTableLogHistoryFilters = (): React.JSX.Element => {
 			);
 		};
 	}, [
-		searchGlobal,
-		searchGlobal.onReset,
+		searchRequestId,
+		searchRequestId.onReset,
+		searchEntityId,
+		searchEntityId.onReset,
 		stateDefault.filters,
 		updateTableState,
 	]);
@@ -102,38 +127,58 @@ export const DataTableLogHistoryFilters = (): React.JSX.Element => {
 		<div className="form-section flex-row flex-wrap gap-4 border-b border-line pb-4">
 			<FormFiltersSearch
 				labelText={
-					translations['log_history.form_filters.label_global']
+					translations['log_history.form_filters.label_request_id']
 				}
-				fieldName="global"
-				search={searchGlobal}
+				fieldName="request_id"
+				search={searchRequestId}
 			/>
 
 			<FormFiltersSelect
 				labelText={
-					translations['log_history.form_filters.label_category']
+					translations['log_history.form_filters.label_entity']
 				}
-				fieldName="category"
-				fieldValue={filters.category.value}
-				selectOptions={logCategories}
+				fieldName="entity"
+				fieldValue={filters.entity.value}
+				selectOptions={entities}
+				handleSelectChange={handleSelectChange}
+			/>
+
+			<FormFiltersSearch
+				labelText={
+					translations['log_history.form_filters.label_entity_id']
+				}
+				fieldName="entity_id"
+				search={searchEntityId}
+			/>
+
+			<FormFiltersSelect
+				labelText={
+					translations['log_history.form_filters.label_action']
+				}
+				fieldName="action"
+				fieldValue={filters.action.value}
+				selectOptions={actions}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersSelect
-				labelText={translations['log_history.form_filters.label_level']}
-				fieldName="level"
-				fieldValue={filters.level.value}
-				selectOptions={logLevels}
+				labelText={
+					translations['log_history.form_filters.label_source']
+				}
+				fieldName="source"
+				fieldValue={filters.source.value}
+				selectOptions={sources}
 				handleSelectChange={handleSelectChange}
 			/>
 
 			<FormFiltersDateRange
 				labelText={
-					translations['log_history.form_filters.label_created_at']
+					translations['log_history.form_filters.label_recorded_at']
 				}
-				startDateField="create_date_start"
-				startDateValue={filters.create_date_start?.value ?? ''}
-				endDateField="create_date_end"
-				endDateValue={filters.create_date_end?.value ?? ''}
+				startDateField="recorded_at_start"
+				startDateValue={filters.recorded_at_start?.value ?? ''}
+				endDateField="recorded_at_end"
+				endDateValue={filters.recorded_at_end?.value ?? ''}
 				handleDateChange={handleDateChange}
 			/>
 

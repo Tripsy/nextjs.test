@@ -16,7 +16,7 @@ export const DataTablePermissionsFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'permissions'>();
 
 	const translationsKeys = useMemo(
-		() => ['permissions.form_filters.label_global'],
+		() => ['permissions.form_filters.label_global'] as const,
 		[],
 	);
 

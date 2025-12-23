@@ -10,28 +10,21 @@ export function ViewLogHistory() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'log_history.view.section_details',
-			'log_history.view.label_id',
-			'log_history.view.label_pid',
-			'log_history.view.label_request_id',
-			'log_history.view.label_category',
-			'log_history.view.label_level',
-			'log_history.view.label_message',
-			'log_history.view.label_created_at',
-			'log_history.view.section_context',
-			'log_history.view.label_method',
-			'log_history.view.label_url',
-			'log_history.view.label_body',
-			'log_history.view.label_params',
-			'log_history.view.label_query',
-			'log_history.view.section_debug_stack',
-			'log_history.view.label_file',
-			'log_history.view.label_line',
-			'log_history.view.label_function',
-			'log_history.view.label_trace',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'log_history.view.section_info',
+				'log_history.view.section_details',
+				'log_history.view.label_id',
+				'log_history.view.label_entity',
+				'log_history.view.label_entity_id',
+				'log_history.view.label_action',
+				'log_history.view.label_auth_id',
+				'log_history.view.label_performed_by',
+				'log_history.view.label_request_id',
+				'log_history.view.label_source',
+				'log_history.view.label_recorded_at',
+			] as const,
 		[],
 	);
 
@@ -47,24 +40,24 @@ export function ViewLogHistory() {
 
 	const {
 		id,
-		pid,
+		entity,
+		entity_id,
+		action,
+		auth_id,
+		performed_by,
 		request_id,
-		category,
-		level,
-		message,
-		context,
-		debugStack,
-		created_at,
+		source,
+		recorded_at,
+		details,
 	} = actionEntry;
 
-	const parsedContext = parseJson(context);
-	const parsedDebugStack = parseJson(debugStack);
+	const parsedDetails = parseJson(details);
 
 	return (
 		<div className="space-y-6">
 			<div>
 				<h3 className="font-bold border-b border-line pb-2 mb-3">
-					{translations['log_history.view.section_details']}
+					{translations['log_history.view.section_info']}
 				</h3>
 				<div className="ml-4 space-y-1">
 					<div>
@@ -75,125 +68,77 @@ export function ViewLogHistory() {
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['log_history.view.label_pid']}
-						</span>{' '}
-						{pid}
-					</div>
-					<div>
-						<span className="font-semibold">
 							{translations['log_history.view.label_request_id']}
 						</span>{' '}
 						{request_id}
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['log_history.view.label_category']}
+							{translations['log_history.view.label_entity']}
 						</span>{' '}
-						{category}
+						{entity}
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['log_history.view.label_level']}
+							{translations['log_history.view.label_entity_id']}
 						</span>{' '}
-						{level}
+						{entity_id}
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['log_history.view.label_message']}
+							{translations['log_history.view.label_action']}
 						</span>{' '}
-						{message}
+						{action}
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['cron_history.view.label_created_at']}
+							{translations['log_history.view.label_auth_id']}
 						</span>{' '}
-						{formatDate(created_at, 'date-time')}
+						{auth_id}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{
+								translations[
+									'log_history.view.label_performed_by'
+								]
+							}
+						</span>{' '}
+						{performed_by}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_history.view.label_source']}
+						</span>{' '}
+						{source}
+					</div>
+					<div>
+						<span className="font-semibold">
+							{translations['log_history.view.label_recorded_at']}
+						</span>{' '}
+						{formatDate(recorded_at, 'date-time')}
 					</div>
 				</div>
 			</div>
 
-			{parsedContext?.request && (
+			{parsedDetails?.request && (
 				<div>
 					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						{translations['log_history.view.section_context']}
+						{translations['log_history.view.section_details']}
 					</h3>
 					<div className="ml-4 space-y-1">
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_method']}
-							</span>{' '}
-							{parsedContext.request.method}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_url']}
-							</span>{' '}
-							{decodeURI(parsedContext.request.url)}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_body']}
-							</span>{' '}
-							{JSON.stringify(parsedContext.request.body)}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_params']}
-							</span>{' '}
-							{JSON.stringify(parsedContext.request.params)}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_query']}
-							</span>{' '}
-							{JSON.stringify(parsedContext.request.query)}
-						</div>
-					</div>
-				</div>
-			)}
-
-			{parsedDebugStack && (
-				<div>
-					<h3 className="font-bold border-b border-line pb-2 mb-3">
-						{translations['log_history.view.section_debug_stack']}
-					</h3>
-					<div className="ml-4 space-y-1">
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_file']}
-							</span>{' '}
-							{parsedDebugStack.file}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{translations['log_history.view.label_line']}
-							</span>{' '}
-							{parsedDebugStack.line}
-						</div>
-						<div>
-							<span className="font-semibold">
-								{
-									translations[
-										'log_history.view.label_function'
-									]
-								}
-							</span>{' '}
-							{parsedDebugStack.function}
-						</div>
-						{parsedDebugStack.trace && (
-							<div>
-								<span className="font-semibold">
-									{
-										translations[
-											'log_history.view.label_trace'
-										]
-									}
+						{Object.entries(parsedDetails).map(([key, value]) => (
+							<div key={key}>
+								<span className="font-semibold capitalize">
+									{key}:
+								</span>{' '}
+								<span>
+									{typeof value === 'object'
+										? JSON.stringify(value, null, 2)
+										: String(value)}
 								</span>
-								<pre className="bg-gray-50 border rounded p-2 text-xs mt-1 overflow-x-auto">
-									{parsedDebugStack.trace.join('\n')}
-								</pre>
 							</div>
-						)}
+						))}
 					</div>
 				</div>
 			)}

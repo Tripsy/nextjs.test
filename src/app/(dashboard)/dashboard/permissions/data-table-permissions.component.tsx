@@ -14,7 +14,7 @@ import { FormManagePermission } from '@/app/(dashboard)/dashboard/permissions/fo
 const modelStore = createModelStore('permissions');
 
 export const DataTablePermissions = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

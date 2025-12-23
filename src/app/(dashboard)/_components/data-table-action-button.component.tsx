@@ -20,7 +20,7 @@ export function DataTableActionButton({
 	const actionLabelKey = `${dataSource}.action.${actionName}.label`;
 
 	const translationsKeys = useMemo(
-		() => [actionTitleKey, actionLabelKey, 'app.text.please_wait'],
+		() => [actionTitleKey, actionLabelKey, 'app.text.please_wait'] as const,
 		[actionLabelKey, actionTitleKey],
 	);
 

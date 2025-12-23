@@ -1,20 +1,14 @@
 # TODO
 
-1. Replace all console.error with logging
-2. New entities
-   - carrier
-   - client
-   - discount  
-   - place
+1. For template section
+   - would be a nice idea to keep track of the last changes (maybe add a new column - prev version id and a button to restore to that version)
+   - view presentation could be enhanced
+2. Replace all console.error with logging
 
 # IDEAS
 
-1. Log history
-2. Add section "documentation"
-3. login with google / facebook
-4. For template section 
-   - would be a nice idea to keep track of the last changes (maybe add a new column - prev version id and a button to restore to that version)
-   - view presentation could be enhanced
+1. Add section "documentation"
+2. login with google / facebook
 
 # SEE ALSO
 

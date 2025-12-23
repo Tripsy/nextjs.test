@@ -30,7 +30,7 @@ type SelectionChangeEvent<T> = {
 
 const CurrentPageReport = (options: PaginatorCurrentPageReportOptions) => {
 	const translationsKeys = useMemo(
-		() => ['dashboard.text.showing_entries'],
+		() => ['dashboard.text.showing_entries'] as const,
 		[],
 	);
 
@@ -86,7 +86,10 @@ export default function DataTableList<K extends keyof DataSourceType>(
 	const [data, setData] = useState<DataSourceModel<K>[]>([]);
 	const [totalRecords, setTotalRecords] = useState(0);
 
-	const translationsKeys = useMemo(() => ['dashboard.text.no_entries'], []);
+	const translationsKeys = useMemo(
+		() => ['dashboard.text.no_entries'] as const,
+		[],
+	);
 
 	const { translations } = useTranslation(translationsKeys);
 

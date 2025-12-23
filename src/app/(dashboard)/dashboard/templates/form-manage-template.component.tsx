@@ -43,17 +43,18 @@ export function FormManageTemplate({
 	pending,
 }: FormManageType<'templates'>) {
 	const translationsKeys = useMemo(
-		() => [
-			'templates.form_manage.label_label',
-			'templates.form_manage.label_language',
-			'templates.form_manage.label_type',
-			'templates.form_manage.label_email_content_subject',
-			'templates.form_manage.label_email_content_html',
-			'templates.form_manage.label_email_content_layout',
-			'templates.form_manage.label_page_content_title',
-			'templates.form_manage.label_page_content_html',
-			'templates.form_manage.label_page_content_layout',
-		],
+		() =>
+			[
+				'templates.form_manage.label_label',
+				'templates.form_manage.label_language',
+				'templates.form_manage.label_type',
+				'templates.form_manage.label_email_content_subject',
+				'templates.form_manage.label_email_content_html',
+				'templates.form_manage.label_email_content_layout',
+				'templates.form_manage.label_page_content_title',
+				'templates.form_manage.label_page_content_html',
+				'templates.form_manage.label_page_content_layout',
+			] as const,
 		[],
 	);
 

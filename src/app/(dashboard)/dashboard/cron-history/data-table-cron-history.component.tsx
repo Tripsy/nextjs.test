@@ -14,7 +14,7 @@ import { ViewCronHistory } from '@/app/(dashboard)/dashboard/cron-history/view-c
 const modelStore = createModelStore('cron_history');
 
 export const DataTableCronHistory = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

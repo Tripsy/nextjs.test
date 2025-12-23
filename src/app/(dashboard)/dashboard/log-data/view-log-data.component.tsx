@@ -10,28 +10,29 @@ export function ViewLogData() {
 	const actionEntry = useStore(modelStore, (state) => state.actionEntry);
 
 	const translationsKeys = useMemo(
-		() => [
-			'dashboard.text.no_entry_selected',
-			'log_data.view.section_details',
-			'log_data.view.label_id',
-			'log_data.view.label_pid',
-			'log_data.view.label_request_id',
-			'log_data.view.label_category',
-			'log_data.view.label_level',
-			'log_data.view.label_message',
-			'log_data.view.label_created_at',
-			'log_data.view.section_context',
-			'log_data.view.label_method',
-			'log_data.view.label_url',
-			'log_data.view.label_body',
-			'log_data.view.label_params',
-			'log_data.view.label_query',
-			'log_data.view.section_debug_stack',
-			'log_data.view.label_file',
-			'log_data.view.label_line',
-			'log_data.view.label_function',
-			'log_data.view.label_trace',
-		],
+		() =>
+			[
+				'dashboard.text.no_entry_selected',
+				'log_data.view.section_details',
+				'log_data.view.label_id',
+				'log_data.view.label_pid',
+				'log_data.view.label_request_id',
+				'log_data.view.label_category',
+				'log_data.view.label_level',
+				'log_data.view.label_message',
+				'log_data.view.label_created_at',
+				'log_data.view.section_context',
+				'log_data.view.label_method',
+				'log_data.view.label_url',
+				'log_data.view.label_body',
+				'log_data.view.label_params',
+				'log_data.view.label_query',
+				'log_data.view.section_debug_stack',
+				'log_data.view.label_file',
+				'log_data.view.label_line',
+				'log_data.view.label_function',
+				'log_data.view.label_trace',
+			] as const,
 		[],
 	);
 
@@ -105,7 +106,7 @@ export function ViewLogData() {
 					</div>
 					<div>
 						<span className="font-semibold">
-							{translations['cron_history.view.label_created_at']}
+							{translations['log_data.view.label_created_at']}
 						</span>{' '}
 						{formatDate(created_at, 'date-time')}
 					</div>

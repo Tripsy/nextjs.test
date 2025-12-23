@@ -62,13 +62,14 @@ export function ActionManage() {
 	const confirmTextKey = `${dataSource}.action.${actionName}.confirmText`;
 
 	const translationsKeys = useMemo(
-		() => [
-			confirmTextKey,
-			'app.error.form',
-			'app.text.loading',
-			'dashboard.text.selected_entries_one',
-			'dashboard.text.selected_entries_many',
-		],
+		() =>
+			[
+				confirmTextKey,
+				'app.error.form',
+				'app.text.loading',
+				'dashboard.text.selected_entries_one',
+				'dashboard.text.selected_entries_many',
+			] as const,
 		[confirmTextKey],
 	);
 

@@ -30,12 +30,13 @@ export const DataTableUsersFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'users'>();
 
 	const translationsKeys = useMemo(
-		() => [
-			'users.form_filters.label_global',
-			'users.form_filters.label_status',
-			'users.form_filters.label_role',
-			'users.form_filters.label_create_date',
-		],
+		() =>
+			[
+				'users.form_filters.label_global',
+				'users.form_filters.label_status',
+				'users.form_filters.label_role',
+				'users.form_filters.label_create_date',
+			] as const,
 		[],
 	);
 

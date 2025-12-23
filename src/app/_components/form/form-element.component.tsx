@@ -227,7 +227,10 @@ export const FormComponentSubmit = ({
 	buttonLabel: string;
 	buttonIcon?: React.JSX.Element;
 }) => {
-	const translationsKeys = useMemo(() => ['app.text.please_wait'], []);
+	const translationsKeys = useMemo(
+		() => ['app.text.please_wait'] as const,
+		[],
+	);
 
 	const { translations } = useTranslation(translationsKeys);
 

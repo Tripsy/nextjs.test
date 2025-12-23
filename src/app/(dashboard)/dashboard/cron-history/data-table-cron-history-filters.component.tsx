@@ -24,11 +24,12 @@ export const DataTableCronHistoryFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'cron_history'>();
 
 	const translationsKeys = useMemo(
-		() => [
-			'cron_history.form_filters.label_global',
-			'cron_history.form_filters.label_status',
-			'cron_history.form_filters.label_start_date',
-		],
+		() =>
+			[
+				'cron_history.form_filters.label_global',
+				'cron_history.form_filters.label_status',
+				'cron_history.form_filters.label_start_date',
+			] as const,
 		[],
 	);
 

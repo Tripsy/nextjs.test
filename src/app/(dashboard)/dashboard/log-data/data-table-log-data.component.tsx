@@ -14,7 +14,7 @@ import { ViewLogData } from '@/app/(dashboard)/dashboard/log-data/view-log-data.
 const modelStore = createModelStore('log_data');
 
 export const DataTableLogData = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

@@ -1,5 +1,6 @@
 import type {
 	CreateFunctionType,
+	DataSourceModel,
 	DataSourceType,
 	DeleteFunctionType,
 	FindFunctionParamsType,
@@ -81,6 +82,13 @@ export const restoreUser = async (
 	return await new ApiRequest().doFetch(`/users/${id}/restore`, {
 		method: 'PATCH',
 	});
+};
+
+export const getUser = async (id: number) => {
+	const response: ResponseFetch<DataSourceModel<'users'>> =
+		await new ApiRequest().doFetch(`/users/${id}`);
+
+	return getResponseData(response);
 };
 
 type GetUserPermissionsType = {

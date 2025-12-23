@@ -15,7 +15,7 @@ import { ViewMailQueueTemplate } from '@/app/(dashboard)/dashboard/mail-queue/vi
 const modelStore = createModelStore('mail_queue');
 
 export const DataTableMailQueue = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

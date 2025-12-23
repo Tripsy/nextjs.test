@@ -38,16 +38,17 @@ export function FormManageUser({
 	pending,
 }: FormManageType<'users'>) {
 	const translationsKeys = useMemo(
-		() => [
-			'users.form_manage.label_name',
-			'users.form_manage.label_email',
-			'users.form_manage.label_password_on_create',
-			'users.form_manage.label_password_on_update',
-			'users.form_manage.label_password_confirm',
-			'users.form_manage.label_language',
-			'users.form_manage.label_role',
-			'users.form_manage.label_operator_type',
-		],
+		() =>
+			[
+				'users.form_manage.label_name',
+				'users.form_manage.label_email',
+				'users.form_manage.label_password_on_create',
+				'users.form_manage.label_password_on_update',
+				'users.form_manage.label_password_confirm',
+				'users.form_manage.label_language',
+				'users.form_manage.label_role',
+				'users.form_manage.label_operator_type',
+			] as const,
 		[],
 	);
 

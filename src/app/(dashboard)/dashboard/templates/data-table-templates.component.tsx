@@ -15,7 +15,7 @@ import { ViewTemplate } from '@/app/(dashboard)/dashboard/templates/view-templat
 const modelStore = createModelStore('templates');
 
 export const DataTableTemplates = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

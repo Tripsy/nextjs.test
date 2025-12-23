@@ -16,7 +16,7 @@ import { ViewUser } from '@/app/(dashboard)/dashboard/users/view-user.component'
 const modelStore = createModelStore('users');
 
 export const DataTableUsers = (): JSX.Element => {
-	const translationsKeys = useMemo(() => ['app.text.loading'], []);
+	const translationsKeys = useMemo(() => ['app.text.loading'] as const, []);
 
 	const { translations } = useTranslation(translationsKeys);
 	const isMounted = useMounted();

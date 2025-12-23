@@ -24,13 +24,14 @@ export const DataTableMailQueueFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'mail_queue'>();
 
 	const translationsKeys = useMemo(
-		() => [
-			'mail_queue.form_filters.label_sent_date_start',
-			'mail_queue.form_filters.label_status',
-			'mail_queue.form_filters.label_template',
-			'mail_queue.form_filters.label_content',
-			'mail_queue.form_filters.label_to',
-		],
+		() =>
+			[
+				'mail_queue.form_filters.label_sent_date_start',
+				'mail_queue.form_filters.label_status',
+				'mail_queue.form_filters.label_template',
+				'mail_queue.form_filters.label_content',
+				'mail_queue.form_filters.label_to',
+			] as const,
 		[],
 	);
 

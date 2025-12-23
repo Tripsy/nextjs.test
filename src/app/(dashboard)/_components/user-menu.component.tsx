@@ -12,18 +12,19 @@ export function UserMenu() {
 	const { auth, authStatus } = useAuth();
 
 	const translationsKeys = useMemo(
-		() => [
-			'users.text.menu_link_login_anchor',
-			'users.text.menu_link_login_title',
-			'users.text.menu_link_register_anchor',
-			'users.text.menu_link_register_title',
-			'users.text.menu_link_logout_anchor',
-			'users.text.menu_link_logout_title',
-			'users.text.menu_link_account_me_anchor',
-			'users.text.menu_link_account_me_title',
-			'users.text.menu_link_dashboard_anchor',
-			'users.text.menu_link_dashboard_title',
-		],
+		() =>
+			[
+				'users.text.menu_link_login_anchor',
+				'users.text.menu_link_login_title',
+				'users.text.menu_link_register_anchor',
+				'users.text.menu_link_register_title',
+				'users.text.menu_link_logout_anchor',
+				'users.text.menu_link_logout_title',
+				'users.text.menu_link_account_me_anchor',
+				'users.text.menu_link_account_me_title',
+				'users.text.menu_link_dashboard_anchor',
+				'users.text.menu_link_dashboard_title',
+			] as const,
 		[],
 	);
 

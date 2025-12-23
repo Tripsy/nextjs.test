@@ -59,10 +59,11 @@ export default function Login() {
 		});
 
 	const translationsKeys = useMemo(
-		() => [
-			'login.message.session_destroy_success',
-			'login.message.session_destroy_error',
-		],
+		() =>
+			[
+				'login.message.session_destroy_success',
+				'login.message.session_destroy_error',
+			] as const,
 		[],
 	);
 
@@ -207,9 +208,14 @@ export default function Login() {
 								showToast({
 									severity: success ? 'success' : 'error',
 									summary: success ? 'Success' : 'Error',
-									detail: translations[
-										`login.message.${message}`
-									],
+									detail:
+										message === 'session_destroy_success'
+											? translations[
+													'login.message.session_destroy_success'
+												]
+											: translations[
+													`login.message.session_destroy_error`
+												],
 								});
 							}}
 						/>

@@ -60,7 +60,10 @@ export const DisplayDeleted = ({
 export const DisplayStatus = ({ status }: { status: string }) => {
 	const statusProps = statusList[status as keyof typeof statusList];
 
-	const translationsKeys = useMemo(() => [`app.status.${status}`], [status]);
+	const translationsKeys = useMemo(
+		() => [`app.status.${status}`] as const,
+		[status],
+	);
 
 	const { translations } = useTranslation(translationsKeys);
 
@@ -88,7 +91,10 @@ export const DisplayAction = <K extends keyof DataSourceType>({
 
 	const actionTitleKey = `${action.source}.action.${actionName}.title`;
 
-	const translationsKeys = useMemo(() => [actionTitleKey], [actionTitleKey]);
+	const translationsKeys = useMemo(
+		() => [actionTitleKey] as const,
+		[actionTitleKey],
+	);
 
 	const { translations } = useTranslation(translationsKeys);
 

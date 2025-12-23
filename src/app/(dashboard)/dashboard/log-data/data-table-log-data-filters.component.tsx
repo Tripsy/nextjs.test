@@ -29,12 +29,13 @@ export const DataTableLogDataFilters = (): React.JSX.Element => {
 	const { stateDefault, modelStore } = useDataTable<'log_data'>();
 
 	const translationsKeys = useMemo(
-		() => [
-			'log_data.form_filters.label_global',
-			'log_data.form_filters.label_category',
-			'log_data.form_filters.label_level',
-			'log_data.form_filters.label_created_at',
-		],
+		() =>
+			[
+				'log_data.form_filters.label_global',
+				'log_data.form_filters.label_category',
+				'log_data.form_filters.label_level',
+				'log_data.form_filters.label_created_at',
+			] as const,
 		[],
 	);
 
