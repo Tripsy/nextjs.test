@@ -23,7 +23,7 @@ import type {
 	DataSourceType,
 } from '@/config/data-source';
 import type { MatchModeType } from '@/lib/helpers/data-table';
-import { getValidDate, stringToDate } from '@/lib/helpers/date';
+import { getValidDate, toDateInstance } from '@/lib/helpers/date';
 
 type HandleSelectChangeType<K extends keyof DataSourceType> = <
 	F extends keyof DataSourceTableFilter<K>,
@@ -172,7 +172,7 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 					<Calendar
 						className="p-inputtext-sm h-11 w-[160px]"
 						id={elementIds[elementStartKey]}
-						value={stringToDate(startDateValue)}
+						value={toDateInstance(startDateValue)}
 						onChange={(e) =>
 							handleDateChange(
 								startDateField as keyof DataSourceTableFilter<K>,
@@ -191,7 +191,7 @@ export function FormFiltersDateRange<K extends keyof DataSourceType>(props: {
 					<Calendar
 						className="p-inputtext-sm h-11 w-[160px]"
 						id={elementIds[elementEndKey]}
-						value={stringToDate(endDateValue)}
+						value={toDateInstance(endDateValue)}
 						onChange={(e) =>
 							handleDateChange(
 								endDateField as keyof DataSourceTableFilter<K>,

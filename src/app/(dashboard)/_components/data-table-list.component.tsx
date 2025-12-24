@@ -19,8 +19,7 @@ import {
 	type DataTablePropsType,
 	getDataSourceConfig,
 } from '@/config/data-source';
-import { cfg } from '@/config/settings';
-import { getMomentInstanceFromDate } from '@/lib/helpers/date';
+import { toDateInstanceCustom } from '@/lib/helpers/date';
 import { replaceVars } from '@/lib/helpers/string';
 
 type SelectionChangeEvent<T> = {
@@ -134,10 +133,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 				// Handle date filters
 				if (/_date_start$/.test(key)) {
-					const date = getMomentInstanceFromDate(
-						value as string,
-						cfg('app.defaultDateFormat') as string,
-					);
+					const date = toDateInstanceCustom(value as string);
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
@@ -145,10 +141,7 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 					acc[key] = date.startOf('day').toISOString();
 				} else if (/_date_end$/.test(key)) {
-					const date = getMomentInstanceFromDate(
-						value as string,
-						cfg('app.defaultDateFormat') as string,
-					);
+					const date = toDateInstanceCustom(value as string);
 
 					if (!date) {
 						throw new Error(`Invalid start date: ${value}`);
@@ -156,7 +149,6 @@ export default function DataTableList<K extends keyof DataSourceType>(
 
 					acc[key] = date.endOf('day').toISOString();
 				} else {
-					// Normal filters
 					acc[key === 'global' ? 'term' : String(key)] =
 						String(value);
 				}
